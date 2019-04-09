@@ -1,6 +1,6 @@
 # Contributing to PrimeHub
 
-Issues are PRs are welcome!
+Issues and PRs are welcome!
 
 # Setting up development environment
 
@@ -62,6 +62,15 @@ kubectl port-forward -n nginx-ingress svc/nginx-ingress-controller 8080:80 --add
 ```
 
 ## Installing PrimeHub
+
+
+### Add helm repos and download dependency charts
+
+```
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm dependency update helm
+```
 
 ### Install the chart
 
