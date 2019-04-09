@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{.Release.Name}}-bootstrap"
+  labels:
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{.Release.Name}}-bootstrap"
+      labels:
+        app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+        app.kubernetes.io/instance: {{.Release.Name | quote }}
+        helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    spec:
+      restartPolicy: Never
+      containers:
+        - image: "busybox"
+          name: done
+          command:
+            - sh
+            - "-c"
+            - "sleep 10"
+          volumeMounts:
+            - name: kcadm
+              mountPath: /kcadm
+
+      initContainers:
+        - name: wait-for-keycloak
+          image: "{{ .Values.keycloak.init.image.repository }}:{{ .Values.keycloak.init.image.tag }}"
+          command:
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 {{ .Chart.Name }}-keycloak-http 80; do
+                  sleep 2;
+              done;
+
+              echo 'Keycloak OK ✓'
+
+        - name: bootstrap
+          image: "{{ .Values.keycloak.keycloak.image.repository }}:{{ .Values.keycloak.keycloak.image.tag }}"
+          imagePullPolicy: {{ .Values.keycloak.keycloak.image.pullPolicy }}
+          command:
+            - bash
+            - "-c"
+            - "keycloak/bin/kcadm.sh  config credentials --server http://{{ .Chart.Name }}-keycloak-http:80/auth --config /kcadm/kcadm.config --realm master --user keycloak --password $(KEYCLOAK_PASSWORD)"
+          env:
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-keycloak-http
+                  key: password
+
+          volumeMounts:
+            - name: kcadm
+              mountPath: /kcadm
+      volumes:
+        - name: kcadm
+          emptyDir: {}
+
+

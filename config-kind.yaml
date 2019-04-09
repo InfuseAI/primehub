@@ -1,0 +1,16 @@
+jupyterhub:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - hub.10.88.88.88.xip.io
+
+keycloak:
+  keycloak:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+      hosts:
+        - id.10.88.88.88.xip.io

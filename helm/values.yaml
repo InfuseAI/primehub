@@ -1,0 +1,90 @@
+primehub:
+  deployKeycloak: true
+
+jupyterhub:
+  debug:
+    enabled: true
+
+  hub:
+    db:
+      type: sqlite-memory
+    # Note that you should not use the default secret. generate with `openssl rand -hex 32`
+    cookieSecret: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    extraEnv:
+    - name: PRIMEHUB_KEYCLOAK_URL
+      valueFrom:
+        secretKeyRef:
+          name: primehub-secret
+          key: keycloak.url
+    - name: PRIMEHUB_KEYCLOAK_REALM
+      value: primehub
+    - name: PRIMEHUB_KEYCLOAK_CLIENT_ID
+      value: jupyterhub
+    - name: PRIMEHUB_KEYCLOAK_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: primehub-secret
+          key: keycloak.clientSecret
+    extraContainers:
+    - name: statsd-to-prometheus
+      image: prom/statsd-exporter:v0.9.0
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: 9102
+      - containerPort: 9125
+        protocol: UDP
+
+  auth:
+    state:
+      cryptoKey: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+      enabled: true
+    type: custom
+    custom:
+      className: PrimeHubAuthenticator
+
+  proxy:
+    secretToken: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  prePuller:
+    hook:
+      enabled: false
+  singleuser:
+    storage:
+      type: none
+    extraEnv:
+      JUPYTER_ENABLE_LAB: "yes"
+      CULL_TIMEOUT: "7200"
+      CULL_KERNEL_TIMEOUT: "3600"
+      CULL_INTERVAL: "300"
+      CULL_CONNECTED: "1"
+    profileList:
+      - display_name: "Shared, CPU node"
+        description: "cpu node"
+        kubespawner_override:
+          singleuser_image_spec: jupyter/minimal-notebook
+      - display_name: "GPU node"
+        description: "gpu node, if your cluster enabled gpu"
+        kubespawner_override:
+          singleuser_image_spec: jupyter/minimal-notebook
+          extra_resource_limits:
+            nvidia.com/gpu: "1"
+
+  custom:
+    keycloakRealm: primehub
+    keycloakClientId: jupyterhub
+
+keycloak:
+  keycloak:
+    replicas: 1
+    image:
+      repository: jboss/keycloak
+      tag: 4.8.3.Final
+    password: CHANGEKEYCLOAKPASSWORD
+
+  postgresql:
+    persistence:
+      enabled: false
+    postgresPassword: CHANGEKEYCLOAKPASSWORD
+
+  # this is used for keycloak subchart, as the condition
+  persistence:
+    deployPostgres: false

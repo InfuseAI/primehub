@@ -1,0 +1,25 @@
+jupyterhub:
+  singleuser:
+    storage:
+      type: dynamic
+  hub:
+    db:
+      type: sqlite-pvc
+      pvc:
+        storageClassName: local-path
+
+keycloak:
+  keycloak:
+    persistence:
+      deployPostgres: true
+      dbVendor: postgres
+      dbPassword: CHANGEKEYCLOAKPASSWORD
+  postgresql:
+    persistence:
+      enabled: true
+    postgresPassword: CHANGEKEYCLOAKPASSWORD
+
+  # this is used for keycloak subchart, as the condition
+  persistence:
+    deployPostgres: true
+
