@@ -4,7 +4,7 @@ This repo contains a *Helm chart* for PrimeHub and a guide to use it.
 
 ## About
 
-PrimeHub is an opininated JupyterHub distribution on Kubernetes, with:
+PrimeHub is an opinionated JupyterHub distribution on Kubernetes, with:
 
 - integrated keycloak for identity management
 - (more to be ported from PrimeHub Enterprise Edition)
