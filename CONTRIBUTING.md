@@ -102,16 +102,25 @@ TODO: this is to be moved to a post-install bootstrap job, which should be an id
 Run the following commands:
 
 ```
+export DOMAIN=10.88.88.88.xip.io:8080
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  config credentials --server http://localhost:8080/auth  --realm master --user keycloak --password CHANGEKEYCLOAKPASSWORD
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create realms -s realm=primehub -s enabled=true
-client_id=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create clients -r primehub -s clientId=jupyterhub -s "redirectUris+=http://hub.10.88.88.88.xip.io:8080/*" -f - --id < ./helm/keycloak/client-jupyterhub.json)
+client_id=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create clients -r primehub -s clientId=jupyterhub -s "redirectUris+=http://hub.${DOMAIN}/*" -f - --id < ./helm/keycloak/client-jupyterhub.json)
 
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create users -r primehub -s username=phuser -s enabled=true -s emailVerified=true
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  set-password  -r primehub --username phuser --new-password=randstring
 
 client_secret=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh get clients/$client_id/client-secret -r primehub  | jq -r .value)
 
-kubectl create -n primehub secret generic primehub-secret --from-literal=keycloak.url=http://id.10.88.88.88.xip.io:8080 --from-literal=keycloak.clientSecret=$client_secret
+kubectl create -n primehub secret generic primehub-secret --from-literal=keycloak.url=http://id.${DOMAIN} --from-literal=keycloak.clientSecret=$client_secret
+
+# for testing, set realm sslRequired=none
+# also set the user to admin in keycloak
+# export KCADM="kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh"
+# $KCADM add-roles -r primehub --uusername phuser --cclientid realm-management --rolename realm-admin
+
+echo Hub: hub.${DOMAIN}
+echo keycloak: id.${DOMAIN}/auth/admin/primehub/console
 ```
 
 ### access
