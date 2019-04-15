@@ -63,19 +63,21 @@ kubectl port-forward -n nginx-ingress svc/nginx-ingress-controller 8080:80 --add
 
 ## Installing PrimeHub
 
+do this in the helm/ directory
 
 ### Add helm repos and download dependency charts
 
 ```
 helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm dependency update helm
+
+helm dependency update primehub
 ```
 
 ### Install the chart
 
 ```
-helm upgrade --install --namespace primehub primehub helm --values config-kind.yaml --set-file jupyterhub.hub.extraConfig.primehub=./helm/jupyterhub_primehub.py
+helm upgrade --install --namespace primehub primehub primehub --values config-kind.yaml --set-file jupyterhub.hub.extraConfig.primehub=./primehub/jupyterhub_primehub.py
 ```
 
 Note that this creates a non-persistent deployment.  Due to the way keycloak chart is designed, upgrading again will destroy the in-memory database and lose all credentials.
@@ -84,7 +86,7 @@ Note that this creates a non-persistent deployment.  Due to the way keycloak cha
 To provide persistent (with default storage class):
 
 ```
-helm upgrade --install --namespace primehub primehub helm --values config-kind.yaml --values config-persist.yaml --set-file jupyterhub.hub.extraConfig.primehub=./helm/jupyterhub_primehub.py
+helm upgrade --install --namespace primehub primehub primehub --values config-kind.yaml --values config-persist.yaml --set-file jupyterhub.hub.extraConfig.primehub=./primehub/jupyterhub_primehub.py
 ```
 
 Note that there's a warning due to the default value of jupyterhub chart.  This can be ignored:
@@ -105,7 +107,7 @@ Run the following commands:
 export DOMAIN=10.88.88.88.xip.io:8080
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  config credentials --server http://localhost:8080/auth  --realm master --user keycloak --password CHANGEKEYCLOAKPASSWORD
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create realms -s realm=primehub -s enabled=true
-client_id=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create clients -r primehub -s clientId=jupyterhub -s "redirectUris+=http://hub.${DOMAIN}/*" -f - --id < ./helm/keycloak/client-jupyterhub.json)
+client_id=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create clients -r primehub -s clientId=jupyterhub -s "redirectUris+=http://hub.${DOMAIN}/*" -f - --id < ./primehub/keycloak/client-jupyterhub.json)
 
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create users -r primehub -s username=phuser -s enabled=true -s emailVerified=true
 kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  set-password  -r primehub --username phuser --new-password=randstring
