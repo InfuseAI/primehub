@@ -1,0 +1,5 @@
+charts:
+  - name: primehub
+    repo:
+      git: InfuseAI/helm-chart
+      published: https://InfuseAI.github.io/helm-chart
