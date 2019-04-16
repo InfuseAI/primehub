@@ -1,4 +1,5 @@
 ![logo](doc/media/logo.png?raw=true "PrimeHub")
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
 
 [![GitHub release](https://img.shields.io/github/release/infuseAI/primehub/all.svg?style=flat-square)](https://github.com/infuseAI/primehub/releases)
 
@@ -29,3 +30,6 @@ We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
 - PrimeHub Community Edition and this chart is licensed under Apache2
 - Project jupyter components are licensed unde 3-clause BSD
 - Zero to JupyterHub is dual licensed under Apache2 and 3-clause BSD
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_large)
