@@ -1,6 +1,7 @@
 ![logo](doc/media/logo.png?raw=true "PrimeHub")
 
 [![GitHub release](https://img.shields.io/github/release/infuseAI/primehub/all.svg?style=flat-square)](https://github.com/infuseAI/primehub/releases)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
 
 # PrimeHub
 
@@ -17,7 +18,7 @@ PrimeHub is an opinionated JupyterHub distribution on Kubernetes, with:
 
 This project is still in early stage, things changes quickly and may contain
 some unexpected features, but we plan to make this rock solid and release more
-features with the community. Any suggestions and discussions are welcome and
+features with the community. Suggestions and discussions are welcome and
 appreciated.
 
 ## Contributing
