@@ -31,50 +31,52 @@ kind create cluster --name primehub
 export KUBECONFIG="$(kind get kubeconfig-path --name="primehub")"
 ```
 
-Install helm:
+## install tools
+
+There are helper scripts in `scripts/` path. You can finish primehub-ce installation following this sequences:
 
 ```
-kubectl --namespace kube-system create sa tiller
-kubectl create clusterrolebinding tiller \
-       --clusterrole cluster-admin \
-       --serviceaccount=kube-system:tiller
-helm init --service-account tiller --wait --upgrade
+./00-setup.sh
+./01-helm-release.sh
+./02-keycloak.sh
 ```
 
-Install nginx ingress:
+### ./00-setup.sh
 
-```
-helm install --namespace nginx-ingress -n nginx-ingress stable/nginx-ingress --set controller.hostNetwork=true
-```
+  * install helm tiller to kind cluster
+  * install nginx ingress: it routes \*.10.88.88.88.xip.io:8080 to our services
+  * configure kubernetes dynamic storage provisioner
 
-Install local provisioner and [make it default](https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/):
+There are two endpoints connected from web browser:
 
-```
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.beta.kubernetes.io/is-default-class":"false"}}}'
-kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
+  * http://id.10.88.88.88.xip.io:8080 
+  * http://hub.10.88.88.88.xip.io:8080 
 
-We'll use port 8080, hence *.10.88.88.88.xip.io:8080 to access all services. Enable this through port-forward for the nginx controller:
+We need to setup port-forward by the instruction:
 
 ```
 kubectl port-forward -n nginx-ingress svc/nginx-ingress-controller 8080:80 --address 10.88.88.88 &
 ```
 
-## Installing PrimeHub
+### ./01-helm-release.sh
 
-do this in the helm/ directory
+  * update add helm repo and update dependency
+    * [Keycloak](https://www.keycloak.org/): Keycloak is an open source identity and access management solution.
+    * [JupyterHub](https://jupyterhub.readthedocs.io/en/stable/): a multi-user Hub, spawns, manages, and proxies multiple instances of the single-user Jupyter notebook server.
+  * install PrimeHub
 
-### Add helm repos and download dependency charts
+### ./02-keycloak.sh
 
-```
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+  * create realm
+  * create Keycloak client and configure it
+  * create a user account
+  * save credentials in the kubernets' secret
 
-helm dependency update primehub
-```
+## Cautions
 
-### Install the chart
+### Persistence
+
+By default we install primehub without a persistence disk with the following command:
 
 ```
 helm upgrade --install --namespace primehub primehub primehub --values config-kind.yaml --set-file jupyterhub.hub.extraConfig.primehub=./primehub/jupyterhub_primehub.py
@@ -89,6 +91,8 @@ To provide persistent (with default storage class):
 helm upgrade --install --namespace primehub primehub primehub --values config-kind.yaml --values config-persist.yaml --set-file jupyterhub.hub.extraConfig.primehub=./primehub/jupyterhub_primehub.py
 ```
 
+### warning from JupyterHub
+
 Note that there's a warning due to the default value of jupyterhub chart.  This can be ignored:
 
 ```
@@ -97,34 +101,11 @@ Warning: Merging destination map for chart 'jupyterhub'. Cannot overwrite table 
 
 This should finish within a few minutes. Note that hub won't start until `primehub-secret`, please follow the bootstrap instructions.
 
-### bootstrap
 
-TODO: this is to be moved to a post-install bootstrap job, which should be an idempotent job that helps with upgrading.
+## The road to PrimeHub
 
-Run the following commands:
+After installation finished, you may now access PrimeHub:
 
-```
-export DOMAIN=10.88.88.88.xip.io:8080
-kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  config credentials --server http://localhost:8080/auth  --realm master --user keycloak --password CHANGEKEYCLOAKPASSWORD
-kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create realms -s realm=primehub -s enabled=true
-client_id=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create clients -r primehub -s clientId=jupyterhub -s "redirectUris+=http://hub.${DOMAIN}/*" -f - --id < ./primehub/keycloak/client-jupyterhub.json)
-
-kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  create users -r primehub -s username=phuser -s enabled=true -s emailVerified=true
-kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh  set-password  -r primehub --username phuser --new-password=randstring
-
-client_secret=$(kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh get clients/$client_id/client-secret -r primehub  | jq -r .value)
-
-kubectl create -n primehub secret generic primehub-secret --from-literal=keycloak.url=http://id.${DOMAIN} --from-literal=keycloak.clientSecret=$client_secret
-
-# for testing, set realm sslRequired=none
-# also set the user to admin in keycloak
-# export KCADM="kubectl exec -ti -n primehub primehub-keycloak-0 -- keycloak/bin/kcadm.sh"
-# $KCADM add-roles -r primehub --uusername phuser --cclientid realm-management --rolename realm-admin
-
-echo Hub: hub.${DOMAIN}
-echo keycloak: id.${DOMAIN}/auth/admin/primehub/console
-```
-
-### access
-
-You may now access http://hub.10.88.88.88.xip.io:8080/ and login with the default user phuser and password rangstring
+* url: http://hub.10.88.88.88.xip.io:8080/
+* username: phuser
+* password: randstring
