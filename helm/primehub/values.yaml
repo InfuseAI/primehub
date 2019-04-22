@@ -1,5 +1,11 @@
 primehub:
   deployKeycloak: true
+  domain: 10.88.88.88.xip.io:8080
+  keycloak:
+    realm: primehub
+    client: jupyterhub
+  user: phuser
+  password: randstring
 
 jupyterhub:
   debug:

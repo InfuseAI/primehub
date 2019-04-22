@@ -1,0 +1,9 @@
+===========
+PrimeHub CE
+===========
+
+You may now access:
+
+  http://hub.10.88.88.88.xip.io:8080/
+
+and login with the default user phuser and password randstring

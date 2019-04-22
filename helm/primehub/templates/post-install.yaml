@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{.Release.Name}}-bootstrap"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{.Release.Name}}-bootstrap"
+      labels:
+        app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+        app.kubernetes.io/instance: {{.Release.Name | quote }}
+        helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    spec:
+      restartPolicy: Never
+      serviceAccountName: primehub-bootstrap-sa
+      containers:
+        - name: primehub-keycloak-bootstrap
+          image: "busybox"
+          env:
+          - name: PRIMEHUB_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: KEYCLOAK_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: KEYCLOAK_NAME
+            value: {{ .Release.Name }}-keycloak-0
+          - name: KEYCLOAK_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-keycloak-http
+                key: password
+          command:
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 {{ .Chart.Name }}-keycloak-http 80; do
+                  sleep 2;
+              done;
+              echo 'Keycloak OK ✓'
+              ls -l /scripts
+              echo
+
+              
+              sh /scripts/install-tools.sh
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: tmp
+          hostPath:
+            path: /tmp
+            type: Directory       
+        - name: scripts
+          configMap:
+            name: primehub-bootstrap-scripts
