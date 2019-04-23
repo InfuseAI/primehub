@@ -2,6 +2,7 @@
 
 [![GitHub release](https://img.shields.io/github/release/infuseAI/primehub/all.svg?style=flat-square)](https://github.com/infuseAI/primehub/releases)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
+[![CircleCI](https://circleci.com/gh/InfuseAI/primehub.svg?style=svg)](https://circleci.com/gh/InfuseAI/primehub)
 
 # PrimeHub
 
