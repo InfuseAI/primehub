@@ -19,7 +19,6 @@ jobs:
     branches:
       only:
         - master
-        - feature/6-boostrap-in-post-install-hook
 
     steps:
       - add_ssh_keys:
