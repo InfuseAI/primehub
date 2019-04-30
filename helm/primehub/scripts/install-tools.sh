@@ -23,11 +23,10 @@ remove_script() {
 }
 
 exec_script() {
-  $EXEC bash bootstrap.sh
+  $EXEC sh -c "DOMAIN=${PRIMEHUB_DOMAIN} ADMIN=${PRIMEHUB_ADMIN} ADMIN_PASSWORD=${PRIMEHUB_ADMIN_PASSWORD} REALM=${PRIMEHUB_REALM} USER=${PRIMEHUB_USER} USER_PASSWORD=${PRIMEHUB_USER_PASSWORD} CLIENT=${PRIMEHUB_CLIENT} bash bootstrap.sh"
   client_secret=$($EXEC cat client.secret)
   echo "get client_secret ${client_secret}"
-  DOMAIN={{ .Values.primehub.domain }}
-  ${KUBECTL} create -n primehub secret generic primehub-secret --from-literal=keycloak.url=http://id.${DOMAIN} --from-literal=keycloak.clientSecret=$client_secret
+  ${KUBECTL} create -n primehub secret generic primehub-secret --from-literal=keycloak.url=http://id.${PRIMEHUB_DOMAIN} --from-literal=keycloak.clientSecret=$client_secret
 }
 
 

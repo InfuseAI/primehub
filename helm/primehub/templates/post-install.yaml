@@ -39,6 +39,20 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-keycloak-http
                 key: password
+          - name: PRIMEHUB_DOMAIN
+            value: {{ .Values.primehub.domain }}
+          - name: PRIMEHUB_ADMIN
+            value: keycloak
+          - name: PRIMEHUB_ADMIN_PASSWORD
+            value: CHANGEKEYCLOAKPASSWORD
+          - name: PRIMEHUB_REALM
+            value: {{ .Values.primehub.keycloak.realm}}
+          - name: PRIMEHUB_USER
+            value: {{ .Values.primehub.user}}
+          - name: PRIMEHUB_USER_PASSWORD
+            value: {{ .Values.primehub.password}}
+          - name: PRIMEHUB_CLIENT
+            value: {{ .Values.primehub.keycloak.client}}
           command:
             - sh
             - -c
@@ -49,7 +63,6 @@ spec:
               echo 'Keycloak OK ✓'
               ls -l /scripts
               echo
-
               
               sh /scripts/install-tools.sh
           volumeMounts:

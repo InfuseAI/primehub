@@ -1,15 +1,6 @@
 KCADM=keycloak/bin/kcadm.sh
 KC_ADD_USER=keycloak/bin/add-user-keycloak.sh
 
-# parameters for bootstraping
-DOMAIN={{ .Values.primehub.domain }}
-ADMIN=keycloak
-ADMIN_PASSWORD=CHANGEKEYCLOAKPASSWORD
-REALM={{ .Values.primehub.keycloak.realm}}
-USER={{ .Values.primehub.user}}
-USER_PASSWORD={{ .Values.primehub.password}}
-CLIENT={{ .Values.primehub.keycloak.client}}
-
 # FIXME: this wouldn't work without restart the server
 # CAUTION: keycloak will lost data after helm-upgrade in non-persist deployment
 
