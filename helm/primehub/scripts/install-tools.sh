@@ -1,10 +1,7 @@
 mkdir /data
 cd /data
 
-wget https://storage.googleapis.com/kubernetes-release/release/v1.14.1/bin/linux/amd64/kubectl -O kubectl
-chmod a+x kubectl
-
-KUBECTL=./kubectl
+KUBECTL=/kubectl
 EXEC="${KUBECTL} exec -ti -n ${KEYCLOAK_NAMESPACE} ${KEYCLOAK_NAME} -- "
 
 copy_script() {
@@ -34,3 +31,4 @@ copy_script bootstrap.sh body.json
 exec_script
 remove_script bootstrap.sh body.json client.secret
 
+exit 0

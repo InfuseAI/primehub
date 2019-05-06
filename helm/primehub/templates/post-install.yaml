@@ -24,9 +24,20 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: primehub-bootstrap-sa
+      initContainers:
+        - name: wait-for-keycloak
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 {{ .Chart.Name }}-keycloak-http 80; do
+                  sleep 2;
+              done;
+              echo 'Keycloak OK ✓'
       containers:
         - name: primehub-keycloak-bootstrap
-          image: "busybox"
+          image: gcr.io/google-containers/hyperkube-amd64:v1.14.0
           env:
           - name: PRIMEHUB_NAMESPACE
             value: {{ .Release.Namespace }}
@@ -57,24 +68,11 @@ spec:
             - sh
             - -c
             - |
-              until printf "." && nc -z -w 2 {{ .Chart.Name }}-keycloak-http 80; do
-                  sleep 2;
-              done;
-              echo 'Keycloak OK ✓'
-              ls -l /scripts
-              echo
-              
               sh /scripts/install-tools.sh
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
             - name: scripts
               mountPath: /scripts
       volumes:
-        - name: tmp
-          hostPath:
-            path: /tmp
-            type: Directory       
         - name: scripts
           configMap:
             name: primehub-bootstrap-scripts
