@@ -53,9 +53,12 @@ spec:
           - name: PRIMEHUB_DOMAIN
             value: {{ .Values.primehub.domain }}
           - name: PRIMEHUB_ADMIN
-            value: keycloak
+            value: {{ .Values.keycloak.keycloak.username }}
           - name: PRIMEHUB_ADMIN_PASSWORD
-            value: CHANGEKEYCLOAKPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-keycloak-http
+                key: password
           - name: PRIMEHUB_REALM
             value: {{ .Values.primehub.keycloak.realm}}
           - name: PRIMEHUB_USER
