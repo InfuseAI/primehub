@@ -95,13 +95,11 @@ Note that there's a warning due to the default value of jupyterhub chart.  This 
 Warning: Merging destination map for chart 'jupyterhub'. Cannot overwrite table item 'extraEnv', with non table value: map[]
 ```
 
-This should finish within a few minutes. Note that hub won't start until `primehub-secret`, please follow the bootstrap instructions.
+This should finish within a few minutes. Note that hub won't start until `primehub-secret` created in the bootstrap process.
 
 ### bootstrap
 
-TODO: this is to be moved to a post-install bootstrap job, which should be an idempotent job that helps with upgrading.
-
-Run the following commands:
+bootstrap will be done with helm-chart's post-install hook. It will run the following commands:
 
 ```
 export DOMAIN=10.88.88.88.xip.io:8080

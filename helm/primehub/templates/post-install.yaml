@@ -26,7 +26,7 @@ spec:
       serviceAccountName: primehub-bootstrap-sa
       initContainers:
         - name: wait-for-keycloak
-          image: busybox
+          image: "{{ .Values.keycloak.init.image.repository }}:{{ .Values.keycloak.init.image.tag }}"
           command:
             - sh
             - -c
@@ -37,7 +37,7 @@ spec:
               echo 'Keycloak OK ✓'
       containers:
         - name: primehub-keycloak-bootstrap
-          image: gcr.io/google-containers/hyperkube-amd64:v1.14.0
+          image: "{{ .Values.primehub.bootstrap.image.repository }}:{{ .Values.primehub.bootstrap.image.tag }}"
           env:
           - name: PRIMEHUB_NAMESPACE
             value: {{ .Release.Namespace }}
