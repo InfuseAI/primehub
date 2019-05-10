@@ -1,5 +1,15 @@
 primehub:
   deployKeycloak: true
+  domain: 10.88.88.88.xip.io:8080
+  keycloak:
+    realm: primehub
+    client: jupyterhub
+  user: phuser
+  password: randstring
+  bootstrap:
+    image:
+      repository: gcr.io/google-containers/hyperkube-amd64
+      tag: v1.14.0
 
 jupyterhub:
   debug:
