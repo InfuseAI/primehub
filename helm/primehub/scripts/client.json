@@ -1,5 +1,4 @@
 {
-  "clientId": "{{.Values.primehub.keycloak.client}}",
   "enabled": true,
   "clientAuthenticatorType": "client-secret",
   "redirectUris": [],
