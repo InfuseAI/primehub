@@ -1,5 +1,21 @@
 {
   "protocol": "openid-connect",
   "publicClient": false,
-  "serviceAccountsEnabled": true
+  "serviceAccountsEnabled": true,
+  "protocolMappers": [
+    {
+      "name": "roles",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-realm-role-mapper",
+      "consentRequired": false,
+      "config": {
+        "userinfo.token.claim": "true",
+        "multivalued": "true",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "roles",
+        "jsonType.label": "String"
+      }
+    }
+  ]
 }
