@@ -20,7 +20,8 @@ class KeycloakMixin(OAuth2Mixin):
 class PrimeHubLogoutHandler(LogoutHandler):
   kc_logout_url = '%s/auth/realms/%s/protocol/openid-connect/logout' % (keycloak_url, keycloak_realm)
 
-  async def get(self):
+  @gen.coroutine
+  def get(self):
     # redirect to keycloak logout url and redirect back with kc=true parameters
     # then proceed with the original logout method.
     logout_kc = self.get_argument('kc', '')
@@ -28,7 +29,7 @@ class PrimeHubLogoutHandler(LogoutHandler):
       logout_url = self.request.full_url() + '?kc=true'
       self.redirect(self.kc_logout_url + '?' + urllib.parse.urlencode({ 'redirect_uri' : logout_url}))
     else:
-      super().get()
+      yield super().get()
 
 class PrimeHubLoginHandler(OAuthLoginHandler, KeycloakMixin):
     pass
