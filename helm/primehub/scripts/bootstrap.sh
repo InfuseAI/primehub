@@ -1,44 +1,31 @@
+set -e
+
 KCADM=keycloak/bin/kcadm.sh
-KC_ADD_USER=keycloak/bin/add-user-keycloak.sh
 
-# FIXME: this wouldn't work without restart the server
-# CAUTION: keycloak will lost data after helm-upgrade in non-persist deployment
-
-# check keycloak initialized
-#if [ "$(${KCADM} get users | jq '. | length')" == "" ]; then
-#  echo "keycloak has not initialized, create an admin account"
-#  ${KC_ADD_USER} -u ${ADMIN} -p ${ADMIN_PASSWORD}
-#fi
+source ./kc_util.source
 
 # login
-${KCADM} config credentials --server http://localhost:8080/auth --realm master --user ${ADMIN} --password ${ADMIN_PASSWORD}
-
-echo "create realm if not exists"
-if [ ! "$(${KCADM} get realms | jq "[.[] | select(.realm | contains(\"${REALM}\"))] | length")" == 1 ]; then
-  echo "create realm ${REALM}"
+if [[ -z "${CLIENT_ADMIN_SECRET}" ]]; then
+  # install
+  echo "Login by user: $ADMIN"
+  ${KCADM} config credentials --server http://localhost:8080/auth --realm master --user ${ADMIN} --password ${ADMIN_PASSWORD}
   ${KCADM} create realms -s realm=${REALM} -s enabled=true
 else
-  echo "found realm ${REALM}"
+  # upgrade
+  echo "Login by service account: $CLIENT_ADMIN"
+  ${KCADM} config credentials --server http://localhost:8080/auth --realm ${REALM} --client ${CLIENT_ADMIN} --secret ${CLIENT_ADMIN_SECRET}
 fi
 
-echo "create client if not exists"
-if [ ! "$(${KCADM} get clients -r ${REALM} | jq "[.[] | select(.clientId | contains(\"${CLIENT}\"))] | length")" == 1 ]; then
-  echo "create client ${CLIENT}"
-  CLIENT_ID=$(${KCADM} create clients -r ${REALM} -s clientId=${CLIENT} -s "redirectUris+=http://hub.${DOMAIN}/*" -f - --id < ./body.json)
-else
-  echo "found client ${CLIENT}"
-  CLIENT_ID=$(${KCADM} get clients -r ${REALM} | jq -r ".[] | select(.clientId | contains(\"${CLIENT}\")) | .id")
-fi
+# keycloak client 'jupyterhub'
+apply_client $CLIENT ./client.json "http://hub.${DOMAIN}/*"
+CLIENT_ID=$(kc_client_get $CLIENT | jq -r .id)
+echo $(kc_client_secret ${CLIENT_ID}) > client.secret
 
-echo "create user if not exists"
-if [ ! "$(${KCADM} get users -r ${REALM} | jq "[.[] | select(.username | contains(\"${USER}\"))] | length")" == 1 ]; then
-  echo "create user ${USER}"
-  ${KCADM} create users -r ${REALM} -s username=${USER} -s enabled=true -s emailVerified=true
-  ${KCADM} set-password  -r ${REALM} --username ${USER} --new-password=${USER_PASSWORD}
-else
-  echo "found user ${USER}"
-fi
+# keycloak client 'primehub'
+apply_client $CLIENT_ADMIN ./client-admin.json
+apply_client_role $CLIENT_ADMIN ./client-admin-roles.json
+CLIENT_ADMIN_ID=$(kc_client_get $CLIENT_ADMIN | jq -r .id)
+echo $(kc_client_secret ${CLIENT_ADMIN_ID}) > client-admin.secret
 
-
-CLIENT_SECRET=$(${KCADM} get clients/${CLIENT_ID}/client-secret -r ${REALM} | jq -r .value)
-echo ${CLIENT_SECRET} > client.secret
+# user
+apply_user $USER $USER_PASSWORD

@@ -4,6 +4,7 @@ primehub:
   keycloak:
     realm: primehub
     client: jupyterhub
+    clientAdmin: primehub
   user: phuser
   password: randstring
   bootstrap:
@@ -12,9 +13,6 @@ primehub:
       tag: v1.14.0
 
 jupyterhub:
-  debug:
-    enabled: true
-
   hub:
     db:
       type: sqlite-memory
@@ -29,7 +27,10 @@ jupyterhub:
     - name: PRIMEHUB_KEYCLOAK_REALM
       value: primehub
     - name: PRIMEHUB_KEYCLOAK_CLIENT_ID
-      value: jupyterhub
+      valueFrom:
+        secretKeyRef:
+          name: primehub-secret
+          key: keycloak.clientId
     - name: PRIMEHUB_KEYCLOAK_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
@@ -77,10 +78,6 @@ jupyterhub:
           singleuser_image_spec: jupyter/minimal-notebook
           extra_resource_limits:
             nvidia.com/gpu: "1"
-
-  custom:
-    keycloakRealm: primehub
-    keycloakClientId: jupyterhub
 
 keycloak:
   keycloak:

@@ -67,6 +67,16 @@ spec:
             value: {{ .Values.primehub.password}}
           - name: PRIMEHUB_CLIENT
             value: {{ .Values.primehub.keycloak.client}}
+          - name: PRIMEHUB_CLIENT_ADMIN
+            value: {{ .Values.primehub.keycloak.clientAdmin}}
+          {{- if .Release.IsUpgrade }}
+          - name: PRIMEHUB_CLIENT_ADMIN_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: primehub-secret
+                key: keycloak.clientAdminSecret
+                optional: true
+          {{- end }}
           command:
             - sh
             - -c

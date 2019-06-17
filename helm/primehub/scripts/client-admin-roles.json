@@ -1,0 +1,8 @@
+{
+  "realmRoles": [],
+  "clientRoles": {
+    "realm-management": [
+      "realm-admin"
+    ]
+  }
+}
