@@ -16,9 +16,13 @@ jobs:
       # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
-    branches:
-      only:
-        - master
+    filters:
+      tags:
+        only:
+          - /^v.*/
+      branches:
+        only:
+          - master
 
     steps:
       - add_ssh_keys:
