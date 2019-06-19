@@ -1,8 +1,5 @@
-# Python CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-#
 version: 2
+
 jobs:
   build:
     docker:
@@ -16,13 +13,6 @@ jobs:
       # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
-    filters:
-      tags:
-        only:
-          - /^v.*/
-      branches:
-        only:
-          - master
 
     steps:
       - add_ssh_keys:
@@ -44,3 +34,20 @@ jobs:
           key: deps-{{ checksum "requirements.txt" }}
           paths:
             - ".venv"
+
+workflows:
+  version: 2
+  latest_builds:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
+  release_builds:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/  
