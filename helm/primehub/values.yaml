@@ -44,6 +44,9 @@ jupyterhub:
       - containerPort: 9102
       - containerPort: 9125
         protocol: UDP
+    extraConfig:
+      primehub: |
+        ## jupyterhub_primehub.py
 
   auth:
     state:

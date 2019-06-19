@@ -16,5 +16,5 @@ source $PROJECT_ROOT/ci/common.sh
 install::helm
 install::chartpress
 helm::update_dependency
-
+ci::setup_inject_values
 ci::setup_ci_environment_and_publish
