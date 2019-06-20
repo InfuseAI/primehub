@@ -6,9 +6,8 @@ valuefile=os.path.abspath(sys.argv[1])
 datafile=os.path.abspath(sys.argv[2])
 outputfile=valuefile
 
-# print('valuefile: %s' % (valuefile))
-# print('datafile: %s' % (datafile))
-
+# Reference https://stackoverflow.com/a/15423007
+# How can I control what scalar form PyYAML uses for my data
 def should_use_block(value):
     for c in u"\u000a\u000d\u001c\u001d\u001e\u0085\u2028\u2029":
         if c in value:
@@ -33,7 +32,8 @@ with open(valuefile, mode='r') as f:
 with open(datafile, mode='r') as f:
     data = f.read()
 
-result['jupyterhub']['hub']['extraConfig']['primehub'] = data
+comment = "# This block is generated from 'helm/primehub/jupyterhub_primehub.py'"
+result['jupyterhub']['hub']['extraConfig']['primehub'] = '%s\n\n%s' % (comment, data)
 yaml.representer.BaseRepresenter.represent_scalar = my_represent_scalar
 output = yaml.dump(result, allow_unicode=True)
 

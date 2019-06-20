@@ -46,7 +46,10 @@ jupyterhub:
         protocol: UDP
     extraConfig:
       primehub: |
-        ## jupyterhub_primehub.py
+        # This attribute is supposed to be inlined while chart building.
+        # For dev installing from directory, please use option
+        # '--set-file helm/primehub/jupyterhub_primehub.py' of helm install
+        # to overwrite this attribute.
 
   auth:
     state:
