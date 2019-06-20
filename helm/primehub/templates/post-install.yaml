@@ -62,9 +62,9 @@ spec:
           - name: PRIMEHUB_REALM
             value: {{ .Values.primehub.keycloak.realm}}
           - name: PRIMEHUB_USER
-            value: {{ .Values.primehub.user}}
+            value: {{ .Values.primehub.user | quote }}
           - name: PRIMEHUB_USER_PASSWORD
-            value: {{ .Values.primehub.password}}
+            value: {{ .Values.primehub.password | quote }}
           - name: PRIMEHUB_CLIENT
             value: {{ .Values.primehub.keycloak.client}}
           - name: PRIMEHUB_CLIENT_ADMIN

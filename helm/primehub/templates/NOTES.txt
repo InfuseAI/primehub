@@ -4,6 +4,6 @@ PrimeHub CE
 
 You may now access:
 
-  http://{{ index .Values.jupyterhub.ingress.hosts 0 }}
+  http://{{ .Values.primehub.domain }}
 
 and login with the default user phuser and password randstring
