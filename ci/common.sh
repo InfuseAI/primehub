@@ -25,6 +25,10 @@ function helm::package() {
   popd
 }
 
+function ci::setup_inject_values() {
+  python ${PROJECT_ROOT}/ci/update-values.py ${PROJECT_ROOT}/helm/primehub/values.yaml ${PROJECT_ROOT}/helm/primehub/jupyterhub_primehub.py
+}
+
 function ci::setup_ci_environment_and_publish() {
   pushd $CHART_ROOT/..
 

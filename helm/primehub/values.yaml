@@ -44,6 +44,12 @@ jupyterhub:
       - containerPort: 9102
       - containerPort: 9125
         protocol: UDP
+    extraConfig:
+      primehub: |
+        # This attribute is supposed to be inlined while chart building.
+        # For dev installing from directory, please use option
+        # '--set-file helm/primehub/jupyterhub_primehub.py' of helm install
+        # to overwrite this attribute.
 
   auth:
     state:
