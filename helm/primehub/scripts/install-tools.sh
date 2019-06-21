@@ -33,7 +33,7 @@ exec_script() {
     echo "get client_admin_secret ${client_admin_secret}"
 
     ${KUBECTL} create -n ${KEYCLOAK_NAMESPACE} secret generic primehub-secret \
-      --from-literal=keycloak.url=http://id.${PRIMEHUB_DOMAIN} \
+      --from-literal=keycloak.url=http://${PRIMEHUB_DOMAIN} \
       --from-literal=keycloak.clientId=${PRIMEHUB_CLIENT} \
       --from-literal=keycloak.clientSecret=${client_secret} \
       --from-literal=keycloak.clientAdminId=${PRIMEHUB_CLIENT_ADMIN} \

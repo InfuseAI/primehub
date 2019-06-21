@@ -103,4 +103,4 @@ bootstrap will be done during post-install hook. It creates the default user and
 
 ### access
 
-You may now access http://hub.10.88.88.88.xip.io:8080/ and login with the default user phuser and password rangstring
+You may now access http://primehub.10.88.88.88.xip.io:8080/ and login with the default user phuser and password rangstring

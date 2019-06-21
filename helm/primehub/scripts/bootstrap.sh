@@ -17,7 +17,7 @@ else
 fi
 
 # keycloak client 'jupyterhub'
-apply_client $CLIENT ./client.json "http://hub.${DOMAIN}/*"
+apply_client $CLIENT ./client.json "http://${DOMAIN}/*"
 CLIENT_ID=$(kc_client_get $CLIENT | jq -r .id)
 echo $(kc_client_secret ${CLIENT_ID}) > client.secret
 
