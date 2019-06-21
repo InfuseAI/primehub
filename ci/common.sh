@@ -66,7 +66,12 @@ EOF
   git config --global user.name "circle-ci"
 
   # publish chart
-  chartpress --commit-range $CIRCLE_SHA1 --publish-chart
-
+  if [ -z "${CIRCLE_TAG+x}" ]; then
+    chartpress --commit-range $CIRCLE_SHA1 --publish-chart
+  else
+    # make a release by --tag
+    # https://github.com/jupyterhub/zero-to-jupyterhub-k8s/blob/master/CONTRIBUTING.md#push-built-images-to-dockerhub--bump-version
+    chartpress --tag $CIRCLE_TAG --publish-chart
+  fi
   popd
 }
