@@ -60,8 +60,6 @@ jupyterhub:
     hook:
       enabled: false
   singleuser:
-    storage:
-      type: none
     extraEnv:
       JUPYTER_ENABLE_LAB: "yes"
       CULL_TIMEOUT: "7200"

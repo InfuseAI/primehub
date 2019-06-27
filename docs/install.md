@@ -4,16 +4,20 @@
 ## Prerequisite
 - Setup Kuberentes Cluster. Please reference z2jh document to [setup a kubernetes cluster](https://zero-to-jupyterhub.readthedocs.io/en/latest/create-k8s-cluster.html)
 - Setup Helm. Please reference z2jh document to [setup helm](https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html#)
+
+  ```
+  helm install --namespace nginx-ingress -n nginx-ingress stable/nginx-ingress
+  ```
 - Ingress Controller (e.g. [nginx-ingress](https://github.com/helm/charts/tree/master/stable/nginx-ingress)). Please reference the [installation guide](https://kubernetes.github.io/ingress-nginx/deploy/#using-helm) of ingress nginx.
-- Doman name for PrimeHub (e.g. primehub.example.com). The domain name should point to the external ip of ingress controller. In the following example, we should point the domain name to `104.199.244.69`
+- Doman name for PrimeHub (e.g. primehub.example.com). The domain name should point to the external ip of ingress controller. In the below example, the external ip is `104.199.244.69`
 
   ```
-  $ kubectl --namespace ingress-nginx get services -o wide -w nginx-nginx-ingress-controller           
+  $ kubectl --namespace nginx-ingress get services -o wide -w
   NAME                             TYPE           CLUSTER-IP   EXTERNAL-IP   PORT(S)                      AGE   SELECTOR
-  nginx-nginx-ingress-controller   LoadBalancer   10.20.4.90   104.199.244.69   80:32625/TCP,443:30809/TCP   52s   ...
+  nginx-ingress-controller   LoadBalancer   10.20.4.90   104.199.244.69   80:32625/TCP,443:30809/TCP   52s   ...
   ```
 
-  
+  For non-production environment, we can use the domain name `primehub.104.199.244.69.xip.io` directly.
 
 ## Install the PrimeHub Chart
 

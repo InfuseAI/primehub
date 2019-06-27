@@ -88,56 +88,14 @@ Since jupyterhub and keycloak needs to talk to each other with domain name, we'l
    helm repo add infuseai https://charts.infuseai.io/
    ```
 
-2. Prepare customization value file. Please store the following content to `values.yaml`.
-
-    ```yaml
-    primehub:
-      domain: primehub.10.88.88.88.xip.io:8080
-    jupyterhub:
-      hub:
-        db:          
-          type: sqlite-pvc      
-          pvc:
-            storageClassName: local-path
-      singleuser:
-        storage:
-          type: dynamic
-      ingress:
-        enabled: true
-        annotations:
-          kubernetes.io/ingress.class: nginx        
-          nginx.ingress.kubernetes.io/app-root: http://primehub.10.88.88.88.xip.io:8080/hub/home
-          nginx.ingress.kubernetes.io/use-port-in-redirects: true    
-        hosts:
-        - primehub.10.88.88.88.xip.io
-        path: /hub
-    keycloak:
-      keycloak:
-        persistence:
-          dbPassword: CHANGEKEYCLOAKPASSWORD
-          dbVendor: postgres
-          deployPostgres: true
-        ingress:
-          enabled: true
-          annotations:
-            kubernetes.io/ingress.class: nginx          
-          hosts:
-          - primehub.10.88.88.88.xip.io
-          path: /auth          
-      persistence:
-        deployPostgres: true
-      postgresql:
-        persistence:
-          enabled: true
-        postgresPassword: CHANGEKEYCLOAKPASSWORD
-    ```
+1. Prepare customization value file. Please download the `config-kind.yaml` from [here](../examples/config-kind.yaml)
    
-2. Install the chart
+1. Install the chart
 
    ```
    helm upgrade --install primehub \
      --namespace primehub \
-     --values values.yaml \
+     --values config-kind.yaml \
      infuseai/primehub
    ```
 
@@ -150,8 +108,8 @@ Since jupyterhub and keycloak needs to talk to each other with domain name, we'l
    > 2019/06/20 18:49:49 warning: cannot overwrite table with non table for extraEnv (map[])
    > ```
 
-3. You may now access http://primehub.10.88.88.88.xip.io:8080/
-4. login with the default user `phuser` and password `randstring`.
+1. You may now access http://primehub.10.88.88.88.xip.io:8080/
+1. login with the default user `phuser` and password `randstring`.
 
 
 # Destroy the Cluster

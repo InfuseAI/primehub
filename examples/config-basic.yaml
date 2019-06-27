@@ -8,6 +8,12 @@ jupyterhub:
       cryptoKey: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   proxy:
     secretToken: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  hub:
+    db:
+      type: sqlite-pvc
+      pvc:
+        storageClassName:
+        capacity: 10Gi
   ingress:
     enabled: true
     annotations:
@@ -17,6 +23,9 @@ jupyterhub:
     hosts:
     - primehub.example.com
     path: /hub
+  singleuser:
+    storage:
+      type: dynamic
 keycloak:
   keycloak:
     ingress:
@@ -36,5 +45,3 @@ keycloak:
     persistence:
       enabled: true
     postgresPassword: CHANGEKEYCLOAKPASSWORD
-
-
