@@ -107,6 +107,16 @@ Since jupyterhub and keycloak needs to talk to each other with domain name, we'l
    > 2019/06/20 18:49:49 warning: cannot overwrite table with non table for extraEnv (map[])
    > 2019/06/20 18:49:49 warning: cannot overwrite table with non table for extraEnv (map[])
    > ```
+   
+   > *\* If you encounter the below message, it could be because the pod is still pulling an image.*
+   > ```
+   > Error: timed out waiting for the condition
+   > ```
+   > 
+   > *Please delete the primehub release and install again.*
+   > ```
+   > helm delete primehub --purge
+   > ```
 
 1. You may now access http://primehub.10.88.88.88.xip.io:8080/
 1. login with the default user `phuser` and password `randstring`.
