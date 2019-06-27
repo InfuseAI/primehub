@@ -2,14 +2,15 @@
 
 
 ## Prerequisite
-- Setup Kuberentes Cluster. Please reference z2jh document to [setup a kubernetes cluster](https://zero-to-jupyterhub.readthedocs.io/en/latest/create-k8s-cluster.html)
-- Setup Helm. Please reference z2jh document to [setup helm](https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html#)
-
+- **Setup Kuberentes Cluster**. Please reference z2jh document to [setup a kubernetes cluster](https://zero-to-jupyterhub.readthedocs.io/en/latest/create-k8s-cluster.html)
+- **Setup Helm**. Please reference z2jh document to [setup helm](https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html#)
+- **Ingress Controller**. If we select [nginx-ingress](https://github.com/helm/charts/tree/master/stable/nginx-ingress) as ingress controller, use the below command to install
   ```
   helm install --namespace nginx-ingress -n nginx-ingress stable/nginx-ingress
   ```
-- Ingress Controller (e.g. [nginx-ingress](https://github.com/helm/charts/tree/master/stable/nginx-ingress)). Please reference the [installation guide](https://kubernetes.github.io/ingress-nginx/deploy/#using-helm) of ingress nginx.
-- Doman name for PrimeHub (e.g. primehub.example.com). The domain name should point to the external ip of ingress controller. In the below example, the external ip is `104.199.244.69`
+  For more information, please reference the ingress nginx [installation guide](https://kubernetes.github.io/ingress-nginx/deploy/#using-helm).
+
+- **Domain name for PrimeHub** (e.g. primehub.example.com). The domain name should point to the external ip of ingress controller. In the below example, the external ip is `104.199.244.69`
 
   ```
   $ kubectl --namespace nginx-ingress get services -o wide -w
