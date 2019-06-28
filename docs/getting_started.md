@@ -108,24 +108,31 @@ Since jupyterhub and keycloak needs to talk to each other with domain name, we'l
    > 2019/06/20 18:49:49 warning: cannot overwrite table with non table for extraEnv (map[])
    > ```
    
-   > *\* If you encounter the below message, it could be because the pod is still pulling an image.*
-   > ```
-   > Error: timed out waiting for the condition
-   > ```
-   > 
-   > *Please delete the primehub release and install again.*
-   > ```
-   > helm delete primehub --purge
-   > ```
+   
 
 1. You may now access http://primehub.10.88.88.88.xip.io:8080/
 1. login with the default user `phuser` and password `randstring`.
 
 
 # Destroy the Cluster
-
 Destroy the kind cluster by this command
 
 ```
 kind delete cluster --name primehub
 ```
+
+# Troubleshooting
+1. If you encounter the below message
+
+   ```
+   Error: timed out waiting for the condition
+   ```
+   
+   It could be the pod is still pulling an image. Please delete the primehub release and install again.
+   ```
+   helm delete primehub --purge
+   ```
+   
+1. If you encounter insufficient cpu or memory issue. (e.g. pod is in pending state, or block in insufficient cpu when 
+   starting a server). Please enlarge the docker engine resource limit. Please reference [docker for mac](https://docs.docker.com/docker-for-mac/)
+   to change the docker daemon available resources in `Advanced` setting.
