@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{.Release.Name}}-bootstrap"
+  name: "{{.Release.Name}}-bootstrap-{{ randAlphaNum 5 | lower }}"
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/managed-by: {{.Release.Service | quote }}
@@ -23,7 +23,7 @@ spec:
         helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
     spec:
       restartPolicy: Never
-      serviceAccountName: primehub-bootstrap-sa
+      serviceAccountName: primehub-bootstrap
       initContainers:
         - name: wait-for-keycloak
           image: "{{ .Values.keycloak.init.image.repository }}:{{ .Values.keycloak.init.image.tag }}"
@@ -81,7 +81,7 @@ spec:
             - sh
             - -c
             - |
-              sh /scripts/install-tools.sh
+              sh /scripts/post-install.sh
           volumeMounts:
             - name: scripts
               mountPath: /scripts

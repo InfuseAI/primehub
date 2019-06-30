@@ -22,23 +22,26 @@ remove_script() {
   done
 }
 
+patch_secret() {
+  KEY=$1
+  VALUE=$2
+  patch_data="{\"data\":{\"$KEY\":\"$(echo -n $VALUE | base64)\"}}"
+  kubectl -n primehub patch secret primehub-secret -p $patch_data
+}
+
 exec_script() {
   $EXEC sh -c "DOMAIN=${PRIMEHUB_DOMAIN} ADMIN=${PRIMEHUB_ADMIN} ADMIN_PASSWORD=${PRIMEHUB_ADMIN_PASSWORD} REALM=${PRIMEHUB_REALM} USER=${PRIMEHUB_USER} USER_PASSWORD=${PRIMEHUB_USER_PASSWORD} CLIENT=${PRIMEHUB_CLIENT} CLIENT_ADMIN=${PRIMEHUB_CLIENT_ADMIN} CLIENT_ADMIN_SECRET=${PRIMEHUB_CLIENT_ADMIN_SECRET} bash bootstrap.sh"
 
-  # check if primehub-secret exits
-  if ! (${KUBECTL} -n ${KEYCLOAK_NAMESPACE} get secret primehub-secret >/dev/null 2>&1); then
-    client_secret=$($EXEC cat client.secret)
-    client_admin_secret=$($EXEC cat client-admin.secret)
-    echo "get client_secret ${client_secret}"
-    echo "get client_admin_secret ${client_admin_secret}"
+  client_secret=$($EXEC cat client.secret)
+  client_admin_secret=$($EXEC cat client-admin.secret)
+  echo "get client_secret ${client_secret}"
+  echo "get client_admin_secret ${client_admin_secret}"
 
-    ${KUBECTL} create -n ${KEYCLOAK_NAMESPACE} secret generic primehub-secret \
-      --from-literal=keycloak.url=http://${PRIMEHUB_DOMAIN} \
-      --from-literal=keycloak.clientId=${PRIMEHUB_CLIENT} \
-      --from-literal=keycloak.clientSecret=${client_secret} \
-      --from-literal=keycloak.clientAdminId=${PRIMEHUB_CLIENT_ADMIN} \
-      --from-literal=keycloak.clientAdminSecret=${client_admin_secret}
-  fi
+  patch_secret keycloak.url http://${PRIMEHUB_DOMAIN}
+  patch_secret keycloak.clientId ${PRIMEHUB_CLIENT}
+  patch_secret keycloak.clientSecret ${client_secret}
+  patch_secret keycloak.clientAdminId ${PRIMEHUB_CLIENT_ADMIN}
+  patch_secret keycloak.clientAdminSecret ${client_admin_secret}
 }
 
 copy_script bootstrap.sh kc_util.source client.json client-admin.json client-admin-roles.json
@@ -48,5 +51,3 @@ remove_script \
   bootstrap.sh \
   client.json client.secret \
   client-admin.json  client-admin.secret
-
-exit 0
