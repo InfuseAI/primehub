@@ -13,10 +13,6 @@ primehub:
 
 jupyterhub:
   hub:
-    db:
-      type: sqlite-memory
-    # Note that you should not use the default secret. generate with `openssl rand -hex 32`
-    cookieSecret: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     extraEnv:
     - name: PRIMEHUB_KEYCLOAK_URL
       valueFrom:
@@ -64,8 +60,6 @@ jupyterhub:
     hook:
       enabled: false
   singleuser:
-    storage:
-      type: none
     extraEnv:
       JUPYTER_ENABLE_LAB: "yes"
       CULL_TIMEOUT: "7200"

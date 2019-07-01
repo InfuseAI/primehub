@@ -1,0 +1,47 @@
+primehub:
+  domain: primehub.example.com
+  user: phuser
+  password: randstring
+jupyterhub:
+  auth:
+    state:
+      cryptoKey: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  proxy:
+    secretToken: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+  hub:
+    db:
+      type: sqlite-pvc
+      pvc:
+        storageClassName:
+        capacity: 10Gi
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/app-root: http://primehub.example.com/hub/home
+      nginx.ingress.kubernetes.io/use-port-in-redirects: true
+    hosts:
+    - primehub.example.com
+    path: /hub
+  singleuser:
+    storage:
+      type: dynamic
+keycloak:
+  keycloak:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+      hosts:
+      - primehub.example.com
+      path: /auth
+    persistence:
+      dbVendor: postgres
+      deployPostgres: true
+      dbPassword: CHANGEKEYCLOAKPASSWORD
+  persistence:
+    deployPostgres: true
+  postgresql:
+    persistence:
+      enabled: true
+    postgresPassword: CHANGEKEYCLOAKPASSWORD

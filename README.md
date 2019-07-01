@@ -1,4 +1,4 @@
-![logo](doc/media/logo.png?raw=true "PrimeHub")
+![logo](docs/media/logo.png?raw=true "PrimeHub")
 
 [![GitHub release](https://img.shields.io/github/release/infuseAI/primehub/all.svg?style=flat-square)](https://github.com/infuseAI/primehub/releases)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
@@ -22,8 +22,13 @@ some unexpected features, but we plan to make this rock solid and release more
 features with the community. Suggestions and discussions are welcome and
 appreciated.
 
-## Contributing
+## Getting Strated
+If it is your first time to try PrimeHub, please reference [getting started](docs/getting_started.md) to install PrimeHub locally.
 
+## Install
+For detailed installation and configuration about the chart, please refrence to [installation guide](docs/install.md).
+
+## Contributing
 We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
 
 ## Licensing
