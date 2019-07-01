@@ -2,6 +2,40 @@
 
 Issues and PRs are welcome!
 
+# Developer Certificate of Origin
+
+PrimeHub DCO and signed-off-by process
+
+The PrimeHub project use the signed-off-by language and process used by the Linux kernel, to give us a clear chain of trust for every patch received.
+
+```
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I have the right to submit it under the open source license indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best of my knowledge, is covered under an appropriate open source license and I have the right under that license to submit that work with modifications, whether created in whole or in part by me, under the same open source license (unless I am permitted to submit under a different license), as indicated in the file; or
+
+(c) The contribution was provided directly to me by some other person who certified (a), (b) or (c) and I have not modified it.
+
+(d) I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
+```
+
+## Using the Signed-Off-By Process
+
+We have the same requirements for using the signed-off-by process as the Linux kernel. In short, you need to include a signed-off-by tag in every patch:
+
+```
+This is my commit message
+
+Signed-off-by: Random J Developer <random@developer.example.org>
+```
+
+Git even has a -s command line option to append this automatically to your commit message:
+
+```
+$ git commit -s -m 'This is my commit message'
+```
+
 # Setting up development environment
 
 Since jupyterhub and keycloak needs to talk to each other with domain name, we'll use xip.io domain for local development.
