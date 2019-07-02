@@ -20,7 +20,7 @@
 
   For non-production environment, we can use the domain name `primehub.104.199.244.69.xip.io` directly.
 
-## Install the PrimeHub Chart
+## Install/Upgrade the PrimeHub Chart
 
 1. Add `infuseai` repository to helm
    ```console
@@ -66,6 +66,16 @@
     ```
 1. Congratuations! Now you can login in to PrimeHub.
 
+
+> If upgrade failed with this message
+> ```
+> Error: UPGRADE FAILED: jobs.batch "primehub-bootstrap" already exists
+> ```
+> please delete the job `primehub-boostrap` and upgrade again.
+> 
+> ```
+> kubectl -n primehub delete jobs primehub-boostrap
+> ```
 
 ## Configuration
 The following table lists the configurable parameters of the PrimeHub chart and their default values.

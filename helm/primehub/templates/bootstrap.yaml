@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{.Release.Name}}-bootstrap-{{ randAlphaNum 5 | lower }}"
+  name: "{{.Release.Name}}-bootstrap"
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/managed-by: {{.Release.Service | quote }}
