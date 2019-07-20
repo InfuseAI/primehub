@@ -27,5 +27,10 @@ apply_client_role $CLIENT_ADMIN ./client-admin-roles.json
 CLIENT_ADMIN_ID=$(kc_client_get $CLIENT_ADMIN | jq -r .id)
 echo $(kc_client_secret ${CLIENT_ADMIN_ID}) > client-admin.secret
 
+# keycloak clinet 'maintenance proxy'
+apply_client $CLIENT_MAINTENANCE_PROXY ./client-maintenance-proxy.json
+CLIENT_MAINTENANCE_PROXY_ID=$(kc_client_get $CLIENT_MAINTENANCE_PROXY | jq -r .id)
+echo $(kc_client_secret ${CLIENT_MAINTENANCE_PROXY_ID}) > client-maintenance-proxy.secret
+
 # user
 apply_user $USER $USER_PASSWORD

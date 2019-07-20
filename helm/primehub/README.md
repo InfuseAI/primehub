@@ -1,5 +1,4 @@
-# Install
-
+# Primehub
 
 ## Prerequisite
 - **Setup Kuberentes Cluster**. Please reference z2jh document to [setup a kubernetes cluster](https://zero-to-jupyterhub.readthedocs.io/en/latest/create-k8s-cluster.html)
@@ -92,6 +91,7 @@ Parameter | Description | Default
 `primehub.bootstrap.image.tag` | The image tag for bootstrap |  `v1.14.0`
 `jupyterhub.*` | The configuration of z2jh subchart. Please reference the [z2jh](https://z2jh.jupyter.org/en/latest/reference.html#helm-chart-configuration-reference) document. |  
 `keycloak.*` | The configuration of z2jh subchart. Please reference the [keycloak](https://github.com/helm/charts/tree/master/stable/keycloak#configuration) document. |  
+`admin-notebook.*` | The configuration of admin-notebook subchart. Please reference the [keycloak](charts/admin-notebook/README.md) document. |  
 
 # Uninstall the PrimeHub Chart
 

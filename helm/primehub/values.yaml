@@ -4,9 +4,11 @@ primehub:
     realm: primehub
     client: jupyterhub
     clientAdmin: primehub
+    clientMaintenanceProxy: maintenance-proxy
   user: phuser
   password: randstring
   bootstrap:
+    enabled: true
     image:
       repository: gcr.io/google-containers/hyperkube-amd64
       tag: v1.14.0
@@ -94,3 +96,29 @@ keycloak:
   # this is used for keycloak subchart, as the condition
   persistence:
     deployPostgres: false
+
+  test:
+    enabled: false
+
+admin-notebook:
+  proxy:
+    extraEnv:
+      - name: KC_BASE
+        valueFrom:
+          secretKeyRef:
+            name: primehub-secret
+            key: keycloak.url
+      - name: KC_REALM
+        value: primehub
+      - name: KC_URL
+        value: $(KC_BASE)/auth/realms/$(KC_REALM)
+      - name: KC_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: primehub-secret
+            key: keycloak.clientMaintenanceProxyId
+      - name: KC_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: primehub-secret
+            key: keycloak.clientMaintenanceProxySecret

@@ -1,0 +1,17 @@
+{
+  "publicClient": false,
+  "protocol": "openid-connect",
+  "protocolMappers": [
+    {
+      "name": "maintenance-proxy-audience",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-audience-mapper",
+      "consentRequired": false,
+      "config": {
+        "included.client.audience": "maintenance-proxy",
+        "id.token.claim": "true",
+        "access.token.claim": "true"
+      }
+    }
+  ]
+}

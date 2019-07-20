@@ -23,10 +23,7 @@ features with the community. Suggestions and discussions are welcome and
 appreciated.
 
 ## Getting Strated
-If it is your first time to try PrimeHub, please reference [getting started](docs/getting_started.md) to install PrimeHub locally.
-
-## Install
-For detailed installation and configuration about the chart, please refrence to [installation guide](docs/install.md).
+If it is your first time to try PrimeHub, please reference [getting started](docs/getting_started.md) to install PrimeHub locally. For detailed installation and configuration about the chart, please refrence to chart [README](helm/primehub/README.md).
 
 ## Contributing
 We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
