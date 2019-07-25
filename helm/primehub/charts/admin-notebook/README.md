@@ -3,7 +3,7 @@
 
 The helm chart of [primehub-admin-notebook](https://github.com/InfuseAI/primehub-admin-notebook). 
 
-This chart also integrate with [keycloak-gateway](https://www.keycloak.org/docs/4.8/securing_apps/index.html#_keycloak_generic_adapter) to secure this application.
+This chart also integrates with [keycloak-gateway](https://www.keycloak.org/docs/4.8/securing_apps/index.html#_keycloak_generic_adapter) to secure this application.
 
 ## Configuration
 The following table lists the configurable parameters of the PrimeHub chart and their default values.

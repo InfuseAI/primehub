@@ -47,7 +47,7 @@ keycloak:
     postgresPassword: CHANGEKEYCLOAKPASSWORD
 admin-notebook:
   baseUrl: /maintenance
-  allowOrigin: http://primehub.10.88.88.88.xip.io:8080
+  allowOrigin: http://primehub.example.com
   proxy:
     enabled: true
     encryptionKey: FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
