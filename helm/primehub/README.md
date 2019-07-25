@@ -179,3 +179,9 @@ helm upgrade --install primehub \
   --values profiles.yaml \
   infuseai/primehub
 ```
+
+## Admin Maintance Notebook
+
+PrimeHub embeds the [admin maintenance notebook](https://github.com/InfuseAI/primehub-admin-notebook) by default, in which it allows to run kubectl in the notebook. There are some common maintanane tasks included as well, and supposed to be extended in the future.
+
+For security concern, PrimeHub integrates with keycloak by keyclaok-gateway. A user must has a client role 'realm-managment:realm-admin' to log into the maintenance notebook.

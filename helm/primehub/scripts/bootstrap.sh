@@ -28,7 +28,7 @@ CLIENT_ADMIN_ID=$(kc_client_get $CLIENT_ADMIN | jq -r .id)
 echo $(kc_client_secret ${CLIENT_ADMIN_ID}) > client-admin.secret
 
 # keycloak clinet 'maintenance proxy'
-apply_client $CLIENT_MAINTENANCE_PROXY ./client-maintenance-proxy.json
+apply_client $CLIENT_MAINTENANCE_PROXY ./client-maintenance-proxy.json "http://${DOMAIN}${CLIENT_MAINTENANCE_PROXY_BASE_URL}/*"
 CLIENT_MAINTENANCE_PROXY_ID=$(kc_client_get $CLIENT_MAINTENANCE_PROXY | jq -r .id)
 echo $(kc_client_secret ${CLIENT_MAINTENANCE_PROXY_ID}) > client-maintenance-proxy.secret
 

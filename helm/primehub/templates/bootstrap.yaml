@@ -80,6 +80,8 @@ spec:
           {{- end }}
           - name: PRIMEHUB_CLIENT_MAINTENANCE_PROXY
             value: {{ .Values.primehub.keycloak.clientMaintenanceProxy}}
+          - name: PRIMEHUB_CLIENT_MAINTENANCE_PROXY_BASE_URL
+            value: {{ index .Values "admin-notebook" "baseUrl"}}
           command:
             - sh
             - -c
