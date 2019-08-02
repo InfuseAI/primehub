@@ -162,5 +162,7 @@ apply_user() {
     kc_user_create $username $password
     echo "${username} added"
   fi
+
+  kc_add_client_role $username realm-management realm-admin
 }
 

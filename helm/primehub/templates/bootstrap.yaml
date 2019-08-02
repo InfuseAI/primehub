@@ -1,3 +1,4 @@
+{{- if .Values.primehub.bootstrap.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -12,7 +13,7 @@ metadata:
     # job is considered part of the release.
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": "before-hook-creation"
 spec:
   template:
     metadata:
@@ -77,6 +78,10 @@ spec:
                 key: keycloak.clientAdminSecret
                 optional: true
           {{- end }}
+          - name: PRIMEHUB_CLIENT_MAINTENANCE_PROXY
+            value: {{ .Values.primehub.keycloak.clientMaintenanceProxy}}
+          - name: PRIMEHUB_CLIENT_MAINTENANCE_PROXY_BASE_URL
+            value: {{ index .Values "admin-notebook" "baseUrl"}}
           command:
             - sh
             - -c
@@ -89,3 +94,4 @@ spec:
         - name: scripts
           configMap:
             name: primehub-bootstrap-scripts
+{{- end }}

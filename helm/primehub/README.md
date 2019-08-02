@@ -1,5 +1,4 @@
-# Install
-
+# PrimeHub
 
 ## Prerequisite
 - **Setup Kuberentes Cluster**. Please reference z2jh document to [setup a kubernetes cluster](https://zero-to-jupyterhub.readthedocs.io/en/latest/create-k8s-cluster.html)
@@ -27,7 +26,11 @@
    helm repo add infuseai https://charts.infuseai.io/
    helm repo update
    ```
-1. Prepare `values.yaml` for configuration. The `values.yaml` is the overriding configuration values. [here](../examples/) are some examples of the value file. We recommend to download [config-basic.yaml](../examples/config-basic.yaml) as base file to configure
+1. Prepare `values.yaml` for configuration. The `values.yaml` is the overriding configuration values. [here](../examples/) are some examples of the value file. We recommend to download [config-basic.yaml](https://raw.githubusercontent.com/InfuseAI/primehub/master/examples/config-basic.yaml) as base file to configure
+
+  ```
+  curl -o values.yaml https://raw.githubusercontent.com/InfuseAI/primehub/master/examples/config-basic.yaml
+  ```
 
 1. In this file, replace the `primehub.example.com` by your domain name mentioned above.
 
@@ -37,6 +40,12 @@
 
     ```
     openssl rand -hex 32
+    ```
+
+    - `admin-notebook.proxy.admin-notebook`
+
+    ```
+    openssl rand -hex 16
     ```
 
 1. Change the username and password for keycloak and PrimeHub users.
@@ -92,6 +101,7 @@ Parameter | Description | Default
 `primehub.bootstrap.image.tag` | The image tag for bootstrap |  `v1.14.0`
 `jupyterhub.*` | The configuration of z2jh subchart. Please reference the [z2jh](https://z2jh.jupyter.org/en/latest/reference.html#helm-chart-configuration-reference) document. |  
 `keycloak.*` | The configuration of z2jh subchart. Please reference the [keycloak](https://github.com/helm/charts/tree/master/stable/keycloak#configuration) document. |  
+`admin-notebook.*` | The configuration of admin-notebook subchart. Please reference the admin-notebook's [README](charts/admin-notebook/README.md). |  
 
 # Uninstall the PrimeHub Chart
 
@@ -169,3 +179,9 @@ helm upgrade --install primehub \
   --values profiles.yaml \
   infuseai/primehub
 ```
+
+## Admin Maintance Notebook
+
+PrimeHub embeds the [admin maintenance notebook](https://github.com/InfuseAI/primehub-admin-notebook) by default, in which it allows you to run kubectl in the notebook. There are some common maintenane tasks included as well, and supposed to be extended in the future.
+
+For security concern, PrimeHub integrates with keycloak by keyclaok-gateway. A user must has a client role `realm-managment:realm-admin` to log into the maintenance notebook.
