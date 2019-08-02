@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: infuseai/primehub-admin-notebook
-  tag: 68dfcffc89
+  tag: b6f4f37789
   pullPolicy: IfNotPresent
 
 nameOverride: ""
