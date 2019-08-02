@@ -36,7 +36,6 @@ spec:
             - "8888"
             - --NotebookApp.token=''
             - --NotebookApp.base_url={{ .Values.baseUrl | quote}}
-            - --NotebookApp.default_url='/notebooks/index.ipynb'
             - --NotebookApp.allow_origin={{ .Values.allowOrigin }}
           env:
            - name: PATH
