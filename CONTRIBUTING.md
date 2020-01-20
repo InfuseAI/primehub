@@ -62,3 +62,76 @@ $ git commit -s -m 'This is my commit message'
        --set-file jupyterhub.hub.extraConfig.primehub=./helm/primehub/jupyterhub_primehub.py \
        ./helm/primehub
    ```
+
+# Write Commit message properly
+
+Structure your commit message like this:
+
+From: [https://git-scm.com/book/ch5-2.html](https://git-scm.com/book/ch5-2.html)
+
+> Short (50 chars or less) summary of changes
+>
+> More detailed explanatory text, if necessary.  Wrap it to about 72
+> characters or so.  In some contexts, the first line is treated as the
+> subject of an email and the rest of the text as the body.  The blank
+> line separating the summary from the body is critical (unless you omit
+> the body entirely); tools like rebase can get confused if you run the
+> two together.
+>
+> Further paragraphs come after blank lines.
+>
+>   - Bullet points are okay, too
+>
+>   - Typically a hyphen or asterisk is used for the bullet, preceded by a
+>    single space, with blank lines in between, but conventions vary here
+
+## **DO**
+
+- Write the summary line and description of what you have done in the imperative mood, that is as if you were commanding someone. Start the line with "Fix", "Add", "Change" instead of "Fixed", "Added", "Changed".
+- Always leave the second line blank.
+- Line break the commit message (to make the commit message readable without having to scroll horizontally in `gitk`).
+- The summary should be meaningful and descriptive.
+
+## **DON'T**
+
+- Don't end the summary line with a period - it's a title and titles don't end with a period.
+- Avoid mentioning specific deployments or customers. Instead, describe what problem is solved.
+
+## **Tips**
+
+- If it seems difficult to summarize what your commit does, it may be due to multiple logical changes or bug fixes, that are better split up into several commits using `git add -p`.
+
+## Recommendations
+
+- Use company email to commit. You can set in the project scope by invoking `git config user.email dev@infuseai.io` inside the repository.
+- Sign-off your commits. [[Ref](https://github.com/InfuseAI/primehub/blob/master/CONTRIBUTING.md#using-the-signed-off-by-process)]
+- Add `Co-authored-by` if you're pairing with someone. [[Ref]](https://help.github.com/en/github/committing-changes-to-your-project/creating-a-commit-with-multiple-authors)
+
+## Examples
+### :x: Bad
+
+```
+Fix bugs
+```
+
+### :white_check_mark: Good
+```git
+Fix crashloopback issue of phjob controller
+
+- Add TTL handler in phjob_controller.go
+- [Other patchs]
+
+Signed-off-by: Ash Wu <hsatac@infuseai.io>
+Co-authored-by: Aaron Huang <aaron@infuseai.io>
+```
+> :white_check_mark:
+```git
+Update CHANGELOG.md for Job Submission
+
+- Add `Action Require` of Job Submission
+- [Other changes]
+
+Signed-off-by: Ash Wu <hsatac@infuseai.io>
+Co-authored-by: Aaron Huang <aaron@infuseai.io>
+Co-authored-by: Timothy Lee <ctiml@infuseai.io>
+```
