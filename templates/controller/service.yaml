@@ -1,0 +1,20 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub.fullname" . }}-controller-metrics
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.controller.service.type }}
+  ports:
+  - name: https
+    port: {{ .Values.controller.service.port }}
+    targetPort: https
+  selector:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

@@ -1,0 +1,34 @@
+{% extends "templates/page.html" %}
+
+{% block stylesheet %}
+<link rel="icon" href="/console/favicon/logo-16.png" size="16x16">
+<link rel="icon" href="/console/favicon/logo-32.png" size="32x32">
+<link rel="icon" href="/console/favicon/logo-64.png" size="64x64">
+{{ super() }}
+<link rel="stylesheet" href="{{ static_url("css/primehub/primehub.css") }}" type="text/css" />
+<script src="{{ static_url("components/primehub/mustache.min.js") }}" integrity="sha256-1B6REXjRTNQ4IJEUSVYbAqEDRIYP8uKNUo+QgYZUzJM=" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block logo %}
+<span id="jupyterhub-logo" class="pull-left">
+  <a href="/"><img src='{{base_url}}logo' alt='PrimeHub - JupyterHub' class='jpy-logo' title='Home' style='height: 32px;'/></a>
+</span>
+
+{% endblock %}
+{% block announcement %}
+{% if announcement %}
+<div class="container announcement">
+  {{ announcement | safe }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block nav_bar_right_items %}
+<li>
+  <span class="primehub-version">
+    {{ primehub_version }}
+  </span>
+</li>
+{{ super() }}
+{% endblock %}
+

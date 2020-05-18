@@ -1,0 +1,27 @@
+{{- if eq .Values.primehub.mode "ee" }}
+{{- if .Values.adminNotebook.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub.name" . }}-admin-notebook
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.adminNotebook.service.type }}
+  ports:
+    - port: {{ .Values.adminNotebook.service.port }}
+      {{- if .Values.istio.enabled }}  
+      targetPort: 8888
+      {{- else }}
+      targetPort: 8080
+      {{- end }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: admin-notebook
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+{{- end }}

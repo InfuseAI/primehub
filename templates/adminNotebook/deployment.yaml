@@ -1,0 +1,130 @@
+{{- if eq .Values.primehub.mode "ee" }}
+{{- if .Values.adminNotebook.enabled -}}
+{{- $BASE_URL := "/maintenance" }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.name" . }}-admin-notebook
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.adminNotebook.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: admin-notebook
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      {{- if .Values.istio.enabled }}  
+      annotations:
+        sidecar.istio.io/inject: "true"
+      {{- end}}
+      labels:
+        app.kubernetes.io/name: admin-notebook
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: "admin-notebook"
+          image: "{{ .Values.adminNotebook.image.repository }}:{{ .Values.adminNotebook.image.tag }}"
+          imagePullPolicy: {{ .Values.adminNotebook.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8888
+              protocol: TCP
+          args:
+            - jupyter
+            - notebook
+            - --ip
+            - "0.0.0.0"
+            - --port
+            - "8888"
+            - --NotebookApp.token=''
+            - --NotebookApp.base_url={{ $BASE_URL | quote }}
+            - --NotebookApp.allow_origin={{ include "primehub.url" . | quote }}
+          env:
+           - name: PATH
+             value: ~/bin:~/.local/bin:/srv/conda/envs/notebook/bin:/srv/conda/bin:/srv/npm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          resources:
+{{ toYaml .Values.adminNotebook.resources | indent 12 }}
+        {{- if eq .Values.istio.enabled false }}  
+        - name: proxy
+          image: "{{ .Values.keycloakGateway.image.repository }}:{{ .Values.keycloakGateway.image.tag }}"
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: KC_URL
+            valueFrom:
+              secretKeyRef:
+                name: primehub-client-admin-notebook
+                key: url
+          - name: KC_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: primehub-client-admin-notebook
+                key: client_id
+          - name: KC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: primehub-client-admin-notebook
+                key: client_secret
+          - name: KC_PROXY_ENCRYPTED_KEY
+            valueFrom:
+              secretKeyRef:
+                name: primehub-client-admin-notebook
+                key: proxy_encrypted_key
+                optional: true
+          args:
+            - --discovery-url=$(KC_URL)
+            {{- if (eq .Values.primehub.scheme "http") }}
+            - --secure-cookie=false
+            {{- else }}
+            - --enable-refresh-tokens=true
+            - --enable-encrypted-token=true
+            - --encryption-key=$(KC_PROXY_ENCRYPTED_KEY)
+            {{- end }}
+            - --client-id=$(KC_CLIENT_ID)
+            - --client-secret=$(KC_CLIENT_SECRET)
+            - --listen=0.0.0.0:8080
+            - --base-uri={{ $BASE_URL }}
+            - --oauth-uri=/oauth
+            - --resources=uri=/*|roles=realm-management:realm-admin
+            - --upstream-url=http://127.0.0.1:8888
+            - --verbose=true
+          resources:
+            limits:
+              cpu: 50m
+              memory: 64Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          ports:
+            - name: web
+              containerPort: 9090
+        {{- end }}  
+{{- with .Values.adminNotebook.extraContainers }}
+{{ tpl . $ | indent 8 }}
+{{- end }}
+
+
+
+    {{- with .Values.adminNotebook.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.adminNotebook.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.adminNotebook.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "primehub.name" . }}-admin-notebook
+{{- end -}}
+{{- end }}

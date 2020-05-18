@@ -1,9 +1,0 @@
-===========
-PrimeHub CE
-===========
-
-You may now access:
-
-  http://{{ .Values.primehub.domain }}
-
-and login with the default user phuser and password randstring

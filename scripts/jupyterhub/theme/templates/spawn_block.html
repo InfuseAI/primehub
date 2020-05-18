@@ -1,0 +1,9 @@
+<div id="you-can-not-pass" class="panel panel-default panel-spawner">
+  <div class="panel-body">
+    {%- if href %}
+      <a href="{{ href }}">{{ block_msg | e }}</a>
+    {%- else %}
+      {{ block_msg | e }}
+    {%- endif %}
+  </div>
+</div>

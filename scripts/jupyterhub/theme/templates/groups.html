@@ -1,0 +1,43 @@
+<div id="group-selector" class="form-group row">
+  <div class="col-sm-12">
+    <label for="group">Group</label>
+    <select class="form-control" name="group">
+        {% for group in groups|sort(attribute='displayName') %}
+        <option value="{{ group.name }}">
+        {{ group.displayName }}
+        </option>
+        {% endfor %}
+    </select>
+  </div>
+</div>
+<div class="panel panel-default panel-spawner">
+  <div class="panel-body">
+    <label>Instance Types</label>
+    <div id="it-container" class="form-group"></div>
+    <hr/>
+    <label>Images</label>
+    <div id="image-container" class="form-group"></div>
+    <div>
+      <a class="collapsed" data-toggle="collapse" href="#advanced-setup">
+        <i class="fa fa-chevron-down"></i>
+        Show advanced settings
+      </a>
+    </div>
+    <div id="advanced-setup" class="collapse">
+      <input type="checkbox" name="safe_mode" id="safe_mode" >&nbsp;
+      <label for="safe_mode">Enable Safe Mode <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Safe Mode mounts your persistent home directory under /home/jovyan/user."></i></label>
+      <br />
+    {% if enable_kernel_gateway %}
+      <input type="checkbox" name="kernel_gateway" id="kernel_gateway" >&nbsp;
+      <label for="kernel_gateway">(Experimental) JupyterLab 1.0 with kernel gateway</label>
+    {% endif %}
+    </div>
+
+    <script type="text/javascript">
+      PrimeHubContext = {{ {'groups': groups} | tojson }};
+    </script>
+  </div>
+</div>
+<div class="alert alert-warning hide" role="image-not-match-gpu-instance">
+  <strong>WARNING:</strong> You choose a instance with GPU resource, but the image may not be optimized for GPU.
+</div>

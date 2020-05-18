@@ -1,0 +1,69 @@
+{{- if .Values.admission.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "admission-post-install-job"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    component: admission
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  template:
+    metadata:
+      name: "primehub-admission"
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        component: admission
+    spec:
+      restartPolicy: Never
+      serviceAccountName: primehub-admission-post-install
+      containers:
+        - name: webhook-post-install
+          image: "{{ .Values.bootstrap.image.repository }}:{{ .Values.bootstrap.image.tag }}"
+          imagePullPolicy: {{ .Values.bootstrap.image.pullPolicy }}
+          env:
+          - name: RELEASE_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: ADMISSION_NAMESPACE
+            value: {{ .Release.Namespace }}
+          resources:
+            {{- toYaml .Values.admission.postHook.resources | nindent 12 }}
+          command:
+            - bash
+            - -c
+            - |
+              set -e
+
+              echo "[Label] 'resources-validation-webhook=enabled' on $RELEASE_NAMESPACE namesapce"
+              kubectl label ns $RELEASE_NAMESPACE --overwrite primehub.io/resources-validation-webhook=enabled
+              
+              echo "[Done]"
+
+          volumeMounts:
+            - name: admission
+              mountPath: /admission
+      volumes:
+        - name: admission
+          configMap:
+            name: primehub-admission-scripts
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primehub-admission-scripts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: primehub-admission
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  {{- tpl (.Files.Glob "scripts/admission/*").AsConfig . | nindent 2 }}
+{{- end }}

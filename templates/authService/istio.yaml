@@ -1,0 +1,43 @@
+{{- if .Values.istio.enabled }}  
+# Create a istio-gateway allow the port:80
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ include "primehub.name" . }}-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        {{- range .Values.ingress.hosts }}
+        - {{ . | quote}}
+        {{- end }}
+
+---
+# Create virtualservices to do L7 routing. Redirect the requests with paths,
+# `/login/oidc` to `authservice svc`.
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "primehub.name" . }}-vs-authservice
+spec:
+  hosts:
+    {{- range .Values.ingress.hosts }}
+    - {{ . | quote}}
+    {{- end }}
+  gateways:
+    - {{ include "primehub.name" . }}-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /login/oidc
+      route:
+        - destination:
+            host: {{ include "primehub.name" . }}-authservice.{{ .Release.Namespace }}.svc.cluster.local
+            port:
+              number: 8080
+{{- end}}

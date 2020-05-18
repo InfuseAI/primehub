@@ -1,0 +1,20 @@
+{{- if .Values.istio.enabled }}  
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub.name" . }}-authservice
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.istio.authService.service.type}}
+  selector:
+    app.kubernetes.io/name: authservice
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - port: {{ .Values.istio.authService.service.port }}
+      name: http
+      targetPort: 8080
+{{- end }}

@@ -1,0 +1,49 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
+{{- if .Values.groupvolume.enabled -}}
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: primehub-group-pvc
+spec:
+  resources:
+  - apiVersion: v1
+    resource: persistentvolumeclaims
+    annotationSelector:
+      matchExpressions:
+      - {key: primehub-group, operator: Exists}
+  attachments:
+  - apiVersion: v1
+    resource: services
+    updateStrategy:
+      method: InPlace
+  - apiVersion: apps/v1
+    resource: statefulsets
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://primehub-group.{{ .Release.Namespace }}/nfs-for-pvc
+---
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: primehub-group-pvc-pv
+spec:
+  resources:
+  - apiVersion: v1
+    resource: services
+    annotationSelector:
+      matchExpressions:
+      - {key: primehub-group, operator: Exists}
+  attachments:
+  - apiVersion: v1
+    resource: persistentvolumes
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://primehub-group.{{ .Release.Namespace }}/group-pv
+{{- end }}
+{{- end }}

@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.name" . }}-watcher
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-watcher
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.watcher.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub.name" . }}-watcher
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}-watcher
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "primehub.name" . }}-watcher
+      {{- if .Values.watcher.image.credentials }}
+      imagePullSecrets:
+        - name: {{ include "primehub.name" . }}-watcher-pull-secret
+      {{- end }}
+      containers:
+        - name: watcher
+          image: "{{ .Values.watcher.image.repository }}:{{ .Values.watcher.image.tag }}"
+          imagePullPolicy: {{ .Values.watcher.image.pullPolicy }}
+          env:
+            - name: KC_API_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_OIDC_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_REALM
+              value: {{ .Values.primehub.keycloak.realm}}
+            {{- if .Values.primehub.keycloak.everyoneGroupId }}
+            - name: KC_EVERYONE_GROUP_ID
+              value: {{ .Values.primehub.keycloak.everyoneGroupId }}
+            {{- else }}
+            - name: KC_EVERYONE_GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: everyone_group_id
+            {{- end }}
+            - name: K8S_CRD_NAMESPACE
+              value: {{ .Release.Namespace }}
+            {{- if .Values.primehub.keycloak.clientSecret }}
+            - name: KC_CLIENT_SECRET
+              value: {{ .Values.primehub.keycloak.clientSecret }}
+            {{- else }}
+            - name: KC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: client_secret
+            {{- end }}
+            - name: KC_CLIENT_ID
+              value: {{ include "primehub.console.clientId" . }}
+            {{- if .Values.primehub.keycloak.maxSockets }}
+            - name: KC_MAX_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxSockets | quote }}
+            {{- end }}
+            {{- if .Values.primehub.keycloak.maxFreeSockets }}
+            - name: KC_MAX_FREE_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxFreeSockets | quote }}
+            {{- end }}
+            {{- if .Values.primehub.keycloak.rolePrefix }}
+            - name: KC_ROLE_PREFIX
+              value: {{ .Values.primehub.keycloak.rolePrefix | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.watcher.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.watcher.resources | nindent 12 }}
+      {{- with .Values.watcher.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watcher.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.watcher.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,11 @@
+.DS_Store
+*.swp
+*.retry
+*.bak
+__pycache__/
+.pytest_cache/
+node_modules/
+tests/report/*
+.coverage
+htmlcov/
+coverage.xml

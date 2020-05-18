@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "primehub.name" . }}-hub
+rules:
+- apiGroups:
+  - primehub.io
+  resources:
+  - instancetypes
+  - images
+  - datasets
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "primehub.name" . }}-hub
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "primehub.name" . }}-hub
+subjects:
+- kind: ServiceAccount
+  name: hub

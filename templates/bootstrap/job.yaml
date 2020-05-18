@@ -1,0 +1,87 @@
+{{- if .Values.bootstrap.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{.Release.Name}}-bootstrap"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    component: bootstrap
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  template:
+    metadata:
+      name: "{{.Release.Name}}-bootstrap"
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        component: bootstrap
+    spec:
+      restartPolicy: Never
+      serviceAccountName: primehub-bootstrap
+      containers:
+        - name: bootstrap
+          image: "{{ .Values.bootstrap.image.repository }}:{{ .Values.bootstrap.image.tag }}"
+          imagePullPolicy: {{ .Values.bootstrap.image.pullPolicy }}
+          env:
+          - name: PRIMEHUB_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: KC_URL
+            value: {{ include "primehub.keycloak.url" . }}
+          - name: KC_USER
+            value: {{ .Values.primehub.keycloak.username }}
+          - name: KC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "primehub-bootstrap"
+                key: kcpassword
+          - name: KC_REALM
+            value: {{ .Values.primehub.keycloak.realm }}
+          {{- if (eq .Values.primehub.keycloak.scheme "http") }}
+          - name: KC_SSL_REQUIRED
+            value: "none"
+          {{- end }}
+          - name: ADMIN_UI_CLIENT_ID
+            value: {{ include "primehub.console.clientId" . }}
+          - name: ADMIN_UI_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: "primehub-client-admin-ui"
+                key: client_secret
+                optional: true
+          - name: ADMIN_UI_REDIRECT_URI
+            value: {{ include "primehub.console.redirectUri" . }}
+          - name: JUPYTERHUB_CLIENT_ID
+            value: {{ include "primehub.jupyterhub.clientId" . }}
+          - name: JUPYTERHUB_REDIRECT_URI
+            value: {{ include "primehub.jupyterhub.redirectUri" . }}
+          - name: MAINTENANCE_PROXY_CLIENT_ID
+            value: {{ include "primehub.adminNotebook.clientId" . }}
+          - name: MAINTENANCE_PROXY_REDIRECT_URI
+            value: {{ include "primehub.adminNotebook.redirectUri" . }}
+          - name: PH_USER
+            value: {{ .Values.bootstrap.username }}
+          - name: PH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "primehub-bootstrap"
+                key: password
+          - name: PH_GROUP
+            value: {{ .Values.bootstrap.group }}
+          resources:
+            {{- toYaml .Values.bootstrap.resources | nindent 12 }}
+          command: ["bash", "/bootstrap/bootstrap.sh"]
+          volumeMounts:
+            - name: bootstrap
+              mountPath: /bootstrap
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: primehub-bootstrap-scripts
+{{- end }}

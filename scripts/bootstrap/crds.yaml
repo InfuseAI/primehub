@@ -1,0 +1,23 @@
+apiVersion: primehub.io/v1alpha1
+kind: Image
+metadata:
+  name: base-notebook
+spec:
+  displayName: "base-notebook"
+  description: "base notebook"
+  type: "both"
+  url: jupyter/base-notebook:e255f1aa00b2
+  urlForGpu: jupyter/base-notebook:e255f1aa00b2
+---
+apiVersion: primehub.io/v1alpha1
+kind: InstanceType
+metadata:
+  name: cpu-only
+spec:
+  displayName: "cpu-only"
+  description: "CPU only"
+  limits.cpu: 1
+  limits.memory: 1G
+  limits.nvidia.com/gpu: 0
+  requests.cpu: 1
+  requests.memory: 1G
