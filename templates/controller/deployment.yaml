@@ -1,0 +1,73 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.fullname" . }}-controller
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.controller.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        checksum/config-map: {{ include (print .Template.BasePath "/controller/configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - args:
+          - --secure-listen-address=0.0.0.0:8443
+          - --upstream=http://127.0.0.1:8080/
+          - --logtostderr=true
+          - --v=10
+          image: "{{ .Values.controller.proxy.image.repository }}:{{ .Values.controller.proxy.image.tag }}"
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+        - args:
+          - --metrics-addr=127.0.0.1:8080
+          - --enable-leader-election
+          command:
+          - /manager
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          name: manager
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          resources:
+{{ toYaml .Values.controller.resources | indent 12 }}
+          volumeMounts:
+          - name: config
+            mountPath: /etc/primehub-controller
+            readOnly: true
+      terminationGracePeriodSeconds: 10
+      serviceAccount: {{ include "primehub.fullname" . }}-controller
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "primehub.fullname" . }}-controller-config
+    {{- with .Values.controller.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.controller.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.controller.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- end }}

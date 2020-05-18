@@ -1,0 +1,23 @@
+{
+  "name": "everyone",
+  "attributes": {
+    "canUseGpu": [
+      "false"
+    ],
+    "displayName": [
+      "Global"
+    ],
+    "quota-cpu": [
+      "0"
+    ],
+    "quota-gpu": [
+      "0"
+    ],
+    "project-quota-gpu": [
+      "0"
+    ],
+    "project-quota-cpu": [
+      "0"
+    ]
+  }
+}

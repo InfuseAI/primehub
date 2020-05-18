@@ -1,0 +1,11 @@
+{
+  "clientId": "admin-ui",
+  "enabled": true,
+  "clientAuthenticatorType": "client-secret",
+  "redirectUris": [],
+  "webOrigins": [],
+  "publicClient": false,
+  "serviceAccountsEnabled": true,
+  "protocol": "openid-connect",
+  "fullScopeAllowed": false
+}

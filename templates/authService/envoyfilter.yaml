@@ -1,0 +1,35 @@
+{{- if .Values.istio.enabled}}
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: {{ include "primehub.name" . }}-authn-filter
+  namespace: istio-system
+spec:
+  workloadLabels:
+    istio: ingressgateway
+  filters:
+    - filterConfig:
+        httpService:
+          serverUri:
+            uri: http://{{ include "primehub.name" . }}-authservice.{{ .Release.Namespace }}.svc.cluster.local
+            cluster: outbound|8080||{{ include "primehub.name" . }}-authservice.{{ .Release.Namespace }}.svc.cluster.local
+            timeout: 10s
+          authorizationRequest:
+            allowedHeaders:
+              patterns:
+                - exact: "cookie"
+          authorizationResponse:
+            allowedUpstreamHeaders:
+              patterns:
+                - exact: "groups"
+                - exact: "Authorization"
+        statusOnError:
+          code: GatewayTimeout
+      filterName: envoy.ext_authz
+      filterType: HTTP
+      insertPosition:
+        index: FIRST
+      listenerMatch:
+        portNUmber: 80
+        listenerType: GATEWAY
+{{- end }}

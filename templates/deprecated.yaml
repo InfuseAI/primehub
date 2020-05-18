@@ -1,0 +1,29 @@
+{{- if (index .Values "primehub-prerequisite") }}
+  {{ fail "The value path 'primehub-prerequisite' does not support now." }}
+{{- end }}
+
+{{- if (index .Values "primehub-console") }}
+  {{- if (index .Values "primehub-console").keycloak }}
+    {{ fail "The value path 'primehub-console.keycloak' does not support now. Please move to 'primehub.keycloak' instead. " }}
+  {{- end }}
+
+  {{- if (index .Values "primehub-console").ui }}
+    {{ fail "The value path 'primehub-console.ui' does not support now. Please move to 'console' instead. " }}
+  {{- end }}
+
+  {{- if (index .Values "primehub-console").graphql }}
+    {{ fail "The value path 'primehub-console.graphql' does not support now. Please move to 'graphql' instead. " }}
+  {{- end }}
+
+  {{- if (index .Values "primehub-console").watcher }}
+    {{ fail "The value path 'primehub-console.watcher' does not support now. Please move to 'watcher' instead. " }}
+  {{- end }}
+{{- end }}
+
+{{- if (index .Values "admin-notebook") }}
+  {{ fail "The value path 'admin-notebook' does not support now. Please use 'adminNotebook' " }}
+{{- end }}
+
+{{- if .Values.primehub.keycloak.url }}
+  {{ fail "The value path 'primehub.keycloak.url' does not support now. Please use 'primehub.keycloak.scheme' and 'primehub.keycloak.domain' instead" }}
+{{- end }}

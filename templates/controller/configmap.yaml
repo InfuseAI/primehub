@@ -1,0 +1,26 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "primehub.fullname" . }}-controller-custom-image-scripts
+data:
+{{ (.Files.Glob "scripts/controller/custom_image/*").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "primehub.fullname" . }}-controller-config
+data:
+  config.yaml: |-
+    ingress:
+{{ toYaml .Values.ingress | indent 6 }}
+    customImage:
+{{ toYaml .Values.customImage | indent 6 }}
+    jobSubmission:
+{{ toYaml .Values.jobSubmission | indent 6 }}
+      graphqlEndpoint: {{ include "primehub.graphql.endpoint" . }}
+      graphqlSecret: {{ .Values.graphql.sharedGraphqlSecret }}
+    modelDeployment:
+      enabled: {{ .Values.modelDeployment.enabled }}
+      primehubUrl: {{ include "primehub.url" . }}
+{{- end }}

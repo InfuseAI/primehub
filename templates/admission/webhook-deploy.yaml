@@ -1,0 +1,87 @@
+{{- if .Values.admission.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resources-validation-webhook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: resources-validation-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resources-validation-webhook
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: resources-validation-webhook
+    spec:
+      serviceAccountName: primehub-admission
+      containers:
+      - name: resources-validation-webhook
+        image: "{{ .Values.admission.image.repository }}:{{ .Values.admission.image.tag }}"
+        ports:
+        - containerPort: 443
+        imagePullPolicy: {{ .Values.admission.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.admission.resources | nindent 10 }}
+        env:
+        - name: GRAPHQL_ENDPOINT
+          value: {{ include "primehub.graphql.endpoint" . }}
+        - name: GRAPHQL_SHARED_SECRET
+          value: {{ .Values.graphql.sharedGraphqlSecret }}
+        - name: FLASK_DEBUG
+          value: "false"
+        - name: LOGURU_LEVEL
+          value: INFO
+        volumeMounts:
+          - name: certs
+            mountPath: /app/ssl
+            readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: resources-validation-webhook-certs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-image-replacing-webhook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pod-image-replacing-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-image-replacing-webhook
+  template:
+    metadata:
+      labels:
+        app: pod-image-replacing-webhook
+    spec:
+      serviceAccountName: primehub-admission
+      containers:
+      - name: pod-image-replacing-webhook
+        image: "{{ .Values.admission.image.repository }}:{{ .Values.admission.image.tag }}"
+        ports:
+        - containerPort: 443
+        imagePullPolicy: {{ .Values.admission.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.admission.resources | nindent 10 }}
+        env:
+        - name: IMAGE_PREFIX
+          value: "primehub.airgap:5000/"
+        - name: FLASK_DEBUG
+          value: "false"
+        volumeMounts:
+          - name: certs
+            mountPath: /app/ssl
+            readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: pod-image-replacing-webhook-certs
+{{- end }}

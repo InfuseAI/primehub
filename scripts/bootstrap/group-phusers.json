@@ -1,0 +1,23 @@
+{
+  "name": "phusers",
+  "attributes": {
+    "canUseGpu": [
+      "false"
+    ],
+    "cpuQuota": [
+      "20"
+    ],
+    "quota-gpu": [
+      "0"
+    ],
+    "displayName": [
+      "primehub users"
+    ],
+    "diskQuota": [
+      "20G"
+    ],
+    "project-quota-gpu": [
+      "0"
+    ]
+  }
+}

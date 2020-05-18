@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "primehub.name" . }}-console
+  labels:
+    app: {{ include "primehub.name" . }}
+    chart: {{ include "primehub.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}

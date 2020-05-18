@@ -1,0 +1,172 @@
+{% extends "page.html"%}
+{% block main %}
+<div class="container">
+  <div class="row">
+    <div id="custom-progress-bar" class="custom-progress-bar">
+      <ul class="progress-bar-inner">
+        <li id="li-preparing" class="tick">
+          <div class="dot">
+            <div class="dot-inner"></div>
+          </div>
+          <div class="label label--start">Preparing</div>
+          <div class="bar">
+            <div class="bar-left"></div>
+            <div class="bar-middle"></div>
+            <div class="bar-right"></div>
+          </div>
+        </li>
+        <li id="li-pulling" class="tick">
+          <div class="dot">
+            <div class="dot-inner"></div>
+          </div>
+          <div class="label label--start">Pulling</div>
+          <div class="bar">
+            <div class="bar-left"></div>
+            <div class="bar-middle"></div>
+            <div class="bar-right"></div>
+          </div>
+        </li>
+        <li id="li-creating" class="tick">
+          <div class="dot">
+            <div class="dot-inner"></div>
+          </div>
+          <div class="label label--start">Creating</div>
+          <div class="bar">
+            <div class="bar-left"></div>
+            <div class="bar-middle"></div>
+            <div class="bar-right"></div>
+          </div>
+        </li>
+        <li id="li-running" class="tick">
+          <div class="dot">
+            <div class="dot-inner"></div>
+          </div>
+          <div class="label label--start">Running</div>
+          <div class="bar">
+            <div class="bar-left"></div>
+            <div class="bar-middle"></div>
+            <div class="bar-right"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <p id="progress-message"></p>
+      <details id="progress-details">
+        <summary>Event log</summary>
+        <div id="progress-log"></div>
+      </details>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+(function(){
+  var evtSource = new EventSource("{{ progress_url  }}");
+  var progressBar = $('#custom-progress-bar');
+  var progressMessage = $("#progress-message");
+  var progressLog = $("#progress-log");
+  // Regex for parse the pod log.
+  const STAT_SET = 'in-progress done warning error';
+  const IN_PROGRESS = 'in-progress';
+  const COMPLETE = 'done';
+  const WARNING = 'warning';
+  const ERROR = 'error';
+  const regServerReq = /Server requested/g;
+  const regAttached = /Attach succeeded/g;
+  const regPulling = /pulling image/g;
+  const regPulled = /Successfully pulled image/g;
+  const regImageExist = /Container image \"[\S]+\" already present on machine/gi;
+  const regCreatedContainer = /Created container/g;
+  const regFailedPull = /Failed to pull image/gi;
+  // Stage check point elements.
+  const stagePrepare = $('#li-preparing');
+  const stagePull= $('#li-pulling');
+  const stageCreate = $('#li-creating');
+  const stageRun = $('#li-running');
+  const PREPARING = 1;
+  const PULLING = 2;
+  const CREATING = 3;
+  const RUNNING = 4;
+  const DONE = 5;
+
+  const setProgress = function (currentStage, status=IN_PROGRESS) {
+    var $progressBarInner = $("ul.progress-bar-inner");
+    prevElem = "li:nth-child(-n+" + (currentStage - 1) + ")";
+    currentElement = "li:nth-child(" + currentStage + ")";
+    $progressBarInner
+      .find(prevElem)
+      .removeClass(STAT_SET)
+      .addClass(COMPLETE);
+    $progressBarInner
+      .find(currentElement)
+      .addClass(status);
+  };
+
+  evtSource.onmessage = function(e) {
+    var evt = JSON.parse(e.data);
+    var msg = evt.message;
+    var $inProgress = $('.in-progress');
+    if (evt.progress !== undefined && msg !== undefined) {
+      if (regImageExist.test(msg) || regPulled.test(msg)) {
+        setProgress(CREATING);
+        $inProgress = stageCreate;
+      } else if (regPulling.test(msg)) {
+        setProgress(PULLING);
+        $inProgress = stagePull;
+      } else if (regFailedPull.test(msg)) {
+        $inProgress = stagePull;
+        $inProgress.addClass(WARNING);
+      } else if (regAttached.test(msg)) {
+        setProgress(PULLING);
+        $inProgress = stagePull;
+      } else if (regServerReq.test(msg)) {
+        setProgress(PREPARING);
+        $inProgress = stagePrepare;
+      }
+    }
+
+    // update message
+    var html_message;
+    if (evt.html_message !== undefined) {
+      progressMessage.html(evt.html_message);
+      html_message = evt.html_message;
+    } else if (msg !== undefined) {
+      progressMessage.text(msg);
+      html_message = progressMessage.html();
+    }
+    if (html_message) {
+      progressLog.append(
+        $("<div>")
+        .addClass('progress-log-event')
+        .html(html_message)
+      );
+    }
+    if (evt.ready) {
+      evtSource.close();
+      // reload the current page
+      // which should result in a redirect to the running server
+      setProgress(RUNNING);
+      setTimeout(function(){
+        setProgress(DONE);
+        window.location.reload();
+      }, 1600);
+    }
+    if (evt.failed) {
+      evtSource.close();
+      // turn progress bar red
+      $inProgress.removeClass(STAT_SET).addClass(ERROR);
+      // open event log for debugging
+      $('#progress-details').prop('open', true);
+    }
+
+  };
+})();
+</script>
+{% endblock %}
+

@@ -1,0 +1,58 @@
+{{- if .Values.istio.enabled }}  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.name" . }}-authservice
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.istio.authService.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: authservice
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/name: authservice
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: authservice
+          image: "{{ .Values.istio.authService.image.repository }}:{{ .Values.istio.authService.image.tag }}"
+          imagePullPolicy: {{ .Values.istio.authService.image.pullPolicy }}
+          ports:
+            - name: http-api
+              containerPort: 8080
+          env:
+            - name: DISABLE_USERINFO
+              value: "true"
+            - name: PORT
+              value: "8080"
+            - name: OIDC_SCOPES
+              value: "openid profile email"
+            - name: OIDC_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                    name: primehub-client-admin-notebook
+                    key: url
+            - name: SELF_URL
+              {{- range .Values.ingress.hosts }}
+              value: https://{{ . }}
+              {{- end }}
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                    name: primehub-client-admin-notebook
+                    key: client_id
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                    name: primehub-client-admin-notebook
+                    key: client_secret
+{{- end}}

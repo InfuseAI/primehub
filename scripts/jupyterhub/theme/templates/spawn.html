@@ -1,0 +1,195 @@
+{% extends "templates/spawn.html"%}
+<!-- extra stylesheets for spawner -->
+
+{% block stylesheet %}
+{{ super() }}
+<link rel="stylesheet" href="{{ static_url("css/primehub/spawner.css") }}" type="text/css" />
+{% endblock %}
+
+<!-- main body -->
+{% block main %}
+<div id="spawner-content" class="container">
+  {% block heading %}
+  <div class="row">
+    <div class="col-md-12">
+      <h4>Select your notebook settings</h4>
+      <hr/>
+    </div>
+  </div>
+  {% endblock %}
+  <!-- Spawner form -->
+  <form enctype="multipart/form-data" id="spawn_form" action="{{url}}" method="post" role="form">
+    <div class="row">
+      <!-- Group Usages -->
+      <div id="group-resources" class="col-md-5 col-md-push-7">
+        <div class="gutter">
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <label for="group">User Limits</label>
+            <table id='user-limits-table' class="table text-center">
+              <tbody>
+                <tr id='user-limits-body' class='light-large-font'>
+                </tr>
+                <tr>
+                  <td><strong>CPU</strong></td>
+                  <td><strong>Memory</strong></td>
+                  <td><strong>GPU</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <label for="group">Group Resources</label>
+            <table class="table table-striped">
+              <thead>
+                <th scope="col">Type</th>
+                <th scope="col">Used</th>
+                <th scope="col">Limit</th>
+              </thead>
+              <tbody id='group-usage-body'>
+              </tbody>
+            </table>
+            <p>
+              <a class="collapsed" data-toggle="collapse" href="#dataset-list">
+                <i class="fa fa-chevron-down"></i>
+                Datasets
+              </a>
+            </p>
+            <div id="dataset-list" class="collapse">
+              <ul id="dataset-list-ul">
+                <li>None</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Group Usages End -->
+      <!-- Spawner Options -->
+      <div class="col-md-7 col-md-pull-5">
+        {% if for_user and user.name != for_user.name -%}
+        <p>Spawning server for {{ for_user.name }}</p>
+        {% endif -%}
+        {% if error_message -%}
+        <p class="spawn-error-msg text-danger">
+          Error: {{error_message}}
+        </p>
+        {% endif %}
+        <div id="spawner-mask" class="load-mask">
+          <div class="primehub-spinner">
+            <span class="primehub-logo">
+              <img src="{{ static_url("images/primehub-logo.png") }}" alt="">
+            </span>
+            <div class="line-spinner">
+              <div class="inner"></div>
+            </div>
+          </div>
+        </div>
+          {{spawner_options_form | safe}}
+      </div>
+      <!-- Spawner Options End -->
+    </div>
+    <div class="row">
+      <div class="col-md-7">
+        <input type="submit" value="Start Notebook" class="btn btn-primehub form-control">
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+<!-- Extends script -->
+{% block script %}
+{{ super() }}
+<script>
+  // Admin can spawn server as other user, need change default resource usage api endpoint.
+  {% if for_user and user.name != for_user.name -%}
+    window.groupFetchUri = '/hub/api/primehub/groups/' + "{{for_user.name}}"
+  {% endif -%}
+</script>
+
+{% raw %}
+<!-- Mustach js tmpl -->
+<script id="user-limits-template" type="x-tmpl-mustache">
+  <td>
+    {{#quotaCpu}}
+      {{quotaCpu}}
+    {{/quotaCpu}}
+    {{^quotaCpu}}
+      -
+    {{/quotaCpu}}
+  </td>
+  <td>
+    {{#quotaMemory}}
+      {{quotaMemory}} GB
+    {{/quotaMemory}}
+    {{^quotaMemory}}
+      -
+    {{/quotaMemory}}
+  </td>
+  <td>
+    {{#quotaGpu}}
+      {{quotaGpu}}
+    {{/quotaGpu}}
+    {{^quotaGpu}}
+      -
+    {{/quotaGpu}}
+  </td>
+</script>
+
+<script id="group-usage-template" type="x-tmpl-mustache">
+  <tr>
+    <th scope="row">CPU</th>
+    <td id="group-cpu-usage">{{cpuUsage}}</td>
+    <td id="group-cpu-limit">{{cpuLimit}}</td>
+  </tr>
+  <tr>
+    <th scope="row">Memory</th>
+    <td id="group-mem-usage">{{memUsage}} GB</td>
+    <td id="group-mem-limit">{{memLimit}}</td>
+  </tr>
+  <tr>
+    <th scope="row">GPU</th>
+    <td id="group-gpu-usage">{{gpuUsage}}</td>
+    <td id="group-gpu-limit">{{gpuLimit}}</td>
+  </tr>
+</script>
+
+<script id="it-template" type="x-tmpl-mustache">
+    {{#.}}
+    <label for="instance_type-item-{{index}}" class="form-control input-group">
+        <div class="col-md-1">
+            <input type="radio" name="instance_type" id="instance_type-item-{{index}}" data-index="{{index}}" value="{{name}}" />
+        </div>
+        <div class="col-md-11">
+  <strong>{{displayName}} <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{{resourceLimits}}"></i></strong>
+            {{#description}}
+            <p>{{description}}</p>
+            {{/description}}
+        </div>
+    </label>
+    {{/.}}
+</script>
+<script id="image-template" type="x-tmpl-mustache">
+    {{#.}}
+    <label for="image-item-{{index}}" data-image-type="{{spec.type}}" class="form-control input-group image-option">
+        <div class="col-md-1">
+            <input type="radio" name="image" id="image-item-{{index}}" data-index="{{index}}" value="{{name}}" />
+        </div>
+        <div class="col-md-11">
+            <strong>{{displayName}} ({{typeLabel}})</strong>
+            {{#description}}
+            <p>{{description}}</p>
+            {{/description}}
+        </div>
+    </label>
+    {{/.}}
+</script>
+{% endraw %}
+
+<script src="{{ static_url("components/primehub/spawner.js") }}"></script>
+
+{% endblock %}

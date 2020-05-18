@@ -1,0 +1,218 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.name" . }}-graphql
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-graphql
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.graphql.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub.name" . }}-graphql
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}-graphql
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        checksum/secret-map: {{ include (print .Template.BasePath "/graphql/secret.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "primehub.name" . }}-graphql
+      {{- if .Values.graphql.image.credentials }}
+      imagePullSecrets:
+        - name: {{ include "primehub.name" . }}-graphql-pull-secret
+      {{- end }}
+      shareProcessNamespace: true
+      containers:
+        - name: graphql
+          image: "{{ .Values.graphql.image.repository }}:{{ .Values.graphql.image.tag }}"
+          imagePullPolicy: {{ .Values.graphql.image.pullPolicy }}
+          env:
+            {{- if .Values.datasetUpload.enabled }}
+            - name: PRIMEHUB_FEATURE_DATASET_UPLOAD
+              value: {{ .Values.datasetUpload.enabled | quote }}
+            {{- end }}
+            {{- if .Values.primehub.sharedVolumeStorageClass }}
+            - name: PRIMEHUB_GROUP_VOLUME_STORAGE_CLASS
+              value: {{ .Values.primehub.sharedVolumeStorageClass }}
+            {{- end }}
+            {{- if .Values.groupvolume.storageClass }}
+            - name: PRIMEHUB_GROUP_SC
+              value: {{ .Values.groupvolume.storageClass }}
+            {{- end }}
+            - name: KC_API_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_OIDC_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_REALM
+              value: {{ .Values.primehub.keycloak.realm}}
+            {{- if .Values.primehub.keycloak.everyoneGroupId }}
+            - name: KC_EVERYONE_GROUP_ID
+              value: {{ .Values.primehub.keycloak.everyoneGroupId }}
+            {{- else }}
+            - name: KC_EVERYONE_GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: everyone_group_id
+            {{- end }}
+            - name: K8S_CRD_NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: KC_GRANT_TYPE
+              value: authorization_code
+            {{- if .Values.primehub.keycloak.clientSecret }}
+            - name: KC_CLIENT_SECRET
+              value: {{ .Values.primehub.keycloak.clientSecret }}
+            {{- else }}
+            - name: KC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: client_secret
+            {{- end }}
+            - name: KC_CLIENT_ID
+              value: {{ include "primehub.console.clientId" . }}
+            {{- if .Values.primehub.keycloak.maxSockets }}
+            - name: KC_MAX_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxSockets | quote }}
+            {{- end }}
+            {{- if .Values.primehub.keycloak.maxFreeSockets }}
+            - name: KC_MAX_FREE_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxFreeSockets | quote }}
+            {{- end }}
+            {{- if .Values.primehub.keycloak.rolePrefix }}
+            - name: KC_ROLE_PREFIX
+              value: {{ .Values.primehub.keycloak.rolePrefix | quote }}
+            {{- end }}
+            - name: SHARED_GRAPHQL_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "primehub.name" . }}-graphql-shared-secret
+                  key: graphql-secret
+            - name: APP_PREFIX
+              value: {{ include "primehub.graphql.path" . }}
+            - name: DATASET_ENDPOINT
+              value: {{ include "primehub.dataset.url" . }}
+            {{- if .Values.graphql.apolloTracing }}
+            - name: APOLLO_TRACING
+              value: {{ .Values.graphql.apolloTracing }}
+            {{- end }}
+            {{- if .Values.graphql.playgroundEnabled }}
+            - name: GRAPHQL_PLAYGROUND
+              value: {{ .Values.graphql.playgroundEnabled | quote}}
+            {{- end }}
+            {{- if .Values.graphql.defaultUserVolumeCapacity }}
+            - name: DEFAULT_USER_VOLUME_CAPACITY
+              value: {{ .Values.graphql.defaultUserVolumeCapacity }}
+            {{- end }}
+            - name: GRAPHQL_HOST
+              value: {{ include "primehub.url" . }}
+            {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+            - name: EXPIRED
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: expired
+            - name: MAX_GROUP
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: max_group
+            - name: LICENSED_TO
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: licensed_to
+            - name: STARTED_AT
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: started_at
+            - name: EXPIRED_AT
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: expired_at
+            {{- end }}
+            {{- range $key, $value := .Values.graphql.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.graphql.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            httpGet:
+              port: http
+              path: {{ include "primehub.graphql.path" . }}/health
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            httpGet:
+              port: http
+              path: {{ include "primehub.graphql.path" . }}/health
+          resources:
+            {{- toYaml .Values.graphql.resources | nindent 12 }}
+        {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+        - name: reloader
+          image: busybox
+          command:
+          - "sh"
+          - "-c"
+          - |
+            #!/bin/sh
+            original_mtime=`stat -c '%Y' /tmp/..data`
+            echo "Start watching secret changes..."
+            while true
+            do
+                sleep 2
+                check_mtime=`stat -c '%Y' /tmp/..data`
+                if [ $check_mtime != $original_mtime ]; then
+                    echo "Secret mtime changed, kill main process."
+                    original_mtime=$check_mtime
+                    killall node
+                    sleep 10
+                fi
+            done
+          resources:
+            limits:
+              cpu: 50m
+              memory: 30Mi
+            requests:
+              cpu: 10m
+              memory: 15Mi
+          volumeMounts:
+          - name: license
+            mountPath: /tmp
+            readOnly: true
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
+        {{- end }}
+      volumes:
+        {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+        - name: license
+          secret:
+            secretName: authoritative-secret
+        {{- end }}
+      {{- with .Values.graphql.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.graphql.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.graphql.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

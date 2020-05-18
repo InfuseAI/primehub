@@ -1,0 +1,29 @@
+## Scripts
+
+All scripts are copied from the docker-stacks project. Any `*.sh` and `*.py` at base-notebook should copy to the current directory.
+
+*Revision:*
+
+https://github.com/jupyter/docker-stacks/tree/dc9744740e128ad7ca7c235d5f54791883c2ea69/base-notebook
+
+
+## known issues
+
+* in sudo, it couldn't find jupyter in PATH
+
+```patch
+diff --git a/modules/charts/primehub/scripts/primehub-start-notebook/start.sh b/modules/charts/primehub/scripts/primehub-start-notebook/start.sh
+index da6905be..f28a9ef8 100755
+--- a/modules/charts/primehub/scripts/primehub-start-notebook/start.sh
++++ b/modules/charts/primehub/scripts/primehub-start-notebook/start.sh
+@@ -99,7 +99,7 @@ if [ $(id -u) == 0 ] ; then
+     # the environment preserved
+     run-hooks /usr/local/bin/before-notebook.d
+     echo "Executing the command: ${cmd[@]}"
+-    exec sudo -E -H -u $NB_USER PATH=$PATH XDG_CACHE_HOME=/home/$NB_USER/.cache PYTHONPATH=${PYTHONPATH:-} "${cmd[@]}"
++    exec sudo -E -H -u $NB_USER PATH=$PATH XDG_CACHE_HOME=/home/$NB_USER/.cache PYTHONPATH=${PYTHONPATH:-} \
++        /srv/conda/envs/notebook/bin/jupyterhub-singleuser --ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab
+ else
+     if [[ "$NB_UID" == "$(id -u jovyan)" && "$NB_GID" == "$(id -g jovyan)" ]]; then
+         # User is not attempting to override user/group via environment
+```

@@ -1,0 +1,29 @@
+{{- if eq .Values.primehub.mode "ee" }}
+{{- if .Values.datasetUpload.enabled -}}
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: primehub-dataset-upload
+spec:
+  resources:
+  - apiVersion: primehub.io/v1alpha1
+    resource: datasets
+  attachments:
+  - apiVersion: apps/v1
+    resource: deployments
+    updateStrategy:
+      method: InPlace
+  - apiVersion: v1
+    resource: services
+    updateStrategy:
+      method: InPlace
+  - apiVersion: networking.k8s.io/v1beta1
+    resource: ingresses
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://primehub-dataset-upload.{{ .Release.Namespace }}/dataset-upload
+{{- end }}
+{{- end }}

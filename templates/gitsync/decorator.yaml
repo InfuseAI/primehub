@@ -1,0 +1,24 @@
+{{- if eq .Values.primehub.mode "ee" }}
+{{- if .Values.gitsync.enabled -}}
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: primehub-gitsync
+spec:
+  resources:
+  - apiVersion: primehub.io/v1alpha1
+    resource: datasets
+    annotationSelector:
+      matchExpressions:
+      - {key: primehub-gitsync, operator: Exists}
+  attachments:
+  - apiVersion: apps/v1
+    resource: daemonsets
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://primehub-gitsync.{{ .Release.Namespace }}/gitsync
+{{- end }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
+{{- if .Values.groupvolume.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: primehub-group
+spec:
+  selector:
+    app: primehub-group
+    role: webhook-server
+  ports:
+  - port: 80
+    targetPort: 8080
+{{- end }}
+{{- end }}

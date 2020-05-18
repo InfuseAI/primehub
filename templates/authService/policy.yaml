@@ -1,0 +1,32 @@
+{{- if .Values.istio.enabled }}  
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: {{ include "primehub.name" . }}-authn-policy
+spec:
+  targets:
+    - name: primehub-admin-notebook
+  origins:
+    - jwt:
+        issuer: "{{ include "primehub.keycloak.url" . }}/realms/{{ .Values.primehub.keycloak.realm}}"
+        jwksUri: "{{ include "primehub.keycloak.url" . }}/realms/{{ .Values.primehub.keycloak.realm}}/protocol/openid-connect/certs"
+  principalBinding: USE_ORIGIN
+
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: {{ include "primehub.name" . }}-authz-policy
+spec:
+  selector:
+    matchLabels:
+        app.kubernetes.io/name: admin-notebook
+        app.kubernetes.io/instance: {{ .Release.Name }}
+  rules:
+    - to:
+        - operation:
+            methods: ["*"]
+      when:
+        - key: request.auth.claims[groups]
+          values: [phusers]
+{{- end }}

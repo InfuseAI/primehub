@@ -1,0 +1,200 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub.name" . }}-console
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-console
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.console.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub.name" . }}-console
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}-console
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+        checksum/config: {{ include (print $.Template.BasePath "/console/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "primehub.name" . }}-console
+      {{- if .Values.console.image.credentials }}
+      imagePullSecrets:
+        - name: {{ include "primehub.name" . }}-console-pull-secret
+      {{- end }}
+      shareProcessNamespace: true
+      containers:
+        - name: console
+          {{- if eq .Values.primehub.mode "deploy" }}
+          image: "{{ .Values.console.image.repository }}-model-deploy:{{ .Values.console.image.tag }}"
+          {{- else }}
+          image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.console.image.pullPolicy }}
+          volumeMounts:
+            - name: portal-config
+              mountPath: /etc/portal-config.yaml
+              subPath: portal-config.yaml
+            - name: portal-default-covers
+              mountPath: /usr/src/app/packages/client/dist/default-covers/
+          env:
+            - name: PORTAL_CONFIG_PATH
+              value: '/etc/portal-config.yaml'
+            {{- if .Values.primehub.keycloak.everyoneGroupId }}
+            - name: KC_EVERYONE_GROUP_ID
+              value: {{ .Values.primehub.keycloak.everyoneGroupId }}
+            {{- else }}
+            - name: KC_EVERYONE_GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: everyone_group_id
+            {{- end }}
+            - name: PRIMEHUB_FEATURE_USER_PORTAL
+              value: "true"
+            {{- if .Values.datasetUpload.enabled }}
+            - name: PRIMEHUB_FEATURE_DATASET_UPLOAD
+              value: {{ .Values.datasetUpload.enabled | quote }}
+            {{- end }}
+            {{- if .Values.customImage.enabled }}
+            - name: PRIMEHUB_FEATURE_CUSTOM_IMAGE
+              value: {{ .Values.customImage.enabled | quote }}
+            {{- if .Values.customImage.registryEndpoint }}
+            - name: PRIMEHUB_CUSTOM_IMAGE_REGISTRY_ENDPOINT
+              value: {{ .Values.customImage.registryEndpoint | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.modelDeployment.enabled }}
+            - name: PRIMEHUB_FEATURE_MODEL_DEPLOYMENT
+              value: {{ .Values.modelDeployment.enabled | quote }}
+            {{- end }}
+            {{- if .Values.console.readOnlyOnInstanceTypeAndImage }}
+            - name: READ_ONLY_ON_INSTANCE_TYPE_AND_IMAGE
+              value: {{ .Values.console.readOnlyOnInstanceTypeAndImage | quote }}
+            {{- end }}
+            - name: KC_API_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_OIDC_BASEURL
+              value: {{ include "primehub.keycloak.url" . }}
+            - name: KC_REALM
+              value: {{ .Values.primehub.keycloak.realm}}
+            {{- if .Values.primehub.keycloak.clientSecret }}
+            - name: KC_CLIENT_SECRET
+              value: {{ .Values.primehub.keycloak.clientSecret }}
+            {{- else }}
+            - name: KC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: primehub-client-admin-ui
+                  key: client_secret
+            {{- end }}
+            - name: KC_CLIENT_ID
+              value: {{ include "primehub.console.clientId" . }}
+            {{- if .Values.console.locale }}
+            - name: CANNER_LOCALE
+              value: {{ .Values.console.locale }}
+            {{- end }}
+            - name: CANNER_CMS_HOST
+              value: {{ include "primehub.url" . }}
+            {{- if .Values.primehub.keycloak.maxSockets }}
+            - name: KC_MAX_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxSockets | quote }}
+            {{- end }}
+            {{- if .Values.primehub.keycloak.maxFreeSockets }}
+            - name: KC_MAX_FREE_SOCKETS
+              value: {{ .Values.primehub.keycloak.maxFreeSockets | quote }}
+            {{- end }}
+            - name: GRAPHQL_ENDPOINT
+              value: {{ include "primehub.graphql.path" . }}/graphql
+            - name: APP_PREFIX
+              value: {{ include "primehub.console.path" . }}
+            {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+            - name: PRIMEHUB_FEATURE_LICENSE
+              value: "true"
+            - name: EXPIRED
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: expired
+            - name: MAX_GROUP
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: max_group
+            {{- end }}
+            {{- range $key, $value := .Values.console.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.console.service.targetPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.console.resources | nindent 12 }}
+        {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+        - name: reloader
+          image: busybox
+          command:
+          - "sh"
+          - "-c"
+          - |
+            #!/bin/sh
+            original_mtime=`stat -c '%Y' /tmp/..data`
+            echo "Start watching secret changes..."
+            while true
+            do
+                sleep 2
+                check_mtime=`stat -c '%Y' /tmp/..data`
+                if [ $check_mtime != $original_mtime ]; then
+                    echo "Secret mtime changed, kill main process."
+                    original_mtime=$check_mtime
+                    killall node
+                    sleep 10
+                fi
+            done
+          resources:
+            limits:
+              cpu: 50m
+              memory: 30Mi
+            requests:
+              cpu: 10m
+              memory: 15Mi
+          volumeMounts:
+          - name: license
+            mountPath: /tmp
+            readOnly: true
+          securityContext:
+            capabilities:
+              add:
+              - SYS_PTRACE
+        {{- end }}
+      volumes:
+        - name: portal-config
+          configMap:
+            name: portal-config
+        - name: portal-default-covers
+          configMap:
+            name: portal-default-covers
+        {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+        - name: license
+          secret:
+            secretName: authoritative-secret
+        {{- end }}
+      {{- with .Values.console.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.console.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
