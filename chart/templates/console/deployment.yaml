@@ -32,6 +32,8 @@ spec:
         - name: console
           {{- if eq .Values.primehub.mode "deploy" }}
           image: "{{ .Values.console.image.repository }}-model-deploy:{{ .Values.console.image.tag }}"
+          {{- else if eq .Values.primehub.mode "ce" }}
+          image: "{{ .Values.console.image.repository }}-ce:{{ .Values.console.image.tag }}"
           {{- else }}
           image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag }}"
           {{- end }}

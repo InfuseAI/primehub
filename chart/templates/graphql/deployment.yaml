@@ -30,7 +30,11 @@ spec:
       shareProcessNamespace: true
       containers:
         - name: graphql
+          {{- if eq .Values.primehub.mode "ce" }}
+          image: "{{ .Values.graphql.image.repository }}-ce:{{ .Values.graphql.image.tag }}"
+          {{- else }}
           image: "{{ .Values.graphql.image.repository }}:{{ .Values.graphql.image.tag }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.graphql.image.pullPolicy }}
           env:
             {{- if .Values.datasetUpload.enabled }}
