@@ -20,13 +20,18 @@ PrimeHub is an effortless infrastructure for machine learning built on top of Ku
 - Support different types of dataset
 - Dataset uploader
 
+## Installation
+
+Please refer to [installation guide](INSTALL.md).## Contributing
+We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
+
+## Designs & Concepts
+
+Read more about the designs & concepts of PrimeHub [here](https://docs.primehub.io/docs/design/architecture).
+
 ## Project Status
 
 This project is still in early stage, things changes quickly and may contain
 some unexpected features, but we plan to make this rock solid and release more
 features with the community. Suggestions and discussions are welcome and
 appreciated.
-
-## Installation
-Please refer to [installation guide](INSTALL.md).## Contributing
-We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
