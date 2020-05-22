@@ -49,8 +49,9 @@ groupvolume:
   storageClass: ${STORAGE_CLASS}
 ingress:
   annotations:
-    ingress.kubernetes.io/affinity: cookie
-    kubernetes.io/ingress.class: nginx
+    # If `primehub.scheme` is `http`, the following annotations are required
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
   -  ${PRIMEHUB_DOMAIN}
 jupyterhub:
