@@ -58,7 +58,7 @@ function helm::package() {
 
 function helm::patch_app_version() {
   info "[Patch] app version: $(git describe --tags)"
-  sed -i "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/chart/Chart.yaml
+  sed -i "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/Chart.yaml
 }
 
 function ci::setup_ci_environment_and_publish() {
