@@ -56,6 +56,11 @@ function helm::package() {
   popd
 }
 
+function helm::patch_app_version() {
+  info "[Patch] app version: $(git describe --tags)"
+  sed -i "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/chart/Chart.yaml
+}
+
 function ci::setup_ci_environment_and_publish() {
   info "[CI] Setup build environment"
   pushd $CHART_ROOT/..

@@ -16,5 +16,6 @@ source $PROJECT_ROOT/ci/common.sh
 install::helm
 install::chartpress
 install::submodule
+helm::patch_app_version
 helm::update_dependency
 ci::setup_ci_environment_and_publish
