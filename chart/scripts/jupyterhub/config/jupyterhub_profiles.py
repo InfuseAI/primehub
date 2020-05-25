@@ -320,15 +320,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         self.log.debug('Datasets in launch group [%s]: %s' % (spawner.user_options['group']['name'], datasets_in_launch_group))
 
-        self.log.debug('=============================')
-        self.log.debug('ds: {}'.format(name))
-        self.log.debug('=============================')
-
         # Check if dataset should mount.
         if not is_global and (launch_group_only and name not in datasets_in_launch_group):
             return False
-
-        self.log.debug('Pass check mount =============================')
 
         spec = dataset['spec']
         type = spec.get('type')
@@ -361,6 +355,11 @@ class OIDCAuthenticator(GenericOAuthenticator):
             mount_path = os.path.join(mount_root, name)
             dataset_prefix = 'dataset-%s'
             logic_name = dataset_prefix % name
+
+            writable = datasets_in_launch_group.get(name, {}).get('writable', False)
+            if is_global:
+                writable = writable or global_datasets.get(name, {}).get('writable', False)
+
             if type == 'git':
                 gitsync_host_root = annotations.get(
                     'dataset.primehub.io/gitSyncHostRoot', '/home/dataset/')
@@ -379,16 +378,13 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     (os.path.join(gitsync_mount_path, name), mount_path))
             elif type == 'pv':
                 volume_name = spec.get('volumeName')
-                writable = datasets_in_launch_group.get(name, {}).get('writable', False)
-
-                if is_global:
-                    writable = writable or global_datasets.get(name, {}).get('writable', False)
 
                 spawner.volume_mounts.append(
                     {'mountPath': mount_path, 'name': logic_name, 'readOnly': not writable})
                 if writable:
                     self.chown_extra.append(mount_path)
 
+                # Deprecated
                 if re.match('^hostpath:', volume_name):
                     path = re.sub('^hostpath:', '', volume_name)
                     spawner.volumes.append(
@@ -398,6 +394,27 @@ class OIDCAuthenticator(GenericOAuthenticator):
                         'name': logic_name,
                         'persistentVolumeClaim': {'claimName': dataset_prefix % volume_name, 'readOnly': not writable}
                     })
+            elif type == 'hostPath':
+                path = spec.get('hostPath', {}).get('path', None)
+                if path:
+                    if writable:
+                        self.chown_extra.append(mount_path)
+
+                    spawner.volume_mounts.append(
+                        {'mountPath': mount_path, 'name': logic_name, 'readOnly': not writable})
+                    spawner.volumes.append(
+                        {'name': logic_name, 'hostPath': {'path': path}})
+            elif type == 'nfs':
+                path = spec.get('nfs', {}).get('path', None)
+                server = spec.get('nfs', {}).get('server', None)
+                if path and server:
+                    if writable:
+                        self.chown_extra.append(mount_path)
+
+                    spawner.volume_mounts.append(
+                        {'mountPath': mount_path, 'name': logic_name, 'readOnly': not writable})
+                    spawner.volumes.append(
+                        {'name': logic_name, 'nfs': {'path': path, 'server': server}})
 
             if home_symlink:
                 self.symlinks.append('ln -sf %s .' % mount_path)

@@ -10,14 +10,105 @@ spec:
   urlForGpu: jupyter/base-notebook:e255f1aa00b2
 ---
 apiVersion: primehub.io/v1alpha1
+kind: Image
+metadata:
+  name: pytorch-1.4.0
+spec:
+  displayName: "PyTorch 1.4.0 (Python 3.7)"
+  description: "PyTorch 1.4.0 (Python 3.7)"
+  type: "both"
+  url: infuseai/docker-stacks:pytorch-notebook-3f48358e
+  urlForGpu: infuseai/docker-stacks:pytorch-notebook-3f48358e-gpu
+---
+apiVersion: primehub.io/v1alpha1
+kind: Image
+metadata:
+  name: tf-1.14
+spec:
+  displayName: "TensorFlow 1.14 (Python 3.7)"
+  description: "TensorFlow 1.14 (Python 3.7)"
+  type: "both"
+  url: infuseai/docker-stacks:tensorflow-notebook-3f48358e
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-3f48358e-gpu
+---
+apiVersion: primehub.io/v1alpha1
+kind: Image
+metadata:
+  name: tf-2.1
+spec:
+  displayName: "TensorFlow 2.1 (Python 3.7)"
+  description: "TensorFlow 2.1 (Python 3.7)"
+  type: "both"
+  url: infuseai/docker-stacks:tensorflow-notebook-tf-v2-3f48358e
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-3f48358e-gpu-cuda-10
+---
+apiVersion: primehub.io/v1alpha1
 kind: InstanceType
 metadata:
-  name: cpu-only
+  name: cpu-1
 spec:
-  displayName: "cpu-only"
-  description: "CPU only"
+  description: 1 CPU / 2G
+  displayName: CPU 1
   limits.cpu: 1
-  limits.memory: 1G
+  limits.memory: 2G
   limits.nvidia.com/gpu: 0
   requests.cpu: 1
-  requests.memory: 1G
+  requests.memory: 2G
+  tolerations:
+  - key: "hub.jupyter.org/dedicated"
+    operator: "Equal"
+    value: "user"
+    effect: "NoSchedule"
+---
+apiVersion: primehub.io/v1alpha1
+kind: InstanceType
+metadata:
+  name: cpu-2
+spec:
+  description: 2 CPU / 10G
+  displayName: CPU 2
+  limits.cpu: 2
+  limits.memory: 10G
+  limits.nvidia.com/gpu: 0
+  nodeSelector: {}
+  tolerations:
+  - key: "hub.jupyter.org/dedicated"
+    operator: "Equal"
+    value: "user"
+    effect: "NoSchedule"
+---
+apiVersion: primehub.io/v1alpha1
+kind: InstanceType
+metadata:
+  name: gpu-1
+spec:
+  description: 2 CPU / 7G / 1 GPU
+  displayName: GPU 1
+  limits.cpu: 2
+  limits.memory: 7G
+  limits.nvidia.com/gpu: 1
+  requests.cpu: 1.5
+  requests.memory: 5G
+  tolerations:
+  - key: "hub.jupyter.org/dedicated"
+    operator: "Equal"
+    value: "user"
+    effect: "NoSchedule"
+---
+apiVersion: primehub.io/v1alpha1
+kind: InstanceType
+metadata:
+  name: gpu-2
+spec:
+  description: 4 CPU / 14G / 2 GPU
+  displayName: GPU 2
+  limits.cpu: 4
+  limits.memory: 14G
+  limits.nvidia.com/gpu: 2
+  requests.cpu: 4
+  requests.memory: 14G
+  tolerations:
+  - key: "hub.jupyter.org/dedicated"
+    operator: "Equal"
+    value: "user"
+    effect: "NoSchedule"

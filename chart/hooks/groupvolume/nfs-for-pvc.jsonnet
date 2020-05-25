@@ -70,6 +70,7 @@ function(request) {
               "primehub-group": group}
           },
           spec: {
+            serviceAccountName: "primehub-groupvolume",
             affinity: {
               podAntiAffinity: {
                 preferredDuringSchedulingIgnoredDuringExecution: [

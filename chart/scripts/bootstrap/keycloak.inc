@@ -95,6 +95,7 @@ function kc_user_create() {
       $KCADM create users \
         -r $realm \
         -s username=$user \
+        -s email=dev+$user@infuseai.io \
         -s enabled=true \
         -s emailVerified=true \
         --id \

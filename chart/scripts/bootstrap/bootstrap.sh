@@ -177,17 +177,27 @@ function create_default_resources() {
   kc_user_add_client_role $KC_REALM $PH_USER realm-management realm-admin
 
   kc_role_create ROLE_IMG $KC_REALM 'img:base-notebook'
-  kc_role_create ROLE_IT $KC_REALM 'it:cpu-only'
-
   print_info "Bind images: img:base-notebook -> $PH_GROUP"
   kc_group_add_realm_role $KC_REALM $PH_GROUP 'img:base-notebook' || true
 
-  print_info "Bind instancetypes: it:cpu-only -> $PH_GROUP"
-  kc_group_add_realm_role $KC_REALM $PH_GROUP 'it:cpu-only' || true
+  instances='cpu-1 cpu-2 gpu-1 gpu-2'
+  for instance in $instances; do
+    kc_role_create ROLE_IT $KC_REALM "it:${instance}"
+    print_info "Bind instancetypes: it:${instance} -> everyone"
+    kc_group_add_realm_role $KC_REALM everyone "it:${instance}" || true
+  done
+
+  images='pytorch-1.4.0 tf-1.14 tf-2.1'
+  for image in $images; do
+    kc_role_create ROLE_IT $KC_REALM "img:${image}"
+    print_info "Bind images: img:${image} -> everyone"
+    kc_group_add_realm_role $KC_REALM everyone "img:${image}" || true
+  done
 
   # add crds
-  print_info "Add CRDs: img:base-notebook, it:cpu-only"
+  print_info "Add CRDs: img:base-notebook img:pytorch-1.4.0 img:tf-1.14 img:tf-2.1 it:cpu-1 it:cpu-2 it:gpu-1 it:gpu-2"
   kubectl apply -n $PRIMEHUB_NAMESPACE -f $DIR/crds.yaml  || true
+
 }
 
 function main() {

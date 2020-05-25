@@ -40,6 +40,8 @@ spec:
           - name: certs
             mountPath: /app/ssl
             readOnly: true
+        securityContext:
+          runAsUser: 0
       volumes:
         - name: certs
           secret:
@@ -80,6 +82,8 @@ spec:
           - name: certs
             mountPath: /app/ssl
             readOnly: true
+        securityContext:
+          runAsUser: 0
       volumes:
         - name: certs
           secret:

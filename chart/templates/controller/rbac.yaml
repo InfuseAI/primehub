@@ -99,6 +99,12 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - namespaces
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
   - services
   verbs:
   - create
@@ -112,6 +118,7 @@ rules:
   - primehub.io
   resources:
   - imagespecjobs
+  - imagespecjobs/finalizers
   verbs:
   - create
   - delete
@@ -132,6 +139,7 @@ rules:
   - primehub.io
   resources:
   - imagespecs
+  - imagespecs/finalizers
   verbs:
   - create
   - delete
@@ -152,6 +160,7 @@ rules:
   - primehub.io
   resources:
   - phdeployments
+  - phdeployments/finalizers
   verbs:
   - create
   - delete
@@ -172,6 +181,7 @@ rules:
   - primehub.io
   resources:
   - phjobs
+  - phjobs/finalizers
   verbs:
   - create
   - delete
@@ -192,6 +202,7 @@ rules:
   - primehub.io
   resources:
   - phschedules
+  - phschedules/finalizers
   verbs:
   - create
   - delete
@@ -212,6 +223,7 @@ rules:
   - primehub.io
   resources:
   - licenses
+  - licenses/finalizers
   verbs:
   - create
   - delete
