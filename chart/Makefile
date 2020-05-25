@@ -58,7 +58,7 @@ install-dev-requirements:
 	LDFLAGS=-L/usr/local/opt/openssl/lib \
 		CPPFLAGS=-I/usr/local/opt/openssl/include \
 		PYCURL_SSL_LIBRARY=openssl \
-		pip3 install -r ../zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
+		pip3 install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
 
 test:
 	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/images/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml
