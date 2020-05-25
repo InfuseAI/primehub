@@ -23,4 +23,9 @@ data:
     modelDeployment:
       enabled: {{ .Values.modelDeployment.enabled }}
       primehubUrl: {{ include "primehub.url" . }}
+      engineContainer:
+        image:
+          repository: {{ .Values.modelDeployment.engineContainer.image.repository }}
+          tag: {{ .Values.modelDeployment.engineContainer.image.tag }}
+          pullPolicy: {{ .Values.modelDeployment.engineContainer.image.pullPolicy }}
 {{- end }}

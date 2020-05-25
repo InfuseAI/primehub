@@ -4,7 +4,7 @@ infuseai/jupyterhub-k8s:jh-5c94e4f4
 infuseai/primehub-admin-notebook:dd029e8112
 infuseai/primehub-admission:322c5f4127
 infuseai/primehub-bootstrap:20191022
-infuseai/primehub-controller-ee:8ffadd2bab
+infuseai/primehub-controller-ee:5ab045ce33
 infuseai/tusd:0.1.1
 jupyterhub/configurable-http-proxy:4.1.0
 jupyterhub/k8s-image-awaiter:0.9-b51ffeb
@@ -14,6 +14,8 @@ keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 prom/statsd-exporter:v0.9.0
-infuseai/canner-admin-server:v3.21.0
-infuseai/canner-graphql-server:v3.21.0
-infuseai/canner-watcher:v3.21.0
+infuseai/canner-admin-server:v3.23.0
+infuseai/canner-graphql-server:v3.23.0
+infuseai/canner-watcher:v3.23.0
+infuseai/canner-admin-server-model-deploy:v3.23.0
+seldonio/seldon-core-executor:1.1.0

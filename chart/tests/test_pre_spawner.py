@@ -43,6 +43,10 @@ class AuthStateBuilder(object):
             ds = self._datasets_builder.add_git(name, **kwargs).data[-1]
         if 'pv' == dataset_type:
             ds = self._datasets_builder.add_pv(name, **kwargs).data[-1]
+        if 'hostPath' == dataset_type:
+            ds = self._datasets_builder.add_hostpath(name, **kwargs).data[-1]
+        if 'nfs' == dataset_type:
+            ds = self._datasets_builder.add_nfs(name, **kwargs).data[-1]
         if 'env' == dataset_type:
             ds = self._datasets_builder.add_env(name, **kwargs).data[-1]
 
@@ -105,6 +109,20 @@ class _DatasetsBuilder(object):
         tpl = self._template(name, **kwargs)
         tpl['spec']['type'] = 'pv'
         tpl['spec']['volumeName'] = kwargs['volumeName']
+        self.data.append(tpl)
+        return self
+
+    def add_hostpath(self, name, **kwargs):
+        tpl = self._template(name, **kwargs)
+        tpl['spec']['type'] = 'hostPath'
+        tpl['spec']['hostPath'] = {'path': kwargs['path']}
+        self.data.append(tpl)
+        return self
+
+    def add_nfs(self, name, **kwargs):
+        tpl = self._template(name, **kwargs)
+        tpl['spec']['type'] = 'nfs'
+        tpl['spec']['nfs'] = {'path': kwargs['path'], 'server': kwargs['server']}
         self.data.append(tpl)
         return self
 
@@ -313,6 +331,101 @@ class TestPreSpawner(testing.AsyncTestCase):
         # ReadOnly
         self.assertEqual('dataset-ds_global_readonly', self.spawner.volumes[1]['name'])
         self.assertEqual(True, self.spawner.volumes[1]['persistentVolumeClaim']['readOnly'])
+
+    @testing.gen_test
+    async def test_hostpath_mount_without_annotations(self):
+        """
+        mountRoot       :  None => /datasets/
+        homeSymlink     :  None => 'false'
+        """
+
+        # add dataset foo without annotations
+        self.builder.add_dataset_role(
+            group_name='phusers', dataset_type='hostPath', name='foo', **dict(path='/tmp/foobar'))
+        await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
+
+        self.assertEqual("dataset-foo", self.spawner.volumes[0]['name'])
+        self.assertEqual(
+            "/tmp/foobar", self.spawner.volumes[0]['hostPath']['path'])
+        self.assertEqual(
+            "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
+
+        # check symbolic link
+        self.assertIn("ln -sf /datasets .", self.get_ln_command())
+        self.assertNotIn("ln -sf /datasets/foo .", self.get_ln_command())
+
+    @testing.gen_test
+    async def test_hostpath_mount_with_annotations_enable_home_symlink(self):
+        """
+        mountRoot       :  None => /datasets/
+        homeSymlink     :  None => 'true'
+        """
+        # add dataset foo with annotations
+        annotations = dict(mountRoot='/datasets',
+                           homeSymlink='true', path='/tmp/foobar')
+        self.builder.add_dataset_role(
+            group_name='phusers', dataset_type='hostPath', name='foo', **annotations)
+        await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
+
+        self.assertEqual("dataset-foo", self.spawner.volumes[0]['name'])
+        self.assertEqual(
+            "/tmp/foobar", self.spawner.volumes[0]['hostPath']['path'])
+        self.assertEqual(
+            "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
+
+        # check symbolic link
+        self.assertIn("ln -sf /datasets .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets/foo .", self.get_ln_command())
+
+    @testing.gen_test
+    async def test_nfs_mount_without_annotations(self):
+        """
+        mountRoot       :  None => /datasets/
+        homeSymlink     :  None => 'false'
+        """
+
+        # add dataset foo without annotations
+        self.builder.add_dataset_role(
+            group_name='phusers', dataset_type='nfs', name='foo', **dict(path='/', server='10.0.0.1'))
+        await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
+
+        self.assertEqual("dataset-foo", self.spawner.volumes[0]['name'])
+        self.assertEqual(
+            "/", self.spawner.volumes[0]['nfs']['path'])
+        self.assertEqual(
+            "10.0.0.1", self.spawner.volumes[0]['nfs']['server'])
+        self.assertEqual(
+            "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
+
+        # check symbolic link
+        self.assertIn("ln -sf /datasets .", self.get_ln_command())
+        self.assertNotIn("ln -sf /datasets/foo .", self.get_ln_command())
+
+    @testing.gen_test
+    async def test_nfs_mount_with_annotations_enable_home_symlink(self):
+        """
+        mountRoot       :  None => /datasets/
+        homeSymlink     :  None => 'true'
+        """
+
+        # add dataset foo with annotations
+        annotations = dict(mountRoot='/datasets',
+                           homeSymlink='true', path='/', server='10.0.0.1')
+        self.builder.add_dataset_role(
+            group_name='phusers', dataset_type='nfs', name='foo', **annotations)
+        await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
+
+        self.assertEqual("dataset-foo", self.spawner.volumes[0]['name'])
+        self.assertEqual(
+            "/", self.spawner.volumes[0]['nfs']['path'])
+        self.assertEqual(
+            "10.0.0.1", self.spawner.volumes[0]['nfs']['server'])
+        self.assertEqual(
+            "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
+
+        # check symbolic link
+        self.assertIn("ln -sf /datasets .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets/foo .", self.get_ln_command())
 
     def test_mount_env_datasets_launch_group_only(self):
         options = dict(launchGroupOnly='true',
