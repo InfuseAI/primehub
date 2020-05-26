@@ -22,7 +22,10 @@ PrimeHub is an effortless infrastructure for machine learning built on top of Ku
 
 ## Installation
 
-Please refer to [installation guide](INSTALL.md).## Contributing
+Please refer to [installation guide](INSTALL.md).
+
+## Contributing
+
 We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
 
 ## Designs & Concepts
