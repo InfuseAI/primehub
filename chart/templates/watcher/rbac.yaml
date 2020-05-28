@@ -16,6 +16,7 @@ rules:
 - apiGroups: [""]
   resources:
   - secrets
+  - persistentvolumeclaims
   verbs:
   - get
   - watch
