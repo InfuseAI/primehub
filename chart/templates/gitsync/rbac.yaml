@@ -1,0 +1,9 @@
+{{- if eq .Values.primehub.mode "ee" }}
+{{- if .Values.gitsync.enabled -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: primehub-gitsync
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}

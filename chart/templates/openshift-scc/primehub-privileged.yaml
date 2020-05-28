@@ -1,0 +1,38 @@
+{{- if .Values.openshift.scc }}
+apiVersion: security.openshift.io/v1
+kind: SecurityContextConstraints
+metadata:
+  name: primehub-privileged
+priority: 10
+allowHostDirVolumePlugin: true
+allowHostIPC: false
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
+allowedCapabilities: null
+defaultAddCapabilities: null
+groups:
+- system:authenticated
+readOnlyRootFilesystem: false
+requiredDropCapabilities:
+- MKNOD
+runAsUser:
+  type: RunAsAny
+fsGroup:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+supplementalGroups:
+  type: RunAsAny
+users:
+- system:serviceaccount:{{ .Release.Namespace }}:primehub-groupvolume
+- system:serviceaccount:{{ .Release.Namespace }}:primehub-gitsync
+volumes:
+- configMap
+- secret
+- persistentVolumeClaim
+- hostPath
+- downwardAPI
+{{- end }}
