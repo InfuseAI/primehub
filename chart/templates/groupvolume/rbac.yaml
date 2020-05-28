@@ -1,0 +1,9 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
+{{- if .Values.groupvolume.enabled -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: primehub-groupvolume
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
