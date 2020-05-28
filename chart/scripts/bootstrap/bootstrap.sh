@@ -167,6 +167,10 @@ function create_default_resources() {
   # Create group: phusers
   print_info "Create group: $PH_GROUP"
   kc_group_create PH_GROUP $KC_REALM $PH_GROUP ${DIR}/group-${PH_GROUP}.json
+  if [ "$PRIMEHUB_MODE" == "deploy" ]; then 
+    print_info "Enable deployment by default at deploy mode"
+    kc_group_update $KC_REALM $PH_GROUP_ID 'attributes.enabled-deployment=["true"]'
+  fi
 
   # Group mapping
   print_info "Add group: $PH_USER -> $PH_GROUP"
