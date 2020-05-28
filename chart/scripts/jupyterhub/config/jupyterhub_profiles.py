@@ -545,6 +545,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         if spawner.enable_kernel_gateway:
             self.log.warning('enable kernel gateway')
+            self.mount_primehub_scripts(spawner)
             mutate_pod_spec_for_kernel_gateway(spawner)
 
         if spawner.enable_safe_mode:
@@ -565,6 +566,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def support_repo2docker(self, spawner):
         # mount extra scripts for repo2docker
+        self.mount_primehub_scripts(spawner)
+        spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
+
+    def mount_primehub_scripts(self, spawner):
         spawner.volumes.append({
             'configMap': {
                 'defaultMode': 0o0777,
@@ -576,7 +581,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'mountPath': '/opt/primehub-start-notebook',
             'name': 'primehub-start-notebook'
         })
-        spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
 
 
 class PrimeHubPodReflector(NamespacedResourceReflector):
@@ -876,6 +880,7 @@ class ResourceUsageHandler(BaseHandler):
         # Tornado will response json when give chuck as a dictionary.
         self.finish(dict(groups=groups))
 
+
 def mutate_pod_spec_for_kernel_gateway(spawner):
 
     # patch it
@@ -909,14 +914,12 @@ def mutate_pod_spec_for_kernel_gateway(spawner):
         "name": "kernel",
         "image": user_launch_image,
         "imagePullPolicy": "IfNotPresent",
+        "securityContext": {"runAsUser": 0},
         "volumeMounts": spawner.volume_mounts,
         "lifecycle": spawner.lifecycle_hooks,
         "env": kernel_gateway_env,
-        "command": ["bash"],
-        "resources": spawner.kernel_container_resources,
-        "args": ["-c", " && ".join(['pip install --user jupyter_kernel_gateway',
-                                    'chown -R jovyan:users /home/jovyan/.local/',
-                                    '. /usr/local/bin/start.sh $HOME/.local/bin/jupyter-kernelgateway --port 8889'])]
+        "command": ["/opt/primehub-start-notebook/kernel_gateway.sh"],
+        "resources": spawner.kernel_container_resources
     }]
 
     spawner.environment['JUPYTER_GATEWAY_URL'] = 'http://127.0.0.1:8889'
@@ -924,6 +927,7 @@ def mutate_pod_spec_for_kernel_gateway(spawner):
     spawner.environment['LOG_LEVEL'] = 'DEBUG'
     spawner.environment['JUPYTER_GATEWAY_REQUEST_TIMEOUT'] = '40'
     spawner.environment['JUPYTER_GATEWAY_CONNECT_TIMEOUT'] = '40'
+    spawner.environment['KERNEL_IMAGE'] = user_launch_image
 
 
 if locals().get('c') and not os.environ.get('TEST_FLAG'):
