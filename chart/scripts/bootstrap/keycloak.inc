@@ -166,6 +166,13 @@ function kc_group_create() {
   eval "${prefix}_ID=$group_id"
 }
 
+function kc_group_update() {
+  local realm=$1
+  local group_id=$2
+  local setting=$3
+  $KCADM update groups/$group_id -s $setting -r $realm
+}
+
 function kc_group_default() {
   local realm=$1
   local group_id=$2
@@ -477,3 +484,4 @@ function kc_theme_update() {
     -s "adminTheme=$theme" \
     -s "emailTheme=$theme" || true
 }
+

@@ -74,6 +74,8 @@ spec:
                 key: password
           - name: PH_GROUP
             value: {{ .Values.bootstrap.group }}
+          - name: PRIMEHUB_MODE
+            value: {{ .Values.primehub.mode }}
           resources:
             {{- toYaml .Values.bootstrap.resources | nindent 12 }}
           command: ["bash", "/bootstrap/bootstrap.sh"]
