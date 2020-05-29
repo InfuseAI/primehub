@@ -2,6 +2,7 @@ function(request) {
   local dataset = request.object,
   local metadata = dataset.metadata,
   local resource_name = "dataset-upload-" + metadata.name,
+  local dataset_type = dataset.spec.type,
 
   local primehub_dataset_upload_prefix = "{{include "primehub.dataset.path" .}}",
   local front_end_path = primehub_dataset_upload_prefix + "/" + metadata.namespace + "/" + metadata.name + "/browse",
@@ -10,6 +11,30 @@ function(request) {
   local primehub_scheme = "{{.Values.primehub.scheme}}",
   local primehub_domain = "{{.Values.primehub.domain}}",
   local tls={{.Values.ingress.tls | toJson}},
+
+  local mount_volume = if dataset_type == 'pv'
+    then {
+      name: "tus-volume",
+      persistentVolumeClaim: {
+        claimName: "dataset-" + metadata.name
+      }
+    }
+    else if dataset_type == 'nfs'
+      then {
+        name: "tus-volume",
+        nfs: {
+          server: dataset.spec.nfs.server,
+          path: dataset.spec.nfs.path
+        },
+      }
+    else if dataset_type == 'hostPath'
+      then {
+        name: "tus-volume",
+        hostPath: {
+          path: dataset.spec.hostPath.path
+        },
+      }
+    else {},
 
   local deploy = {
     apiVersion: "apps/v1",
@@ -96,12 +121,7 @@ function(request) {
             },
           ],
           volumes: [
-            {
-              name: "tus-volume",
-              persistentVolumeClaim: {
-                claimName: "dataset-" + metadata.name
-              }
-            }
+            mount_volume
           ],
         },
       },
