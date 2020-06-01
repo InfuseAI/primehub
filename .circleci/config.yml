@@ -1,6 +1,37 @@
 version: 2
 
 jobs:
+  unit_test:
+    docker:
+      - image: circleci/python:3.6.1
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Unit tests
+          command: |
+            # checkout submodules
+            git submodule init && git submodule sync && git submodule update --init --recursive && git submodule status
+
+            # create venv
+            python3 -m venv .venv
+            source .venv/bin/activate
+
+            # run tests
+            cd chart
+            pip install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
+            pip install pytest-cov
+            make test-html
+
+            # upload artifacts
+            mkdir -p /tmp/artifacts
+            mv htmlcov /tmp/artifacts/
+
+      - store_artifacts:
+          path: /tmp/artifacts
+
   build:
     docker:
       # specify the version you desire here
@@ -39,6 +70,7 @@ workflows:
   version: 2
   release_builds:
     jobs:
+      - unit_test
       - build:
           filters:
             tags:
