@@ -24,7 +24,6 @@ jobs:
             pip install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
             pip install pytest-cov
             make test-html
-            ../ci/test-cov.sh
 
             # upload artifacts
             mkdir -p /tmp/artifacts
