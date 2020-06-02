@@ -20,6 +20,7 @@ services:
   - name: User Guide
     uri: "https://docs.primehub.io/"
     image: "/console/default-covers/support.png"
+    target: "_blank"
   - name: JupyterHub Admin
     uri: "/hub/admin"
     adminOnly: true
@@ -42,5 +43,6 @@ services:
     uri: "/grafana/login/generic_oauth"
     image: "/grafana/public/img/grafana_icon.svg"
     adminOnly: true
+    target: "_blank"
   {{- end }}
 welcomeMessage: >
