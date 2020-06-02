@@ -417,7 +417,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                         {'name': logic_name, 'nfs': {'path': path, 'server': server}})
 
             if home_symlink:
-                self.symlinks.append('ln -sf %s .' % mount_path)
+                self.symlinks.append('ln -sf %s /home/jovyan/' % mount_path)
 
         return True
 
@@ -463,7 +463,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 "Exception when calling CustomObjectsApi->get_namespaced_custom_object: %s\n" %
                 e)
 
-        self.symlinks = ["ln -sf /datasets ."]
+        self.symlinks = ["ln -sf /datasets /home/jovyan/"]
         global_datasets = self.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.get_datasets_in_launch_group(
             launch_group_name=spawner.user_options['group']['name'], auth_state=auth_state)
@@ -491,7 +491,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 if is_project:
                     yield self.attach_project_pvc(spawner, name, name, '200Gi')
                     self.chown_extra.append('/project/' + name)
-                    self.symlinks.append('ln -sf /project/%s .' % name)
+                    self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
         else:
             for group in groups:
                 if not group.get('enabledSharedVolume', False):
@@ -512,7 +512,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     yield self.attach_project_pvc(spawner, name, name, size)
                     self.chown_extra.append('/project/' + name)
                     if home_symlink:
-                        self.symlinks.append('ln -sf /project/%s .' % name)
+                        self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
 
         # We have to chown the home directory since we disabled the kubelet fs_group.
         # Newly created home volume needs this to work.
@@ -542,10 +542,16 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
 
         spawner.init_containers = []
+        self.mount_primehub_scripts(spawner)
+
+        origin_args = spawner.get_args()
+        def empty_list():
+            return []
+        spawner.get_args = empty_list
+        spawner.cmd = ['/opt/primehub-start-notebook/primehub-entrypoint.sh'] + origin_args
 
         if spawner.enable_kernel_gateway:
             self.log.warning('enable kernel gateway')
-            self.mount_primehub_scripts(spawner)
             mutate_pod_spec_for_kernel_gateway(spawner)
 
         if spawner.enable_safe_mode:
@@ -566,7 +572,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def support_repo2docker(self, spawner):
         # mount extra scripts for repo2docker
-        self.mount_primehub_scripts(spawner)
         spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
 
     def mount_primehub_scripts(self, spawner):
