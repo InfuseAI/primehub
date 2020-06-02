@@ -42,7 +42,7 @@ console:
   replicas: 1
   image:
     repository: infuseai/canner-admin-server
-    tag: v3.24.4
+    tag: v3.24.5
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -108,7 +108,7 @@ graphql:
   replicas: 1
   image:
     repository: infuseai/canner-graphql-server
-    tag: v3.24.4
+    tag: v3.24.5
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -138,7 +138,7 @@ graphql:
 watcher:
   image:
     repository: infuseai/canner-watcher
-    tag: v3.24.4
+    tag: v3.24.5
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
