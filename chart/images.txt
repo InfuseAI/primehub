@@ -14,8 +14,8 @@ keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 prom/statsd-exporter:v0.9.0
-infuseai/canner-admin-server:v3.24.3
-infuseai/canner-graphql-server:v3.24.3
-infuseai/canner-watcher:v3.24.3
-infuseai/canner-admin-server-model-deploy:v3.24.3
+infuseai/canner-admin-server:v3.24.4
+infuseai/canner-graphql-server:v3.24.4
+infuseai/canner-watcher:v3.24.4
+infuseai/canner-admin-server-model-deploy:v3.24.4
 seldonio/seldon-core-executor:1.1.0
