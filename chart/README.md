@@ -34,7 +34,7 @@ Parameter | Description | Default
 `console.portalConfig` | The configuration of portal | Please see [values.yaml](values.yaml)
 `console.readOnlyOnInstanceTypeAndImage` | Whether we only allow read operations and group-assignment on instanceType/image form | `false`
 `console.replicas` | The number of primehub console replicas| `1`
-`console.image.repository` | The primehub console image repository | `registry.gitlab.com/infuseai/canner-admin-ui/admin-server`
+`console.image.repository` | The primehub console image repository | `infuseai/primehub-console`
 `console.image.tag` | The primehub console image tag | Please see [values.yaml](values.yaml)
 `console.image.pullPolicy` | The primehub console image pull policy | `IfNotPresent`
 `console.image.credentials.*` | The credential for primehub console image | `null`
@@ -51,7 +51,7 @@ Parameter | Description | Default
 `graphql.apolloTracing` | Enable appolo tracing | `false`
 `graphql.defaultUserVolumeCapacity` | Default user volume capacity | `20G`
 `graphql.replicas` | The number of graphql server replicas | `1`
-`graphql.image.repository` | The graphql server image repository | `registry.gitlab.com/infuseai/canner-admin-ui/graphql-server`
+`graphql.image.repository` | The graphql server image repository | `infuseai/primehub-console-graphql`
 `graphql.image.tag` | The graphql server image tag | Please see [values.yaml](values.yaml)
 `graphql.image.pullPolicy` | The graphql server image pull policy | `IfNotPresent`
 `graphql.image.credentials.*` | The credential for graphql server image | `null`
@@ -65,7 +65,7 @@ Parameter | Description | Default
 --- | --- | ---
 `watcher.replicas` | The number of watcher replicas | `1`
 `watcher.image.credentials.*` | The credential for watcher image | `null`
-`watcher.image.repository` | The watcher image repository | `registry.gitlab.com/infuseai/canner-admin-ui/watcher`
+`watcher.image.repository` | The watcher image repository | `infuseai/primehub-console-watcher`
 `watcher.image.tag` | The watcher image tag | Please see [values.yaml](values.yaml) 
 `watcher.image.pullPolicy` | The watcher image pull policy | `IfNotPresent`
 `watcher.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
