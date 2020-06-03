@@ -224,18 +224,93 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.2
   creationTimestamp: null
+  name: licenses.primehub.io
+spec:
+  group: primehub.io
+  names:
+    kind: License
+    listKind: LicenseList
+    plural: licenses
+    singular: license
+  scope: ""
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: License is the Schema for the licenses API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: LicenseSpec defines the desired state of License
+          properties:
+            signed_license:
+              type: string
+          required:
+          - signed_license
+          type: object
+        status:
+          description: LicenseStatus defines the observed state of License
+          properties:
+            expired:
+              type: string
+            expired_at:
+              type: string
+            licensed_to:
+              type: string
+            max_group:
+              type: integer
+            max_node:
+              type: integer
+            reason:
+              type: string
+            started_at:
+              type: string
+          required:
+          - max_group
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.2
+  creationTimestamp: null
   name: phdeployments.primehub.io
 spec:
   additionalPrinterColumns:
-    - JSONPath: .status.phase
-      name: Status
-      type: string
-    - JSONPath: .status.replicas
-      name: Replicas
-      type: integer
-    - JSONPath: .status.availableReplicas
-      name: Available
-      type: integer
+  - JSONPath: .status.phase
+    name: Status
+    type: string
+  - JSONPath: .status.replicas
+    name: Replicas
+    type: integer
+  - JSONPath: .status.availableReplicas
+    name: Available
+    type: integer
   group: primehub.io
   names:
     kind: PhDeployment
@@ -250,16 +325,14 @@ spec:
       description: PhDeployment is the Schema for the phdeployments API
       properties:
         apiVersion:
-          description:
-            "APIVersion defines the versioned schema of this representation
+          description: 'APIVersion defines the versioned schema of this representation
             of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources"
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
           type: string
         kind:
-          description:
-            "Kind is a string value representing the REST resource this
+          description: 'Kind is a string value representing the REST resource this
             object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds"
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
           type: string
         metadata:
           type: object
@@ -270,6 +343,25 @@ spec:
               type: string
             displayName:
               type: string
+            endpoint:
+              properties:
+                accessType:
+                  type: string
+                clients:
+                  items:
+                    properties:
+                      name:
+                        type: string
+                      token:
+                        type: string
+                    required:
+                    - name
+                    - token
+                    type: object
+                  type: array
+              required:
+              - accessType
+              type: object
             groupId:
               type: string
             groupName:
@@ -292,10 +384,10 @@ spec:
                   replicas:
                     type: integer
                 required:
-                  - instanceType
-                  - modelImage
-                  - name
-                  - replicas
+                - instanceType
+                - modelImage
+                - name
+                - replicas
                 type: object
               type: array
             stop:
@@ -305,12 +397,12 @@ spec:
             userName:
               type: string
           required:
-            - displayName
-            - groupId
-            - groupName
-            - predictors
-            - userId
-            - userName
+          - displayName
+          - groupId
+          - groupName
+          - predictors
+          - userId
+          - userName
           type: object
         status:
           description: PhDeploymentStatus defines the observed state of PhDeployment
@@ -329,6 +421,25 @@ spec:
                         type: string
                       displayName:
                         type: string
+                      endpoint:
+                        properties:
+                          accessType:
+                            type: string
+                          clients:
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                                token:
+                                  type: string
+                              required:
+                              - name
+                              - token
+                              type: object
+                            type: array
+                        required:
+                        - accessType
+                        type: object
                       groupId:
                         type: string
                       groupName:
@@ -351,10 +462,10 @@ spec:
                             replicas:
                               type: integer
                           required:
-                            - instanceType
-                            - modelImage
-                            - name
-                            - replicas
+                          - instanceType
+                          - modelImage
+                          - name
+                          - replicas
                           type: object
                         type: array
                       stop:
@@ -364,19 +475,19 @@ spec:
                       userName:
                         type: string
                     required:
-                      - displayName
-                      - groupId
-                      - groupName
-                      - predictors
-                      - userId
-                      - userName
+                    - displayName
+                    - groupId
+                    - groupName
+                    - predictors
+                    - userId
+                    - userName
                     type: object
                   time:
                     format: date-time
                     type: string
                 required:
-                  - spec
-                  - time
+                - spec
+                - time
                 type: object
               type: array
             message:
@@ -386,14 +497,14 @@ spec:
             replicas:
               type: integer
           required:
-            - phase
+          - phase
           type: object
       type: object
   version: v1alpha1
   versions:
-    - name: v1alpha1
-      served: true
-      storage: true
+  - name: v1alpha1
+    served: true
+    storage: true
 status:
   acceptedNames:
     kind: ""
@@ -666,79 +777,6 @@ spec:
             nextRunTime:
               format: date-time
               type: string
-          type: object
-      type: object
-  version: v1alpha1
-  versions:
-  - name: v1alpha1
-    served: true
-    storage: true
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
-
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  creationTimestamp: null
-  name: licenses.primehub.io
-spec:
-  group: primehub.io
-  names:
-    kind: License
-    listKind: LicenseList
-    plural: licenses
-    singular: license
-  scope: ""
-  subresources:
-    status: {}
-  validation:
-    openAPIV3Schema:
-      description: License is the Schema for the licenses API
-      properties:
-        apiVersion:
-          description: 'APIVersion defines the versioned schema of this representation
-            of an object. Servers should convert recognized schemas to the latest
-            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#resources'
-          type: string
-        kind:
-          description: 'Kind is a string value representing the REST resource this
-            object represents. Servers may infer this from the endpoint the client
-            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds'
-          type: string
-        metadata:
-          type: object
-        spec:
-          description: LicenseSpec defines the desired state of License
-          properties:
-            signed_license:
-              type: string
-          required:
-          - signed_license
-          type: object
-        status:
-          description: LicenseStatus defines the observed state of License
-          properties:
-            expired:
-              type: string
-            expired_at:
-              type: string
-            licensed_to:
-              type: string
-            max_group:
-              type: integer
-            max_node:
-              type: integer
-            reason:
-              type: string
-            started_at:
-              type: string
-          required:
-          - max_group
           type: object
       type: object
   version: v1alpha1
