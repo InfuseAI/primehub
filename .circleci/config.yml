@@ -34,7 +34,7 @@ jobs:
 
   e2e:
     docker:
-      - image: infuseai/primehub-ci:0.6.3-e2e
+      - image: circleci/buildpack-deps:jessie-curl-dind
     working_directory: ~/repo
     steps:
       - checkout
