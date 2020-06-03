@@ -172,13 +172,13 @@ wait_for_console() {
 }
 
 # ssh
-echo "configure ssh-agent"
-eval $(ssh-agent -s)
-echo -e "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
-echo -e "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-chmod 644 ~/.ssh/known_hosts
+#echo "configure ssh-agent"
+#eval $(ssh-agent -s)
+#echo -e "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+#mkdir -p ~/.ssh
+#chmod 700 ~/.ssh
+#echo -e "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+#chmod 644 ~/.ssh/known_hosts
 git submodule init && git submodule sync && git submodule update --init --recursive && git submodule status
 
 
