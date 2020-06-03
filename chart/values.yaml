@@ -41,8 +41,8 @@ console:
   enableUserPortal: true
   replicas: 1
   image:
-    repository: infuseai/canner-admin-server
-    tag: v3.24.5
+    repository: infuseai/primehub-console
+    tag: 6d6f7c3a
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -107,8 +107,8 @@ console:
 graphql:
   replicas: 1
   image:
-    repository: infuseai/canner-graphql-server
-    tag: v3.24.5
+    repository: infuseai/primehub-console-graphql
+    tag: 6d6f7c3a
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -137,8 +137,8 @@ graphql:
 
 watcher:
   image:
-    repository: infuseai/canner-watcher
-    tag: v3.24.5
+    repository: infuseai/primehub-console-watcher
+    tag: 6d6f7c3a
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
