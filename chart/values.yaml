@@ -25,18 +25,7 @@ ingress:
     - chart-example.local
   tls: []
 
-istio:
-  enabled: false
-  authService:
-    image:
-      repository: infuseai/oidc-authservice
-      tag: 1dc296d
-      pullPolicy: IfNotPresent
-    replicaCount: 1
-    service:
-      type: ClusterIP
-      port: 8080
-
+# Primehub console
 console:
   enableUserPortal: true
   replicas: 1
@@ -152,6 +141,7 @@ watcher:
       cpu: 50m
       memory: 128Mi
 
+# Admisson
 admission:
   enabled: true
   image:
@@ -174,7 +164,7 @@ admission:
         cpu: 100m
         memory: 128Mi
 
-
+# Bootstrap
 bootstrap:
   enabled: true
   image:
@@ -192,6 +182,7 @@ bootstrap:
   password:
   group: phusers
 
+# Dataset upload
 datasetUpload:
   enabled: true
   interface:
@@ -338,9 +329,6 @@ jupyterhub:
     custom:
       className: OIDCAuthenticator
 
-
-
-
   singleuser:
     uid: 0
     fsGid: null
@@ -406,40 +394,6 @@ jupyterhub:
     pod-anti-affinity-required: []
     startNotebookConfigMap: start-notebook-d
 
-# Image builder
-customImage:
-  enabled: false
-  registryEndpoint: https://gcr.io
-  registryUsername: _json_key
-  registryPassword: _password_
-  pushRepoPrefix: gcr.io/_prefix_
-  pushSecretName: primehub-controller-custom-image-push-secret
-
-  buildJob:
-    resources:
-      limits:
-        cpu: 2000m
-        memory: 1500Mi
-      requests:
-        cpu: 500m
-        memory: 100Mi
-
-# Job Submission
-jobSubmission:
-  enabled: false
-  workingDirSize: 5Gi
-  defaultActiveDeadlineSeconds: 86400
-  defaultTTLSecondsAfterFinished: 604800
-
-# Model Deployment
-modelDeployment:
-  enabled: false
-  engineContainer:
-    image:
-      repository: seldonio/seldon-core-executor
-      tag: 1.1.0
-      pullPolicy: IfNotPresent
-
 # Group Volume (shared volume over nfs)
 groupvolume:
   enabled: true
@@ -498,6 +452,78 @@ gitsync:
       tag: v3.1.3
       pullPolicy: IfNotPresent
 
+#                   ____________   ______           __
+#                  / ____/ ____/  / ____/__  ____ _/ /___  __________  _____
+#  ____________   / __/ / __/    / /_  / _ \/ __ `/ __/ / / / ___/ _ \/ ___/  ____________
+# /_____/_____/  / /___/ /___   / __/ /  __/ /_/ / /_/ /_/ / /  /  __(__  )  /_____/_____/
+#               /_____/_____/  /_/    \___/\__,_/\__/\__,_/_/   \___/____/
+
+
+# Primehub controller
+controller:
+  replicaCount: 1
+
+  image:
+    repository: infuseai/primehub-controller-ee
+    tag: 056b83215a
+
+  proxy:
+    image:
+      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      tag: v0.4.1
+
+  service:
+    type: ClusterIP
+    port: 8443
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 20Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# Image builder
+customImage:
+  enabled: false
+  registryEndpoint: https://gcr.io
+  registryUsername: _json_key
+  registryPassword: _password_
+  pushRepoPrefix: gcr.io/_prefix_
+  pushSecretName: primehub-controller-custom-image-push-secret
+
+  buildJob:
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1500Mi
+      requests:
+        cpu: 500m
+        memory: 100Mi
+
+# Job Submission
+jobSubmission:
+  enabled: false
+  workingDirSize: 5Gi
+  defaultActiveDeadlineSeconds: 86400
+  defaultTTLSecondsAfterFinished: 604800
+
+# Model Deployment
+modelDeployment:
+  enabled: false
+  engineContainer:
+    image:
+      repository: seldonio/seldon-core-executor
+      tag: 1.1.0
+      pullPolicy: IfNotPresent
+
 # Admin Notebook
 adminNotebook:
   enabled: false
@@ -525,15 +551,28 @@ adminNotebook:
 
   affinity: {}
 
-# Keycloak gateway
+# Grafana
+grafana:
+  enabled: false
+
+# Keycloak gateway for admin notebook
 keycloakGateway:
   image:
     repository: keycloak/keycloak-gatekeeper
     tag: 6.0.1
     pullPolicy: IfNotPresent
 
-grafana:
-  enabled: false
-
 openshift:
   scc: false
+
+istio:
+  enabled: false
+  authService:
+    image:
+      repository: infuseai/oidc-authservice
+      tag: 1dc296d
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 8080
