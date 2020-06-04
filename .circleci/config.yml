@@ -32,6 +32,21 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
 
+  e2e:
+    machine:
+      #image: infuseai/primehub-ci:0.6.3-e2e
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          command: |
+            ./ci/ci-test.sh
+
   build:
     docker:
       # specify the version you desire here
@@ -71,6 +86,7 @@ workflows:
   release_builds:
     jobs:
       - unit_test
+      - e2e
       - build:
           filters:
             tags:
