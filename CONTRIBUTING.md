@@ -62,6 +62,11 @@ $ git commit -s -m 'This is my commit message'
        --set-file jupyterhub.hub.extraConfig.primehub=./helm/primehub/jupyterhub_primehub.py \
        ./helm/primehub
    ```
+## Contribute External Components
+
+### PrimeHub Console
+
+Please see [infuseai/primehub-console](https://github.com/InfuseAI/primehub-console) repo for more details.
 
 # Write Commit message properly
 
