@@ -66,7 +66,7 @@ $ git commit -s -m 'This is my commit message'
 
 ### PrimeHub Console
 
-Please see [github/infuseai/primehub-console](https://github.com/InfuseAI/primehub-console) repo for more details.
+Please see [infuseai/primehub-console](https://github.com/InfuseAI/primehub-console) repo for more details.
 
 # Write Commit message properly
 
