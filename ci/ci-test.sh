@@ -13,19 +13,6 @@ cleanup() {
 }
 trap "cleanup" ERR
 
-# install tools
-
-KIND_VERSION=0.7.0
-HELM_VERSION=2.16.1
-
-curl -sLo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 && \
-  chmod +x kind && \
-  sudo mv kind /usr/local/bin/
-
-curl -ssL https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xz --strip-components 1 linux-amd64/helm && \
-  chmod +x helm && \
-  sudo mv helm /usr/local/bin/
-
 wait_for_docker() {
   local now=$SECONDS
   local timeout=600

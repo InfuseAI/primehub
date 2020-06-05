@@ -33,8 +33,16 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
+KIND_VERSION=0.7.0
+HELM_VERSION=2.16.1
+
+# Install kind
+curl -sLo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 && \
+  chmod +x kind && \
+  sudo mv kind /usr/local/bin/
+
 # Install helm
-curl -ssL https://storage.googleapis.com/kubernetes-helm/helm-v2.16.1-linux-amd64.tar.gz | tar -xz --strip-components 1 linux-amd64/helm && \
+curl -ssL https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xz --strip-components 1 linux-amd64/helm && \
   chmod +x helm && \
   sudo mv helm /usr/local/bin
 
