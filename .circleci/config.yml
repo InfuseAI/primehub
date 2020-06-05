@@ -48,7 +48,7 @@ jobs:
             ./ci/ci-test.sh
 
       - store_artifacts:
-          path: ~/project/tests/report
+          path: ~/project/e2e
 
   build:
     docker:
