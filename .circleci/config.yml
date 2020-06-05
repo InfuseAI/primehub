@@ -47,6 +47,9 @@ jobs:
           command: |
             ./ci/ci-test.sh
 
+      - store_artifacts:
+          path: ~/project/tests/report
+
   build:
     docker:
       # specify the version you desire here
