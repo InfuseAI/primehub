@@ -35,6 +35,29 @@ wait_for_docker() {
   return 0
 }
 
+wait_for_pod() {
+  local name=$1
+  local now=$SECONDS
+  local timeout=600
+  while true; do
+    # it might fail
+    echo "Checking ${name} up..."
+    set +e
+    kubectl get pods -n hub -l app.kubernetes.io/name=${name} | grep "2/2" > /dev/null 2>&1
+    ret=$?
+    set -e
+    if [ "$ret" == "0" ]; then
+      echo "${name} is available now"
+      break
+    fi
+    if (( $SECONDS - now > $timeout )); then
+      return 1
+    fi
+    sleep 5
+  done
+  return 0
+}
+
 # sync submodules
 git submodule init && git submodule sync && git submodule update --init --recursive && git submodule status
 
@@ -83,6 +106,17 @@ ci/dev-kind/setup-kind.sh
 echo "install primehub"
 ci/dev-kind/install-components.sh
 
+# apply dev license
+DEV_LICENSE=${DEV_LICENSE:-false}
+if [ "$DEV_LICENSE" != "false" ]; then
+  echo "Applying License for test."
+  echo "$DEV_LICENSE" | base64 -d | kubectl apply -n hub -f -
+  kubectl -n hub get license primehub-license -oyaml
+  sleep 30
+  wait_for_pod "primehub-graphql"
+  wait_for_pod "primehub-console"
+fi
+
 # ensure rollout before testing
 kubectl get deploy -n hub -o json | jq -r '.items[] | .metadata.name' | xargs -n1 kubectl rollout status -n hub deployment
 
@@ -101,4 +135,8 @@ for filename in tests/*.sh; do echo $filename; $filename; done
 # e2e test
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "@released and not @wip"
+tags="@released and not @ee and not @wip"
+if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
+  tags="@released and not @wip"
+fi
+~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"

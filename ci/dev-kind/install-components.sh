@@ -3,6 +3,7 @@ set -e
 PRIMEHUB_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd $PRIMEHUB_ROOT
 
+export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 export PRIMEHUB_DOMAIN=hub.ci-e2e.dev.primehub.io
 export PRIMEHUB_PASSWORD=${PH_PASSWORD}
 export PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
@@ -38,6 +39,7 @@ helm install codecentric/keycloak --name keycloak --version 7.2.1 -f keycloak-va
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
 primehub:
+  mode: ${PRIMEHUB_MODE}
   scheme: http
   domain: ${PRIMEHUB_DOMAIN}
   port: ${PRIMEHUB_PORT}
@@ -75,6 +77,20 @@ jupyterhub:
       dynamic:
         storageClass: ${STORAGE_CLASS}
 EOF
+
+if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
+  cat <<EOF >> primehub-values.yaml
+
+customImage:
+  enabled: true
+
+jobSubmission:
+  enabled: true
+
+adminNotebook:
+  enabled: true
+EOF
+fi
 
 helm upgrade \
   --install \

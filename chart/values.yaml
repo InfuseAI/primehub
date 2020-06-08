@@ -493,10 +493,10 @@ controller:
 # Image builder
 customImage:
   enabled: false
-  registryEndpoint: https://gcr.io
-  registryUsername: _json_key
-  registryPassword: _password_
-  pushRepoPrefix: gcr.io/_prefix_
+  #registryEndpoint: https://gcr.io
+  #registryUsername: _json_key
+  #registryPassword: _password_
+  #pushRepoPrefix: gcr.io/_prefix_
   pushSecretName: primehub-controller-custom-image-push-secret
 
   buildJob:

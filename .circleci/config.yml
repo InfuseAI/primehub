@@ -50,6 +50,25 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+  e2e_ee:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+          command: |
+            ./ci/ci-test.sh
+
+      - store_artifacts:
+          path: ~/project/e2e
+
   build:
     docker:
       # specify the version you desire here
@@ -90,6 +109,7 @@ workflows:
     jobs:
       - unit_test
       - e2e
+      - e2e_ee
       - build:
           filters:
             tags:
