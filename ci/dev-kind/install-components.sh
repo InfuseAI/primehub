@@ -88,7 +88,7 @@ jobSubmission:
   enabled: true
 
 adminNotebook:
-  enabled: true
+  enabled: false
 EOF
 fi
 
@@ -97,6 +97,7 @@ helm upgrade \
   --reset-values \
   --namespace hub  \
   --values primehub-values.yaml \
+  --values dev-kind/primehub-override.yaml \
   primehub ../chart
 
 # change requests.cpu to 0.1 to make sure shared runner can have enough resource

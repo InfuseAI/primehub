@@ -111,7 +111,6 @@ DEV_LICENSE=${DEV_LICENSE:-false}
 if [ "$DEV_LICENSE" != "false" ]; then
   echo "Applying License for test."
   echo "$DEV_LICENSE" | base64 -d | kubectl apply -n hub -f -
-  kubectl -n hub get license primehub-license -oyaml
   sleep 30
   wait_for_pod "primehub-graphql"
   wait_for_pod "primehub-console"
