@@ -181,7 +181,8 @@ class TestPreSpawner(testing.AsyncTestCase):
     async def test_spawan_without_global_dataset(self):
         del self.builder.launch_context['groups'][0]['datasets']
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
-        self.assertEqual([], self.spawner.volumes)
+        self.assertEqual([{'configMap': {'defaultMode': 511, 'name': 'primehub-start-notebook'},
+                           'name': 'primehub-start-notebook'}], self.spawner.volumes)
 
     @testing.gen_test
     async def test_git_mount_without_annotations(self):
@@ -203,7 +204,7 @@ class TestPreSpawner(testing.AsyncTestCase):
         # check symbolic link
         self.assertIn("ln -sf /gitsync/foo/foo /datasets/foo",
                       self.get_ln_command())
-        self.assertNotIn("ln -sf /gitsync/foo/foo .", self.get_ln_command())
+        self.assertNotIn("ln -sf /gitsync/foo/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_git_mount_with_annotations_and_not_ending_slash(self):
@@ -248,8 +249,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertNotIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_pv_mount_with_annotations_enable_home_symlink_and_without_ending_slash(self):
@@ -270,8 +271,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_dataset_not_in_launch_context_groups_bind_and_not_global(self):
@@ -286,7 +287,7 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.builder.add_dataset_role(group_name='others', name='ds_other', dataset_type='pv', writable=False, dataset_global=False, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         # Shouldn't mount if dataset is not in users' group set and not global
-        self.assertEqual(0, len(self.spawner.volumes))
+        self.assertEqual(1, len(self.spawner.volumes))
 
     @testing.gen_test
     async def test_dataset_without_group_bind_but_global_and_launchGroupOnly(self):
@@ -301,7 +302,7 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.builder.add_dataset_role(group_name='everyone', name='ds_global', dataset_type='pv', writable=False, dataset_global=True, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         # Shouldn't mount if dataset is not in users' group set and not global
-        self.assertEqual(1, len(self.spawner.volumes))
+        self.assertEqual(2, len(self.spawner.volumes))
         self.assertEqual(True, self.spawner.volumes[0]['persistentVolumeClaim']['readOnly'])
 
     @testing.gen_test
@@ -322,7 +323,7 @@ class TestPreSpawner(testing.AsyncTestCase):
         # This one shouldn't mount.
         self.builder.add_dataset_role(group_name='other', name='other_ds', dataset_type='pv', writable=False, dataset_global=True, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
-        self.assertEqual(2, len(self.spawner.volumes))
+        self.assertEqual(3, len(self.spawner.volumes))
 
         # Writable
         self.assertEqual('dataset-ds_global', self.spawner.volumes[0]['name'])
@@ -351,8 +352,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertNotIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_hostpath_mount_with_annotations_enable_home_symlink(self):
@@ -374,8 +375,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_nfs_mount_without_annotations(self):
@@ -398,8 +399,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertNotIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     @testing.gen_test
     async def test_nfs_mount_with_annotations_enable_home_symlink(self):
@@ -424,8 +425,8 @@ class TestPreSpawner(testing.AsyncTestCase):
             "/datasets/foo", self.spawner.volume_mounts[0]['mountPath'])
 
         # check symbolic link
-        self.assertIn("ln -sf /datasets .", self.get_ln_command())
-        self.assertIn("ln -sf /datasets/foo .", self.get_ln_command())
+        self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
+        self.assertIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
     def test_mount_env_datasets_launch_group_only(self):
         options = dict(launchGroupOnly='true',

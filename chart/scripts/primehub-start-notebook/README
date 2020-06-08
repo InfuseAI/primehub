@@ -27,3 +27,7 @@ index da6905be..f28a9ef8 100755
      if [[ "$NB_UID" == "$(id -u jovyan)" && "$NB_GID" == "$(id -g jovyan)" ]]; then
          # User is not attempting to override user/group via environment
 ```
+
+## kernel_gateway.sh
+
+It is used in `kernel gateway` mode.

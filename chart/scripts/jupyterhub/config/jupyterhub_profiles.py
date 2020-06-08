@@ -417,7 +417,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                         {'name': logic_name, 'nfs': {'path': path, 'server': server}})
 
             if home_symlink:
-                self.symlinks.append('ln -sf %s .' % mount_path)
+                self.symlinks.append('ln -sf %s /home/jovyan/' % mount_path)
 
         return True
 
@@ -463,7 +463,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 "Exception when calling CustomObjectsApi->get_namespaced_custom_object: %s\n" %
                 e)
 
-        self.symlinks = ["ln -sf /datasets ."]
+        self.symlinks = ["ln -sf /datasets /home/jovyan/"]
         global_datasets = self.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.get_datasets_in_launch_group(
             launch_group_name=spawner.user_options['group']['name'], auth_state=auth_state)
@@ -491,7 +491,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 if is_project:
                     yield self.attach_project_pvc(spawner, name, name, '200Gi')
                     self.chown_extra.append('/project/' + name)
-                    self.symlinks.append('ln -sf /project/%s .' % name)
+                    self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
         else:
             for group in groups:
                 if not group.get('enabledSharedVolume', False):
@@ -512,7 +512,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     yield self.attach_project_pvc(spawner, name, name, size)
                     self.chown_extra.append('/project/' + name)
                     if home_symlink:
-                        self.symlinks.append('ln -sf /project/%s .' % name)
+                        self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
 
         # We have to chown the home directory since we disabled the kubelet fs_group.
         # Newly created home volume needs this to work.
@@ -522,8 +522,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'CHOWN_EXTRA': ','.join(self.chown_extra)
         })
 
+        # use preStop hook to ensure jupyter's metadata owner back to the jovyan user
         spawner.lifecycle_hooks = {
-            'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}}
+            'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}},
+            'preStop': {'exec': {'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
         }
 
         # add labels for resource validation
@@ -542,6 +544,13 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
 
         spawner.init_containers = []
+        self.mount_primehub_scripts(spawner)
+
+        origin_args = spawner.get_args()
+        def empty_list():
+            return []
+        spawner.get_args = empty_list
+        spawner.cmd = ['/opt/primehub-start-notebook/primehub-entrypoint.sh'] + origin_args
 
         if spawner.enable_kernel_gateway:
             self.log.warning('enable kernel gateway')
@@ -565,6 +574,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def support_repo2docker(self, spawner):
         # mount extra scripts for repo2docker
+        spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
+
+    def mount_primehub_scripts(self, spawner):
         spawner.volumes.append({
             'configMap': {
                 'defaultMode': 0o0777,
@@ -576,7 +588,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'mountPath': '/opt/primehub-start-notebook',
             'name': 'primehub-start-notebook'
         })
-        spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
 
 
 class PrimeHubPodReflector(NamespacedResourceReflector):
@@ -876,6 +887,7 @@ class ResourceUsageHandler(BaseHandler):
         # Tornado will response json when give chuck as a dictionary.
         self.finish(dict(groups=groups))
 
+
 def mutate_pod_spec_for_kernel_gateway(spawner):
 
     # patch it
@@ -909,14 +921,12 @@ def mutate_pod_spec_for_kernel_gateway(spawner):
         "name": "kernel",
         "image": user_launch_image,
         "imagePullPolicy": "IfNotPresent",
+        "securityContext": {"runAsUser": 0},
         "volumeMounts": spawner.volume_mounts,
         "lifecycle": spawner.lifecycle_hooks,
         "env": kernel_gateway_env,
-        "command": ["bash"],
-        "resources": spawner.kernel_container_resources,
-        "args": ["-c", " && ".join(['pip install --user jupyter_kernel_gateway',
-                                    'chown -R jovyan:users /home/jovyan/.local/',
-                                    '. /usr/local/bin/start.sh $HOME/.local/bin/jupyter-kernelgateway --port 8889'])]
+        "command": ["/opt/primehub-start-notebook/kernel_gateway.sh"],
+        "resources": spawner.kernel_container_resources
     }]
 
     spawner.environment['JUPYTER_GATEWAY_URL'] = 'http://127.0.0.1:8889'
@@ -924,6 +934,7 @@ def mutate_pod_spec_for_kernel_gateway(spawner):
     spawner.environment['LOG_LEVEL'] = 'DEBUG'
     spawner.environment['JUPYTER_GATEWAY_REQUEST_TIMEOUT'] = '40'
     spawner.environment['JUPYTER_GATEWAY_CONNECT_TIMEOUT'] = '40'
+    spawner.environment['KERNEL_IMAGE'] = user_launch_image
 
 
 if locals().get('c') and not os.environ.get('TEST_FLAG'):
