@@ -522,8 +522,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'CHOWN_EXTRA': ','.join(self.chown_extra)
         })
 
+        # use preStop hook to ensure jupyter's metadata owner back to the jovyan user
         spawner.lifecycle_hooks = {
-            'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}}
+            'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}},
+            'preStop': {'exec': {'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
         }
 
         # add labels for resource validation
