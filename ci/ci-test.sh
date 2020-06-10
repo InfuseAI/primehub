@@ -76,7 +76,7 @@ export KC_PORT=${PRIMEHUB_PORT}
 export PH_USERNAME="phadmin"
 export PH_PASSWORD=$(openssl rand -hex 16)
 export PRIMEHUB_STORAGE_CLASS=local-path
-export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ee}
+export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 
 rm -f env_file
 echo CLUSTER_NAME=$CLUSTER_NAME >> env_file
