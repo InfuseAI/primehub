@@ -1,0 +1,40 @@
+---
+jupyterhub:
+  hub:
+    resources:
+      requests:
+        cpu: 0m
+  proxy:
+    chp:
+      resources:
+        requests:
+          cpu: 0m
+console:
+  resources:
+    requests:
+      cpu: 0m
+graphql:
+  resources:
+    requests:
+      cpu: 0m
+watcher:
+  resources:
+    requests:
+      cpu: 0m
+adminNotebook:
+  enabled: false
+  resources:
+    requests:
+      cpu: 0m
+admission:
+  resources:
+    requests:
+      cpu: 0m
+  postHook:
+    resources:
+      requests:
+        cpu: 0m
+controller:
+  resources:
+    requests:
+      cpu: 0m

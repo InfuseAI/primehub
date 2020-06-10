@@ -34,6 +34,6 @@ defineStep("I logout from banner UI", async function() {
 });
 
 defineStep("I click {string} image in landing page", async function(string) {
-  const xpath = "//h3[text()='"+ string +"']/..";
+  const xpath = "//h3[text()='"+ string +"']/..//div";
   await this.clickElementByXpath(xpath);
 });
