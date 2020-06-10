@@ -48,8 +48,8 @@ defineStep("I am on the jupyterhub admin page", async function() {
 });
 
 defineStep("I choose group with name {string}", async function(name) {
-  await this.page.select("#group-selector select", name);
-  await this.takeScreenshot(`choose-group-${name}`);
+  await this.page.select("#group-selector select", `${name}-${this.E2E_SUFFIX}`);
+  await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I choose instance type", async function() {
@@ -58,7 +58,7 @@ defineStep("I choose instance type", async function() {
 });
 
 defineStep("I choose instance type with name {string}", async function(name) {
-  const xpath = `//input[@value='${name}']`;
+  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementByXpath(xpath);
 });
 
@@ -135,8 +135,9 @@ defineStep("I logout on JupyterHub page", async function() {
 });
 
 defineStep("I {string} see instance types block contains {string} instanceType with {string} description and tooltip to show {string}", async function(exist, name, desc, resource) {
-  const xpath = `//div[@id='it-container']//strong[contains(text(), '${name}')]`;
-  if (!this.checkElementExistByXPath(exist, xpath)) throw new Error(`failed to check '${name}' instanceType is existed`);
+  const xpath = `//div[@id='it-container']//strong[contains(text(), '${name}-${this.E2E_SUFFIX}')]`;
+  if (!this.checkElementExistByXPath(exist, xpath)) 
+    throw new Error(`failed to check '${name}-${this.E2E_SUFFIX}' instanceType is existed`);
   if (!exist.includes('not')) {
     const [element] = await this.page.$x(xpath+'//i');
     await element.hover();
@@ -144,8 +145,8 @@ defineStep("I {string} see instance types block contains {string} instanceType w
 
     if (!this.checkElementExistByXPath(exist, xpath+`//div[text()='${resource}']`))
       throw new Error(`failed to get '${resource}' information tooltip`);
-    if (!this.checkElementExistByXPath(exist, xpath+`//..//p[text()='${desc}']`))
-      throw new Error(`failed to get '${desc}' instanceType description`);
+    if (!this.checkElementExistByXPath(exist, xpath+`//..//p[text()='${desc}-${this.E2E_SUFFIX}']`))
+      throw new Error(`failed to get '${desc}-${this.E2E_SUFFIX}' instanceType description`);
   }
 });
 
@@ -162,11 +163,13 @@ defineStep("I {string} see images block contains {string} image with {string} ty
       postfix = " (GPU)";
       break;
   }
-  var xpath = `//div[@id='image-container']//strong[text()='${name}${postfix}']`;
-  if (!this.checkElementExistByXPath(exist, xpath)) throw new Error(`failed to check image '${name}' is existed`);
+  var xpath = `//div[@id='image-container']//strong[text()='${name}-${this.E2E_SUFFIX}${postfix}']`;
+  if (!this.checkElementExistByXPath(exist, xpath))
+    throw new Error(`failed to check image '${name}-${this.E2E_SUFFIX}' is existed`);
   if (!exist.includes('not')) {
-    xpath += `//..//p[text()='${desc}']`;
-    if (!this.checkElementExistByXPath(exist, xpath)) throw new Error(`failed to get '${desc}' image description`);
+    xpath += `//..//p[text()='${desc}-${this.E2E_SUFFIX}']`;
+    if (!this.checkElementExistByXPath(exist, xpath))
+      throw new Error(`failed to get '${desc}-${this.E2E_SUFFIX}' image description`);
   }
 });
 

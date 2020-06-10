@@ -10,7 +10,6 @@ Feature: Login
     And I click login
     # wait for a short while to avoid "Node with given id does not belong to the document" error
     And I wait for 3.0 seconds
-    
     Then I am on login page
 
   Scenario: User can login/logout the admin page via correct username and password

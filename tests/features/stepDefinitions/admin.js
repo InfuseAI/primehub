@@ -36,20 +36,20 @@ defineStep("I type {string} to element with test-id {string}", async function(st
   await this.page.focus(selector);
   await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
   await this.page.keyboard.press("Backspace");
-  await this.page.type(selector, string);
+  await this.page.type(selector, `${string}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I click edit-button in row contains text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then edit button
   // xpath: //tr[contains(., 'hlb')]//button[@data-testid='edit-button']
-  const xpath = `//tr[contains(., '${string}')]//button[@data-testid='edit-button']`;
+  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//button[@data-testid='edit-button']`;
   await this.clickElementByXpath(xpath);
 });
 
 defineStep("I delete a row with text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then delete button
   // xpath: //tr[contains(., 'string')]//button[@data-testid='delete-button']
-  const xpath = `//tr[contains(., '${string}')]//button[@data-testid='delete-button']`;
+  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//button[@data-testid='delete-button']`;
   await this.clickElementByXpath(xpath);
   await this.page.waitFor(3*1000);
   // press OK button in popup
@@ -69,20 +69,20 @@ defineStep("I should see element with test-id {string}", async function(testId) 
 
 defineStep("list-view table {string} contain row with {string}", async function(exist, string) {
   // use xpath to find the <tr> containing 'text'
-  const xpath = `//tr[contains(., '${string}')]`;
+  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]`;
   var isExist = true;
   try {await this.page.waitForXPath(xpath, {timeout: 10 * 1000});}
   catch (err) {isExist = false;}
-  if (exist.includes("not") === isExist) throw new Error(`list view ${string} is exist: ${isExist}`);
-  await this.takeScreenshot(`list-view-${string}-isExist-${isExist}`);
+  if (exist.includes("not") === isExist) throw new Error(`list view ${string}-${this.E2E_SUFFIX} is exist: ${isExist}`);
+  await this.takeScreenshot(`list-view-${string}-${this.E2E_SUFFIX}-isExist-${isExist}`);
 });
 
 defineStep("I should see input in test-id {string} with value {string}", async function(testId, string) {
   // xpath: //*[@data-testid='user/username']//input
   const xpath = `${testIdToXpath(testId)}//input`;
   const inputValue = await this.getXPathValue(xpath);
-  await this.takeScreenshot(`test-id-${testId.replace('/', '-')}-value-${string}`);
-  expect(inputValue).to.equal(string);
+  await this.takeScreenshot(`test-id-${testId.replace('/', '-')}-value-${string}-${this.E2E_SUFFIX}`);
+  expect(inputValue).to.equal(`${string}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("boolean input with test-id {string} should have value {string}", async function(testId, rawValue) {

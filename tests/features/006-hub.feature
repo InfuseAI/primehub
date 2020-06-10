@@ -22,7 +22,8 @@ Feature: Hub
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I choose instance type
+    When I choose group with name "e2e-test-group"
+    And I choose instance type
     And I choose image
     And I click "Start Notebook" button
     Then I can see the spawning page
@@ -48,7 +49,7 @@ Feature: Hub
     And I type "1" to element with test-id "instanceType/gpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='phusers']/..//input"
+    And I click element with xpath "//td[text()='test-group']/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
@@ -61,7 +62,8 @@ Feature: Hub
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I choose instance type with name "test-instance-type-gpu"
+    When I choose group with name "test-group"
+    And I choose instance type with name "test-instance-type-gpu"
     And I choose image
     And I click "Start Notebook" button
     Then I can see the error message "Error: User phadmin exceeded gpu quota: 0, requesting 1"

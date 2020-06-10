@@ -132,6 +132,7 @@ kubectl get pod  -n hub  -o=custom-columns='NAMESPACE:.metadata.namespace,NAME:.
 for filename in tests/*.sh; do echo $filename; $filename; done
 
 # e2e test
+export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
 tags="@released and not @ee and not @wip"
