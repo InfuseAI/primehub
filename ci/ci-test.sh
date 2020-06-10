@@ -108,7 +108,7 @@ ci/dev-kind/install-components.sh
 
 # apply dev license
 DEV_LICENSE=${DEV_LICENSE:-false}
-if [ "$DEV_LICENSE" != "false" ]; then
+if [ "$DEV_LICENSE" != "false" && "${PRIMEHUB_MODE}" == "ee" ]; then
   echo "Applying License for test."
   echo "$DEV_LICENSE" | base64 -d | kubectl apply -n hub -f -
   sleep 30
