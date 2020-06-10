@@ -22,10 +22,12 @@ services:
     image: "/console/default-covers/support.png"
     target: "_blank"
   {{- end }}
+  {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
   - name: JupyterHub Admin
     uri: "/hub/admin"
     adminOnly: true
     image: "/console/default-covers/jh-admin.png"
+  {{- end }}
   - name: Admin Dashboard
     uri: "/console/cms"
     image: "/console/default-covers/admin-ui.png"
