@@ -18,7 +18,6 @@ Feature: Admin
     And I should see element with test-id "user/email"
     And I should see element with test-id "user/sendEmail"
     When I type "test-user" to element with test-id "user/username"
-    And I type "test-user@gmail.com" to element with test-id "user/email"
     And I click element with xpath "//button/span[text()='Confirm']"
     Then list-view table "should" contain row with "test-user"
     When I logout from banner UI
@@ -35,25 +34,23 @@ Feature: Admin
     Then I am on the admin dashboard "Users" page
     When I click edit-button in row contains text "test-user"
     Then I should see input in test-id "user/username" with value "test-user"
-    And I should see input in test-id "user/email" with value "test-user@gmail.com"
     When I type "test" to element with test-id "user/firstName"
     And I check boolean input with test-id "user/isAdmin"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='phusers']/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//button/span[text()='Confirm']"
     Then list-view table "should" contain row with "test-user"
     When I click edit-button in row contains text "test-user"
     Then I should see input in test-id "user/username" with value "test-user"
-    And I should see input in test-id "user/email" with value "test-user@gmail.com"
     And I should see input in test-id "user/firstName" with value "test"
     And boolean input with test-id "user/isAdmin" should have value "true"
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
-    When I click edit-button in row contains text "phusers"
-    Then I "should" see element with xpath "//td[text()='test-user']"
+    When I click edit-button in row contains text "e2e-test-group"
+    Then I "should" see element with xpath "//td[contains(text(), 'test-user')]"
     When I logout from banner UI
     Then I am on login page
   

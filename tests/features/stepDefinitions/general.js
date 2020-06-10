@@ -85,8 +85,8 @@ defineStep("I wait for {float} seconds", async function(float) {
 });
 
 defineStep("I choose radio button with name {string}", async function(name) {
-  await this.clickElementByXpath(`//input[@value='${name}']`);
-  await this.takeScreenshot(`choose-radio-button-${name}`);
+  await this.clickElementByXpath(`//input[@value='${name}-${this.E2E_SUFFIX}']`);
+  await this.takeScreenshot(`choose-radio-button-${name}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I type {string} to element with xpath {string}", async function(string, xpath) {

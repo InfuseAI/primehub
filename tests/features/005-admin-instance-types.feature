@@ -36,9 +36,10 @@ Feature: Admin
     And I should see input in test-id "instanceType/displayName" with value "test-instance-type"
     When I type "test-instance-type-display-name" to element with test-id "instanceType/displayName"
     And I type "test-description" to element with test-id "instanceType/description"
+    And I type "0.5" to element with test-id "instanceType/cpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='phusers']/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
@@ -53,31 +54,8 @@ Feature: Admin
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    And I "should" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 0"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
-  
-  Scenario: Delete instance type
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
-    When I click "Instance Types" in admin dashboard
-    Then I am on the admin dashboard "Instance Types" page
-    When I delete a row with text "test-instance-type"
+    When I choose group with name "e2e-test-group"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-instance-type"
-    When I click refresh
-    Then list-view table "should not" contain row with "test-instance-type" 
-    When I logout from banner UI
-    Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    And I "should not" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 0"
+    Then I "should" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
     When I logout on JupyterHub page
     Then I can logout from JupyterHub

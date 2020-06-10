@@ -11,8 +11,9 @@ Feature: Job Submission
     Then I am on the job submission page
     When I click "Create Job" button
     Then I am on the create job page
-    When I choose radio button with name "cpu-1"
-    And I choose radio button with name "base-notebook"
+    When I choose group with name "e2e-test-group-display-name" in create job page
+    And I choose radio button with name "test-instance-type"
+    And I choose radio button with name "test-image"
     And I type "create-job-test" to "displayName" text field
     And I type "echo 'test'" to "command" text field
     And I click "Submit" button
@@ -58,8 +59,9 @@ Feature: Job Submission
     Then I am on the job submission page
     When I click "Create Job" button
     Then I am on the create job page
-    When I choose radio button with name "cpu-1"
-    And I choose radio button with name "base-notebook"
+    When I choose group with name "e2e-test-group-display-name" in create job page
+    And I choose radio button with name "test-instance-type"
+    And I choose radio button with name "test-image"
     And I type "cancel-job-test" to "displayName" text field
     And I type "echo 'test'" to "command" text field
     And I click "Submit" button

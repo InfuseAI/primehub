@@ -14,6 +14,19 @@ Feature: Landing page
     When I logout from banner UI
     Then I am on login page
 
+  @wip
+  Scenario: User can go to User Guide via the landing page
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the landing page
+    When I click "User Guide" image in landing page
+    Then I am on the user guide page
+    When I click GoBack
+    Then I am on the landing page
+    When I logout from banner UI
+    Then I am on login page
+
   Scenario: User can go to JupyterHub Admin via the landing page
     Given I go to login page
     When I fill in the correct username credentials

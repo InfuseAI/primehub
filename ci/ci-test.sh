@@ -76,7 +76,7 @@ export KC_PORT=${PRIMEHUB_PORT}
 export PH_USERNAME="phadmin"
 export PH_PASSWORD=$(openssl rand -hex 16)
 export PRIMEHUB_STORAGE_CLASS=local-path
-export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ee}
+export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 
 rm -f env_file
 echo CLUSTER_NAME=$CLUSTER_NAME >> env_file
@@ -108,7 +108,7 @@ ci/dev-kind/install-components.sh
 
 # apply dev license
 DEV_LICENSE=${DEV_LICENSE:-false}
-if [ "$DEV_LICENSE" != "false" ]; then
+if [[ ( "$DEV_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" ) ]]; then
   echo "Applying License for test."
   echo "$DEV_LICENSE" | base64 -d | kubectl apply -n hub -f -
   sleep 30
@@ -132,6 +132,7 @@ kubectl get pod  -n hub  -o=custom-columns='NAMESPACE:.metadata.namespace,NAME:.
 for filename in tests/*.sh; do echo $filename; $filename; done
 
 # e2e test
+export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
 tags="@released and not @ee and not @wip"

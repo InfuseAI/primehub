@@ -38,7 +38,7 @@ Feature: Admin
     When I type "test-dataset-display-name" to element with test-id "dataset/displayName"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='phusers']/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with test-id "confirm-button"
@@ -53,8 +53,9 @@ Feature: Admin
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I click element with xpath "//a[@href='#dataset-list']"
-    Then I "should" see element with xpath "//div[@aria-expanded='true']//li[text()='test-dataset-display-name']"
+    When I choose group with name "e2e-test-group"
+    And I click element with xpath "//a[@href='#dataset-list']"
+    Then I "should" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]"
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
@@ -79,7 +80,8 @@ Feature: Admin
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I click element with xpath "//a[@href='#dataset-list']"
-    Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[text()='test-dataset-display-name']"
+    When I choose group with name "e2e-test-group"
+    And I click element with xpath "//a[@href='#dataset-list']"
+    Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]"
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
