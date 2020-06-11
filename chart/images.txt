@@ -4,7 +4,7 @@ infuseai/jupyterhub-k8s:jh-5c94e4f4
 infuseai/primehub-admin-notebook:dd029e8112
 infuseai/primehub-admission:322c5f4127
 infuseai/primehub-bootstrap:20191022
-infuseai/primehub-controller-ee:056b83215a
+infuseai/primehub-controller-ee:fb269a871f
 infuseai/tusd:0.1.1
 jupyterhub/configurable-http-proxy:4.1.0
 jupyterhub/k8s-image-awaiter:0.9-b51ffeb
@@ -14,8 +14,8 @@ keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 prom/statsd-exporter:v0.9.0
-infuseai/primehub-console:cfb896df
-infuseai/primehub-console-graphql:cfb896df
-infuseai/primehub-console-watcher:cfb896df
-infuseai/primehub-console-model-deploy:cfb896df
+infuseai/primehub-console:bc0adf0
+infuseai/primehub-console-graphql:bc0adf0
+infuseai/primehub-console-watcher:bc0adf0
+infuseai/primehub-console-model-deploy:bc0adf0
 seldonio/seldon-core-executor:1.1.0
