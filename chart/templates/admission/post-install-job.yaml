@@ -44,7 +44,10 @@ spec:
 
               echo "[Label] 'resources-validation-webhook=enabled' on $RELEASE_NAMESPACE namesapce"
               kubectl label ns $RELEASE_NAMESPACE --overwrite primehub.io/resources-validation-webhook=enabled
-              
+
+              echo "[Label] 'pvc-check-webhook=enabled' on $RELEASE_NAMESPACE namesapce"
+              kubectl label ns $RELEASE_NAMESPACE --overwrite primehub.io/pvc-check-webhook=enabled
+
               echo "[Done]"
 
           volumeMounts:
