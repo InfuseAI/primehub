@@ -88,4 +88,46 @@ spec:
         - name: certs
           secret:
             secretName: pod-image-replacing-webhook-certs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pvc-check-webhook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pvc-check-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pvc-check-webhook
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: pvc-check-webhook
+    spec:
+      serviceAccountName: primehub-admission
+      containers:
+      - name: pvc-check-webhook
+        image: "{{ .Values.admission.image.repository }}:{{ .Values.admission.image.tag }}"
+        ports:
+        - containerPort: 443
+        imagePullPolicy: {{ .Values.admission.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.admission.resources | nindent 10 }}
+        env:
+        - name: FLASK_DEBUG
+          value: "false"
+        volumeMounts:
+          - name: certs
+            mountPath: /app/ssl
+            readOnly: true
+        securityContext:
+          runAsUser: 0
+      volumes:
+        - name: certs
+          secret:
+            secretName: pvc-check-webhook-certs
 {{- end }}

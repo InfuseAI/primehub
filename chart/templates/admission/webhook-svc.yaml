@@ -32,4 +32,21 @@ spec:
     app: pod-image-replacing-webhook
   sessionAffinity: None
   type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pvc-check-webhook
+  name: pvc-check-webhook-svc
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: 443
+  selector:
+    app: pvc-check-webhook
+  sessionAffinity: None
+  type: ClusterIP
 {{- end }}
