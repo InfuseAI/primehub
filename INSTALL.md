@@ -74,7 +74,7 @@ EOF
 ## Add the chart repository
 
 ```
-helm repo add primehub https://charts.infuseai.io
+helm repo add infuseai https://charts.infuseai.io
 helm repo update
 ```
 
