@@ -146,7 +146,7 @@ admission:
   enabled: true
   image:
     repository: infuseai/primehub-admission
-    tag: "25dc0b3999"
+    tag: "29c8243d73"
     pullPolicy: IfNotPresent
   resources:
     limits:

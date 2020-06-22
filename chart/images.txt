@@ -2,7 +2,7 @@ gcr.io/google_containers/pause:3.0
 infuseai/dataset-upload-web-front-end:d744507a5e
 infuseai/jupyterhub-k8s:jh-5c94e4f4
 infuseai/primehub-admin-notebook:dd029e8112
-infuseai/primehub-admission:25dc0b3999
+infuseai/primehub-admission:29c8243d73
 infuseai/primehub-bootstrap:20191022
 infuseai/primehub-controller-ee:fb269a871f
 infuseai/tusd:0.1.1
