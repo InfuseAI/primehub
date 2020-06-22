@@ -26,7 +26,7 @@ defineStep("I logout from banner UI", async function() {
     await this.takeScreenshot("logout-from-banner-ui");
 
     try {
-      await this.page.waitForXPath("//title[text()='Log in to primehub']", {timeout: 5 * 1000});
+      await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`, {timeout: 5 * 1000});
       break;
     }
     catch(e){}
