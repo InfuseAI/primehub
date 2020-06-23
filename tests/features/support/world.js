@@ -16,12 +16,13 @@ class World {
   constructor({ attach, parameters }) {
     this.attach = attach;
     this.parameters = parameters;
-    this.PRIMEHUB_SCHEME = process.env.PRIMEHUB_SCHEME;
     this.KC_SCHEME = process.env.KC_SCHEME;
     this.KC_DOMAIN = process.env.KC_DOMAIN;
+    this.KC_REALM = process.env.KC_REALM;
+    this.PRIMEHUB_SCHEME = process.env.PRIMEHUB_SCHEME;
     this.PRIMEHUB_DOMAIN = process.env.PRIMEHUB_DOMAIN;
     this.USERNAME = process.env.PH_USERNAME;
-    this.USER_EMAIL = process.env.PH_USER_EMAIL;
+    //this.USER_EMAIL = process.env.PH_USER_EMAIL;
     this.PASSWORD = process.env.PH_PASSWORD;
     this.DEBUG = process.env.DEBUG;
     this.E2E_SUFFIX = process.env.E2E_SUFFIX;
