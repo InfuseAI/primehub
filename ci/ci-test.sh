@@ -132,7 +132,8 @@ kubectl get pod  -n hub  -o=custom-columns='NAMESPACE:.metadata.namespace,NAME:.
 for filename in tests/*.sh; do echo $filename; $filename; done
 
 # e2e test
-KC_REALM="$(cut -d':' -f2 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM))"
+# split the grep output of 'KC_REALM: ...' by space
+KC_REALM="$(cut -d' ' -f2 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM))"
 export KC_REALM=${KC_REALM}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
