@@ -73,7 +73,6 @@ export PRIMEHUB_PORT=$(( $RANDOM % 50000 + 10000 ))
 export KC_SCHEME="http"
 export KC_DOMAIN="id.ci-e2e.dev.primehub.io"
 export KC_PORT=${PRIMEHUB_PORT}
-export KC_REALM=${KC_REALM}
 export PH_USERNAME="phadmin"
 export PH_PASSWORD=$(openssl rand -hex 16)
 export PRIMEHUB_STORAGE_CLASS=local-path
@@ -88,7 +87,6 @@ echo PRIMEHUB_PORT=$PRIMEHUB_PORT >> env_file
 echo KC_SCHEME=$KC_SCHEME >> env_file
 echo KC_DOMAIN=$KC_DOMAIN >> env_file
 echo KC_PORT=$KC_PORT >> env_file
-echo KC_REALM=$KC_REALM >> env_file
 echo PH_USERNAME=$PH_USERNAME >> env_file
 echo PH_PASSWORD=$PH_PASSWORD >> env_file
 echo PRIMEHUB_STORAGE_CLASS=$PRIMEHUB_STORAGE_CLASS >> env_file
@@ -134,6 +132,7 @@ kubectl get pod  -n hub  -o=custom-columns='NAMESPACE:.metadata.namespace,NAME:.
 for filename in tests/*.sh; do echo $filename; $filename; done
 
 # e2e test
+export KC_REALM=${KC_REALM}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
