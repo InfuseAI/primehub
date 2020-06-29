@@ -14,8 +14,8 @@ keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 prom/statsd-exporter:v0.9.0
-infuseai/primehub-console:92552f7a
-infuseai/primehub-console-graphql:92552f7a
-infuseai/primehub-console-watcher:92552f7a
-infuseai/primehub-console-model-deploy:92552f7a
+infuseai/primehub-console:a81e94f0
+infuseai/primehub-console-graphql:a81e94f0
+infuseai/primehub-console-watcher:a81e94f0
+infuseai/primehub-console-model-deploy:a81e94f0
 seldonio/seldon-core-executor:1.1.0
