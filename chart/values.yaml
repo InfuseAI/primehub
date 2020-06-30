@@ -14,7 +14,6 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   sharedVolumeStorageClass: ""
-
 ingress:
   enabled: true
   annotations:
@@ -31,7 +30,7 @@ console:
   replicas: 1
   image:
     repository: infuseai/primehub-console
-    tag: a81e94f0
+    tag: 2d876153
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -97,7 +96,7 @@ graphql:
   replicas: 1
   image:
     repository: infuseai/primehub-console-graphql
-    tag: a81e94f0
+    tag: 2d876153
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -127,7 +126,7 @@ graphql:
 watcher:
   image:
     repository: infuseai/primehub-console-watcher
-    tag: a81e94f0
+    tag: 2d876153
     pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
