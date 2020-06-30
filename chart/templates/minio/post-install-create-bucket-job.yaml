@@ -1,0 +1,76 @@
+{{- if or .Values.minio.defaultBucket.enabled .Values.minio.buckets }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "minio.fullname" . }}-make-bucket-job
+  labels:
+    app: {{ template "minio.name" . }}-make-bucket-job
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+{{- with .Values.minio.makeBucketJob.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "minio.name" . }}-job
+        release: {{ .Release.Name }}
+{{- if .Values.minio.podLabels }}
+{{ toYaml .Values.minio.podLabels | indent 8 }}
+{{- end }}
+    spec:
+      restartPolicy: OnFailure
+{{- if .Values.minio.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.minio.nodeSelector | indent 8 }}
+{{- end }}
+{{- with .Values.minio.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.minio.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      volumes:
+        - name: minio-configuration
+          projected:
+            sources:
+            - configMap:
+                name: {{ template "minio.fullname" . }}
+            - secret:
+                name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+        {{- if .Values.minio.tls.enabled }}
+        - name: cert-secret-volume-mc
+          secret:
+            secretName: {{ .Values.minio.tls.certSecret }}
+            items:
+            - key: {{ .Values.minio.tls.publicCrt }}
+              path: CAs/public.crt
+        {{ end }}
+      serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
+      containers:
+      - name: minio-mc
+        image: "{{ .Values.minio.mcImage.repository }}:{{ .Values.minio.mcImage.tag }}"
+        imagePullPolicy: {{ .Values.minio.mcImage.pullPolicy }}
+        command: ["/bin/sh", "/config/initialize"]
+        env:
+          - name: MINIO_ENDPOINT
+            value: {{ template "minio.fullname" . }}
+          - name: MINIO_PORT
+            value: {{ .Values.minio.service.port | quote }}
+        volumeMounts:
+          - name: minio-configuration
+            mountPath: /config
+          {{- if .Values.minio.tls.enabled }}
+          - name: cert-secret-volume-mc
+            mountPath: {{ .Values.minio.configPathmc }}certs
+          {{ end }}
+        resources:
+{{ toYaml .Values.minio.resources | indent 10 }}
+{{- end }}

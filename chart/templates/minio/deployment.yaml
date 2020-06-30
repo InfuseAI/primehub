@@ -1,0 +1,266 @@
+{{- if eq .Values.minio.mode "standalone" }}
+{{ $bucketRoot := or ($.Values.minio.bucketRoot) ($.Values.minio.mountPath) }}
+apiVersion: {{ template "minio.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "minio.fullname" . }}
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  strategy:
+    type: {{ .Values.minio.DeploymentUpdate.type }}
+    {{- if eq .Values.minio.DeploymentUpdate.type "RollingUpdate" }}
+    rollingUpdate:
+      maxSurge: {{ .Values.minio.DeploymentUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.minio.DeploymentUpdate.maxUnavailable }}
+    {{- end}}
+  {{- if .Values.minio.nasgateway.enabled }}
+  replicas: {{ .Values.minio.nasgateway.replicas }}
+  {{- end }}
+  {{- if .Values.minio.s3gateway.enabled }}
+  replicas: {{ .Values.minio.s3gateway.replicas }}
+  {{- end }}
+  {{- if .Values.minio.azuregateway.enabled }}
+  replicas: {{ .Values.minio.azuregateway.replicas }}
+  {{- end }}
+  {{- if .Values.minio.gcsgateway.enabled }}
+  replicas: {{ .Values.minio.gcsgateway.replicas }}
+  {{- end }}
+  {{- if .Values.minio.ossgateway.enabled }}
+  replicas: {{ .Values.minio.ossgateway.replicas }}
+  {{- end }}
+  {{- if .Values.minio.b2gateway.enabled }}
+  replicas: {{ .Values.minio.b2gateway.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "minio.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: {{ template "minio.fullname" . }}
+      labels:
+        app: {{ template "minio.name" . }}
+        release: {{ .Release.Name }}
+{{- if .Values.minio.podLabels }}
+{{ toYaml .Values.minio.podLabels | indent 8 }}
+{{- end }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/minio/secrets.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/minio/configmap.yaml") . | sha256sum }}
+{{- if .Values.minio.podAnnotations }}
+{{ toYaml .Values.minio.podAnnotations | trimSuffix "\n" | indent 8 }}
+{{- end }}
+    spec:
+  {{- if .Values.minio.priorityClassName }}
+      priorityClassName: "{{ .Values.minio.priorityClassName }}"
+  {{- end }}
+      serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
+{{- if and .Values.minio.securityContext.enabled .Values.minio.persistence.enabled }}
+      securityContext:
+        runAsUser: {{ .Values.minio.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.minio.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.minio.securityContext.fsGroup }}
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.minio.image.repository }}:{{ .Values.minio.image.tag }}"
+          imagePullPolicy: {{ .Values.minio.image.pullPolicy }}
+          {{- if .Values.minio.s3gateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway s3 {{ .Values.minio.s3gateway.serviceEndpoint }} {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          {{- if .Values.minio.azuregateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway azure {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          {{- if .Values.minio.gcsgateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway gcs {{ .Values.minio.gcsgateway.projectId }} {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          {{- if .Values.minio.ossgateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway oss {{ .Values.minio.ossgateway.endpointURL }} {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          {{- if .Values.minio.nasgateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway nas {{ $bucketRoot }} {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          {{- if .Values.minio.b2gateway.enabled }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway b2 {{- template `minio.extraArgs` . }}" ]
+          {{- else }}
+          command: [ "/bin/sh",
+          "-ce",
+          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} server {{ $bucketRoot }} {{- template `minio.extraArgs` . }}" ]
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            {{- if and .Values.minio.persistence.enabled (not .Values.minio.gcsgateway.enabled) (not .Values.minio.azuregateway.enabled) (not .Values.minio.s3gateway.enabled) (not .Values.minio.b2gateway.enabled) }}
+            - name: export
+              mountPath: {{ .Values.minio.mountPath }}
+              {{- if .Values.minio.persistence.subPath }}
+              subPath: "{{ .Values.minio.persistence.subPath }}"
+              {{- end }}
+            {{- end }}
+            {{- if or .Values.minio.gcsgateway.enabled .Values.minio.etcd.clientCert .Values.minio.etcd.clientCertKey }}
+            - name: minio-user
+              mountPath: "/etc/credentials"
+              readOnly: true
+            {{- end }}
+            {{- if .Values.minio.tls.enabled }}
+            - name: cert-secret-volume
+              mountPath: {{ .Values.minio.certsPath }}
+            {{ end }}
+          ports:
+            {{- if .Values.minio.tls.enabled }}
+            - name: https
+            {{ else }}
+            - name: http
+            {{- end }}
+              containerPort: 9000
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: accesskey
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: secretkey
+            {{- if .Values.minio.gcsgateway.enabled }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/credentials/gcs_key.json"
+            {{- end }}
+            {{- if .Values.minio.etcd.endpoints }}
+            - name: MINIO_ETCD_ENDPOINTS
+              value: {{ join "," .Values.minio.etcd.endpoints | quote }}
+            {{- end }}
+            {{- if .Values.minio.etcd.clientCert }}
+            - name: MINIO_ETCD_CLIENT_CERT
+              value: "/etc/credentials/etcd_client_cert.pem"
+            {{- end }}
+            {{- if .Values.minio.etcd.clientCertKey }}
+            - name: MINIO_ETCD_CLIENT_CERT_KEY
+              value: "/etc/credentials/etcd_client_cert_key.pem"
+            {{- end }}
+            {{- if .Values.minio.etcd.pathPrefix }}
+            - name: MINIO_ETCD_PATH_PREFIX
+              value: {{ .Values.minio.etcd.pathPrefix }}
+            {{- end }}
+            {{- if .Values.minio.etcd.corednsPathPrefix }}
+            - name: MINIO_ETCD_COREDNS_PATH
+              value: {{ .Values.minio.etcd.corednsPathPrefix }}
+            {{- end }}
+            {{- if .Values.minio.s3gateway.enabled -}}
+            {{- if .Values.minio.s3gateway.accessKey }}
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: awsAccessKeyId
+            {{- end }}
+            {{- if .Values.minio.s3gateway.secretKey }}
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: awsSecretAccessKey
+            {{- end }}
+            {{- end }}
+            {{- range $key, $val := .Values.minio.environment }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end}}
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              {{- if .Values.minio.tls.enabled }}
+              port: https
+              {{ else }}
+              port: http
+              {{- end }}
+              {{- if .Values.minio.tls.enabled }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{- end }}
+            initialDelaySeconds: {{ .Values.minio.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.minio.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.minio.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.minio.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.minio.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              {{- if .Values.minio.tls.enabled }}
+              scheme: HTTPS
+              {{- end }}
+              path: /minio/health/ready
+              {{- if .Values.minio.tls.enabled }}
+              port: https
+              {{ else }}
+              port: http
+              {{- end }}
+            initialDelaySeconds: {{ .Values.minio.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.minio.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.minio.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.minio.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.minio.readinessProbe.failureThreshold }}
+          resources:
+{{ toYaml .Values.minio.resources | indent 12 }}
+{{- with .Values.minio.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- if .Values.minio.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml .Values.minio.imagePullSecrets | nindent 8 }}
+{{- end }}
+{{- with .Values.minio.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.minio.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+      volumes:
+        {{- if and (not .Values.minio.gcsgateway.enabled) (not .Values.minio.azuregateway.enabled) (not .Values.minio.s3gateway.enabled) (not .Values.minio.b2gateway.enabled) }}
+        - name: export
+        {{- if .Values.minio.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.minio.persistence.existingClaim | default (include "minio.fullname" .) }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        {{- end }}
+        - name: minio-user
+          secret:
+            secretName: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+        {{- if .Values.minio.tls.enabled }}
+        - name: cert-secret-volume
+          secret:
+            secretName: {{ .Values.minio.tls.certSecret }}
+            items:
+            - key: {{ .Values.minio.tls.publicCrt }}
+              path: public.crt
+            - key: {{ .Values.minio.tls.privateKey }}
+              path: private.key
+            - key: {{ .Values.minio.tls.publicCrt }}
+              path: CAs/public.crt
+        {{ end }}
+{{- end }}

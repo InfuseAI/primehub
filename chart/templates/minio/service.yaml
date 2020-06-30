@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "minio.fullname" . }}
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.minio.service.annotations }}
+  annotations:
+{{ toYaml .Values.minio.service.annotations | indent 4 }}
+{{- end }}
+spec:
+{{- if (or (eq .Values.minio.service.type "ClusterIP" "") (empty .Values.minio.service.type)) }}
+  type: ClusterIP
+  {{- if not (empty .Values.minio.service.clusterIP) }}
+  clusterIP: {{ .Values.minio.service.clusterIP }}
+  {{end}}
+{{- else if eq .Values.minio.service.type "LoadBalancer" }}
+  type: {{ .Values.minio.service.type }}
+  loadBalancerIP: {{ default "" .Values.minio.service.loadBalancerIP }}
+{{- else }}
+  type: {{ .Values.minio.service.type }}
+{{- end }}
+  ports:
+    {{- if .Values.minio.tls.enabled }}
+    - name: https
+    {{ else }}
+    - name: http
+    {{- end }}
+      port: {{ .Values.minio.service.port }}
+      protocol: TCP
+{{- if (and (eq .Values.minio.service.type "NodePort") ( .Values.minio.service.nodePort)) }}
+      nodePort: {{ .Values.minio.service.nodePort }}
+{{- else }}
+      targetPort: 9000
+{{- end}}
+{{- if .Values.minio.service.externalIPs }}
+  externalIPs:
+{{- range $i , $ip := .Values.minio.service.externalIPs }}
+  - {{ $ip }}
+{{- end }}
+{{- end }}
+  selector:
+    app: {{ template "minio.name" . }}
+    release: {{ .Release.Name }}
