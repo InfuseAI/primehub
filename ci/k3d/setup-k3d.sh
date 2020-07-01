@@ -29,13 +29,12 @@ k3d version
 k3d create --name ${CLUSTER_NAME} --image=rancher/k3s:${K8S_VERSION} --server-arg '--no-deploy=traefik' --wait 120
 mkdir -p ~/.kube
 cp $(k3d get-kubeconfig --name=${CLUSTER_NAME}) ~/.kube/config
-kubectl get nodes
-sleep 10
-kubectl get nodes
 
-echo "wait for nodes ready"
-kubectl wait --timeout=2m --for=condition=Ready nodes --all
-kubectl get nodes
+echo "waiting for nodes ready"
+until kubectl get nodes | grep ' Ready'
+do
+  sleep 2
+done
 
 # Helm
 echo "init helm"
