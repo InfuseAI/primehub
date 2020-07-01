@@ -138,8 +138,8 @@ export KC_REALM=${KC_REALM}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-tags="@released and not @ee and not @wip"
+tags="@released and not @ee and not @scheduled and not @wip"
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="@released and not @wip"
+  tags="@released and not @scheduled and not @wip"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
