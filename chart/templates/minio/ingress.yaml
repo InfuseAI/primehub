@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if .Values.minio.ingress.enabled -}}
 {{- $fullName := include "minio.fullname" . -}}
 {{- $servicePort := .Values.minio.service.port -}}
@@ -7,22 +8,17 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-{{- with .Values.minio.ingress.labels }}
-{{ toYaml . | indent 4 }}
-{{- end }}
-
-{{- with .Values.minio.ingress.annotations }}
-  annotations:
-{{ toYaml . | indent 4 }}
-{{- end }}
+    app.kubernetes.io/name: {{ template "minio.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-{{- if .Values.minio.ingress.tls }}
+{{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.minio.ingress.tls }}
+  {{- range .Values.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -31,10 +27,10 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.minio.ingress.hosts }}
+  {{- range .Values.ingress.hosts }}
     - http:
         paths:
-          - path: {{ $ingressPath }}
+          - path: /minio
             backend:
               serviceName: {{ $fullName }}
               servicePort: {{ $servicePort }}
@@ -42,4 +38,5 @@ spec:
       host: {{ . | quote }}
       {{- end }}
   {{- end }}
+{{- end }}
 {{- end }}

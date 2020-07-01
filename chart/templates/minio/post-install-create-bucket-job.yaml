@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if or .Values.minio.defaultBucket.enabled .Values.minio.buckets }}
 apiVersion: batch/v1
 kind: Job
@@ -73,4 +74,5 @@ spec:
           {{ end }}
         resources:
 {{ toYaml .Values.minio.resources | indent 10 }}
+{{- end }}
 {{- end }}

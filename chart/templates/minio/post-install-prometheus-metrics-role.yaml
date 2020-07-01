@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if .Values.minio.serviceAccount.create -}}
 {{- $fullName := include "minio.fullname" . -}}
 apiVersion: rbac.authorization.k8s.io/v1
@@ -36,3 +37,4 @@ rules:
     resourceNames:
       - {{ $fullName }}
 {{- end -}}
+{{- end }}

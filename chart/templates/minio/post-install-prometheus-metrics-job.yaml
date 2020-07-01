@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if .Values.minio.metrics.serviceMonitor.enabled }}
 {{- $fullName := include "minio.fullname" . -}}
 apiVersion: batch/v1
@@ -107,4 +108,5 @@ spec:
               mountPath: /workdir
           resources:
 {{ toYaml .Values.minio.resources | indent 12 }}
+{{- end }}
 {{- end }}

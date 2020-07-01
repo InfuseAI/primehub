@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if .Values.minio.networkPolicy.enabled }}
 kind: NetworkPolicy
 apiVersion: {{ template "minio.networkPolicy.apiVersion" . }}
@@ -22,4 +23,5 @@ spec:
             matchLabels:
               {{ template "minio.name" . }}-client: "true"
       {{- end }}
+{{- end }}
 {{- end }}

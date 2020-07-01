@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if .Values.minio.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -38,4 +39,5 @@ spec:
     matchLabels:
       app: {{ include "minio.name" . }}
       release: {{ .Release.Name }}
+{{- end }}
 {{- end }}

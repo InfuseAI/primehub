@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if eq .Values.minio.mode "standalone" }}
 {{- if and .Values.minio.persistence.enabled (not .Values.minio.persistence.existingClaim) }}
 apiVersion: v1
@@ -30,6 +31,7 @@ spec:
 {{- end }}
 {{- if .Values.minio.persistence.VolumeName }}
   volumeName: "{{ .Values.minio.persistence.VolumeName }}"
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

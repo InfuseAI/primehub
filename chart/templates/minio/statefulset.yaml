@@ -1,3 +1,4 @@
+{{- if .Values.primehub.store.enabled }}
 {{- if eq .Values.minio.mode "distributed" }}
 {{ $zoneCount := .Values.minio.zones | int }}
 {{ $nodeCount := .Values.minio.replicas | int }}
@@ -227,5 +228,6 @@ spec:
           requests:
             storage: {{ $psize }}
   {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
