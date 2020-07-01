@@ -576,3 +576,27 @@ istio:
     service:
       type: ClusterIP
       port: 8080
+
+fluentd:
+  enabled: false
+  image:
+    repository: infuseai/primehub-console-graphql
+    tag: a81e94f0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3001
+  resources:
+    # limits:
+    #   cpu: 512m
+    #   memory: 512Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 512Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
