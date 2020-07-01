@@ -43,6 +43,9 @@ helm init --service-account tiller --wait
 helm version
 echo "end helm"
 
+# Wait for metrics api to be available
+kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apiservices/v1beta1.metrics.k8s.io
+
 # nginx
 echo "init nginx-ingress"
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
