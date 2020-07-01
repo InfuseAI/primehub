@@ -77,6 +77,7 @@ export PH_USERNAME="phadmin"
 export PH_PASSWORD=$(openssl rand -hex 16)
 export PRIMEHUB_STORAGE_CLASS=local-path
 export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
+export SCHEDULED=${SCHEDULED:-false}
 
 rm -f env_file
 echo CLUSTER_NAME=$CLUSTER_NAME >> env_file
@@ -91,6 +92,7 @@ echo PH_USERNAME=$PH_USERNAME >> env_file
 echo PH_PASSWORD=$PH_PASSWORD >> env_file
 echo PRIMEHUB_STORAGE_CLASS=$PRIMEHUB_STORAGE_CLASS >> env_file
 echo PRIMEHUB_MODE=$PRIMEHUB_MODE >> env_file
+echo SCHEDULED=$SCHEDULED >> env_file
 
 sudo ifconfig lo:0 inet ${BIND_ADDRESS} netmask 0xffffff00
 
@@ -141,5 +143,8 @@ mkdir -p e2e/screenshots e2e/webpages
 tags="@released and not @ee and not @scheduled and not @wip"
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="@released and not @scheduled and not @wip"
+fi
+if [[ "${SCHEDULED}" == "true" ]]; then
+  tags="@scheduled"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"

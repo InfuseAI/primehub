@@ -69,6 +69,25 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+  e2e_scheduled:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            SCHEDULED: true
+          command: |
+            ./ci/ci-test.sh
+
+      - store_artifacts:
+          path: ~/project/e2e
+
   build:
     docker:
       # specify the version you desire here
@@ -116,3 +135,13 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
+  scheduled_workflow:
+    triggers:
+      - schedule:
+          cron: "0 4 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - e2e_scheduled
