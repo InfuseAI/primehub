@@ -464,7 +464,7 @@ controller:
 
   image:
     repository: infuseai/primehub-controller-ee
-    tag: fb269a871f
+    tag: 943ec229ef
 
   proxy:
     image:
