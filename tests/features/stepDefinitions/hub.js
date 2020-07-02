@@ -57,14 +57,14 @@ defineStep("I choose instance type", async function() {
   await this.clickElementBySelector(selector);
 });
 
-defineStep("I choose instance type with name {string}", async function(name) {
-  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
-  await this.clickElementByXpath(xpath);
-});
-
 defineStep("I choose image", async function() {
   const selector = "#image-container label:first-child input[type='radio']";
   await this.clickElementBySelector(selector);
+});
+
+defineStep("I choose option with name {string}", async function(name) {
+  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
+  await this.clickElementByXpath(xpath);
 });
 
 defineStep("I go to the spawner page", async function() {
@@ -196,6 +196,9 @@ defineStep("I can see the spawning page", async function() {
 
 defineStep("I can see the JupyterLab page", {timeout: 310 * 1000}, async function() {
   await this.page.waitForXPath("//title[text()='JupyterLab']", {timeout: 300 * 1000});
+  const url = this.page.url();
+  expect(url).to.contain("/lab");
+  await this.page.waitFor(6 * 1000); // just for screenshot the lab page
   await this.takeScreenshot("jupyterlab-page");
 });
 
