@@ -1,3 +1,4 @@
+{{- if .Values.fluentd.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -89,3 +90,4 @@ data:
         chunk_limit_size "#{ENV['BUFFER_CHUNK_LIMIT_SIZE']}"
       </buffer>
     </match>
+{{- end }}

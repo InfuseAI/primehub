@@ -1,3 +1,4 @@
+{{- if .Values.fluentd.enabled -}}
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -96,3 +97,4 @@ spec:
       - name: fluentd-etc-volume
         configMap:
           name: {{ include "primehub.name" . }}-fluentd
+{{- end }}

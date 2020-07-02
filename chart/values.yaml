@@ -580,7 +580,6 @@ istio:
 fluentd:
   enabled: false
 
-
   # Buffer configuration: https://docs.fluentd.org/configuration/buffer-section
   flushAtShutdown: false
   flushInterval: "3600s"
