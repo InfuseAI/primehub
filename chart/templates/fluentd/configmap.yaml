@@ -28,6 +28,7 @@ data:
     # we use kubernetes metadata plugin to add metadatas to the log
     <filter kubernetes.**>
       @type kubernetes_metadata
+      skip_namespace_metadata true
     </filter>
 
     # select pods from specific namespace

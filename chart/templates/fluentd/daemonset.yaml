@@ -74,3 +74,5 @@ spec:
       - name: fluentd-etc-volume
         configMap:
           name: {{ include "primehub.name" . }}-fluentd
+  updateStrategy:
+    type: RollingUpdate
