@@ -30,8 +30,8 @@ console:
   replicas: 1
   image:
     repository: infuseai/primehub-console
-    tag: 2d876153
-    pullPolicy: IfNotPresent
+    tag: latest
+    pullPolicy: Always
     # credentials:
     #   registry: registry.gitlab.com
     #   username:
@@ -96,8 +96,8 @@ graphql:
   replicas: 1
   image:
     repository: infuseai/primehub-console-graphql
-    tag: 2d876153
-    pullPolicy: IfNotPresent
+    tag: latest
+    pullPolicy: Always
     # credentials:
     #   registry: registry.gitlab.com
     #   username:
@@ -126,8 +126,8 @@ graphql:
 watcher:
   image:
     repository: infuseai/primehub-console-watcher
-    tag: 2d876153
-    pullPolicy: IfNotPresent
+    tag: latest
+    pullPolicy: Always
     # credentials:
     #   registry: registry.gitlab.com
     #   username:
@@ -464,7 +464,7 @@ controller:
 
   image:
     repository: infuseai/primehub-controller-ee
-    tag: fb269a871f
+    tag: latest
 
   proxy:
     image:
