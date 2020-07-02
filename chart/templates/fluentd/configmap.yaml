@@ -71,7 +71,7 @@ data:
       path logs/phjob/${pod}/%Y%m%d
       s3_object_key_format %{path}/log-%{index}.%{file_extension}
       force_path_style true
-      store_as txt
+      store_as "#{ENV['S3_STORE_AS']}"
       <format>
         @type single_value
         message_key log
@@ -80,11 +80,12 @@ data:
       <buffer namespace, pod, container, time>
         @type file
         path /var/log/fluentd-buffers/primehub/${namespace}/${pod}/${container}
+        flush_at_shutdown "#{ENV['BUFFER_FLUSH_AT_SHUTDOWN']}"
         flush_mode interval
-        flush_interval 10
+        flush_interval "#{ENV['BUFFER_FLUSH_INTERVAL']}"
         timekey 86400
         timekey_wait 60
         timekey_use_utc true
-        chunk_limit_size 256m
+        chunk_limit_size "#{ENV['BUFFER_CHUNK_LIMIT_SIZE']}"
       </buffer>
     </match>

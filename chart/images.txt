@@ -19,3 +19,4 @@ infuseai/primehub-console-graphql:a81e94f0
 infuseai/primehub-console-watcher:a81e94f0
 infuseai/primehub-console-model-deploy:a81e94f0
 seldonio/seldon-core-executor:1.1.0
+fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
