@@ -81,7 +81,7 @@ jobs:
       - run:
           name: End-to-end tests
           environment:
-            SCHEDULED: true
+            E2E_SCHEDULED: "true"
           command: |
             ./ci/ci-test.sh
 
@@ -138,7 +138,7 @@ workflows:
   scheduled_workflow:
     triggers:
       - schedule:
-          cron: "0 4 * * *"
+          cron: "0 20 * * *"
           filters:
             branches:
               only:
