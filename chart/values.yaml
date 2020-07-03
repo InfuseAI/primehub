@@ -724,7 +724,7 @@ minio:
     storageClass: ""
     VolumeName: ""
     accessMode: ReadWriteOnce
-    size: 500Gi
+    size: 10Gi
 
     ## If subPath is set mount a sub folder of a volume instead of the root of the volume.
     ## This is especially handy for volume plugins that don't natively support sub mounting (like glusterfs).
@@ -827,9 +827,9 @@ minio:
   ## Create a bucket after minio install
   ##
   defaultBucket:
-    enabled: false
+    enabled: true
     ## If enabled, must be a string with length > 0
-    name: bucket
+    name: primehub
     ## Can be one of none|download|upload|public
     policy: none
     ## Purge if bucket exists already
