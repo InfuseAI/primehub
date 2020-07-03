@@ -1,0 +1,37 @@
+{{- if .Values.fluentd.enabled -}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "primehub.name" . }}-fluentd
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: {{ include "primehub.name" . }}-fluentd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: {{ include "primehub.name" . }}-fluentd
+roleRef:
+  kind: ClusterRole
+  name: {{ include "primehub.name" . }}-fluentd
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ include "primehub.name" . }}-fluentd
+  namespace: {{.Release.Namespace}}
+{{- end }}

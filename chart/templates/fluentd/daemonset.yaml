@@ -1,0 +1,100 @@
+{{- if .Values.fluentd.enabled -}}
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ include "primehub.name" . }}-fluentd
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-fluentd
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub.name" . }}-fluentd
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "primehub.name" . }}-fluentd
+        app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config-map: {{ include (print .Template.BasePath "/fluentd/configmap.yaml") . | sha256sum }}
+        checksum/secret-map: {{ include (print .Template.BasePath "/fluentd/secret.yaml") . | sha256sum }}
+    spec:
+      serviceAccount: {{ include "primehub.name" . }}-fluentd
+      serviceAccountName: {{ include "primehub.name" . }}-fluentd
+      {{- with .Values.fluentd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.fluentd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.fluentd.tolerations }}
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: fluentd
+        image: "{{ .Values.fluentd.image.repository }}:{{ .Values.fluentd.image.tag }}"
+        imagePullPolicy: {{ .Values.fluentd.image.pullPolicy }}
+        env:
+        - name: FLUENT_UID
+          value: "0"
+        - name:  S3_BUCKET_NAME
+          value: "{{ .Values.fluentd.bucket }}"
+        - name:  S3_BUCKET_REGION
+          value: "us-east-1"
+        - name:  S3_ENDPOINT
+          value: "{{ .Values.fluentd.endpoint }}"
+        - name:  S3_STORE_AS
+          value: "{{ .Values.fluentd.storeAs }}"
+        - name:  BUFFER_FLUSH_AT_SHUTDOWN
+          value: {{ .Values.fluentd.flushAtShutdown | quote}}
+        - name:  BUFFER_FLUSH_INTERVAL
+          value: {{ .Values.fluentd.flushInterval | quote}}
+        - name:  BUFFER_CHUNK_LIMIT_SIZE
+          value: {{ .Values.fluentd.chunkLimitSize | quote}}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "primehub.name" . }}-fluentd
+              key: aws_access_key_id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "primehub.name" . }}-fluentd
+              key: aws_secret_access_key
+        resources:
+          {{- toYaml .Values.fluentd.resources | nindent 10 }}
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: fluentd-etc-volume
+          mountPath: /fluentd/etc/fluent.conf
+          subPath: fluent.conf
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: fluentd-etc-volume
+        configMap:
+          name: {{ include "primehub.name" . }}-fluentd
+{{- end }}

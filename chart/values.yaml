@@ -575,3 +575,33 @@ istio:
     service:
       type: ClusterIP
       port: 8080
+
+fluentd:
+  enabled: false
+
+  # Buffer configuration: https://docs.fluentd.org/configuration/buffer-section
+  flushAtShutdown: false
+  flushInterval: "3600s"
+  chunkLimitSize: "256m"
+  # XXX: will be removed when integration with primehub store
+  bucket: "primehub"
+  endpoint: "http://minio.hub:9000/"
+  # S3 Configuratio
+  storeAs: "txt"
+  image:
+    repository: fluent/fluentd-kubernetes-daemonset
+    tag: v1.11-debian-s3-1
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 512m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}

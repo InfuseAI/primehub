@@ -1,0 +1,93 @@
+{{- if .Values.fluentd.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "primehub.name" . }}-fluentd
+data:
+  fluent.conf: |
+    <label @FLUENT_LOG>
+      <match fluent.**>
+        @type null
+      </match>
+    </label>
+
+    # here we read the logs from Docker's containers and parse them
+    <source>
+      @type tail
+      @id in_tail_container_logs
+      path /var/log/containers/*.log
+      pos_file /var/log/primehub-fluentd-containers.log.pos
+      tag "#{ENV['FLUENT_CONTAINER_TAIL_TAG'] || 'kubernetes.*'}"
+      exclude_path "#{ENV['FLUENT_CONTAINER_TAIL_EXCLUDE_PATH'] || use_default}"
+      read_from_head true
+      <parse>
+        @type "#{ENV['FLUENT_CONTAINER_TAIL_PARSER_TYPE'] || 'json'}"
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    # we use kubernetes metadata plugin to add metadatas to the log
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      skip_namespace_metadata true
+    </filter>
+
+    # select pods from specific namespace
+    <filter kubernetes.**>
+        @type grep
+        <regexp>
+            key $.kubernetes.namespace_name
+            pattern hub
+        </regexp>
+    </filter>
+
+    <filter kubernetes.**>
+      @type record_transformer
+      enable_ruby
+      <record>
+        namespace ${record.dig("kubernetes", "namespace_name")}
+        pod ${record.dig("kubernetes", "pod_name")}
+        container ${record.dig("kubernetes", "container_name")}
+      </record>
+    </filter>
+
+    <match kubernetes.**>
+      @type rewrite_tag_filter
+      <rule>
+        key     $.kubernetes.labels.app
+        pattern /^primehub-job$/
+        tag     phjob
+      </rule>
+    </match>
+
+    # PhJobs
+    <match phjob>
+      # docs: https://docs.fluentd.org/v0.12/articles/out_s3
+      # note: this configuration relies on the nodes have an IAM instance profile with access to your S3 bucket
+      @type s3
+      @id out_s3
+      @log_level info
+      s3_bucket "#{ENV['S3_BUCKET_NAME']}"
+      s3_endpoint "#{ENV['S3_ENDPOINT']}"
+      path logs/phjob/${pod}/%Y%m%d
+      s3_object_key_format %{path}/log-%{index}.%{file_extension}
+      force_path_style true
+      store_as "#{ENV['S3_STORE_AS']}"
+      <format>
+        @type single_value
+        message_key log
+        add_newline false
+      </format>
+      <buffer namespace, pod, container, time>
+        @type file
+        path /var/log/fluentd-buffers/primehub/${namespace}/${pod}/${container}
+        flush_at_shutdown "#{ENV['BUFFER_FLUSH_AT_SHUTDOWN']}"
+        flush_mode interval
+        flush_interval "#{ENV['BUFFER_FLUSH_INTERVAL']}"
+        timekey 86400
+        timekey_wait 60
+        timekey_use_utc true
+        chunk_limit_size "#{ENV['BUFFER_CHUNK_LIMIT_SIZE']}"
+      </buffer>
+    </match>
+{{- end }}
