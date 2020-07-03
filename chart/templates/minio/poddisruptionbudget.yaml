@@ -1,0 +1,15 @@
+{{- if .Values.primehub.store.enabled }}
+{{- if .Values.minio.podDisruptionBudget.enabled }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: minio
+  labels:
+    app: {{ template "minio.name" . }}
+spec:
+  maxUnavailable: {{ .Values.minio.podDisruptionBudget.maxUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ template "minio.name" . }}
+{{- end }}
+{{- end }}

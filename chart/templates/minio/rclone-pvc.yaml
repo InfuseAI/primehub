@@ -1,0 +1,44 @@
+{{- if .Values.primehub.store.enabled }}
+{{- $fullName := include "minio.fullname" . -}}
+{{- $servicePort := .Values.minio.service.port -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $fullName }}-store
+  labels:
+    app.kubernetes.io/name: {{ template "minio.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 64Gi
+  storageClassName: rclone
+  csi:
+    driver: csi-rclone
+    volumeHandle: data-id
+    volumeAttributes:
+      remote: "s3"
+      remotePath: "{{.Values.primehub.store.bucket}}"
+      s3-provider: "Minio"
+      s3-endpoint: "http://{{ $fullName }}.{{ .Release.Namespace }}:{{ $servicePort }}"
+      s3-access-key-id: {{ .Values.minio.accessKey | quote }}
+      s3-secret-access-key: {{ .Values.minio.secretKey | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $fullName }}-store
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 64Gi
+  storageClassName: rclone
+  selector:
+    matchLabels:
+  name: {{ $fullName }}-store
+{{- end }}

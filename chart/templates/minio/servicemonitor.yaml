@@ -1,0 +1,43 @@
+{{- if .Values.primehub.store.enabled }}
+{{- if .Values.minio.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "minio.fullname" . }}
+  {{- if .Values.minio.metrics.serviceMonitor.namespace }}
+  namespace: {{ .Values.minio.metrics.serviceMonitor.namespace }}
+  {{- end }}
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.minio.metrics.serviceMonitor.additionalLabels }}
+{{ toYaml .Values.minio.metrics.serviceMonitor.additionalLabels | indent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    {{- if .Values.minio.tls.enabled }}
+    - port: https
+    {{ else }}
+    - port: http
+    {{- end }}
+      path: /minio/prometheus/metrics
+      {{- if .Values.minio.metrics.serviceMonitor.interval }}
+      interval: {{ .Values.minio.metrics.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .Values.minio.metrics.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ .Values.minio.metrics.serviceMonitor.scrapeTimeout }}
+      {{- end }}
+      bearerTokenSecret:
+        name: {{ template "minio.fullname" . }}-prometheus
+        key: token
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace | quote }}
+  selector:
+    matchLabels:
+      app: {{ include "minio.name" . }}
+      release: {{ .Release.Name }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,233 @@
+{{- if .Values.primehub.store.enabled }}
+{{- if eq .Values.minio.mode "distributed" }}
+{{ $zoneCount := .Values.minio.zones | int }}
+{{ $nodeCount := .Values.minio.replicas | int }}
+{{ $drivesPerNode := .Values.minio.drivesPerNode | int }}
+{{ $scheme := "http" }}
+{{- if .Values.minio.tls.enabled }}
+{{ $scheme = "https" }}
+{{ end }}
+{{ $mountPath := .Values.minio.mountPath }}
+{{ $bucketRoot := or ($.Values.minio.bucketRoot) ($.Values.minio.mountPath) }}
+{{ $subPath := .Values.minio.persistence.subPath }}
+{{ $penabled := .Values.minio.persistence.enabled }}
+{{ $accessMode := .Values.minio.persistence.accessMode }}
+{{ $storageClass := .Values.minio.persistence.storageClass }}
+{{ $psize := .Values.minio.persistence.size }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "minio.fullname" . }}-svc
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  publishNotReadyAddresses: true
+  clusterIP: None
+  ports:
+    {{- if .Values.minio.tls.enabled }}
+    - name: https
+    {{ else }}
+    - name: http
+    {{- end }}
+      port: {{ .Values.minio.service.port }}
+      protocol: TCP
+  selector:
+    app: {{ template "minio.name" . }}
+    release: {{ .Release.Name }}
+---
+apiVersion: {{ template "minio.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ template "minio.fullname" . }}
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  updateStrategy:
+    type: {{ .Values.minio.StatefulSetUpdate.updateStrategy }}
+  podManagementPolicy: "Parallel"
+  serviceName: {{ template "minio.fullname" . }}-svc
+  replicas: {{ mul $zoneCount $nodeCount }}
+  selector:
+    matchLabels:
+      app: {{ template "minio.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: {{ template "minio.fullname" . }}
+      labels:
+        app: {{ template "minio.name" . }}
+        release: {{ .Release.Name }}
+{{- if .Values.minio.podLabels }}
+{{ toYaml .Values.minio.podLabels | indent 8 }}
+{{- end }}
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/minio/secrets.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/minio/configmap.yaml") . | sha256sum }}
+{{- if .Values.minio.podAnnotations }}
+{{ toYaml .Values.minio.podAnnotations | trimSuffix "\n" | indent 8 }}
+{{- end }}
+    spec:
+      {{- if .Values.minio.priorityClassName }}
+      priorityClassName: "{{ .Values.minio.priorityClassName }}"
+      {{- end }}
+      serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
+{{- if and .Values.minio.securityContext.enabled .Values.minio.persistence.enabled }}
+      securityContext:
+        runAsUser: {{ .Values.minio.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.minio.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.minio.securityContext.fsGroup }}
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.minio.image.repository }}:{{ .Values.minio.image.tag }}
+          imagePullPolicy: {{ .Values.minio.image.pullPolicy }}
+
+          command: [ "/bin/sh",
+            "-ce",
+            "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} server {{- range $i := until $zoneCount }}{{ $factor := mul $i $nodeCount }}{{ $endIndex := add $factor $nodeCount }}{{ $beginIndex := mul $i $nodeCount }}  {{ $scheme }}://{{ template `minio.fullname` $ }}-{{ `{` }}{{ $beginIndex }}...{{ sub $endIndex 1 }}{{ `}`}}.{{ template `minio.fullname` $ }}-svc.{{ $.Release.Namespace }}.svc.{{ $.Values.minio.clusterDomain }}{{if (gt $drivesPerNode 1)}}{{ $bucketRoot }}-{{ `{` }}0...{{ sub $drivesPerNode 1 }}{{ `}` }}{{else}}{{ $bucketRoot }}{{end}}{{- end}}{{- template `minio.extraArgs` . }}" ]
+          volumeMounts:
+            {{- if $penabled }}
+            {{- if (gt $drivesPerNode 1) }}
+            {{- range $i := until $drivesPerNode }}
+            - name: export-{{ $i }}
+              mountPath: {{ $mountPath }}-{{ $i }}
+              {{- if and $penabled $subPath }}
+              subPath: {{ $subPath }}
+              {{- end }}
+            {{- end }}
+            {{- else }}
+            - name: export
+              mountPath: {{ $mountPath }}
+              {{- if and $penabled $subPath }}
+              subPath: {{ $subPath }}
+              {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.minio.tls.enabled }}
+            - name: cert-secret-volume
+              mountPath: {{ .Values.minio.certsPath }}
+            {{ end }}
+          ports:
+            {{- if .Values.minio.tls.enabled }}
+            - name: https
+            {{ else }}
+            - name: http
+            {{- end }}
+              containerPort: 9000
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: accesskey
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+                  key: secretkey
+            {{- range $key, $val := .Values.minio.environment }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end}}
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              {{- if .Values.minio.tls.enabled }}
+              port: https
+              {{ else }}
+              port: http
+              {{- end }}
+              {{- if .Values.minio.tls.enabled }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{- end }}
+            initialDelaySeconds: {{ .Values.minio.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.minio.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.minio.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.minio.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.minio.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              {{- if .Values.minio.tls.enabled }}
+              port: https
+              {{ else }}
+              port: http
+              {{- end }}
+              {{- if .Values.minio.tls.enabled }}
+              scheme: HTTPS
+              {{ else }}
+              scheme: HTTP
+              {{- end }}
+            initialDelaySeconds: {{ .Values.minio.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.minio.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.minio.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.minio.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.minio.readinessProbe.failureThreshold }}
+          resources:
+{{ toYaml .Values.minio.resources | indent 12 }}
+    {{- with .Values.minio.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.minio.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.minio.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: minio-user
+          secret:
+            secretName: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+        {{- if .Values.minio.tls.enabled }}
+        - name: cert-secret-volume
+          secret:
+            secretName: {{ .Values.minio.tls.certSecret }}
+            items:
+            - key: {{ .Values.minio.tls.publicCrt }}
+              path: public.crt
+            - key: {{ .Values.minio.tls.privateKey }}
+              path: private.key
+            - key: {{ .Values.minio.tls.publicCrt }}
+              path: CAs/public.crt
+        {{ end }}
+{{- if .Values.minio.persistence.enabled }}
+  volumeClaimTemplates:
+  {{- if gt $drivesPerNode 1 }}
+    {{- range $diskId := until $drivesPerNode}}
+    - metadata:
+        name: export-{{ $diskId }}
+      spec:
+        accessModes: [ {{ $accessMode | quote }} ]
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $psize }}
+    {{- end }}
+  {{- else }}
+    - metadata:
+        name: export
+      spec:
+        accessModes: [ {{ $accessMode | quote }} ]
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $psize }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
