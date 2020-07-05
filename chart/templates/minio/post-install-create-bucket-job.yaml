@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if or .Values.minio.defaultBucket.enabled .Values.minio.buckets }}
 apiVersion: batch/v1
 kind: Job

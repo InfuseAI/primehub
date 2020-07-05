@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if .Values.minio.networkPolicy.enabled }}
 kind: NetworkPolicy
 apiVersion: {{ template "minio.networkPolicy.apiVersion" . }}

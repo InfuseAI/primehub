@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if .Values.minio.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

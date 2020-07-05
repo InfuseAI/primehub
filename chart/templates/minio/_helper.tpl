@@ -1,4 +1,13 @@
 {{/* vim: set filetype=mustache: */}}
+
+{{- define "minio.enabled" -}}
+  {{- if (and .Values.store.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}

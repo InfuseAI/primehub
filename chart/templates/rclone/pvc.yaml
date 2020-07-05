@@ -1,15 +1,14 @@
-{{- if .Values.primehub.store.enabled }}
-{{- $fullName := include "minio.fullname" . -}}
-{{- $servicePort := .Values.minio.service.port -}}
+{{- if eq (include "rclone.enabled" .) "true" -}}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ $fullName }}-store
+  name: {{ include "primehub.store.pvcName" .}}
   labels:
-    app.kubernetes.io/name: {{ template "minio.name" . }}
+    app.kubernetes.io/name: {{ include "primehub.name" . }}-store
     helm.sh/chart: {{ include "primehub.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    name: {{ include "primehub.store.pvcName" .}}
 spec:
   accessModes:
   - ReadWriteMany
@@ -21,16 +20,16 @@ spec:
     volumeHandle: data-id
     volumeAttributes:
       remote: "s3"
-      remotePath: "{{.Values.primehub.store.bucket}}"
+      remotePath: {{ include "primehub.store.bucket" .}}
       s3-provider: "Minio"
-      s3-endpoint: "http://{{ $fullName }}.{{ .Release.Namespace }}:{{ $servicePort }}"
-      s3-access-key-id: {{ .Values.minio.accessKey | quote }}
-      s3-secret-access-key: {{ .Values.minio.secretKey | quote }}
+      s3-endpoint: {{ include "primehub.store.endpoint" .}}
+      s3-access-key-id: {{ include "primehub.store.accessKey" .}}
+      s3-secret-access-key: {{ include "primehub.store.secretKey" .}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $fullName }}-store
+  name: {{ include "primehub.store.pvcName" .}}
 spec:
   accessModes:
   - ReadWriteMany
@@ -40,5 +39,5 @@ spec:
   storageClassName: rclone
   selector:
     matchLabels:
-  name: {{ $fullName }}-store
+      name: {{ include "primehub.store.pvcName" .}}
 {{- end }}

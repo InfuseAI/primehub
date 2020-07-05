@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if eq .Values.minio.mode "standalone" }}
 {{ $bucketRoot := or ($.Values.minio.bucketRoot) ($.Values.minio.mountPath) }}
 apiVersion: {{ template "minio.deployment.apiVersion" . }}

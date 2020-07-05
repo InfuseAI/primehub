@@ -1,4 +1,4 @@
-{{- if .Values.fluentd.enabled -}}
+{{- if eq (include "fluentd.enabled" .) "true" -}}
 ---
 apiVersion: v1
 kind: ServiceAccount
