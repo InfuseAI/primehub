@@ -180,10 +180,6 @@ function create_default_resources() {
   print_info "Add client role: realm-management:realm-admin -> $PH_USER"
   kc_user_add_client_role $KC_REALM $PH_USER realm-management realm-admin
 
-  kc_role_create ROLE_IMG $KC_REALM 'img:base-notebook'
-  print_info "Bind images: img:base-notebook -> $PH_GROUP"
-  kc_group_add_realm_role $KC_REALM $PH_GROUP 'img:base-notebook' || true
-
   instances='cpu-1 cpu-2 gpu-1 gpu-2'
   for instance in $instances; do
     kc_role_create ROLE_IT $KC_REALM "it:${instance}"
@@ -191,9 +187,9 @@ function create_default_resources() {
     kc_group_add_realm_role $KC_REALM everyone "it:${instance}" || true
   done
 
-  images='pytorch-1.4.0 tf-1.14 tf-2.1'
+  images='base-notebook pytorch-1.4.0 tf-1.14 tf-2.1'
   for image in $images; do
-    kc_role_create ROLE_IT $KC_REALM "img:${image}"
+    kc_role_create ROLE_IMG $KC_REALM "img:${image}"
     print_info "Bind images: img:${image} -> everyone"
     kc_group_add_realm_role $KC_REALM everyone "img:${image}" || true
   done
