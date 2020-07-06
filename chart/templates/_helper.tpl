@@ -107,3 +107,39 @@ Dataset
 {{- printf "%s%s" (include "primehub.url" .) (include "primehub.dataset.path" .) -}}
 {{- end -}}
 
+
+{{/*
+Store
+*/}}
+{{- define "primehub.phfs.enabled" -}}
+  {{- if (and .Values.store.enabled .Values.store.phfs.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}
+
+{{- define "primehub.feature.logPersistence.enabled" -}}
+  {{- if (and .Values.store.enabled .Values.store.logPersistence.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}
+
+
+{{- define "primehub.store.endpoint" -}}
+  http://{{ include "primehub.fullname" . }}-minio.{{ .Release.Namespace}}:{{ .Values.minio.service.port }}
+{{- end -}}
+{{- define "primehub.store.bucket" -}}
+  {{.Values.store.bucket}}
+{{- end -}}
+{{- define "primehub.store.accessKey" -}}
+  {{.Values.minio.accessKey}}
+{{- end -}}
+{{- define "primehub.store.secretKey" -}}
+  {{.Values.minio.secretKey}}
+{{- end -}}
+{{- define "primehub.store.pvcName" -}}
+  {{include "primehub.name" .}}-store
+{{- end -}}

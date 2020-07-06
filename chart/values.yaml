@@ -16,8 +16,6 @@ primehub:
   sharedVolumeStorageClass: ""
   store:
     enabled: false
-    bucket: primehub
-
 ingress:
   enabled: true
   annotations:
@@ -580,6 +578,17 @@ istio:
       type: ClusterIP
       port: 8080
 
+store:
+  enabled: false
+  accessKey: "AKIAIOSFODNN7EXAMPLE"
+  secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  bucket: "primehub"
+
+  phfs:
+    enabled: true
+  logPersistence:
+    enabled: true
+
 fluentd:
   enabled: false
 
@@ -587,9 +596,6 @@ fluentd:
   flushAtShutdown: false
   flushInterval: "3600s"
   chunkLimitSize: "256m"
-  # XXX: will be removed when integration with primehub store
-  bucket: "primehub"
-  endpoint: "http://minio.hub:9000/"
   # S3 Configuratio
   storeAs: "txt"
   image:
@@ -822,7 +828,7 @@ minio:
   ##
   resources:
     requests:
-      memory: 4Gi
+      memory: 512Mi
 
   ## Create a bucket after minio install
   ##

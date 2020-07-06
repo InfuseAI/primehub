@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if eq .Values.minio.mode "standalone" }}
 {{- if and .Values.minio.persistence.enabled (not .Values.minio.persistence.existingClaim) }}
 apiVersion: v1
@@ -21,7 +21,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.minio.persistence.size | quote }}
-      
+
 {{- if .Values.minio.persistence.storageClass }}
 {{- if (eq "-" .Values.minio.persistence.storageClass) }}
   storageClassName: ""

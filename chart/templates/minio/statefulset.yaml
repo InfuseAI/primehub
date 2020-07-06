@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if eq .Values.minio.mode "distributed" }}
 {{ $zoneCount := .Values.minio.zones | int }}
 {{ $nodeCount := .Values.minio.replicas | int }}

@@ -1,4 +1,4 @@
-{{- if .Values.fluentd.enabled -}}
+{{- if eq (include "fluentd.enabled" .) "true" -}}
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -51,11 +51,11 @@ spec:
         - name: FLUENT_UID
           value: "0"
         - name:  S3_BUCKET_NAME
-          value: "{{ .Values.fluentd.bucket }}"
+          value: {{ include "primehub.store.bucket" .}}
         - name:  S3_BUCKET_REGION
           value: "us-east-1"
         - name:  S3_ENDPOINT
-          value: "{{ .Values.fluentd.endpoint }}"
+          value: {{ include "primehub.store.endpoint" .}}
         - name:  S3_STORE_AS
           value: "{{ .Values.fluentd.storeAs }}"
         - name:  BUFFER_FLUSH_AT_SHUTDOWN

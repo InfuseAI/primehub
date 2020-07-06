@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if .Values.minio.ingress.enabled -}}
 {{- $fullName := include "minio.fullname" . -}}
 {{- $servicePort := .Values.minio.service.port -}}

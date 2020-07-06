@@ -1,4 +1,4 @@
-{{- if .Values.primehub.store.enabled }}
+{{- if eq (include "minio.enabled" .) "true" -}}
 {{- if .Values.minio.serviceAccount.create -}}
 {{- $fullName := include "minio.fullname" . -}}
 apiVersion: rbac.authorization.k8s.io/v1
