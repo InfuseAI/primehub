@@ -26,9 +26,9 @@ fi
 k3d version
 
 # Create k3d
-k3d create --name ${CLUSTER_NAME} --image=rancher/k3s:${K8S_VERSION} --server-arg '--no-deploy=traefik' --wait 120
+k3d create cluster ${CLUSTER_NAME} --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
 mkdir -p ~/.kube
-cp $(k3d get-kubeconfig --name=${CLUSTER_NAME}) ~/.kube/config
+cp $(k3d get kubeconfig ${CLUSTER_NAME}) ~/.kube/config || true
 
 echo "waiting for nodes ready"
 until kubectl get nodes | grep ' Ready'

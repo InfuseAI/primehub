@@ -33,7 +33,7 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
-K3D_VERSION=1.7.0
+K3D_VERSION=3.0.0-rc.6
 HELM_VERSION=2.16.1
 
 # Install k3d
