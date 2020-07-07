@@ -9,7 +9,7 @@ export PRIMEHUB_PASSWORD=${PH_PASSWORD}
 export PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
 export KEYCLOAK_DOMAIN=id.ci-e2e.dev.primehub.io
 export KEYCLOAK_PASSWORD=$(openssl rand -hex 16)
-export STORAGE_CLASS=standard
+export STORAGE_CLASS=local-path
 export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
 export HUB_AUTH_STATE_CRYPTO_KEY=$(openssl rand -hex 32)
 export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
@@ -97,7 +97,7 @@ helm upgrade \
   --reset-values \
   --namespace hub  \
   --values primehub-values.yaml \
-  --values dev-kind/primehub-override.yaml \
+  --values k3d/primehub-override.yaml \
   primehub ../chart
 
 # change requests.cpu to 0.1 to make sure shared runner can have enough resource

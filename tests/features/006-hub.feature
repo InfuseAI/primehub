@@ -24,7 +24,7 @@ Feature: Hub
     Then I am on the spawner page
     When I choose group with name "e2e-test-group"
     And I choose instance type
-    And I choose image
+    And I choose image with name "base-notebook"
     And I click "Start Notebook" button
     Then I can see the spawning page
     And I can see the JupyterLab page

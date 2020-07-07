@@ -33,13 +33,13 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
-KIND_VERSION=0.7.0
+K3D_VERSION=3.0.0-rc.6
 HELM_VERSION=2.16.1
 
-# Install kind
-curl -sLo kind https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64 && \
-  chmod +x kind && \
-  sudo mv kind /usr/local/bin/
+# Install k3d
+curl -sLo k3d https://github.com/rancher/k3d/releases/download/v${K3D_VERSION}/k3d-linux-amd64 && \
+  chmod +x k3d && \
+  sudo mv k3d /usr/local/bin/
 
 # Install helm
 curl -ssL https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xz --strip-components 1 linux-amd64/helm && \

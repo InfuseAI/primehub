@@ -67,6 +67,11 @@ defineStep("I choose option with name {string}", async function(name) {
   await this.clickElementByXpath(xpath);
 });
 
+defineStep("I choose image with name {string}", async function(name) {
+  const selector = `#image-container input[value='${name}']`;
+  await this.clickElementBySelector(selector);
+});
+
 defineStep("I go to the spawner page", async function() {
   /* wait unitl page fully load */
   await this.page.goto(this.HUB_HOME_URL, {

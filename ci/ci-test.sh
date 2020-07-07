@@ -7,9 +7,9 @@ cleanup() {
   kubectl get pod --all-namespaces
   echo "events in all namespaces"
   kubectl get events --all-namespaces
-  echo "export kind logs"
-  mkdir -p kind_logs
-  kind export logs --name primehub kind_logs
+  #echo "export kind logs"
+  #mkdir -p kind_logs
+  #kind export logs --name primehub kind_logs
 }
 trap "cleanup" ERR
 
@@ -100,11 +100,11 @@ wait_for_docker
 
 # install cluster
 echo "create a cluster"
-ci/dev-kind/setup-kind.sh
+ci/k3d/setup-k3d.sh
 
 # install primehub
 echo "install primehub"
-ci/dev-kind/install-components.sh
+ci/k3d/install-components.sh
 
 # apply dev license
 DEV_LICENSE=${DEV_LICENSE:-false}
