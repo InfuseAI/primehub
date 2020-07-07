@@ -10,11 +10,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-{{- if and .Values.minio.nasgateway.enabled .Values.minio.nasgateway.pv }}
-  selector:
-    matchLabels:
-      pv: {{ .Values.minio.nasgateway.pv | quote }}
-{{- end }}
   accessModes:
     - {{ .Values.minio.persistence.accessMode | quote }}
   resources:

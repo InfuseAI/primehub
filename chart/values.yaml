@@ -767,16 +767,8 @@ minio:
     accessKey: ""
     secretKey: ""
 
-  ## Use minio as an azure blob gateway, you should disable data persistence so no volume claim are created.
-  ## https://docs.minio.io/docs/minio-gateway-for-azure
-  azuregateway:
-    enabled: false
-    # Number of parallel instances
-    replicas: 4
-
   ## Use minio as GCS (Google Cloud Storage) gateway, you should disable data persistence so no volume claim are created.
   ## https://docs.minio.io/docs/minio-gateway-for-gcs
-
   gcsgateway:
     enabled: false
     # Number of parallel instances
@@ -786,46 +778,12 @@ minio:
     # Google cloud project-id
     projectId: ""
 
-  ossgateway:
-    enabled: false
-    # Number of parallel instances
-    replicas: 4
-    endpointURL: ""
-
-  ## Use minio on NAS backend
-  ## https://docs.minio.io/docs/minio-gateway-for-nas
-
-  nasgateway:
-    enabled: false
-    # Number of parallel instances
-    replicas: 4
-    # For NAS Gateway, you may want to bind the PVC to a specific PV. To ensure that happens, PV to bind to should have
-    # a label like "pv: <value>", use value here.
-    pv: ~
-
-  ## Use minio as Backblaze B2 gateway
-  ## https://github.com/minio/minio/blob/master/docs/gateway/b2.md
-  b2gateway:
-    enabled: false
-    # Number of parallel instances
-    replicas: 4
 
   ## Use this field to add environment variables relevant to Minio server. These fields will be passed on to Minio container(s)
   ## when Chart is deployed
   environment:
     MINIO_API_READY_DEADLINE: "5s"
     ## Please refer for comprehensive list https://docs.minio.io/docs/minio-server-configuration-guide.html
-
-  networkPolicy:
-    enabled: false
-    allowExternal: true
-
-  ## PodDisruptionBudget settings
-  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
-  ##
-  podDisruptionBudget:
-    enabled: false
-    maxUnavailable: 1
 
   ## Specify the service account to use for the Minio pods. If 'create' is set to 'false'
   ## and 'name' is left unspecified, the account 'default' will be used.
