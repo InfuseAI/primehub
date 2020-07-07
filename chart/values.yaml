@@ -615,18 +615,6 @@ fluentd:
   affinity: {}
 
 minio:
-  ## Provide a name in place of minio for `app:` labels
-  ##
-  nameOverride: ""
-
-  ## Provide a name to substitute for the full names of resources
-  ##
-  fullnameOverride: ""
-
-  ## set kubernetes cluster domain where minio is running
-  ##
-  clusterDomain: cluster.local
-
   ## Set default image, imageTag, and imagePullPolicy. mode is used to indicate the
   ##
   image:
@@ -932,21 +920,4 @@ minio:
     ## The name of the service account to use. If 'create' is 'true', a service account with that name
     ## will be created. Otherwise, a name will be auto-generated.
     name:
-
-  metrics:
-    # Metrics can not be disabled yet: https://github.com/minio/minio/issues/7493
-    serviceMonitor:
-      enabled: false
-      additionalLabels: {}
-      # namespace: monitoring
-      # interval: 30s
-      # scrapeTimeout: 10s
-
-  ## ETCD settings: https://github.com/minio/minio/blob/master/docs/sts/etcd.md
-  etcd:
-    endpoints: []
-    pathPrefix: ""
-    corednsPathPrefix: ""
-    clientCert: ""
-    clientCertKey: ""
 
