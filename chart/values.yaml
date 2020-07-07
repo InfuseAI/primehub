@@ -14,8 +14,6 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   sharedVolumeStorageClass: ""
-  store:
-    enabled: false
 ingress:
   enabled: true
   annotations:
