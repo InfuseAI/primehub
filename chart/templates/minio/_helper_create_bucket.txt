@@ -78,11 +78,7 @@ createBucket() {
 }
 
 # Try connecting to Minio instance
-{{- if .Values.minio.tls.enabled }}
-scheme=https
-{{- else }}
 scheme=http
-{{- end }}
 connectToMinio $scheme
 
 {{- if or .Values.minio.defaultBucket.enabled }}
@@ -91,6 +87,6 @@ createBucket {{ .Values.minio.defaultBucket.name }} {{ .Values.minio.defaultBuck
 {{ else if .Values.minio.buckets }}
 # Create the buckets
 {{- range .Values.minio.buckets }}
-createBucket {{ .name }} {{ .policy }} {{ .purge }} 
+createBucket {{ .name }} {{ .policy }} {{ .purge }}
 {{- end }}
 {{- end }}

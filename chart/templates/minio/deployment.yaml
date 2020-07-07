@@ -116,16 +116,8 @@ spec:
               subPath: "{{ .Values.minio.persistence.subPath }}"
               {{- end }}
             {{- end }}
-            {{- if .Values.minio.tls.enabled }}
-            - name: cert-secret-volume
-              mountPath: {{ .Values.minio.certsPath }}
-            {{ end }}
           ports:
-            {{- if .Values.minio.tls.enabled }}
-            - name: https
-            {{ else }}
             - name: http
-            {{- end }}
               containerPort: 9000
           env:
             - name: MINIO_ACCESS_KEY
@@ -165,16 +157,8 @@ spec:
           livenessProbe:
             httpGet:
               path: /minio/health/live
-              {{- if .Values.minio.tls.enabled }}
-              port: https
-              {{ else }}
               port: http
-              {{- end }}
-              {{- if .Values.minio.tls.enabled }}
-              scheme: HTTPS
-              {{ else }}
               scheme: HTTP
-              {{- end }}
             initialDelaySeconds: {{ .Values.minio.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.minio.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.minio.livenessProbe.timeoutSeconds }}
@@ -182,15 +166,8 @@ spec:
             failureThreshold: {{ .Values.minio.livenessProbe.failureThreshold }}
           readinessProbe:
             httpGet:
-              {{- if .Values.minio.tls.enabled }}
-              scheme: HTTPS
-              {{- end }}
               path: /minio/health/ready
-              {{- if .Values.minio.tls.enabled }}
-              port: https
-              {{ else }}
               port: http
-              {{- end }}
             initialDelaySeconds: {{ .Values.minio.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.minio.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.minio.readinessProbe.timeoutSeconds }}
@@ -226,16 +203,4 @@ spec:
         - name: minio-user
           secret:
             secretName: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-        {{- if .Values.minio.tls.enabled }}
-        - name: cert-secret-volume
-          secret:
-            secretName: {{ .Values.minio.tls.certSecret }}
-            items:
-            - key: {{ .Values.minio.tls.publicCrt }}
-              path: public.crt
-            - key: {{ .Values.minio.tls.privateKey }}
-              path: private.key
-            - key: {{ .Values.minio.tls.publicCrt }}
-              path: CAs/public.crt
-        {{ end }}
 {{- end }}

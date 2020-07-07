@@ -46,14 +46,6 @@ spec:
                 name: {{ template "minio.fullname" . }}
             - secret:
                 name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-        {{- if .Values.minio.tls.enabled }}
-        - name: cert-secret-volume-mc
-          secret:
-            secretName: {{ .Values.minio.tls.certSecret }}
-            items:
-            - key: {{ .Values.minio.tls.publicCrt }}
-              path: CAs/public.crt
-        {{ end }}
       serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
       containers:
       - name: minio-mc
@@ -68,10 +60,6 @@ spec:
         volumeMounts:
           - name: minio-configuration
             mountPath: /config
-          {{- if .Values.minio.tls.enabled }}
-          - name: cert-secret-volume-mc
-            mountPath: {{ .Values.minio.configPathmc }}certs
-          {{ end }}
         resources:
 {{ toYaml .Values.minio.resources | indent 10 }}
 {{- end }}
