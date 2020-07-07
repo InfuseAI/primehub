@@ -1,5 +1,4 @@
 {{- if eq (include "minio.enabled" .) "true" -}}
-{{- if eq .Values.minio.mode "standalone" }}
 {{ $bucketRoot := or ($.Values.minio.bucketRoot) ($.Values.minio.mountPath) }}
 apiVersion: {{ template "minio.deployment.apiVersion" . }}
 kind: Deployment
@@ -239,5 +238,4 @@ spec:
             - key: {{ .Values.minio.tls.publicCrt }}
               path: CAs/public.crt
         {{ end }}
-{{- end }}
 {{- end }}
