@@ -81,12 +81,5 @@ createBucket() {
 scheme=http
 connectToMinio $scheme
 
-{{- if or .Values.minio.defaultBucket.enabled }}
-# Create the bucket
-createBucket {{ .Values.minio.defaultBucket.name }} {{ .Values.minio.defaultBucket.policy }} {{ .Values.minio.defaultBucket.purge }}
-{{ else if .Values.minio.buckets }}
-# Create the buckets
-{{- range .Values.minio.buckets }}
-createBucket {{ .name }} {{ .policy }} {{ .purge }}
-{{- end }}
-{{- end }}
+createBucket {{ .Values.store.bucket }} none false
+

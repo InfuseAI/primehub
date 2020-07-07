@@ -1,5 +1,4 @@
 {{- if eq (include "minio.enabled" .) "true" -}}
-{{- if or .Values.minio.defaultBucket.enabled .Values.minio.buckets }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -12,9 +11,6 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
-{{- with .Values.minio.makeBucketJob.annotations }}
-{{ toYaml . | indent 4 }}
-{{- end }}
 spec:
   template:
     metadata:
@@ -62,5 +58,4 @@ spec:
             mountPath: /config
         resources:
 {{ toYaml .Values.minio.resources | indent 10 }}
-{{- end }}
 {{- end }}

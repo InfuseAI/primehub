@@ -648,14 +648,6 @@ minio:
   ##
   priorityClassName: ""
 
-  ## Set default accesskey, secretkey, Minio config file path, volume mount path and
-  ## number of nodes (only used for Minio distributed mode)
-  ## AccessKey and secretKey is generated when not set
-  ## Distributed Minio ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
-  ##
-  existingSecret: ""
-  accessKey: "AKIAIOSFODNN7EXAMPLE"
-  secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   certsPath: "/etc/minio/certs/"
   configPathmc: "/etc/minio/mc/"
   mountPath: "/export"
@@ -763,32 +755,6 @@ minio:
   resources:
     requests:
       memory: 512Mi
-
-  ## Create a bucket after minio install
-  ##
-  defaultBucket:
-    enabled: true
-    ## If enabled, must be a string with length > 0
-    name: primehub
-    ## Can be one of none|download|upload|public
-    policy: none
-    ## Purge if bucket exists already
-    purge: false
-
-  ## Create multiple buckets after minio install
-  ## Enabling `defaultBucket` will take priority over this list
-  ##
-  buckets: []
-    # - name: bucket1
-    #   policy: none
-    #   purge: false
-    # - name: bucket2
-    #   policy: none
-    #   purge: false
-
-  ## Additional Annotations for the Kubernetes Batch (make-bucket-job)
-  makeBucketJob:
-    annotations:
 
   ## Additional Annotations for the Kubernetes Batch (update-prometheus-secret)
   updatePrometheusJob:
