@@ -1,5 +1,4 @@
 {{- if eq (include "minio.enabled" .) "true" -}}
-{{ $bucketRoot := or ($.Values.minio.bucketRoot) ($.Values.minio.mountPath) }}
 apiVersion: {{ template "minio.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -11,12 +10,10 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   strategy:
-    type: {{ .Values.minio.DeploymentUpdate.type }}
-    {{- if eq .Values.minio.DeploymentUpdate.type "RollingUpdate" }}
+    type: RollingUpdate
     rollingUpdate:
-      maxSurge: {{ .Values.minio.DeploymentUpdate.maxSurge }}
-      maxUnavailable: {{ .Values.minio.DeploymentUpdate.maxUnavailable }}
-    {{- end}}
+      maxSurge: 100%
+      maxUnavailable: 0
   {{- if .Values.minio.s3gateway.enabled }}
   replicas: {{ .Values.minio.s3gateway.replicas }}
   {{- end }}
@@ -37,15 +34,12 @@ spec:
         checksum/secrets: {{ include (print $.Template.BasePath "/minio/secrets.yaml") . | sha256sum }}
         checksum/config: {{ include (print $.Template.BasePath "/minio/configmap.yaml") . | sha256sum }}
     spec:
-  {{- if .Values.minio.priorityClassName }}
-      priorityClassName: "{{ .Values.minio.priorityClassName }}"
-  {{- end }}
       serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
-{{- if and .Values.minio.securityContext.enabled .Values.minio.persistence.enabled }}
+{{- if .Values.minio.persistence.enabled }}
       securityContext:
-        runAsUser: {{ .Values.minio.securityContext.runAsUser }}
-        runAsGroup: {{ .Values.minio.securityContext.runAsGroup }}
-        fsGroup: {{ .Values.minio.securityContext.fsGroup }}
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
 {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -54,25 +48,27 @@ spec:
           {{- if .Values.minio.s3gateway.enabled }}
           command: [ "/bin/sh",
           "-ce",
-          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway s3 {{ .Values.minio.s3gateway.serviceEndpoint }} {{- template `minio.extraArgs` . }}" ]
+          "/usr/bin/docker-entrypoint.sh minio -S /etc/minio/certs/ gateway s3 {{ .Values.minio.s3gateway.serviceEndpoint }} {{- template `minio.extraArgs` . }}" ]
           {{- else }}
           {{- if .Values.minio.gcsgateway.enabled }}
           command: [ "/bin/sh",
           "-ce",
-          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} gateway gcs {{ .Values.minio.gcsgateway.projectId }} {{- template `minio.extraArgs` . }}" ]
+          "/usr/bin/docker-entrypoint.sh minio -S /etc/minio/certs/ gateway gcs {{ .Values.minio.gcsgateway.projectId }} {{- template `minio.extraArgs` . }}" ]
           {{- else }}
           command: [ "/bin/sh",
           "-ce",
-          "/usr/bin/docker-entrypoint.sh minio -S {{ .Values.minio.certsPath }} server {{ $bucketRoot }} {{- template `minio.extraArgs` . }}" ]
+          "/usr/bin/docker-entrypoint.sh minio -S /etc/minio/certs/ server /export {{- template `minio.extraArgs` . }}" ]
           {{- end }}
           {{- end }}
           volumeMounts:
             {{- if and .Values.minio.persistence.enabled (not .Values.minio.gcsgateway.enabled) (not .Values.minio.s3gateway.enabled) }}
             - name: export
-              mountPath: {{ .Values.minio.mountPath }}
-              {{- if .Values.minio.persistence.subPath }}
-              subPath: "{{ .Values.minio.persistence.subPath }}"
-              {{- end }}
+              mountPath: /export
+            {{- end }}
+            {{- if .Values.minio.gcsgateway.enabled }}
+            - name: minio-user
+              mountPath: "/etc/credentials"
+              readOnly: true
             {{- end }}
           ports:
             - name: http
@@ -108,29 +104,28 @@ spec:
                   key: awsSecretAccessKey
             {{- end }}
             {{- end }}
-            {{- range $key, $val := .Values.minio.environment }}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-            {{- end}}
+            - name: MINIO_API_READY_DEADLINE
+              value: "5s"
           livenessProbe:
             httpGet:
               path: /minio/health/live
               port: http
               scheme: HTTP
-            initialDelaySeconds: {{ .Values.minio.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.minio.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.minio.livenessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.minio.livenessProbe.successThreshold }}
-            failureThreshold: {{ .Values.minio.livenessProbe.failureThreshold }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 1
           readinessProbe:
             httpGet:
               path: /minio/health/ready
               port: http
-            initialDelaySeconds: {{ .Values.minio.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.minio.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.minio.readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.minio.readinessProbe.successThreshold }}
-            failureThreshold: {{ .Values.minio.readinessProbe.failureThreshold }}
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            ## Set this to 1s higher than MINIO_API_READY_DEADLINE
+            timeoutSeconds: 6
+            successThreshold: 1
+            failureThreshold: 3
           resources:
 {{ toYaml .Values.minio.resources | indent 12 }}
 {{- with .Values.minio.nodeSelector }}

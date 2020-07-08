@@ -633,40 +633,11 @@ minio:
   ## Additional arguments to pass to minio binary
   extraArgs: []
 
-  ## Update strategy for Deployments
-  DeploymentUpdate:
-    type: RollingUpdate
-    maxUnavailable: 0
-    maxSurge: 100%
-
-  ## Update strategy for StatefulSets
-  StatefulSetUpdate:
-    updateStrategy: RollingUpdate
-
-  ## Pod priority settings
-  ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
-  ##
-  priorityClassName: ""
-
-  certsPath: "/etc/minio/certs/"
-  configPathmc: "/etc/minio/mc/"
-  mountPath: "/export"
-
-  ## Override the root directory which the minio server should serve from.
-  ## If left empty, it defaults to the value of {{ .Values.mountPath }}
-  ## If defined, it must be a sub-directory of the path specified in {{ .Values.mountPath }}
-  bucketRoot: ""
-
   ## Enable persistence using Persistent Volume Claims
   ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
   ##
   persistence:
     enabled: true
-
-    ## A manually managed Persistent Volume and Claim
-    ## Requires persistence.enabled: true
-    ## If defined, PVC must be created manually before volume will be bound
-    existingClaim: ""
 
     ## minio data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
@@ -682,87 +653,26 @@ minio:
     accessMode: ReadWriteOnce
     size: 10Gi
 
-    ## If subPath is set mount a sub folder of a volume instead of the root of the volume.
-    ## This is especially handy for volume plugins that don't natively support sub mounting (like glusterfs).
-    ##
-    subPath: ""
-
-  ## Expose the Minio service to be accessed from outside the cluster (LoadBalancer service).
-  ## or access it from within the cluster (ClusterIP service). Set the service type and the port to serve it.
-  ## ref: http://kubernetes.io/docs/user-guide/services/
-  ##
-
   service:
     type: ClusterIP
-    clusterIP: ~
     port: 9000
-    nodePort: 32000
-
-    ## List of IP addresses at which the Prometheus server service is available
-    ## Ref: https://kubernetes.io/docs/user-guide/services/#external-ips
-    ##
-    externalIPs: []
-    #   - externalIp1
-
-    annotations: {}
-      # prometheus.io/scrape: 'true'
-      # prometheus.io/path:   '/minio/prometheus/metrics'
-      # prometheus.io/port:   '9000'
-
-  ## Configure Ingress based on the documentation here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-  ##
 
   imagePullSecrets: []
-  # - name: "image-pull-secret"
 
   ingress:
     enabled: false
 
-  ## Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
-  ## Add stateful containers to have security context, if enabled MinIO will run as this
-  ## user and group NOTE: securityContext is only enabled if persistence.enabled=true
-  securityContext:
-    enabled: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
-
-  ## Liveness and Readiness probe values.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-  livenessProbe:
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 1
-    successThreshold: 1
-    failureThreshold: 1
-  readinessProbe:
-    initialDelaySeconds: 30
-    periodSeconds: 5
-    ## Set this to 1s higher than MINIO_API_READY_DEADLINE
-    timeoutSeconds: 6
-    successThreshold: 1
-    failureThreshold: 3
-
-  ## Configure resource requests and limits
-  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ##
   resources:
     requests:
       memory: 512Mi
 
-  ## Additional Annotations for the Kubernetes Batch (update-prometheus-secret)
-  updatePrometheusJob:
-    annotations:
-
   s3gateway:
     enabled: false
-    replicas: 4
+    replicas: 1
     serviceEndpoint: ""
     accessKey: ""
     secretKey: ""
@@ -772,18 +682,11 @@ minio:
   gcsgateway:
     enabled: false
     # Number of parallel instances
-    replicas: 4
+    replicas: 1
     # credential json file of service account key
     gcsKeyJson: ""
     # Google cloud project-id
     projectId: ""
-
-
-  ## Use this field to add environment variables relevant to Minio server. These fields will be passed on to Minio container(s)
-  ## when Chart is deployed
-  environment:
-    MINIO_API_READY_DEADLINE: "5s"
-    ## Please refer for comprehensive list https://docs.minio.io/docs/minio-server-configuration-guide.html
 
   ## Specify the service account to use for the Minio pods. If 'create' is set to 'false'
   ## and 'name' is left unspecified, the account 'default' will be used.
