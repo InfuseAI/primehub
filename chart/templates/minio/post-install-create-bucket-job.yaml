@@ -42,7 +42,6 @@ spec:
                 name: {{ template "minio.fullname" . }}
             - secret:
                 name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
-      serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
       containers:
       - name: minio-mc
         image: "{{ .Values.minio.mcImage.repository }}:{{ .Values.minio.mcImage.tag }}"

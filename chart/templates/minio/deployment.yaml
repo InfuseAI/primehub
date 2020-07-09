@@ -34,7 +34,6 @@ spec:
         checksum/secrets: {{ include (print $.Template.BasePath "/minio/secrets.yaml") . | sha256sum }}
         checksum/config: {{ include (print $.Template.BasePath "/minio/configmap.yaml") . | sha256sum }}
     spec:
-      serviceAccountName: {{ include "minio.serviceAccountName" . | quote }}
 {{- if .Values.minio.persistence.enabled }}
       securityContext:
         runAsUser: 1000
