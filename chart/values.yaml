@@ -586,6 +586,8 @@ store:
     enabled: true
   logPersistence:
     enabled: true
+  microk8s:
+    enabled: false
 
 fluentd:
   enabled: false
@@ -698,4 +700,36 @@ minio:
     ## The name of the service account to use. If 'create' is 'true', a service account with that name
     ## will be created. Otherwise, a name will be auto-generated.
     name:
+
+rclone:
+  # use /var/snap/microk8s/common/var/lib/kubelet with microk8s
+  kubeletPath:
+
+  nodeDriverRegistrar:
+    image:
+      repository: quay.io/k8scsi/csi-node-driver-registrar
+      tag: v1.1.0
+      pullPolicy: IfNotPresent
+    resources:
+
+  rclone:
+    image:
+      repository: wunderio/csi-rclone
+      tag: v1.2.6
+      pullPolicy: IfNotPresent
+    resources:
+
+  csiAttacher:
+    image:
+      repository: quay.io/k8scsi/csi-attacher
+      tag: v1.1.1
+      pullPolicy: IfNotPresent
+    resources:
+
+  csiClusterDriverRegistrar:
+    image:
+      repository: quay.io/k8scsi/csi-cluster-driver-registrar
+      tag: v1.0.1
+      pullPolicy: IfNotPresent
+    resources:
 
