@@ -9,11 +9,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 100%
-      maxUnavailable: 0
   {{- if .Values.minio.s3gateway.enabled }}
   replicas: {{ .Values.minio.s3gateway.replicas }}
   {{- end }}
