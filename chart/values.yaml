@@ -662,6 +662,9 @@ minio:
   ingress:
     enabled: false
 
+    # annotation for nginx.ingress.kubernetes.io/proxy-body-size: "8192m"
+    maxBodySize: "8192m"
+
   nodeSelector: {}
   tolerations: []
   affinity: {}
