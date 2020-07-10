@@ -48,7 +48,7 @@ Feature: Hub
     And I type "1" to element with test-id "instanceType/gpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='e2e-test-group']/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
