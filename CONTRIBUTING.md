@@ -56,11 +56,12 @@ $ git commit -s -m 'This is my commit message'
 4. Install primehub by local chart
 
    ```
-   helm upgrade --install primehub \
+   helm upgrade primehub ./helm/primehub \
+       --install \
+       --create-namespace \
        --namespace primehub \
        --values values.yaml \
-       --set-file jupyterhub.hub.extraConfig.primehub=./helm/primehub/jupyterhub_primehub.py \
-       ./helm/primehub
+       --set-file jupyterhub.hub.extraConfig.primehub=./helm/primehub/jupyterhub_primehub.py
    ```
 ## Contribute External Components
 

@@ -1,4 +1,4 @@
-HELM_VERSION=v2.16.1
+HELM_VERSION=v3.2.4
 
 function info() {
   echo -e "\033[0;32m$1\033[0m"
@@ -14,9 +14,8 @@ function error() {
 
 function install::helm() {
   info "[Install] helm"
-  wget -O helm.tgz https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz
+  wget -O helm.tgz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
   tar zxvf helm.tgz; sudo mv linux-amd64/* /usr/bin/; rm -f helm.tgz
-  helm init --client-only
 }
 
 function install::chartpress() {

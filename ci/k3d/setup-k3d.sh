@@ -37,11 +37,8 @@ do
 done
 
 # Helm
-echo "init helm"
-kubectl apply -f k3d/helm-rbac.yml
-helm init --service-account tiller --wait
+echo "show helm version"
 helm version
-echo "end helm"
 
 # Wait for metrics api to be available
 kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apiservices/v1beta1.metrics.k8s.io
@@ -49,7 +46,7 @@ kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apis
 # nginx
 echo "init nginx-ingress"
 helm repo add stable https://kubernetes-charts.storage.googleapis.com
-helm upgrade --install --namespace nginx-ingress nginx-ingress stable/nginx-ingress --version=1.31.0 --set controller.hostNetwork=true
+helm install nginx-ingress stable/nginx-ingress --create-namespace --namespace nginx-ingress --version=1.31.0 --set controller.hostNetwork=true
 kubectl apply -f k3d/nginx-config.yaml
 
 (

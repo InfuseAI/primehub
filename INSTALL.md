@@ -84,14 +84,14 @@ helm repo update
 
    ```
    helm upgrade \
+     primehub infuseai/primehub \
      --install \
-     --reset-values \
+     --create-namespace \
      --namespace hub  \
-     --values primehub-values.yaml \
-     primehub infuseai/primehub
+     --values primehub-values.yaml
    ```
 
-   > In the first time installation, it may take a longer time to pull images. You can add `--timeout 1800` to change the default timeout duration.
+   > In the first time installation, it may take a longer time to pull images. You can add `--timeout 30m` to change the default timeout duration.
 
 2. Label the nodes which can be assigned for jupyterhub servers
 
