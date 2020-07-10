@@ -32,7 +32,6 @@ Feature: Hub
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
-  @wip
   Scenario: ch5367: User can see the error message when there is not enough quota
     Given I go to login page
     When I fill in the correct username credentials
@@ -66,7 +65,7 @@ Feature: Hub
     And I choose option with name "test-instance-type-gpu"
     And I choose image
     And I click "Start Notebook" button
-    Then I can see the error message "Error: User phadmin exceeded gpu quota: 0, requesting 1"
+    Then I can see the error message "Exceeded gpu quota"
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
