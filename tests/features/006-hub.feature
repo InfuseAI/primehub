@@ -15,24 +15,7 @@ Feature: Hub
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
-  Scenario: User can start/stop the JupyterLab server
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I choose instance type
-    And I choose image with name "base-notebook"
-    And I click "Start Notebook" button
-    Then I can see the spawning page
-    And I can see the JupyterLab page
-    And I go to the jupyterhub admin page to stop server
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
-
-  Scenario: ch5367: User can see the error message when there is not enough quota
+  Scenario: User can see the error message when gpu quota is not enough
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
@@ -65,7 +48,24 @@ Feature: Hub
     And I choose option with name "test-instance-type-gpu"
     And I choose image with name "base-notebook"
     And I click "Start Notebook" button
-    Then I can see the error message "Exceeded gpu quota"
+    Then I can see the error message "Error: 0/1 nodes are available: 1 Insufficient nvidia.com/gpu."
+    When I logout on JupyterHub page
+    Then I can logout from JupyterHub
+
+  Scenario: User can start/stop the JupyterLab server
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the landing page
+    When I click "JupyterHub" image in landing page
+    Then I am on the spawner page
+    When I choose group with name "e2e-test-group"
+    And I choose instance type
+    And I choose image with name "base-notebook"
+    And I click "Start Notebook" button
+    Then I can see the spawning page
+    And I can see the JupyterLab page
+    And I go to the jupyterhub admin page to stop server
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 

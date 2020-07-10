@@ -109,13 +109,7 @@ defineStep("I can see the error message {string}", async function(message) {
   const [ui_element] = await this.page.$x(xpath);
   var text = await (await ui_element.getProperty('textContent')).jsonValue();
   console.log(`Error message: ${text.trim()}`);
-
-  switch (message) {
-    case 'Exceeded gpu quota':
-      if (text.trim() !== `Error: User ${this.USERNAME} exceeded gpu quota: 0, requesting 1`) 
-        throw new Error("The 'error prompt message' is incorrect");
-      break;
-  }
+  if (text.trim() !== message) throw new Error("The 'error prompt message' is incorrect");
 });
 
 defineStep("I go to the hub control panel", async function() {
