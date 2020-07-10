@@ -8,7 +8,7 @@ echo "original args: $@"
 if command -v tini &>/dev/null && command -v start-notebook.sh; then
     echo "start the standard notebook command"
     export PRIMEHUB_LAUNCH_MODE=standard
-    start-notebook.sh
+    start-notebook.sh $@ --NotebookApp.default_url=/lab
     exit 0
 fi
 
