@@ -46,7 +46,7 @@ Feature: Admin
     And I type "4" to element with xpath "//div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input']"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='phadmin']/..//input"
+    And I click my username
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"

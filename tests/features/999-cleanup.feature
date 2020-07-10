@@ -39,13 +39,13 @@ Feature: Admin
     Then I am on the admin dashboard "Instance Types" page
     When I delete a row with text "test-instance-type"
     And I wait for 2.0 seconds
-    #And I delete a row with text "test-instance-type-gpu"
-    #And I wait for 2.0 seconds
+    And I delete a row with text "test-instance-type-gpu"
+    And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-instance-type"
-    #And list-view table "should not" contain row with "test-instance-type-gpu"
+    And list-view table "should not" contain row with "test-instance-type-gpu"
     When I click refresh
     Then list-view table "should not" contain row with "test-instance-type"
-    #And list-view table "should not" contain row with "test-instance-type-gpu"
+    And list-view table "should not" contain row with "test-instance-type-gpu"
     When I logout from banner UI
     Then I am on login page
     When I fill in the correct username credentials

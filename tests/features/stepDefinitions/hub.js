@@ -109,7 +109,7 @@ defineStep("I can see the error message {string}", async function(message) {
   const [ui_element] = await this.page.$x(xpath);
   var text = await (await ui_element.getProperty('textContent')).jsonValue();
   console.log(`Error message: ${text.trim()}`);
-  if (text.trim() !== message) throw new Error("Error message is incorrect");
+  if (text.trim() !== message) throw new Error("The 'error prompt message' is incorrect");
 });
 
 defineStep("I go to the hub control panel", async function() {

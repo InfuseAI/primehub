@@ -39,6 +39,10 @@ defineStep("I type {string} to element with test-id {string}", async function(st
   await this.page.type(selector, `${string}-${this.E2E_SUFFIX}`);
 });
 
+defineStep("I click my username", async function() {
+  await this.clickElementByXpath(`//td[text()='${this.USERNAME}']/..//input`);
+});
+
 defineStep("I click edit-button in row contains text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then edit button
   // xpath: //tr[contains(., 'hlb')]//button[@data-testid='edit-button']

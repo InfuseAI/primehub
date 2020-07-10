@@ -15,25 +15,7 @@ Feature: Hub
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
-  Scenario: User can start/stop the JupyterLab server
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I choose instance type
-    And I choose image with name "base-notebook"
-    And I click "Start Notebook" button
-    Then I can see the spawning page
-    And I can see the JupyterLab page
-    And I go to the jupyterhub admin page to stop server
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
-
-  @wip
-  Scenario: ch5367: User can see the error message when there is not enough quota
+  Scenario: User can see the error message when gpu quota is not enough
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
@@ -49,7 +31,7 @@ Feature: Hub
     And I type "1" to element with test-id "instanceType/gpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='test-group']/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
@@ -62,11 +44,28 @@ Feature: Hub
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I choose group with name "test-group"
+    When I choose group with name "e2e-test-group"
     And I choose option with name "test-instance-type-gpu"
-    And I choose image
+    And I choose image with name "base-notebook"
     And I click "Start Notebook" button
-    Then I can see the error message "Error: User phadmin exceeded gpu quota: 0, requesting 1"
+    Then I can see the error message "Error: 0/1 nodes are available: 1 Insufficient nvidia.com/gpu."
+    When I logout on JupyterHub page
+    Then I can logout from JupyterHub
+
+  Scenario: User can start/stop the JupyterLab server
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the landing page
+    When I click "JupyterHub" image in landing page
+    Then I am on the spawner page
+    When I choose group with name "e2e-test-group"
+    And I choose instance type
+    And I choose image with name "base-notebook"
+    And I click "Start Notebook" button
+    Then I can see the spawning page
+    And I can see the JupyterLab page
+    And I go to the jupyterhub admin page to stop server
     When I logout on JupyterHub page
     Then I can logout from JupyterHub
 
