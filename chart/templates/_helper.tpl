@@ -135,10 +135,10 @@ Store
   {{.Values.store.bucket}}
 {{- end -}}
 {{- define "primehub.store.accessKey" -}}
-  {{.Values.minio.accessKey}}
+  {{.Values.store.accessKey}}
 {{- end -}}
 {{- define "primehub.store.secretKey" -}}
-  {{.Values.minio.secretKey}}
+  {{.Values.store.secretKey}}
 {{- end -}}
 {{- define "primehub.store.pvcName" -}}
   {{include "primehub.name" .}}-store

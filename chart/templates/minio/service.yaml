@@ -25,11 +25,7 @@ spec:
   type: {{ .Values.minio.service.type }}
 {{- end }}
   ports:
-    {{- if .Values.minio.tls.enabled }}
-    - name: https
-    {{ else }}
     - name: http
-    {{- end }}
       port: {{ .Values.minio.service.port }}
       protocol: TCP
 {{- if (and (eq .Values.minio.service.type "NodePort") ( .Values.minio.service.nodePort)) }}

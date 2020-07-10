@@ -1,5 +1,4 @@
 {{- if eq (include "minio.enabled" .) "true" -}}
-{{- if eq .Values.minio.mode "standalone" }}
 {{- if and .Values.minio.persistence.enabled (not .Values.minio.persistence.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -11,11 +10,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-{{- if and .Values.minio.nasgateway.enabled .Values.minio.nasgateway.pv }}
-  selector:
-    matchLabels:
-      pv: {{ .Values.minio.nasgateway.pv | quote }}
-{{- end }}
   accessModes:
     - {{ .Values.minio.persistence.accessMode | quote }}
   resources:
@@ -31,7 +25,6 @@ spec:
 {{- end }}
 {{- if .Values.minio.persistence.VolumeName }}
   volumeName: "{{ .Values.minio.persistence.VolumeName }}"
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

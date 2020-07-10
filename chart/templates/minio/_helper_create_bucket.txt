@@ -1,12 +1,8 @@
 #!/bin/sh
 set -e ; # Have script exit in the event of a failed command.
 
-{{- if .Values.minio.configPathmc }}
-MC_CONFIG_DIR="{{ .Values.minio.configPathmc }}"
+MC_CONFIG_DIR="/etc/minio/mc/"
 MC="/usr/bin/mc --config-dir ${MC_CONFIG_DIR}"
-{{- else }}
-MC="/usr/bin/mc"
-{{- end }}
 
 # connectToMinio
 # Use a check-sleep-check loop to wait for Minio service to be available
@@ -78,19 +74,8 @@ createBucket() {
 }
 
 # Try connecting to Minio instance
-{{- if .Values.minio.tls.enabled }}
-scheme=https
-{{- else }}
 scheme=http
-{{- end }}
 connectToMinio $scheme
 
-{{- if or .Values.minio.defaultBucket.enabled }}
-# Create the bucket
-createBucket {{ .Values.minio.defaultBucket.name }} {{ .Values.minio.defaultBucket.policy }} {{ .Values.minio.defaultBucket.purge }}
-{{ else if .Values.minio.buckets }}
-# Create the buckets
-{{- range .Values.minio.buckets }}
-createBucket {{ .name }} {{ .policy }} {{ .purge }} 
-{{- end }}
-{{- end }}
+createBucket {{ .Values.store.bucket }} none false
+

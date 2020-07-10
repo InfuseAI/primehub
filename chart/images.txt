@@ -22,4 +22,3 @@ seldonio/seldon-core-executor:1.1.0
 fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 minio/minio:RELEASE.2020-06-14T18-32-17Z
 minio/mc:RELEASE.2020-05-28T23-43-36Z
-bskim45/helm-kubectl-jq:3.1.0

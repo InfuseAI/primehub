@@ -76,17 +76,6 @@ Return the appropriate apiVersion for ingress.
 {{- end -}}
 
 {{/*
-Determine service account name for deployment or statefulset.
-*/}}
-{{- define "minio.serviceAccountName" -}}
-{{- if .Values.minio.serviceAccount.create -}}
-{{- default (include "minio.fullname" .) .Values.minio.serviceAccount.name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- default "default" .Values.minio.serviceAccount.name -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Properly format optional additional arguments to Minio binary
 */}}
 {{- define "minio.extraArgs" -}}
