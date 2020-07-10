@@ -48,7 +48,7 @@ Feature: Hub
     And I type "1" to element with test-id "instanceType/gpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[text()='test-group']/..//input"
+    And I click element with xpath "//td[text()='e2e-test-group']/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
@@ -61,9 +61,9 @@ Feature: Hub
     Then I am on the landing page
     When I click "JupyterHub" image in landing page
     Then I am on the spawner page
-    When I choose group with name "test-group"
+    When I choose group with name "e2e-test-group"
     And I choose option with name "test-instance-type-gpu"
-    And I choose image
+    And I choose image with name "base-notebook"
     And I click "Start Notebook" button
     Then I can see the error message "Exceeded gpu quota"
     When I logout on JupyterHub page
