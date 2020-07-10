@@ -28,7 +28,7 @@ Feature: Hub
     When I click element with test-id "add-button"
     Then I should see element with test-id "instanceType/name"
     When I type "test-instance-type-gpu" to element with test-id "instanceType/name"
-    And I type "1" to element with test-id "instanceType/gpuLimit"
+    And I type "1" to element with xpath "//div[@data-testid='instanceType/gpuLimit']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
