@@ -147,3 +147,4 @@ if [[ "$E2E_SCHEDULED" == "true" ]] ; then
   tags="@scheduled"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
+node generate_e2e_report.js
