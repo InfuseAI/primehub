@@ -1,0 +1,79 @@
+{{- if eq (include "rclone.enabled" .) "true" -}}
+# This YAML file contains attacher & csi driver API objects that are necessary
+# to run external CSI attacher for rclone
+
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: csi-controller-rclone
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: "csi-controller-rclone"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csi-controller-rclone
+  template:
+    metadata:
+      labels:
+        app: csi-controller-rclone
+    spec:
+      serviceAccountName: csi-controller-rclone
+      containers:
+        - name: csi-attacher
+          image: "{{ .Values.rclone.csiAttacher.image.repository }}:{{ .Values.rclone.csiAttacher.image.tag }}"
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          imagePullPolicy: "{{ .Values.rclone.csiAttacher.image.pullPolicy }}"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+          {{- if .Values.rclone.csiAttacher.resources }}
+          resources:
+            {{ .Values.rclone.csiAttacher.resources | toYaml | indent 12 | trim }}
+          {{- end }}
+        - name: csi-cluster-driver-registrar
+          image: "{{ .Values.rclone.csiClusterDriverRegistrar.image.repository }}:{{ .Values.rclone.csiClusterDriverRegistrar.image.tag }}"
+          args:
+            - "--v=5"
+            - "--pod-info-mount-version=\"v1\""
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+          imagePullPolicy: "{{ .Values.rclone.csiClusterDriverRegistrar.image.pullPolicy }}"
+          {{- if .Values.rclone.csiClusterDriverRegistrar.resources }}
+          resources:
+            {{ .Values.rclone.csiClusterDriverRegistrar.resources | toYaml | indent 12 | trim }}
+          {{- end }}
+        - name: rclone
+          image: "{{ .Values.rclone.rclone.image.repository }}:{{ .Values.rclone.rclone.image.tag }}"
+          args :
+            - "--nodeid=$(NODE_ID)"
+            - "--endpoint=$(CSI_ENDPOINT)"
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_ENDPOINT
+              value: unix://plugin/csi.sock
+          imagePullPolicy: "{{ .Values.rclone.rclone.image.pullPolicy }}"
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /plugin
+          {{- if .Values.rclone.rclone.resources }}
+          resources:
+            {{ .Values.rclone.rclone.resources | toYaml | indent 12 | trim }}
+          {{- end }}
+      volumes:
+        - name: socket-dir
+          emptyDir:
+{{- end }}

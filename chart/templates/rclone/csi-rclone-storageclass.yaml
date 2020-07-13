@@ -1,0 +1,8 @@
+{{- if eq (include "rclone.enabled" .) "true" -}}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rclone
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/no-provisioner
+{{- end }}
