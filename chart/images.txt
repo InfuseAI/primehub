@@ -22,3 +22,7 @@ seldonio/seldon-core-executor:1.1.0
 fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 minio/minio:RELEASE.2020-06-14T18-32-17Z
 minio/mc:RELEASE.2020-05-28T23-43-36Z
+quay.io/k8scsi/csi-attacher:v1.1.1
+quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
+quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+wunderio/csi-rclone:v1.2.6
