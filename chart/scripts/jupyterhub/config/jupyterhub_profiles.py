@@ -54,6 +54,9 @@ fs_group_id = get_config('singleuser.fsGid')
 
 autoscaling_enabled = get_config('scheduling.userScheduler.enabled')
 
+phfs_enabled = get_primehub_config('phfsEnabled', False)
+phfs_pvc = get_primehub_config('phfsPVC', '')
+
 # Support old group volume convention.
 support_old_group_volume_convention = os.environ.get(
     'SUPPORT_OLD_GROUP_VOLUME_CONVENTION', False) == "true"
@@ -513,6 +516,14 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     self.chown_extra.append('/project/' + name)
                     if home_symlink:
                         self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
+                    
+        if phfs_enabled:
+            spawner.volumes.append({'name': 'phfs',
+                                'persistentVolumeClaim': {'claimName': phfs_pvc}})
+            spawner.volume_mounts.append(
+                {'mountPath': '/phfs', 'name': 'phfs', 'subPath': 'groups/' + re.sub('_', '-', launch_group).lower()})
+            self.chown_extra.append('/phfs')
+            self.symlinks.append('ln -sf /phfs /home/jovyan/')
 
         # We have to chown the home directory since we disabled the kubelet fs_group.
         # Newly created home volume needs this to work.
