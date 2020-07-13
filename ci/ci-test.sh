@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-# print all pod stats and export kind logs when job failed
 cleanup() {
+  if [ -f "tests/report/cucumber_report.json" ]; then
+    node tests/report/generate_e2e_report.js
+  fi
+  # print pod and event info when job failed
   echo "pods in all namespaces"
   kubectl get pod --all-namespaces
   echo "events in all namespaces"
   kubectl get events --all-namespaces
-  #echo "export kind logs"
-  #mkdir -p kind_logs
-  #kind export logs --name primehub kind_logs
 }
 trap "cleanup" ERR
 
@@ -147,3 +147,4 @@ if [[ "$E2E_SCHEDULED" == "true" ]] ; then
   tags="@scheduled"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
+node tests/report/generate_e2e_report.js
