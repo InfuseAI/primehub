@@ -586,8 +586,6 @@ store:
     enabled: true
   logPersistence:
     enabled: true
-  microk8s:
-    enabled: false
 
 fluentd:
   enabled: false
