@@ -65,7 +65,9 @@ BACKEND_API_UNAVAILABLE = 'API_UNAVAILABLE'
 GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                     system { defaultUserVolumeCapacity }
                     user (where: { id: $id }) { id username isAdmin volumeCapacity
-                    groups { name
+                    groups { 
+                            id 
+                            name
                             displayName
                             enabledSharedVolume
                             sharedVolumeCapacity
@@ -439,7 +441,14 @@ class OIDCAuthenticator(GenericOAuthenticator):
             spawner.storage_capacity = str(storage_capacity) + "Gi"
 
         spawner.environment.update(
-            {'TZ': auth_state['oauth_user'].get('timezone', 'UTC')})
+            {
+                'TZ': auth_state['oauth_user'].get('timezone', 'UTC'),
+                'GROUP_ID': spawner.user_options.get('group', {}).get('id', ''),
+                'GROUP_NAME': spawner.user_options.get('group', {}).get('name', ''),
+                'INSTANCE_TYPE': spawner.user_options.get('instance_type', ''),
+                'IMAGE_NAME': spawner.user_options.get('image', '')
+            }
+        )
 
         if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0 and not spawner.enable_kernel_gateway:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
@@ -799,7 +808,7 @@ class PrimeHubSpawner(KubeSpawner):
                 if it['name'] == options['instance_type']]
         [img] = [img for img in group['images'] if img['name'] == options['image']]
         options['group'] = {k: group[k]
-                            for k in ['name', 'quotaGpu', 'projectQuotaGpu']}
+                            for k in ['id', 'name', 'quotaGpu', 'projectQuotaGpu']}
 
         self.log.debug("SPAWN: %s / %s", it, img)
 

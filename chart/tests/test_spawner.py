@@ -80,6 +80,7 @@ class TestGroupsFromCtx(unittest.TestCase):
     def test_user_has_no_groups(self):
         context = {'groups': [
             {
+                'id': 'everyone',
                 'name': 'everyone',
                 'quotaCpu': 0,
                 'quotaMemory': 0,
@@ -582,6 +583,7 @@ class TestOptionFromForm(unittest.TestCase):
         self.mock_spwaner = mock_for_options_from_form(mock_spawner())
         self.mock_spwaner._groups = [
             {
+                'id': 'phuser',
                 'name': 'phuser',
                 'displayName': 'phuser',
                 'images': [{'name': 'base-notebook', 'spec': {'url': ''}}],
