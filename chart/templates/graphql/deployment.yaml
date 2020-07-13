@@ -98,8 +98,8 @@ spec:
             - name: SHARED_GRAPHQL_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "primehub.name" . }}-graphql-shared-secret
-                  key: graphql-secret
+                  name: {{ include "primehub.name" . }}-graphql
+                  key: sharedSecret
             - name: APP_PREFIX
               value: {{ include "primehub.graphql.path" . }}
             - name: DATASET_ENDPOINT
@@ -144,6 +144,28 @@ spec:
                 secretKeyRef:
                   name: authoritative-secret
                   key: expired_at
+            {{- end }}
+            {{- if .Values.store.enabled }}
+            - name: PRIMEHUB_FEATURE_STORE
+              value: "true"
+            - name: PRIMEHUB_STORE_ENDPOINT
+              value: {{ include "primehub.store.endpoint" . | quote }}
+            - name: PRIMEHUB_STORE_BUCKET
+              value: {{ include "primehub.store.bucket" . | quote }}
+            - name: PRIMEHUB_STORE_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "primehub.name" . }}-graphql
+                  key: storeAccessKey
+            - name: PRIMEHUB_STORE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "primehub.name" . }}-graphql
+                  key: storeSecretKey
+            {{- if .Values.store.logPersistence.enabled }}
+            - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
+              value: "true"
+            {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.graphql.extraEnv }}
             - name: {{ $key }}
