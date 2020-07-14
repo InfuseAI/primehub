@@ -2,3 +2,8 @@ appVersion: LOCAL
 description: Machine learning platform for enterprises.
 name: primehub
 version: 1.0.0
+dependencies:
+  - name: keycloak
+    version: 7.2.1
+    repository: https://codecentric.github.io/helm-charts
+    condition: primehub.deployKeycloak

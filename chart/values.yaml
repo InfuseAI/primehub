@@ -13,6 +13,7 @@ primehub:
     #rolePrefix:
     #maxSockets:
     #maxFreeSockets:
+  deployKeycloak: false
   sharedVolumeStorageClass: ""
 ingress:
   enabled: true
@@ -23,6 +24,20 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
+
+# Keycloak
+keycloak:
+  keycloak:
+    password:
+    ingress:
+      enabled: true
+      annotations:
+        ingress.kubernetes.io/affinity: cookie
+        kubernetes.io/ingress.class: nginx
+        kubernetes.io/tls-acme: "true"
+      hosts:
+      - chart-example.local
+      tls: []
 
 # Primehub console
 console:

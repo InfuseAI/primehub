@@ -22,19 +22,10 @@ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/metacontr
 # Create CRDs for Metacontroller APIs, and the Metacontroller StatefulSet.
 kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/metacontroller/master/manifests/metacontroller.yaml
 
-echo "install keycloak chart"
-cat <<EOF > keycloak-values.yaml
-keycloak:
-  password: ${KEYCLOAK_PASSWORD}
-  extraArgs: -Dkeycloak.ssl-required=none
-  ingress:
-    enabled: true
-    hosts:
-    - ${KEYCLOAK_DOMAIN}
-EOF
-
-helm repo add codecentric https://codecentric.github.io/helm-charts
-helm install keycloak codecentric/keycloak --version 7.2.1 -f keycloak-values.yaml
+cd ../chart
+helm dependency update
+helm dependency list
+cd $PRIMEHUB_ROOT
 
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
@@ -49,6 +40,15 @@ primehub:
     username: keycloak
     password: ${KEYCLOAK_PASSWORD}
     port: ${PRIMEHUB_PORT}
+  deployKeycloak: true
+keycloak:
+  keycloak:
+    password: ${KEYCLOAK_PASSWORD}
+    extraArgs: -Dkeycloak.ssl-required=none
+    ingress:
+      enabled: true
+      hosts:
+      - ${KEYCLOAK_DOMAIN}
 bootstrap:
   usernmae: phadmin
   password: ${PRIMEHUB_PASSWORD}
