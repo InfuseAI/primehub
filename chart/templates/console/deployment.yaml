@@ -129,6 +129,14 @@ spec:
                   name: authoritative-secret
                   key: max_group
             {{- end }}
+            {{- if .Values.store.enabled }}
+            - name: PRIMEHUB_FEATURE_STORE
+              value: "true"
+            {{- if .Values.store.logPersistence.enabled }}
+            - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
+              value: "true"
+            {{- end }}
+            {{- end }}
             {{- range $key, $value := .Values.console.extraEnv }}
             - name: {{ $key }}
               value: {{ $value }}
