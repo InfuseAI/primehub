@@ -25,7 +25,7 @@ kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/metacontr
 cd ../chart
 helm dependency update
 helm dependency list
-cd $PRIMEHUB_ROOT
+cd -
 
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
