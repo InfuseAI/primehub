@@ -252,36 +252,36 @@ jupyterhub:
     extraContainers: []
     extraVolumes:
     - name: primehub-hub-images
-      readOnly: true
       configMap:
         name: primehub-hub-images
     - name: primehub-hub-js
-      readOnly: true
       configMap:
         name: primehub-hub-js
     - name: primehub-hub-css
-      readOnly: true
       configMap:
         name: primehub-hub-css
     - name: primehub-hub-templates
-      readOnly: true
       configMap:
         name: primehub-hub-templates
     - name: primehub-hub-config
-      readOnly: true
       configMap:
         name: primehub-hub-config
     extraVolumeMounts:
     - name: primehub-hub-images
       mountPath: /usr/local/share/jupyterhub/static/images
+      readOnly: true
     - name: primehub-hub-js
       mountPath: /usr/local/share/jupyterhub/static/components/primehub
+      readOnly: true
     - name: primehub-hub-css
       mountPath: /usr/local/share/jupyterhub/static/css/primehub
+      readOnly: true
     - name: primehub-hub-templates
       mountPath: /etc/jupyterhub/templates
+      readOnly: true
     - name: primehub-hub-config
       mountPath: /srv/primehub
+      readOnly: true
     image:
       name: infuseai/jupyterhub-k8s
       tag: jh-5c94e4f4

@@ -34,7 +34,7 @@ keycloak:
 EOF
 
 helm repo add codecentric https://codecentric.github.io/helm-charts
-helm install codecentric/keycloak --name keycloak --version 7.2.1 -f keycloak-values.yaml
+helm install keycloak codecentric/keycloak --version 7.2.1 -f keycloak-values.yaml
 
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
@@ -93,12 +93,12 @@ EOF
 fi
 
 helm upgrade \
+  primehub ../chart \
   --install \
-  --reset-values \
+  --create-namespace \
   --namespace hub  \
   --values primehub-values.yaml \
-  --values k3d/primehub-override.yaml \
-  primehub ../chart
+  --values k3d/primehub-override.yaml
 
 # change requests.cpu to 0.1 to make sure shared runner can have enough resource
 kubectl -n hub patch instancetype cpu-1 -p '{"spec":{"requests.cpu":0.1}}' --type merge || true
