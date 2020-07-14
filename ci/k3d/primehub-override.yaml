@@ -9,6 +9,11 @@ jupyterhub:
       resources:
         requests:
           cpu: 0m
+keycloak:
+  keycloak:
+    resources:
+      requests:
+        cpu: 0m
 console:
   resources:
     requests:

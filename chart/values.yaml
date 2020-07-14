@@ -38,6 +38,13 @@ keycloak:
       hosts:
       - chart-example.local
       tls: []
+    resources:
+      limits:
+        cpu: 500m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 32Mi
 
 # Primehub console
 console:
