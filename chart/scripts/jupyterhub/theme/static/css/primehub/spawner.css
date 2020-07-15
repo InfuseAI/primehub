@@ -14,8 +14,9 @@
 #group-selector select[name='group'] {
   display: inline-block;
   margin-left: 1em;
-  height: 2em;
+  height: 2.5em;
   width: auto;
+  padding: 0px 12px;
 }
 
 #user-limits-table {
