@@ -1,6 +1,6 @@
 {{- if eq (include "minio.enabled" .) "true" -}}
-apiVersion: {{ template "minio.deployment.apiVersion" . }}
-kind: Deployment
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
   name: {{ template "minio.fullname" . }}
   labels:
@@ -138,16 +138,21 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
       volumes:
-        {{- if and (not .Values.minio.gcsgateway.enabled) (not .Values.minio.s3gateway.enabled) }}
-        - name: export
-        {{- if .Values.minio.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.minio.persistence.existingClaim | default (include "minio.fullname" .) }}
-        {{- else }}
-          emptyDir: {}
-        {{- end }}
-        {{- end }}
         - name: minio-user
           secret:
             secretName: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+  {{- if and (not .Values.minio.gcsgateway.enabled) (not .Values.minio.s3gateway.enabled) }}
+  {{- if .Values.minio.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: export
+      spec:
+        accessModes:
+          - {{ .Values.minio.persistence.accessMode | quote }}
+        resources:
+          requests:
+            storage: {{ .Values.minio.persistence.size | quote }}
+        storageClassName: {{ .Values.minio.persistence.storageClass }}
+  {{- end }}
+  {{- end }}
 {{- end }}
