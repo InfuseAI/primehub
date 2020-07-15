@@ -41,10 +41,10 @@ keycloak:
     resources:
       limits:
         cpu: 500m
-        memory: 128Mi
+        memory: 512Mi
       requests:
         cpu: 50m
-        memory: 32Mi
+        memory: 64Mi
 
 # Primehub console
 console:
