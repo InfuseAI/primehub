@@ -10,16 +10,13 @@ metadata:
     heritage: {{ .Release.Service }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
     metadata:
       labels:
-        app: {{ template "minio.name" . }}-job
+        app: {{ template "minio.name" . }}-make-bucket-job
         release: {{ .Release.Name }}
-{{- if .Values.minio.podLabels }}
-{{ toYaml .Values.minio.podLabels | indent 8 }}
-{{- end }}
     spec:
       restartPolicy: OnFailure
 {{- if .Values.minio.nodeSelector }}
