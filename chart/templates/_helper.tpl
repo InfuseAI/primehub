@@ -36,9 +36,17 @@ Keycloak
 */}}
 {{- define "primehub.keycloak.url" -}}
 {{- if .Values.primehub.keycloak.port -}}
-{{- printf "%s://%s:%v/auth" .Values.primehub.keycloak.scheme .Values.primehub.keycloak.domain .Values.primehub.keycloak.port }}
+{{- printf "%s://%s:%v/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) .Values.primehub.keycloak.port }}
 {{- else -}}
-{{- printf "%s://%s/auth" .Values.primehub.keycloak.scheme .Values.primehub.keycloak.domain }}
+{{- printf "%s://%s/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) }}
+{{- end -}}
+{{- end -}}
+
+{{- define "primehub.keycloak.domain" -}}
+{{- if .Values.primehub.keycloak.domain -}}
+{{- printf "%s" .Values.primehub.keycloak.domain }}
+{{- else -}}
+{{- printf "%s" .Values.primehub.domain }}
 {{- end -}}
 {{- end -}}
 

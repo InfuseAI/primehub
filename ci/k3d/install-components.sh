@@ -7,7 +7,6 @@ export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 export PRIMEHUB_DOMAIN=hub.ci-e2e.dev.primehub.io
 export PRIMEHUB_PASSWORD=${PH_PASSWORD}
 export PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
-export KEYCLOAK_DOMAIN=id.ci-e2e.dev.primehub.io
 export KEYCLOAK_PASSWORD=$(openssl rand -hex 16)
 export STORAGE_CLASS=local-path
 export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
@@ -23,13 +22,9 @@ echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
 primehub:
   mode: ${PRIMEHUB_MODE}
-  scheme: http
   domain: ${PRIMEHUB_DOMAIN}
   port: ${PRIMEHUB_PORT}
   keycloak:
-    scheme: http
-    domain: ${KEYCLOAK_DOMAIN}
-    username: keycloak
     password: ${KEYCLOAK_PASSWORD}
     port: ${PRIMEHUB_PORT}
 keycloak:
@@ -39,9 +34,8 @@ keycloak:
     ingress:
       enabled: true
       hosts:
-      - ${KEYCLOAK_DOMAIN}
+      - ${PRIMEHUB_DOMAIN}
 bootstrap:
-  usernmae: phadmin
   password: ${PRIMEHUB_PASSWORD}
 graphql:
   sharedGraphqlSecret: ${GRAPHQL_SECRET_KEY}
