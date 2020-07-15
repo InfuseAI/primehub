@@ -14,6 +14,7 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   deployKeycloak: true
+  deployMetacontroller: true
   sharedVolumeStorageClass: ""
 ingress:
   enabled: true
