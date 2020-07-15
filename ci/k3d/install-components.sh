@@ -40,7 +40,6 @@ primehub:
     username: keycloak
     password: ${KEYCLOAK_PASSWORD}
     port: ${PRIMEHUB_PORT}
-  deployKeycloak: true
 keycloak:
   keycloak:
     password: ${KEYCLOAK_PASSWORD}

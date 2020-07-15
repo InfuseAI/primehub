@@ -13,7 +13,7 @@ primehub:
     #rolePrefix:
     #maxSockets:
     #maxFreeSockets:
-  deployKeycloak: false
+  deployKeycloak: true
   sharedVolumeStorageClass: ""
 ingress:
   enabled: true
