@@ -20,6 +20,8 @@ data:
 {{ toYaml .Values.jobSubmission | indent 6 }}
       graphqlEndpoint: {{ include "primehub.graphql.endpoint" . }}
       graphqlSecret: {{ .Values.graphql.sharedGraphqlSecret }}
+      phfsEnabled: {{ include "primehub.phfs.enabled" . }}
+      phfsPVC: {{ include "primehub.store.pvcName" . }}
     modelDeployment:
       enabled: {{ .Values.modelDeployment.enabled }}
       primehubUrl: {{ include "primehub.url" . }}

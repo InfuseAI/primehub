@@ -40,6 +40,8 @@ data:
     version: {{ .Chart.AppVersion | quote }}
     graphqlEndpoint: {{ include "primehub.graphql.endpoint" . }}
     graphqlSecret: {{ .Values.graphql.sharedGraphqlSecret }}
+    phfsEnabled: {{ include "primehub.phfs.enabled" . }}
+    phfsPVC: {{ include "primehub.store.pvcName" . }}
     keycloak:
       url: {{ include "primehub.keycloak.url" . }}
       realm: {{ .Values.primehub.keycloak.realm }}
