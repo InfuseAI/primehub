@@ -296,8 +296,6 @@ status:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    controller-gen.kubebuilder.io/version: v0.2.2
   creationTimestamp: null
   name: phdeployments.primehub.io
 spec:
@@ -392,6 +390,8 @@ spec:
               type: array
             stop:
               type: boolean
+            updateMessage:
+              type: string
             userId:
               type: string
             userName:
@@ -470,6 +470,8 @@ spec:
                         type: array
                       stop:
                         type: boolean
+                      updateMessage:
+                        type: string
                       userId:
                         type: string
                       userName:
