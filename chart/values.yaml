@@ -14,7 +14,6 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   deployKeycloak: true
-  deployMetacontroller: true
   sharedVolumeStorageClass: ""
 ingress:
   enabled: true
@@ -25,6 +24,25 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
+
+# Metacontroller
+metacontroller:
+  deploy: true
+  replicas: 1
+  image:
+    repository: metacontroller/metacontroller
+    tag: 0.2
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 50m
+      memory: 32Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 # Keycloak
 keycloak:

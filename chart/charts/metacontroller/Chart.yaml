@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "0.2"
-description: Metacontroller
-name: metacontroller
-version: 0.1.1

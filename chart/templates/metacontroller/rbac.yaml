@@ -1,12 +1,13 @@
+{{- if .Values.metacontroller.deploy }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Release.Name }}
+  name: metacontroller
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: {{ .Release.Name }}
+  name: metacontroller
 rules:
 - apiGroups:
   - "*"
@@ -18,12 +19,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}
+  name: metacontroller
 subjects:
 - kind: ServiceAccount
-  name: {{ .Release.Name }}
+  name: metacontroller
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}
+  name: metacontroller
   apiGroup: rbac.authorization.k8s.io
+{{- end }}
