@@ -13,7 +13,6 @@ primehub:
     #rolePrefix:
     #maxSockets:
     #maxFreeSockets:
-  deployKeycloak: true
   sharedVolumeStorageClass: ""
 ingress:
   enabled: true
@@ -24,6 +23,26 @@ ingress:
   hosts:
     - chart-example.local
   tls: []
+
+# Keycloak
+keycloak:
+  deploy: true
+  clusterDomain: cluster.local
+  init:
+    image:
+      repository: busybox
+      tag: 1.31
+      pullPolicy: IfNotPresent
+    resources: {}
+  username: keycloak
+  password:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
 # Metacontroller
 metacontroller:
@@ -43,27 +62,6 @@ metacontroller:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
-# Keycloak
-keycloak:
-  keycloak:
-    password:
-    ingress:
-      enabled: true
-      annotations:
-        ingress.kubernetes.io/affinity: cookie
-        kubernetes.io/ingress.class: nginx
-        kubernetes.io/tls-acme: "true"
-      hosts:
-      - chart-example.local
-      tls: []
-    resources:
-      limits:
-        cpu: 500m
-        memory: 512Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
 
 # Primehub console
 console:

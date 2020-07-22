@@ -39,7 +39,7 @@ spec:
             value: {{ include "primehub.keycloak.url" . }}
             {{- end }}
           - name: KC_USER
-            value: {{ .Values.primehub.keycloak.username }}
+            value: {{ include "primehub.keycloak.username" . }}
           - name: KC_PASSWORD
             valueFrom:
               secretKeyRef:

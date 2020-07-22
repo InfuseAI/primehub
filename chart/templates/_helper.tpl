@@ -35,18 +35,38 @@ Global
 Keycloak
 */}}
 {{- define "primehub.keycloak.url" -}}
+{{- if .Values.keycloak.deploy -}}
+{{- printf "%s/auth" (include "primehub.url" .) }}
+{{- else }}
 {{- if .Values.primehub.keycloak.port -}}
 {{- printf "%s://%s:%v/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) .Values.primehub.keycloak.port }}
 {{- else -}}
 {{- printf "%s://%s/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) }}
 {{- end -}}
 {{- end -}}
+{{- end -}}
 
 {{- define "primehub.keycloak.domain" -}}
-{{- if .Values.primehub.keycloak.domain -}}
-{{- printf "%s" .Values.primehub.keycloak.domain }}
-{{- else -}}
+{{- if .Values.keycloak.deploy -}}
 {{- printf "%s" .Values.primehub.domain }}
+{{- else -}}
+{{- printf "%s" .Values.primehub.keycloak.domain }}
+{{- end -}}
+{{- end -}}
+
+{{- define "primehub.keycloak.username" -}}
+{{- if .Values.keycloak.deploy -}}
+{{- .Values.keycloak.username }}
+{{- else -}}
+{{- .Values.primehub.keycloak.username }}
+{{- end -}}
+{{- end -}}
+
+{{- define "primehub.keycloak.password" -}}
+{{- if .Values.keycloak.deploy -}}
+{{- .Values.keycloak.password }}
+{{- else -}}
+{{- .Values.primehub.keycloak.password }}
 {{- end -}}
 {{- end -}}
 
@@ -150,4 +170,184 @@ Store
 {{- end -}}
 {{- define "primehub.store.pvcName" -}}
   {{include "primehub.name" .}}-store
+{{- end -}}
+
+{{/*
+Keycloak
+*/}}
+{{- define "keycloak.name" -}}
+{{- "keycloak" -}}
+{{- end -}}
+
+{{- define "keycloak.fullname" -}}
+{{- "keycloak" -}}
+{{- end -}}
+
+{{/*
+Create the service DNS name.
+*/}}
+{{- define "keycloak.serviceDnsName" -}}
+{{ include "keycloak.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.keycloak.clusterDomain }}
+{{- end -}}
+
+{{/*
+{{/*
+Create common labels.
+*/}}
+{{- define "keycloak.commonLabels" -}}
+app.kubernetes.io/name: {{ include "keycloak.name" . }}
+helm.sh/chart: {{ include "primehub.chart" . }}
+app.kubernetes.io/instance: {{ .Release.Name | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{/*
+Create selector labels.
+*/}}
+{{- define "keycloak.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "keycloak.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name | quote }}
+{{- end -}}
+
+{{/*
+Create name of the service account to use
+*/}}
+{{- define "keycloak.serviceAccountName" -}}
+{{- if .Values.keycloak.serviceAccount.create -}}
+    {{ default (include "keycloak.fullname" .) .Values.keycloak.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.keycloak.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name for the postgres requirement.
+*/}}
+{{- define "keycloak.postgresql.fullname" -}}
+{{- $postgresContext := dict "Values" .Values.keycloak.postgresql "Release" .Release "Chart" (dict "Name" "postgresql") -}}
+{{ include "postgresql.fullname" $postgresContext }}
+{{- end -}}
+
+{{/*
+Create the name for the Keycloak secret.
+*/}}
+{{- define "keycloak.secret" -}}
+{{- if .Values.keycloak.existingSecret -}}
+  {{- tpl .Values.keycloak.existingSecret $ -}}
+{{- else -}}
+  {{- include "keycloak.fullname" . -}}-http
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name for the database secret.
+*/}}
+{{- define "keycloak.dbSecretName" -}}
+{{- if .Values.keycloak.persistence.existingSecret -}}
+  {{- tpl .Values.keycloak.persistence.existingSecret $ -}}
+{{- else -}}
+  {{- include "keycloak.fullname" . -}}-db
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the Keycloak password.
+*/}}
+{{- define "keycloak.password" -}}
+{{- if .Values.keycloak.password -}}
+  {{- .Values.keycloak.password | b64enc | quote -}}
+{{- else -}}
+  {{- randAlphaNum 16 | b64enc | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name for the password secret key.
+*/}}
+{{- define "keycloak.passwordKey" -}}
+{{- if .Values.keycloak.existingSecret -}}
+  {{- .Values.keycloak.existingSecretKey -}}
+{{- else -}}
+  password
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name for the database password secret key.
+*/}}
+{{- define "keycloak.dbPasswordKey" -}}
+{{- if and .Values.keycloak.persistence.existingSecret .Values.keycloak.persistence.existingSecretPasswordKey -}}
+  {{- .Values.keycloak.persistence.existingSecretPasswordKey -}}
+{{- else -}}
+  password
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name for the database password secret key - if it is defined.
+*/}}
+{{- define "keycloak.dbUserKey" -}}
+{{- if and .Values.keycloak.persistence.existingSecret .Values.keycloak.persistence.existingSecretUsernameKey -}}
+  {{- .Values.keycloak.persistence.existingSecretUsernameKey -}}
+{{- else -}}
+  username
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create environment variables for database configuration.
+*/}}
+{{- define "keycloak.dbEnvVars" -}}
+{{- if .Values.keycloak.persistence.deployPostgres }}
+{{- if not (eq "postgres" .Values.keycloak.persistence.dbVendor) }}
+{{ fail (printf "ERROR: 'Setting keycloak.persistence.deployPostgres' to 'true' requires setting 'keycloak.persistence.dbVendor' to 'postgres' (is: '%s')!" .Values.keycloak.persistence.dbVendor) }}
+{{- end }}
+- name: DB_VENDOR
+  value: postgres
+- name: DB_ADDR
+  value: {{ include "keycloak.postgresql.fullname" . }}
+- name: DB_PORT
+  value: "5432"
+- name: DB_DATABASE
+  value: {{ .Values.keycloak.postgresql.postgresqlDatabase | quote }}
+- name: DB_USER
+  value: {{ .Values.keycloak.postgresql.postgresqlUsername | quote }}
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "keycloak.postgresql.fullname" . }}
+      key: postgresql-password
+{{- else }}
+- name: DB_VENDOR
+  value: {{ .Values.keycloak.persistence.dbVendor | quote }}
+{{- if not (eq "h2" .Values.keycloak.persistence.dbVendor) }}
+- name: DB_ADDR
+  value: {{ .Values.keycloak.persistence.dbHost | quote }}
+- name: DB_PORT
+  value: {{ .Values.keycloak.persistence.dbPort | quote }}
+- name: DB_DATABASE
+  value: {{ .Values.keycloak.persistence.dbName | quote }}
+- name: DB_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "keycloak.dbSecretName" . }}
+      key: {{ include "keycloak.dbUserKey" . | quote }}
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "keycloak.dbSecretName" . }}
+      key: {{ include "keycloak.dbPasswordKey" . | quote }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Create the namespace for the serviceMonitor deployment.
+*/}}
+{{- define "keycloak.serviceMonitor.namespace" -}}
+{{- if .Values.keycloak.prometheus.operator.serviceMonitor.namespace -}}
+{{ .Values.keycloak.prometheus.operator.serviceMonitor.namespace }}
+{{- else -}}
+{{ .Release.Namespace }}
+{{- end -}}
 {{- end -}}
