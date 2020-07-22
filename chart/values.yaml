@@ -43,6 +43,24 @@ keycloak:
     requests:
       cpu: 50m
       memory: 64Mi
+  serviceAccount:
+    create: false
+  basepath: auth
+  cli:
+    enabled: true
+    nodeIdentifier: |
+      {{ .Files.Get "scripts/node-identifier.cli" }}
+
+    logging: |
+      {{ .Files.Get "scripts/logging.cli" }}
+
+    ha: |
+      {{ .Files.Get "scripts/ha.cli" }}
+
+    datasource: |
+      {{ .Files.Get "scripts/datasource.cli" }}
+
+    custom: |
 
 # Metacontroller
 metacontroller:
