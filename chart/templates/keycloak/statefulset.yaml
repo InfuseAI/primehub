@@ -23,8 +23,8 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       annotations:
-        checksum/config-sh: {{ include (print .Template.BasePath "/configmap-sh.yaml") . | sha256sum }}
-        checksum/config-startup: {{ include (print .Template.BasePath "/configmap-startup.yaml") . | sha256sum }}
+        checksum/config-sh: {{ include (print .Template.BasePath "/keycloak/configmap-sh.yaml") . | sha256sum }}
+        checksum/config-startup: {{ include (print .Template.BasePath "/keycloak/configmap-startup.yaml") . | sha256sum }}
         {{- with .Values.keycloak.podAnnotations }}
         {{- range $key, $value := . }}
         {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 8 }}
