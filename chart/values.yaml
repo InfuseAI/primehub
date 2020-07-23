@@ -27,6 +27,46 @@ ingress:
 # Keycloak
 keycloak:
   deploy: true
+  image:
+    repository: jboss/keycloak
+    tag: 8.0.1
+    pullPolicy: IfNotPresent
+  persistence:
+    deployPostgres: false
+    dbVendor: h2
+    dbName: keycloak
+    dbHost: mykeycloak
+    dbPort: 5432
+    existingSecret: ""
+    existingSecretPasswordKey: ""  # read keycloak db password from existingSecret under this Key
+    existingSecretUsernameKey: ""  # read keycloak db user from existingSecret under this Key
+    dbUser: keycloak
+    dbPassword: keycloak
+  service:
+    annotations: {}
+    labels: {}
+    type: ClusterIP
+    httpPort: 80
+    httpNodePort: ""
+    httpsPort: 8443
+    httpsNodePort: ""
+    jgroupsPort: 7600
+  prometheus:
+    operator:
+      enabled: false
+      serviceMonitor:
+        namespace: ""
+        selector:
+          release: prometheus
+        interval: 10s
+        scrapeTimeout: 10s
+        path: /auth/realms/master/metrics
+      prometheusRules:
+        enabled: false
+        selector:
+          app: prometheus-operator
+          release: prometheus
+        rules: {}
   clusterDomain: cluster.local
   init:
     image:
@@ -49,16 +89,16 @@ keycloak:
   cli:
     enabled: true
     nodeIdentifier: |
-      {{ .Files.Get "scripts/node-identifier.cli" }}
+      {{ .Files.Get "scripts/keycloak/node-identifier.cli" }}
 
     logging: |
-      {{ .Files.Get "scripts/logging.cli" }}
+      {{ .Files.Get "scripts/keycloak/logging.cli" }}
 
     ha: |
-      {{ .Files.Get "scripts/ha.cli" }}
+      {{ .Files.Get "scripts/keycloak/ha.cli" }}
 
     datasource: |
-      {{ .Files.Get "scripts/datasource.cli" }}
+      {{ .Files.Get "scripts/keycloak/datasource.cli" }}
 
     custom: |
 
