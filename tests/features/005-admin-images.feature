@@ -18,6 +18,8 @@ Feature: Admin
     And I should see element with test-id "image/displayName"
     When I type "test-image" to element with test-id "image/name"
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-image"
     When I logout from banner UI
     Then I am on login page
@@ -31,7 +33,8 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
-    When I click edit-button in row contains text "test-image"
+    When I search "test-image" in test-id "text-filter-name"
+    And I click edit-button in row contains text "test-image"
     Then I should see input in test-id "image/name" with value "test-image"
     And I should see input in test-id "image/displayName" with value "test-image"
     When I type "test-image-display-name" to element with test-id "image/displayName"
@@ -39,10 +42,13 @@ Feature: Admin
     And I type "jupyter/base-notebook:e255f1aa00b2" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
     And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-image"
     When I click edit-button in row contains text "test-image"
     Then I should see input in test-id "image/name" with value "test-image"

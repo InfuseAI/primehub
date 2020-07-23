@@ -18,6 +18,8 @@ Feature: Admin
     And I should see element with test-id "group/displayName"
     When I type "e2e-test-group" to element with test-id "group/name"
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
     When I logout from banner UI
     Then I am on login page
@@ -31,7 +33,8 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
-    When I click edit-button in row contains text "e2e-test-group"
+    When I search "e2e-test-group" in test-id "text-filter-name"
+    And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
     When I type "e2e-test-group-display-name" to element with test-id "group/displayName"
     And I type "1" to element with xpath "//div[@data-testid='group/quotaCpu']//input[@class='ant-input-number-input']"
@@ -46,10 +49,13 @@ Feature: Admin
     And I type "4" to element with xpath "//div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input']"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
+    And I search my username in name filter
     And I click my username
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
     When I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"

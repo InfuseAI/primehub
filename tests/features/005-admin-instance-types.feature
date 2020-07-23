@@ -18,6 +18,8 @@ Feature: Admin
     And I should see element with test-id "instanceType/displayName"
     When I type "test-instance-type" to element with test-id "instanceType/name"
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "test-instance-type" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-instance-type"
     When I logout from banner UI
     Then I am on login page
@@ -31,7 +33,8 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
-    When I click edit-button in row contains text "test-instance-type"
+    When I search "test-instance-type" in test-id "text-filter-name"
+    And I click edit-button in row contains text "test-instance-type"
     Then I should see input in test-id "instanceType/name" with value "test-instance-type"
     And I should see input in test-id "instanceType/displayName" with value "test-instance-type"
     When I type "test-instance-type-display-name" to element with test-id "instanceType/displayName"
@@ -39,10 +42,13 @@ Feature: Admin
     And I type "0.5" to element with test-id "instanceType/cpuLimit"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
     And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "test-instance-type" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-instance-type"
     When I click edit-button in row contains text "test-instance-type"
     Then I should see input in test-id "instanceType/name" with value "test-instance-type"

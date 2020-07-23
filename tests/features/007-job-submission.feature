@@ -79,6 +79,6 @@ Feature: Job Submission
     And I click link of "cancel-job-test" of 1th item on list
     Then I "should" see element with xpath "//div[text()='cancel-job-test']"
     And I click tab of "Logs"
-    Then I should see "cannot get log" in element "div" under active tab
+    Then I should see "cannot get log|(no data)" in element "div" under active tab
     When I logout from banner UI
     Then I am on login page

@@ -27,10 +27,11 @@ defineStep("I go to the jupyterhub admin page to stop server", async function() 
   await this.takeScreenshot("hub-admin-page");
   for (retryCount=0; retryCount < 3; retryCount++) {
     try {
-      await this.clickElementByXpath(xpath="//a[contains(text(), 'stop server')]");
+      await this.clickElementByXpath(
+        xpath=`//tr[@id='user-${this.USERNAME}']//a[contains(text(), 'stop server')]`);
       await this.page.waitFor(3 * 1000);
       await this.page.waitForXPath(
-        "//a[@class='stop-server btn btn-xs btn-danger']", {timeout: 5 * 1000});
+        `//tr[@id='user-${this.USERNAME}']//a[@class='stop-server btn btn-xs btn-danger']`, {timeout: 5 * 1000});
       console.log("Detect server is still running, try to click on 'stop server' button");
       await this.takeScreenshot("server-still-running");
     }
@@ -41,7 +42,7 @@ defineStep("I go to the jupyterhub admin page to stop server", async function() 
 });
 
 defineStep("I am on the jupyterhub admin page", async function() {
-  await this.page.waitForXPath("//tr[@id='user-phadmin']");
+  await this.page.waitForXPath(`//tr[@id='user-${this.USERNAME}']`);
   const url = this.page.url();
   expect(url).to.contain("/hub/admin");
   await this.takeScreenshot("hub-admin-page");
@@ -49,6 +50,7 @@ defineStep("I am on the jupyterhub admin page", async function() {
 
 defineStep("I choose group with name {string}", async function(name) {
   await this.page.select("#group-selector select", `${name}-${this.E2E_SUFFIX}`);
+  await this.page.waitFor(500);
   await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
 });
 
@@ -62,13 +64,17 @@ defineStep("I choose image", async function() {
   await this.clickElementBySelector(selector);
 });
 
-defineStep("I choose option with name {string}", async function(name) {
-  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
-  await this.clickElementByXpath(xpath);
+//defineStep("I choose option with name {string}", async function(name) {
+//  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
+//  await this.clickElementByXpath(xpath);
+//});
+defineStep("I choose instance type with name {string}", async function(name) {
+  const selector = `#it-container input[value='${name}-${this.E2E_SUFFIX}']`;
+  await this.clickElementBySelector(selector);
 });
 
 defineStep("I choose image with name {string}", async function(name) {
-  const selector = `#image-container input[value='${name}']`;
+  const selector = `#image-container input[value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementBySelector(selector);
 });
 

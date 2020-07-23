@@ -11,10 +11,12 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
-    When I delete a row with text "test-image"
+    When I search "test-image" in test-id "text-filter-name"
+    And I delete a row with text "test-image"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-image"
     When I click refresh
+    And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image"
     When I logout from banner UI
     Then I am on login page
@@ -37,15 +39,10 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
-    When I delete a row with text "test-instance-type"
-    And I wait for 2.0 seconds
-    And I delete a row with text "test-instance-type-gpu"
+    When I search "test-instance-type" in test-id "text-filter-name"
+    And I delete a row with text "test-instance-type"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-instance-type"
-    And list-view table "should not" contain row with "test-instance-type-gpu"
-    When I click refresh
-    Then list-view table "should not" contain row with "test-instance-type"
-    And list-view table "should not" contain row with "test-instance-type-gpu"
     When I logout from banner UI
     Then I am on login page
     When I fill in the correct username credentials
@@ -67,10 +64,12 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
-    When I delete a row with text "e2e-test-group"
+    When I search "e2e-test-group" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-group"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-group"
     When I click refresh
+    And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-group" 
     When I logout from banner UI
     Then I am on login page
