@@ -147,9 +147,6 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
-      - e2e_scheduled
-      - e2e_installed_ph:
-          context: e2e-demo-a
       - build:
           filters:
             tags:
@@ -159,10 +156,12 @@ workflows:
   scheduled_workflow:
     triggers:
       - schedule:
-          cron: "0 20 * * *"
+          cron: "0 21 * * *"
           filters:
             branches:
               only:
                 - master
     jobs:
       - e2e_scheduled
+      - e2e_installed_ph:
+          context: e2e-demo-a
