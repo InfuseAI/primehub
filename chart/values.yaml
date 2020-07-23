@@ -102,6 +102,47 @@ keycloak:
 
     custom: |
 
+  theme:
+    image: infuseai/primehub-keycloak-theme:ca39c3e0
+    packages: []
+  extraInitContainers: |
+    - name: theme-provider
+      image: {{ .Values.keycloak.theme.image }}
+      imagePullPolicy: IfNotPresent
+      command:
+        - sh
+      args:
+        - -c
+        - |
+          echo "Copying theme..."
+          cp -R /primehub/* /theme-primehub/
+          {{- range $package := .Values.keycloak.theme.packages }}
+          cp -R /{{ $package }}/* /theme-{{ $package }}/
+          {{- end }}
+      volumeMounts:
+        - name: theme-primehub
+          mountPath: /theme-primehub
+        {{- range $package := .Values.keycloak.theme.packages }}
+        - name: theme-{{ $package }}
+          mountPath: /theme-{{ $package }}
+        {{- end }}
+
+  extraVolumeMounts: |
+    - name: theme-primehub
+      mountPath: /opt/jboss/keycloak/themes/primehub
+    {{- range $package := .Values.keycloak.theme.packages }}
+    - name: theme-{{ $package }}
+      mountPath: /opt/jboss/keycloak/themes/{{ $package }}
+    {{- end }}
+
+  extraVolumes: |
+    - name: theme-primehub
+      emptyDir: {}
+    {{- range $package := .Values.keycloak.theme.packages }}
+    - name: theme-{{ $package }}
+      emptyDir: {}
+    {{- end }}
+
 # Metacontroller
 metacontroller:
   deploy: true
