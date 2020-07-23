@@ -29,7 +29,7 @@ class World {
 
     // To run tests in different setup,
     // kind -> port# is need; gcp -> port# isn't need
-    if (process.env.KC_PORT) this.KC_PORT = `:${process.env.KC_PORT}`;
+    if (process.env.KC_PORT !== 'None') this.KC_PORT = `:${process.env.KC_PORT}`;
     else this.KC_PORT = '';
     this.PRIMEHUB_PORT = this.KC_PORT;
 
@@ -171,6 +171,14 @@ class World {
   async checkElementExistByXPath(exist, xpath, timeout = 5) {
     const [ui_element] = await this.page.$x(xpath, {timeout: timeout * 1000});
     return (exist.includes("not") === !ui_element) ? true : false;
+  }
+
+  async inputText(selector, text) {
+    await this.page.waitForSelector(selector, {visible: true});
+    await this.page.focus(selector);
+    await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
+    await this.page.keyboard.press("Backspace");
+    await this.page.type(selector, `${text}-${this.E2E_SUFFIX}`);
   }
 
   async takeScreenshot(filename) {

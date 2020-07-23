@@ -19,6 +19,8 @@ Feature: Admin
     When I type "test-dataset" to element with test-id "dataset/name"
     And I select option "env" in admin dashboard
     And I click element with test-id "confirm-button"
+    And I wait for 2.0 seconds
+    And I search "test-dataset" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-dataset"
     When I logout from banner UI
     Then I am on login page
@@ -32,16 +34,20 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
-    When I click edit-button in row contains text "test-dataset"
+    When I search "test-dataset" in test-id "text-filter-name"
+    And I click edit-button in row contains text "test-dataset"
     Then I should see input in test-id "dataset/name" with value "test-dataset"
     And I should see input in test-id "dataset/displayName" with value "test-dataset"
     When I type "test-dataset-display-name" to element with test-id "dataset/displayName"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
     And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with test-id "confirm-button"
+    And I wait for 2.0 seconds
+    And I search "test-dataset" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-dataset"
     When I click edit-button in row contains text "test-dataset"
     Then I should see input in test-id "dataset/name" with value "test-dataset"
@@ -68,10 +74,12 @@ Feature: Admin
     Then I am on the admin dashboard "System" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
-    When I delete a row with text "test-dataset"
+    When I search "test-dataset" in test-id "text-filter-name"
+    And I delete a row with text "test-dataset"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-dataset"
     When I click refresh
+    And I search "test-dataset" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-dataset" 
     When I logout from banner UI
     Then I am on login page

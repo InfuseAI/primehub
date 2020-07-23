@@ -33,10 +33,27 @@ defineStep("I click element with test-id {string}", async function(testId) {
 
 defineStep("I type {string} to element with test-id {string}", async function(string, testId) {
   const selector = `${testIdToSelector(testId)} input`;
+  await this.inputText(selector, string);
+});
+
+defineStep("I search {string} in test-id {string}", async function(name, testId) {
+  const selector = testIdToSelector(testId);
+  await this.inputText(selector, name);
+  await this.page.keyboard.press("Enter");
+  await this.page.waitFor(500);
+  await this.takeScreenshot(`search-${name}`);
+});
+
+defineStep("I search my username in name filter", async function() {
+  const selector = testIdToSelector("text-filter-username");
+  await this.page.waitForSelector(selector, {visible: true});
   await this.page.focus(selector);
   await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
   await this.page.keyboard.press("Backspace");
-  await this.page.type(selector, `${string}-${this.E2E_SUFFIX}`);
+  await this.page.type(selector, this.USERNAME);
+  await this.page.keyboard.press("Enter");
+  await this.page.waitFor(500);
+  await this.takeScreenshot(`search-${this.USERNAME}`);
 });
 
 defineStep("I click my username", async function() {

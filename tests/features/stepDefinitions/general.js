@@ -218,9 +218,19 @@ defineStep("I should see {int}th column of {int}th item is {string} on list", as
 
 defineStep("I should see {string} in element {string} under active tab", async function(text, element) {
   //div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//textarea[contains(., 'test')]
-  const xpath = `//div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//${element}[contains(., '${text}')]`;
-  await this.page.waitForXPath(xpath);
-  await this.takeScreenshot(`element-${element}-show-${text}`); 
+  let xpath;
+  let content = text.split("|");
+  for (index = 0; index < content.length; index++) {
+    xpath = `//div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//${element}[contains(., '${content[index]}')]`;
+    try {
+      await this.page.waitForXPath(xpath, {timeout: 5 * 1000});
+      console.log(`Found '${content[index]}'`);
+      await this.takeScreenshot(`element-${element}-show-${content[index]}`);
+      return;
+    }
+    catch (e) {}
+  }
+  throw new Error(`Failed to find '${text}'`);
 });
 
 

@@ -69,6 +69,24 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+  e2e_installed_ph:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            INSTALLED_PH: "true"
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+
   e2e_scheduled:
     machine:
       image: ubuntu-1604:202004-01
@@ -129,6 +147,9 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
+      - e2e_scheduled
+      - e2e_installed_ph:
+          context: e2e-demo-a
       - build:
           filters:
             tags:
