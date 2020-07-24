@@ -13,28 +13,14 @@ export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
 export HUB_AUTH_STATE_CRYPTO_KEY=$(openssl rand -hex 32)
 export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
 
-cd ../chart
-helm dependency update
-helm dependency list
-cd -
-
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
 primehub:
   mode: ${PRIMEHUB_MODE}
   domain: ${PRIMEHUB_DOMAIN}
   port: ${PRIMEHUB_PORT}
-  keycloak:
-    password: ${KEYCLOAK_PASSWORD}
-    port: ${PRIMEHUB_PORT}
 keycloak:
-  keycloak:
-    password: ${KEYCLOAK_PASSWORD}
-    extraArgs: -Dkeycloak.ssl-required=none
-    ingress:
-      enabled: true
-      hosts:
-      - ${PRIMEHUB_DOMAIN}
+  password: ${KEYCLOAK_PASSWORD}
 bootstrap:
   password: ${PRIMEHUB_PASSWORD}
 graphql:
