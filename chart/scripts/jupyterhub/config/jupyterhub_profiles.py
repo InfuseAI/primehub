@@ -599,6 +599,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def attach_usage_annoations(self, spawner):
         usage_annotation = dict(component='jupyter',
+                                component_name=spawner.pod_name,
                                 group=spawner.user_options.get('group', {}).get('name', ''),
                                 user=spawner.user.name,
                                 instance_type=spawner.user_options.get('instance_type', ''))
