@@ -208,11 +208,20 @@ defineStep("I should see confirmation dialogue of {string}", async function(stri
 });
 
 
-defineStep("I should see {int}th column of {int}th item is {string} on list", async function(col, row, string) {
+defineStep("I should see {int}th column of {int}th item is {string} on list", async function(col, row, text) {
   //tbody/tr[1]/td[1][contains(., 'Cancelled')]
-  await this.takeScreenshot(`${row}th-item-${col}th-col-with-${string}`); 
-  const xpath = `//tbody/tr[${row}]/td[${col}][contains(., '${string}')]`;
-  await this.page.waitForXPath(xpath);
+  let xpath;
+  let content = text.split("|");
+  for (index = 0; index < content.length; index++) {
+    xpath = `//tbody/tr[${row}]/td[${col}][contains(., '${content[index]}')]`;
+    try {
+      await this.page.waitForXPath(xpath, {timeout: 5 * 1000});
+      console.log(`Found '${content[index]}'`);
+      await this.takeScreenshot(`${row}th-item-${col}th-col-with-${content[index]}`); 
+      return;
+    }
+    catch (e) {}
+  }
 });
 
 
