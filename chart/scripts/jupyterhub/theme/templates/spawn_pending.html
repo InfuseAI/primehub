@@ -154,7 +154,7 @@
       setProgress(RUNNING);
       setTimeout(function(){
         setProgress(DONE);
-        window.location.reload();
+        window.location = '/hub/home';
       }, 1600);
     }
     if (evt.failed) {
