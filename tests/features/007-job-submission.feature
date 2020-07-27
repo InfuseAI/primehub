@@ -40,7 +40,7 @@ Feature: Job Submission
     And I click button of "Yes" on confirmation dialogue
     And I wait for 0.5 seconds
     And I click "Refresh" button
-    Then I should see 1th column of 1th item is "Pending" on list
+    Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     And I wait for job completed
     And I wait for 0.5 seconds
     And I click link of "create-job-test" of 1th item on list
