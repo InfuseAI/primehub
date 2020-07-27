@@ -27,17 +27,8 @@ HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
 cat <<EOF > primehub-values.yaml
 primehub:
   domain: ${PRIMEHUB_DOMAIN}
-  keycloak:
-    domain: ${PRIMEHUB_DOMAIN}
-    password: ${KEYCLOAK_PASSWORD}
 keycloak:
-  keycloak:
-    password: ${KEYCLOAK_PASSWORD}
-    extraArgs: -Dkeycloak.ssl-required=none
-    ingress:
-      enabled: true
-      hosts:
-      - ${PRIMEHUB_DOMAIN}
+  password: ${KEYCLOAK_PASSWORD}
 bootstrap:
   password: ${PRIMEHUB_PASSWORD}
 graphql:
