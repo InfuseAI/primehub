@@ -15,6 +15,7 @@ from tornado.auth import OAuth2Mixin
 from oauthenticator.generic import GenericLoginHandler, GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
 from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
+from jupyterhub.utils import url_path_join
 from kubespawner.objects import make_pvc
 from kubernetes.client.models import V1LabelSelector
 from kubernetes.client.rest import ApiException
@@ -68,8 +69,8 @@ BACKEND_API_UNAVAILABLE = 'API_UNAVAILABLE'
 GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                     system { defaultUserVolumeCapacity }
                     user (where: { id: $id }) { id username isAdmin volumeCapacity
-                    groups { 
-                            id 
+                    groups {
+                            id
                             name
                             displayName
                             enabledSharedVolume
@@ -525,7 +526,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     self.chown_extra.append('/project/' + name)
                     if home_symlink:
                         self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
-                    
+
         if phfs_enabled:
             spawner.volumes.append({'name': 'phfs',
                                 'persistentVolumeClaim': {'claimName': phfs_pvc}})
@@ -592,6 +593,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
             "command": ["false"],
         })
 
+        spawner.set_launch_group(launch_group)
+
     def support_repo2docker(self, spawner):
         # mount extra scripts for repo2docker
         spawner.environment['R2D_ENTRYPOINT'] = '/opt/primehub-start-notebook/primehub-start-notebook.sh'
@@ -622,6 +625,8 @@ class PrimeHubPodReflector(NamespacedResourceReflector):
 class PrimeHubSpawner(KubeSpawner):
     enable_kernel_gateway = None
     enable_safe_mode = False
+    _launch_group = None
+    _active_group = None
 
     @property
     def primehub_pod_reflector(self):
@@ -633,6 +638,7 @@ class PrimeHubSpawner(KubeSpawner):
     def __init__(self, *args, **kwargs):
         _mock = kwargs.get('_mock', False)
         super().__init__(*args, **kwargs)
+
         if not _mock:
             self._start_reflector("primehub_pods", PrimeHubPodReflector, replace=True)
 
@@ -724,6 +730,41 @@ class PrimeHubSpawner(KubeSpawner):
         seen = set()
         return [x for g in groups for x in g[key] if x['name']
                 not in seen and not seen.add(x['name'])]
+
+    @property
+    def launch_group(self):
+        return self._launch_group
+
+    def set_launch_group(self, launch_group):
+        self._launch_group = launch_group
+
+    @property
+    def active_group(self):
+        return self._active_group
+
+    def set_active_group(self, active_group):
+        self._active_group = active_group
+
+    def get_state(self):
+        """get the current state"""
+        state = super().get_state()
+        if self.launch_group:
+            state['launch_group'] = self.launch_group
+        self.log.info("get_state: %s" % self._launch_group)
+        return state
+
+    def load_state(self, state):
+        """load state from the database"""
+        super().load_state(state)
+        if 'launch_group' in state:
+            self._launch_group = state['launch_group']
+        self.log.info("load_state: %s" % self._launch_group)
+
+    def clear_state(self):
+        """clear any state (called after shutdown)"""
+        super().clear_state()
+        self._launch_group = None
+        self.log.info("clear_state: %s" % self._launch_group)
 
     @gen.coroutine
     def _render_options_form_dynamically(self, current_spawner):
@@ -907,6 +948,42 @@ class ResourceUsageHandler(BaseHandler):
         # Tornado will response json when give chuck as a dictionary.
         self.finish(dict(groups=groups))
 
+class PrimeHubHomeHandler(BaseHandler):
+    """Render the user's home page."""
+
+    @web.authenticated
+    async def get(self):
+        user = self.current_user
+        if user.running:
+            # trigger poll_and_notify event in case of a server that died
+            await user.spawner.poll_and_notify()
+
+        # send the user to /spawn if they have no active servers,
+        # to establish that this is an explicit spawn request rather
+        # than an implicit one, which can be caused by any link to `/user/:name(/:server_name)`
+        if user.active:
+            url = url_path_join(self.base_url, 'user', user.escaped_name)
+        else:
+            url = url_path_join(self.hub.base_url, 'spawn', user.escaped_name)
+
+        group = self.get_query_argument("group")
+        if group and user.spawner:
+            user.spawner.set_active_group(group)
+
+        html = self.render_template(
+            'home.html',
+            user=user,
+            url=url,
+            allow_named_servers=self.allow_named_servers,
+            named_server_limit_per_user=self.named_server_limit_per_user,
+            url_path_join=url_path_join,
+            group=group,
+            # can't use user.spawners because the stop method of User pops named servers from user.spawners when they're stopped
+            spawners=user.orm_user._orm_spawners,
+            default_server=user.spawner,
+        )
+        self.finish(html)
+
 
 def mutate_pod_spec_for_kernel_gateway(spawner):
 
@@ -975,8 +1052,10 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
     c.JupyterHub.extra_handlers = [
             (r"/api/primehub/groups", ResourceUsageHandler),
             (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
+            (r"/primehub/home", PrimeHubHomeHandler),
             ]
 
+    c.JupyterHub.redirect_to_server = False
     c.JupyterHub.template_paths = [jupyterhub_template_path]
     c.JupyterHub.statsd_host = 'localhost'
     c.JupyterHub.statsd_port = 9125

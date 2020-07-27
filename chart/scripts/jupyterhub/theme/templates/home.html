@@ -1,0 +1,19 @@
+{% extends "templates/home.html" %}
+
+{% block main %}
+<div class="container">
+  <div class="row">
+    <div class="text-center">
+      {% if default_server.active %}
+        <a id="stop" role="button" class="btn btn-lg btn-danger">
+          Stop My Server
+        </a>
+      {% endif %}
+      <a id="start" role="button" class="btn btn-lg btn-primary" href="{{ url }}" target="_blank">
+      {% if not default_server.active %}Start{% endif %}
+      My Server
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock main %}
