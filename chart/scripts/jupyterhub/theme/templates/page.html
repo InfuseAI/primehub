@@ -10,6 +10,9 @@
 {% endblock %}
 
 {% block logo %}
+<span id="jupyterhub-logo" class="pull-left">
+  <a href="/"><img src='{{base_url}}logo' alt='PrimeHub - JupyterHub' class='jpy-logo' title='Home' style='height: 32px;'/></a>
+</span>
 {% endblock %}
 {% block announcement %}
 {% if announcement %}
@@ -20,18 +23,17 @@
 {% endblock %}
 
 {% block nav_bar_right_items %}
+<li>
+  <span class="primehub-version">
+    {{ primehub_version }}
+  </span>
+</li>
+{{ super() }}
 {% endblock %}
 
 {% block nav_bar %}
-{{ super() }}
-<div>base_url: {{ base_url }} </div>
-<div>prefix: {{ prefix }} </div>
-<div>login_url: {{ login_url }} </div>
-<div>logout_url: {{ logout_url }} </div>
-<div>static_url: {{ static_url }} </div>
 {% if user.spawner %}
 <div>launch_group: {{user.spawner.launch_group }} </div>
 <div>active_group: {{user.spawner.active_group }} </div>
 {% endif %}
 {% endblock %}
-

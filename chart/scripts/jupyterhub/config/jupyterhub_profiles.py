@@ -783,11 +783,15 @@ class PrimeHubSpawner(KubeSpawner):
 
         try:
             groups = self._groups_from_ctx(context)
+            if self.active_group:
+                groups = [group for group in groups if group.get('name') == self.active_group ]
+                if len(groups) == 0:
+                    return self.render_html('spawn_block.html', block_msg=f"The group {self.active_group} is not found")
             self._groups = groups
         except:
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        return self.render_html('groups.html', groups=groups, enable_kernel_gateway=enable_feature_kernel_gateway)
+        return self.render_html('groups.html', groups=groups, active_group=self.active_group, enable_kernel_gateway=enable_feature_kernel_gateway)
 
     def get_container_resource_usage(self, group):
         existing = []
