@@ -33,8 +33,8 @@ spec:
           - name: PRIMEHUB_NAMESPACE
             value: {{ .Release.Namespace }}
           - name: KC_URL
-            {{- if .Values.primehub.deployKeycloak }}
-            value: http://{{ .Release.Name }}-keycloak-http.{{ .Release.Namespace }}/auth
+            {{- if .Values.keycloak.deploy }}
+            value: http://keycloak-http.{{ .Release.Namespace }}/auth
             {{- else }}
             value: {{ include "primehub.keycloak.url" . }}
             {{- end }}
