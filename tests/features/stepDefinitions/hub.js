@@ -64,18 +64,18 @@ defineStep("I choose image", async function() {
   await this.clickElementBySelector(selector);
 });
 
-//defineStep("I choose option with name {string}", async function(name) {
-//  const xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
-//  await this.clickElementByXpath(xpath);
-//});
 defineStep("I choose instance type with name {string}", async function(name) {
   const selector = `#it-container input[value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementBySelector(selector);
+  await this.page.waitFor(500);
+  await this.takeScreenshot(`choose-instance-type-${name}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I choose image with name {string}", async function(name) {
   const selector = `#image-container input[value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementBySelector(selector);
+  await this.page.waitFor(500);
+  await this.takeScreenshot(`choose-image-${name}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I go to the spawner page", async function() {
