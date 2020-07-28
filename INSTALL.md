@@ -1,10 +1,5 @@
 # Install PrimeHub
 
-## Prerequisite
-
-Keycloak and Metacontroller are required for PrimeHub.
-The detail installation steps, please reference [Install Metacontroller](https://docs.primehub.io/docs/next/getting_started/install_metacontroller) and [Install Keycloak](https://docs.primehub.io/docs/next/getting_started/install_keycloak).
-
 ## Prepare the Value File
 Prepare the value file `primehub-values.yaml` for helm installation. 
 
@@ -12,7 +7,6 @@ Key | Description
 ----|------------------------------------
 `PRIMEHUB_DOMAIN` | The domain name of primehub. It can be the same as primehub's one.
 `PRIMEHUB_PASSWORD` | The password for primehub admin. (The default username of admin is `phadmin`)
-`KEYCLOAK_DOMAIN` | The hostname of keycloak. It can be the same as primehub's one.
 `KEYCLOAK_PASSWORD` | The master password of keycloak
 `STORAGE_CLASS` | The storage class for persistence storage
 `GRAPHQL_SECRET_KEY` | The graphql API secret key
@@ -24,7 +18,6 @@ Modify the environment variables below and execute the commands to generate the 
 ```
 PRIMEHUB_DOMAIN=1.2.3.4.nip.io
 PRIMEHUB_PASSWORD=__my_password__
-KEYCLOAK_DOMAIN=1.2.3.4.nip.io
 KEYCLOAK_PASSWORD=__my_password__
 STORAGE_CLASS=__storage_class__
 GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
@@ -33,15 +26,10 @@ HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
 
 cat <<EOF > primehub-values.yaml
 primehub:
-  scheme: http
   domain: ${PRIMEHUB_DOMAIN}
-  keycloak:
-    scheme: http
-    domain: ${KEYCLOAK_DOMAIN}
-    username: keycloak
-    password: ${KEYCLOAK_PASSWORD}
+keycloak:
+  password: ${KEYCLOAK_PASSWORD}
 bootstrap:
-  usernmae: phadmin  
   password: ${PRIMEHUB_PASSWORD}
 graphql:
   sharedGraphqlSecret: ${GRAPHQL_SECRET_KEY}
@@ -49,7 +37,6 @@ groupvolume:
   storageClass: ${STORAGE_CLASS}
 ingress:
   annotations:
-    # If `primehub.scheme` is `http`, the following annotations are required
     kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:

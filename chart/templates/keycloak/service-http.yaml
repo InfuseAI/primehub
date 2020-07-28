@@ -1,0 +1,36 @@
+{{- if .Values.keycloak.deploy }}
+{{- $service := .Values.keycloak.service -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "keycloak.fullname" . }}-http
+  {{- with $service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "keycloak.commonLabels" . | nindent 4 }}
+    {{- with $service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    service: http
+spec:
+  type: {{ $service.type }}
+  ports:
+    - name: http
+      port: {{ $service.httpPort }}
+      targetPort: http
+    {{- if and (eq "NodePort" $service.type) $service.httpNodePort }}
+      nodePort: {{ $service.httpNodePort }}
+    {{- end }}
+      protocol: TCP
+    - name: https
+      port: {{ $service.httpsPort }}
+      targetPort: https
+    {{- if and (eq "NodePort" $service.type) $service.httpsNodePort }}
+      nodePort: {{ $service.httpsNodePort }}
+    {{- end }}
+      protocol: TCP
+  selector:
+    {{- include "keycloak.selectorLabels" . | nindent 4 }}
+{{- end }}

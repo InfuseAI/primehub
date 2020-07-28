@@ -7,50 +7,21 @@ export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 export PRIMEHUB_DOMAIN=hub.ci-e2e.dev.primehub.io
 export PRIMEHUB_PASSWORD=${PH_PASSWORD}
 export PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
-export KEYCLOAK_DOMAIN=id.ci-e2e.dev.primehub.io
 export KEYCLOAK_PASSWORD=$(openssl rand -hex 16)
 export STORAGE_CLASS=local-path
 export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
 export HUB_AUTH_STATE_CRYPTO_KEY=$(openssl rand -hex 32)
 export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
 
-echo "apply metacontroller yaml"
-# Create metacontroller namespace.
-kubectl create namespace metacontroller
-# Create metacontroller service account and role/binding.
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/metacontroller/master/manifests/metacontroller-rbac.yaml
-# Create CRDs for Metacontroller APIs, and the Metacontroller StatefulSet.
-kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/metacontroller/master/manifests/metacontroller.yaml
-
-echo "install keycloak chart"
-cat <<EOF > keycloak-values.yaml
-keycloak:
-  password: ${KEYCLOAK_PASSWORD}
-  extraArgs: -Dkeycloak.ssl-required=none
-  ingress:
-    enabled: true
-    hosts:
-    - ${KEYCLOAK_DOMAIN}
-EOF
-
-helm repo add codecentric https://codecentric.github.io/helm-charts
-helm install keycloak codecentric/keycloak --version 7.2.1 -f keycloak-values.yaml
-
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
 primehub:
   mode: ${PRIMEHUB_MODE}
-  scheme: http
   domain: ${PRIMEHUB_DOMAIN}
   port: ${PRIMEHUB_PORT}
-  keycloak:
-    scheme: http
-    domain: ${KEYCLOAK_DOMAIN}
-    username: keycloak
-    password: ${KEYCLOAK_PASSWORD}
-    port: ${PRIMEHUB_PORT}
+keycloak:
+  password: ${KEYCLOAK_PASSWORD}
 bootstrap:
-  usernmae: phadmin
   password: ${PRIMEHUB_PASSWORD}
 graphql:
   sharedGraphqlSecret: ${GRAPHQL_SECRET_KEY}

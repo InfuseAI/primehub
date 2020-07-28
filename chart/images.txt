@@ -13,6 +13,7 @@ k8s.gcr.io/volume-nfs:0.8
 keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
+metacontroller/metacontroller:0.2
 prom/statsd-exporter:v0.9.0
 infuseai/primehub-console:latest
 infuseai/primehub-console-graphql:latest
@@ -26,3 +27,4 @@ quay.io/k8scsi/csi-attacher:v1.1.1
 quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
 quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
 wunderio/csi-rclone:v1.2.6
+jboss/keycloak:8.0.1
