@@ -552,16 +552,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_labels['primehub.io/user'] = escape_to_primehub_label(spawner.user.name)
         spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(spawner.user_options.get('group', {}).get('name', ''))
 
-        # add annotations for billing, the value must be string
-        spawner.extra_annotations['auditing.launch_id'] = uuid.uuid4().hex
-        spawner.extra_annotations['auditing.pod_name'] = spawner.pod_name
-        spawner.extra_annotations['auditing.user_name'] = spawner.user.name
-        spawner.extra_annotations['auditing.launch_group_name'] = spawner.user_options.get('group', {}).get('name', '')
-        spawner.extra_annotations['auditing.instance_type'] = spawner.user_options.get('instance_type', '')
-        spawner.extra_annotations['auditing.image'] = spawner.image
-        spawner.extra_annotations['auditing.cpu_limit'] = str(spawner.cpu_limit)
-        spawner.extra_annotations['auditing.mem_limit'] = str(spawner.mem_limit)
-        spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
+        self.attach_auditing_annotations(spawner)
+        self.attach_usage_annoations(spawner)
 
         spawner.init_containers = []
         self.mount_primehub_scripts(spawner)
@@ -591,6 +583,30 @@ class OIDCAuthenticator(GenericOAuthenticator):
             "imagePullPolicy": "Never",
             "command": ["false"],
         })
+
+    def attach_auditing_annotations(self, spawner):
+        # add annotations for billing, the value must be string
+        # TODO remove it if the cloud billing is no longer supported
+        spawner.extra_annotations['auditing.launch_id'] = uuid.uuid4().hex
+        spawner.extra_annotations['auditing.pod_name'] = spawner.pod_name
+        spawner.extra_annotations['auditing.user_name'] = spawner.user.name
+        spawner.extra_annotations['auditing.launch_group_name'] = spawner.user_options.get('group', {}).get('name', '')
+        spawner.extra_annotations['auditing.instance_type'] = spawner.user_options.get('instance_type', '')
+        spawner.extra_annotations['auditing.image'] = spawner.image
+        spawner.extra_annotations['auditing.cpu_limit'] = str(spawner.cpu_limit)
+        spawner.extra_annotations['auditing.mem_limit'] = str(spawner.mem_limit)
+        spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
+
+    def attach_usage_annoations(self, spawner):
+        usage_annotation = dict(component='jupyter',
+                                component_name=spawner.pod_name,
+                                group=spawner.user_options.get('group', {}).get('name', ''),
+                                user=spawner.user.name,
+                                instance_type=spawner.user_options.get('instance_type', ''))
+        value = json.dumps(usage_annotation)
+        # convert json format `{ }` to `{{ }}` to escape curly-brace characters in the python template
+        spawner.extra_annotations['primehub.io/usage'] = '{%s}' % value
+
 
     def support_repo2docker(self, spawner):
         # mount extra scripts for repo2docker
