@@ -21,6 +21,8 @@ jobs:
 
             # run tests
             cd chart
+            pip install --upgrade pip
+            pip install wheel
             pip install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
             pip install pytest-cov
             make test-html
