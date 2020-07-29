@@ -149,8 +149,6 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
-      - e2e_installed_ph:
-          context: e2e-demo-a
       - build:
           filters:
             tags:
