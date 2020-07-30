@@ -364,11 +364,11 @@ Create the namespace for the serviceMonitor deployment.
 {{- end -}}
 
 {{- define "postgresql.name" -}}
-{{- "postgres" -}}
+{{- "keycloak-postgres" -}}
 {{- end -}}
 
 {{- define "postgresql.fullname" -}}
-{{- "postgres" -}}
+{{- "keycloak-postgres" -}}
 {{- end -}}
 
 {{- define "postgresql.port" -}}

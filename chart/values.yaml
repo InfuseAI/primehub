@@ -78,6 +78,13 @@ keycloak:
       timeoutSeconds: 5
       failureThreshold: 6
       successThreshold: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
     metrics:
       enabled: false
     securityContext:
