@@ -5,6 +5,7 @@ infuseai/primehub-admin-notebook:dd029e8112
 infuseai/primehub-admission:29c8243d73
 infuseai/primehub-bootstrap:20191022
 infuseai/primehub-controller-ee:latest
+infuseai/primehub-keycloak-theme:e1e29f10
 infuseai/tusd:0.1.1
 jupyterhub/configurable-http-proxy:4.1.0
 jupyterhub/k8s-image-awaiter:0.9-b51ffeb
@@ -28,3 +29,5 @@ quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
 quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
 wunderio/csi-rclone:v1.2.6
 jboss/keycloak:8.0.1
+bitnami/postgresql:11.5.0-debian-9-r60
+bitnami/minideb:stretch
