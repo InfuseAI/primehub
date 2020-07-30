@@ -10,7 +10,10 @@ jupyterhub:
         requests:
           cpu: 0m
 keycloak:
-  keycloak:
+  resources:
+    requests:
+      cpu: 0m
+  postgresql:
     resources:
       requests:
         cpu: 0m

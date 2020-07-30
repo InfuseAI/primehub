@@ -32,8 +32,8 @@ keycloak:
     tag: 8.0.1
     pullPolicy: IfNotPresent
   persistence:
-    deployPostgres: false
-    dbVendor: h2
+    deployPostgres: true
+    dbVendor: postgres
     dbName: keycloak
     dbHost: mykeycloak
     dbPort: 5432
@@ -41,7 +41,74 @@ keycloak:
     existingSecretPasswordKey: ""  # read keycloak db password from existingSecret under this Key
     existingSecretUsernameKey: ""  # read keycloak db user from existingSecret under this Key
     dbUser: keycloak
-    dbPassword: keycloak
+    dbPassword:
+  postgresql:
+    image:
+      registry: docker.io
+      repository: bitnami/postgresql
+      tag: 11.5.0-debian-9-r60
+      pullPolicy: IfNotPresent
+      debug: false
+    service:
+      type: ClusterIP
+      port: 5432
+      annotations: {}
+    postgresqlUsername: postgres
+    master:
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []
+      podLabels: {}
+      podAnnotations: {}
+      extraVolumeMounts: []
+      extraVolumes: []
+    updateStrategy:
+      type: RollingUpdate
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    metrics:
+      enabled: false
+    securityContext:
+      enabled: true
+      fsGroup: 1001
+      runAsUser: 1001
+    serviceAccount:
+      enabled: false
+    volumePermissions:
+      enabled: true
+      image:
+        registry: docker.io
+        repository: bitnami/minideb
+        tag: stretch
+      securityContext:
+        runAsUser: 0
+    persistence:
+      enabled: true
+      mountPath: /bitnami/postgresql
+      subPath: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      annotations: {}
   service:
     annotations: {}
     labels: {}
@@ -103,7 +170,7 @@ keycloak:
     custom: |
 
   theme:
-    image: infuseai/primehub-keycloak-theme:ca39c3e0
+    image: infuseai/primehub-keycloak-theme:e1e29f10
     packages: []
   extraInitContainers: |
     - name: theme-provider

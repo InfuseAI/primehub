@@ -1,0 +1,40 @@
+{{- if .Values.keycloak.persistence.deployPostgres }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "postgresql.fullname" . }}
+  labels:
+    app: {{ template "postgresql.name" . }}
+    chart: {{ template "primehub.chart" . }}
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+{{- with .Values.keycloak.postgresql.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.keycloak.postgresql.service.type }}
+  {{- if and .Values.keycloak.postgresql.service.loadBalancerIP (eq .Values.keycloak.postgresql.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.keycloak.postgresql.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.keycloak.postgresql.service.type "LoadBalancer") .Values.keycloak.postgresql.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{ with .Values.keycloak.postgresql.service.loadBalancerSourceRanges }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  {{- end }}
+  {{- if and (eq .Values.keycloak.postgresql.service.type "ClusterIP") .Values.keycloak.postgresql.service.clusterIP }}
+  clusterIP: {{ .Values.keycloak.postgresql.service.clusterIP }}
+  {{- end }}
+  ports:
+  - name: postgresql
+    port: {{ template "postgresql.port" . }}
+    targetPort: postgresql
+    {{- if .Values.keycloak.postgresql.service.nodePort }}
+    nodePort: {{ .Values.keycloak.postgresql.service.nodePort }}
+    {{- end }}
+  selector:
+    app: {{ template "postgresql.name" . }}
+    release: {{ .Release.Name | quote }}
+    role: master
+{{- end }}
