@@ -284,6 +284,17 @@ Create the name for the database password secret key.
 {{- end -}}
 
 {{/*
+Get keycloak db password
+*/}}
+{{- define "keycloak.dbPassword" -}}
+{{- if .Values.keycloak.persistence.dbPassword }}
+  {{- .Values.keycloak.persistence.dbPassword }}
+{{- else -}}
+  {{- randAlphaNum 16 -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name for the database password secret key - if it is defined.
 */}}
 {{- define "keycloak.dbUserKey" -}}
@@ -349,5 +360,81 @@ Create the namespace for the serviceMonitor deployment.
 {{ .Values.keycloak.prometheus.operator.serviceMonitor.namespace }}
 {{- else -}}
 {{ .Release.Namespace }}
+{{- end -}}
+{{- end -}}
+
+{{- define "postgresql.name" -}}
+{{- "postgres" -}}
+{{- end -}}
+
+{{- define "postgresql.fullname" -}}
+{{- "postgres" -}}
+{{- end -}}
+
+{{- define "postgresql.port" -}}
+{{- .Values.keycloak.postgresql.service.port -}}
+{{- end -}}
+
+{{- define "postgresql.master.fullname" -}}
+{{- "keycloak-postgres" -}}
+{{- end -}}
+
+{{- define "postgresql.volumePermissions.image" -}}
+{{- $registryName := .Values.keycloak.postgresql.volumePermissions.image.registry -}}
+{{- $repositoryName := .Values.keycloak.postgresql.volumePermissions.image.repository -}}
+{{- $tag := .Values.keycloak.postgresql.volumePermissions.image.tag | toString -}}
+{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+{{- define "postgresql.image" -}}
+{{- $registryName := .Values.keycloak.postgresql.image.registry -}}
+{{- $repositoryName := .Values.keycloak.postgresql.image.repository -}}
+{{- $tag := .Values.keycloak.postgresql.image.tag | toString -}}
+{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- end -}}
+
+{{- define "postgresql.username" -}}
+{{- .Values.keycloak.postgresql.postgresqlUsername -}}
+{{- end -}}
+
+{{- define "postgresql.secretName" -}}
+{{- printf "%s" (include "postgresql.fullname" .) -}}
+{{- end -}}
+
+{{- define "postgresql.database" -}}
+{{- .Values.postgresqlDatabase -}}
+{{- end -}}
+
+{{- define "postgresql.readinessProbeCommand" -}}
+- |
+{{- if (include "postgresql.database" .) }}
+  pg_isready -U {{ include "postgresql.username" . | quote }} -d {{ (include "postgresql.database" .) | quote }} -h 127.0.0.1 -p {{ template "postgresql.port" . }}
+{{- else }}
+  pg_isready -U {{ include "postgresql.username" . | quote }} -h 127.0.0.1 -p {{ template "postgresql.port" . }}
+{{- end }}
+{{- if contains "bitnami/" .Values.keycloak.postgresql.image.repository }}
+  [ -f /opt/bitnami/postgresql/tmp/.initialized ]
+{{- end -}}
+{{- end -}}
+
+{{- define "postgresql.storageClass" -}}
+{{- if .Values.keycloak.postgresql.persistence.storageClass -}}
+{{- if (eq "-" .Values.keycloak.postgresql.persistence.storageClass) -}}
+  {{- printf "storageClassName: \"\"" -}}
+{{- else }}
+  {{- printf "storageClassName: %s" .Values.keycloak.postgresql.persistence.storageClass -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "postgresql.createSecret" -}}
+{{- true -}}
+{{- end -}}
+
+{{- define "postgresql.password" -}}
+{{- if .Values.keycloak.postgresql.postgresqlPassword -}}
+    {{- .Values.keycloak.postgresql.postgresqlPassword -}}
+{{- else -}}
+    {{- randAlphaNum 10 -}}
 {{- end -}}
 {{- end -}}
