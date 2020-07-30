@@ -1,4 +1,4 @@
-{{- if .Values.keycloak.persistence.deployPostgres }}
+{{- if and .Values.keycloak.deploy .Values.keycloak.persistence.deployPostgres }}
 apiVersion: v1
 kind: Service
 metadata:

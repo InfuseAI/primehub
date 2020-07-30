@@ -1,4 +1,4 @@
-{{- if .Values.keycloak.persistence.deployPostgres }}
+{{- if and .Values.keycloak.deploy .Values.keycloak.persistence.deployPostgres }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
