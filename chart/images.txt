@@ -4,7 +4,7 @@ infuseai/jupyterhub-k8s:jh-5c94e4f4
 infuseai/primehub-admin-notebook:dd029e8112
 infuseai/primehub-admission:29c8243d73
 infuseai/primehub-bootstrap:20191022
-infuseai/primehub-controller-ee:latest
+infuseai/primehub-controller-ee:v2.8-14dde5a4
 infuseai/tusd:0.1.1
 jupyterhub/configurable-http-proxy:4.1.0
 jupyterhub/k8s-image-awaiter:0.9-b51ffeb
@@ -14,10 +14,10 @@ keycloak/keycloak-gatekeeper:6.0.1
 gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 prom/statsd-exporter:v0.9.0
-infuseai/primehub-console:latest
-infuseai/primehub-console-graphql:latest
-infuseai/primehub-console-watcher:latest
-infuseai/primehub-console-model-deploy:latest
+infuseai/primehub-console:v2.8-e302d0be
+infuseai/primehub-console-graphql:v2.8-e302d0be
+infuseai/primehub-console-watcher:v2.8-e302d0be
+infuseai/primehub-console-model-deploy:v2.8-e302d0be
 seldonio/seldon-core-executor:1.1.0
 fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 minio/minio:RELEASE.2020-06-14T18-32-17Z
