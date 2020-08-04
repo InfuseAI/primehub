@@ -40,6 +40,9 @@ spec:
           command:
           - /manager
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          {{- if .Values.controller.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
+          {{- end }}
           name: manager
           env:
           - name: POD_NAMESPACE

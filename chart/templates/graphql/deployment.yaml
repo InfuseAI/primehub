@@ -35,7 +35,9 @@ spec:
           {{- else }}
           image: "{{ .Values.graphql.image.repository }}:{{ .Values.graphql.image.tag }}"
           {{- end }}
+          {{- if .Values.graphql.image.pullPolicy }}
           imagePullPolicy: {{ .Values.graphql.image.pullPolicy }}
+          {{- end }}
           env:
             {{- if .Values.datasetUpload.enabled }}
             - name: PRIMEHUB_FEATURE_DATASET_UPLOAD
