@@ -349,7 +349,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
                         "[%s] is a invalid env key. Discarded" %
                         env_key)
                     continue
+                # For backward compatibility in env
                 ds_env[env_key] = value
+                # Actually, hyphen is not supported in bash
+                ds_env[env_key.replace('-', '_')] = value
 
             spawner.environment.update(ds_env)
         else:
