@@ -37,7 +37,9 @@ spec:
           {{- else }}
           image: "{{ .Values.console.image.repository }}:{{ .Values.console.image.tag }}"
           {{- end }}
+          {{- if .Values.console.image.pullPolicy }}
           imagePullPolicy: {{ .Values.console.image.pullPolicy }}
+          {{- end }}
           volumeMounts:
             - name: portal-config
               mountPath: /etc/portal-config.yaml

@@ -29,7 +29,9 @@ spec:
       containers:
         - name: watcher
           image: "{{ .Values.watcher.image.repository }}:{{ .Values.watcher.image.tag }}"
+          {{- if .Values.watcher.image.pullPolicy }}
           imagePullPolicy: {{ .Values.watcher.image.pullPolicy }}
+          {{- end }}
           env:
             - name: KC_API_BASEURL
               value: {{ include "primehub.keycloak.url" . }}
