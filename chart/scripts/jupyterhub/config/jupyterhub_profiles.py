@@ -1077,7 +1077,6 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
             (r"/primehub/home", PrimeHubHomeHandler),
             ]
 
-    c.JupyterHub.redirect_to_server = False
     c.JupyterHub.template_paths = [jupyterhub_template_path]
     c.JupyterHub.statsd_host = 'localhost'
     c.JupyterHub.statsd_port = 9125
