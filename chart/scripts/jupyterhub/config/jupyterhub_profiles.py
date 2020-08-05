@@ -988,8 +988,8 @@ class PrimeHubHomeHandler(BaseHandler):
         else:
             url = url_path_join(self.hub.base_url, 'spawn', user.escaped_name)
 
-        group = self.get_query_argument("group")
-        if group and user.spawner:
+        group = self.get_query_argument("group", default=None)
+        if user.spawner:
             user.spawner.set_active_group(group)
 
         html = self.render_template(

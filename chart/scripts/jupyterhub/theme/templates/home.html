@@ -13,11 +13,10 @@
           Stop My Server
         </a>
       {% endif %}
-      {% if not default_server.active %}
-      <a id="start" role="button" class="btn btn-lg btn-primary" href="{{ url }}">Start My Server </a>
-      {% else %}
-      <a id="start" role="button" class="btn btn-lg btn-primary" href="{{ url }}" target="_blank">My Server </a>
-      {% endif %}
+      <a id="start" role="button" class="btn btn-lg btn-primary" href="{{ url }}">
+      {% if not default_server.active %}Start{% endif %}
+      My Server
+      </a>
     </div>
   </div>
 </div>
@@ -28,16 +27,25 @@
 require(["jquery"], function(
   $
 ) {
-  $("#stop").click(function() {
-    console.log("stop my server");
-    $("#start").removeAttr("target");
-  });
-
-  {% if user.spawner and not user.spawner.active_group %}
+  // Customize for jupyterhub in embedded mode.
   if (window.self !== window.top) {
+    // Open in new tab when clicking "My server"
+    {% if default_server.active %}
+    $("#start").attr("target", "_blank");
+    {% endif %}
+
+    // On stop button is clicked, "My server" would be grayed out. And then change to "Start my server"
+    // In this case, we don't want to open in new tab
+    $("#stop").click(function() {
+      $("#start").removeAttr("target");
+    });
+
+    // This only happen while the jupyter server is just closed.
+    // The spanwner instance is recreated, to reload the page to resync the group-context
+    {% if user.spawner and not user.spawner.active_group %}
     window.top.location.reload();
+    {% endif %}
   }
-  {% endif %}
 });
 </script>
 

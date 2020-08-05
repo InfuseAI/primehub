@@ -32,8 +32,9 @@
 {% endblock %}
 
 {% block nav_bar %}
-{% if user.spawner %}
-<div>launch_group: {{user.spawner.launch_group }} </div>
-<div>active_group: {{user.spawner.active_group }} </div>
+{% if user.spawner and user.spawner.active_group %}
+<div style="margin-bottom: 20px;"></div>
+{% else %}
+{{ super() }}
 {% endif %}
 {% endblock %}
