@@ -38,3 +38,7 @@ This project is still in early stage, things changes quickly and may contain
 some unexpected features, but we plan to make this rock solid and release more
 features with the community. Suggestions and discussions are welcome and
 appreciated.
+
+## Comparison with other open-sourced or free plan
+
+Please refer to [comparison](Comparison.md).
