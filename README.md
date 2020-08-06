@@ -41,4 +41,4 @@ appreciated.
 
 ## Comparison with other open-sourced or free plan
 
-Please refer to [comparison](comparison.md).
+Please refer to [comparison](Comparison.md).
