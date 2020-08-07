@@ -31,3 +31,4 @@ wunderio/csi-rclone:v1.2.6
 jboss/keycloak:8.0.1
 bitnami/postgresql:11.5.0-debian-9-r60
 bitnami/minideb:stretch
+mltooling/ssh-proxy:0.1.11

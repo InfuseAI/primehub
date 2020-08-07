@@ -1,0 +1,59 @@
+{{- if .Values.sshBastionServer.enabled }}
+{{- if .Values.sshBastionServer.netpol.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: {{ include "ssh-bastion-server.name" . }}-singleuser-ingress
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          ssh-bastion-server/bastion: "true"
+    ports:
+    - port: 22
+      protocol: TCP
+    - port: {{ .Values.sshBastionServer.ssh.target.publicKeyApiPort }}
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      {{- toYaml .Values.sshBastionServer.ssh.target.matchLabels | nindent 6 }}
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: {{ include "ssh-bastion-server.name" . }}-egress
+spec:
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- toYaml .Values.sshBastionServer.ssh.target.matchLabels | nindent 10 }}
+    ports:
+    - port: 22
+      protocol: TCP
+    - port: {{ .Values.sshBastionServer.ssh.target.publicKeyApiPort }}
+      protocol: TCP
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+    ports:
+    - port: 53
+      protocol: UDP
+    - port: 6443
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      ssh-bastion-server/bastion: "true"
+  policyTypes:
+  - Egress
+{{- end }}
+{{- end }}

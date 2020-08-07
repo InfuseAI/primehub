@@ -917,3 +917,46 @@ rclone:
       pullPolicy: IfNotPresent
     resources:
 
+sshBastionServer:
+  enabled: false
+  image:
+    repository: mltooling/ssh-proxy
+    tag: 0.1.11
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 2222
+    targetPort: 22
+  ssh:
+    target:
+      matchLabels:
+        app: jupyterhub
+        component: singleuser-server
+        ssh-bastion-server/notebook: "true"
+      publicKeyApiPort: 8080
+  resources:
+    limits:
+      cpu: 200m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  netpol:
+    enabled: true
+  metacontroller:
+    replicas: 1
+    image:
+      repository: metacontroller/jsonnetd
+      tag: 0.1
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
