@@ -438,3 +438,26 @@ Create the namespace for the serviceMonitor deployment.
     {{- randAlphaNum 10 -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+ssh bastion server
+*/}}
+{{- define "ssh-bastion-server.name" -}}
+{{- "ssh-bastion-server" -}}
+{{- end -}}
+
+{{- define "ssh-bastion-server.labels" -}}
+helm.sh/chart: {{ include "primehub.chart" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "ssh-bastion-server.ssh.target.labels" -}}
+{{- $v := "" }}
+{{- range $key, $value := .Values.sshBastionServer.ssh.target.matchLabels }}
+{{- $v = printf "%s,%s" $v (printf "%s=%v" $key $value) }}
+{{- end }}
+{{- printf "%v" $v | trimPrefix "," }}
+{{- end }}

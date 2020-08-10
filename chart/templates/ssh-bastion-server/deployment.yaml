@@ -1,0 +1,61 @@
+{{- if .Values.sshBastionServer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}
+  labels:
+{{ include "ssh-bastion-server.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.sshBastionServer.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        ssh-bastion-server/bastion: "true"
+    spec:
+    {{- with .Values.sshBastionServer.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccount: {{ include "ssh-bastion-server.name" . }}
+      securityContext:
+        {{- toYaml .Values.sshBastionServer.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.sshBastionServer.securityContext | nindent 12 }}
+          image: "{{ .Values.sshBastionServer.image.repository }}:{{ .Values.sshBastionServer.image.tag }}"
+          imagePullPolicy: {{ .Values.sshBastionServer.image.pullPolicy }}
+          volumeMounts:
+          - name: config
+            mountPath: /resources/start_ssh.py
+            subPath: start_ssh.py
+          resources:
+            {{- toYaml .Values.sshBastionServer.resources | nindent 12 }}
+          env:
+          - name: SSH_TARGET_PUBLICKEY_API_PORT
+            value: {{ .Values.sshBastionServer.ssh.target.publicKeyApiPort | quote }}
+          - name: SSH_TARGET_LABELS
+            value: {{ include "ssh-bastion-server.ssh.target.labels" . }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "ssh-bastion-server.name" . }}-config
+      {{- with .Values.sshBastionServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.sshBastionServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.sshBastionServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+{{- end }}

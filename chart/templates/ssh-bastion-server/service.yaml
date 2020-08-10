@@ -1,0 +1,19 @@
+{{- if .Values.sshBastionServer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}
+  labels:
+{{ include "ssh-bastion-server.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.sshBastionServer.service.type }}
+  ports:
+    - port: {{ .Values.sshBastionServer.service.port }}
+      targetPort: {{ .Values.sshBastionServer.service.targetPort }}
+      protocol: TCP
+      name: ssh
+  selector:
+    app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    ssh-bastion-server/bastion: "true"
+{{- end }}

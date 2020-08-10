@@ -6,3 +6,20 @@ PrimeHub is installed at:
 To get the login account, please enter the following commands:
   echo "username: {{ .Values.bootstrap.username }}"
   echo "password: $(kubectl -n {{ .Release.Namespace}} get secret primehub-bootstrap -o jsonpath='{.data.password}' | base64 --decode)"
+
+{{ if .Values.sshBastionServer.enabled }}
+SSH Bastion Server is enabled. Please expose bastion server service
+
+The configuration is
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+data:
+  2222: {{ .Release.Namespace }}/{{ include "ssh-bastion-server.name" . }}:{{ .Values.sshBastionServer.service.port }}
+
+For more information, please see
+https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/
+{{- end }}

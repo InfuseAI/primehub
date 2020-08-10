@@ -1,0 +1,92 @@
+{{- if .Values.sshBastionServer.enabled }}
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-service
+spec:
+  resources:
+  - apiVersion: v1
+    resource: pods
+    labelSelector:
+      matchLabels:
+        {{- toYaml .Values.sshBastionServer.ssh.target.matchLabels | nindent 8 }}
+  attachments:
+  - apiVersion: v1
+    resource: services
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://{{ include "ssh-bastion-server.name" . }}-metacontroller.{{ .Release.Namespace }}/service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-metacontroller
+spec:
+  selector:
+    app: {{ include "ssh-bastion-server.name" . }}-metacontroller
+    role: webhook-server
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-metacontroller
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-metacontroller-hooks
+data:
+  {{- tpl (.Files.Glob "scripts/ssh-bastion-server/service.jsonnet").AsConfig . | nindent 2 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-metacontroller
+spec:
+  replicas: {{ .Values.sshBastionServer.metacontroller.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "ssh-bastion-server.name" . }}-metacontroller
+  template:
+    metadata:
+      labels:
+        app: {{ include "ssh-bastion-server.name" . }}-metacontroller
+        role: webhook-server
+      annotations:
+        sidecar.istio.io/inject: "false"
+        checksum/config: {{ tpl (.Files.Glob "hooks/*").AsConfig . | nindent 2 | sha256sum }}
+    spec:
+      containers:
+      - name: hooks
+        image: "{{ .Values.sshBastionServer.metacontroller.image.repository }}:{{ .Values.sshBastionServer.metacontroller.image.tag }}"
+        imagePullPolicy: {{ .Values.sshBastionServer.metacontroller.image.pullPolicy }}
+        workingDir: /hooks
+        volumeMounts:
+        - name: hooks
+          mountPath: /hooks
+        resources:
+{{ toYaml .Values.sshBastionServer.metacontroller.resources | indent 10 }}
+    {{- with .Values.sshBastionServer.metacontroller.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+    {{- with .Values.sshBastionServer.metacontroller.affinity }}
+      affinity:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+    {{- with .Values.sshBastionServer.metacontroller.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+    {{- end }}
+      volumes:
+      - name: hooks
+        configMap:
+          name: {{ include "ssh-bastion-server.name" . }}-metacontroller-hooks
+{{- end }}
