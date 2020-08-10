@@ -1,0 +1,34 @@
+{{- if eq (include "primehub-usage.enabled" .) "true" -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-db
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-db
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "primehub-usage.fullname" . }}-db
+subjects:
+- kind: ServiceAccount
+  name: {{ include "primehub-usage.fullname" . }}-db
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-db
+  labels:
+    {{- include "primehub-usage.labels" . | nindent 4 }}
+{{- end }}

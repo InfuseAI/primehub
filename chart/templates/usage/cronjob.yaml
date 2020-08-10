@@ -1,0 +1,31 @@
+{{- if eq (include "primehub-usage.enabled" .) "true" -}}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-report-generator
+spec:
+  schedule: {{ .Values.usage.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: {{.Values.usage.image.repository}}:{{.Values.usage.image.tag}}
+            imagePullPolicy: {{.Values.usage.image.pullPolicy}}
+            command: ['/usr/local/bin/primehub-usage-report-generator.py']
+            env:
+            - name: PRIMEHUB_USAGE_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: {{ include "primehub-usage.fullname" . }}-db
+            - name: PRIMEHUB_USAGE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "primehub-usage.fullname" . }}-db
+            - name: PRIMEHUB_USAGE_DB_HOST
+              value: {{ include "primehub-usage.fullname" . }}-db
+          restartPolicy: OnFailure
+{{- end }}
