@@ -962,3 +962,45 @@ sshBastionServer:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+
+usage:
+  enabled: false
+  dbUser: postgres
+  dbPassword: mysecretpassword
+
+  initImage:
+    repository: busybox
+    pullPolicy: IfNotPresent
+    tag: 1.31
+
+  image:
+    repository: infuseai/primehub-usage
+    pullPolicy: IfNotPresent
+    tag: v0.0.2-alpha
+
+  appResources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+  dbImage:
+    repository: postgres
+    pullPolicy: IfNotPresent
+    tag: 12
+
+  dbResources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 256Mi
+
+  dbStorage: 64Gi
+
+  # cronjob schedule for the report generator
+  schedule: "0 0 * * *"
+

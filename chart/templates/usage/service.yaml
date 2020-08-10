@@ -1,0 +1,27 @@
+{{- if eq (include "primehub-usage.enabled" .) "true" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-db
+  labels:
+    app: primehub-usage-db
+spec:
+  ports:
+  - port: 5432
+  clusterIP: None
+  selector:
+    app: primehub-usage-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-api
+  labels:
+    app: primehub-usage-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: primehub-usage-api
+{{- end }}

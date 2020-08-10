@@ -1,0 +1,57 @@
+{{- if eq (include "primehub-usage.enabled" .) "true" -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "primehub-usage.fullname" . }}-db
+spec:
+  selector:
+    matchLabels:
+      app: primehub-usage-db
+  serviceName: headless-{{ include "primehub-usage.fullname" . }}-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: primehub-usage-db
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: database
+        command:
+        - bash
+        - -c
+        - |
+          echo "Start PostgreSQL ..."
+          source /usr/local/bin/docker-entrypoint.sh
+          export POSTGRES_USER=$(cat /etc/credentials/username)
+          export POSTGRES_PASSWORD=$(cat /etc/credentials/password)
+          _main postgres
+        image: {{.Values.usage.dbImage.repository}}:{{.Values.usage.dbImage.tag}}
+        imagePullPolicy: {{.Values.usage.dbImage.pullPolicy}}
+        ports:
+        - containerPort: 5432
+          name: db
+        volumeMounts:
+        - name: {{ include "primehub-usage.fullname" . }}-data
+          mountPath: /var/lib/postgresql/data
+          subPath: data
+        - name: credentials
+          mountPath: /etc/credentials
+        {{- if .Values.usage.dbResources }}
+        resources:
+          {{ .Values.usage.dbResources | toYaml | indent 10 | trim }}
+        {{- end }}
+      volumes:
+      - name: credentials
+        secret:
+          secretName: {{ include "primehub-usage.fullname" . }}-db
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "primehub-usage.fullname" . }}-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: null
+      resources:
+        requests:
+          storage: {{ .Values.usage.dbStorage }}
+{{- end }}
