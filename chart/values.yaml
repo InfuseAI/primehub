@@ -944,6 +944,7 @@ sshBastionServer:
       memory: 256Mi
   netpol:
     enabled: true
+    kubeApiPort: 6443
   metacontroller:
     replicas: 1
     image:

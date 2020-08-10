@@ -48,7 +48,7 @@ spec:
     ports:
     - port: 53
       protocol: UDP
-    - port: 6443
+    - port: {{ .Values.sshBastionServer.netpol.kubeApiPort }}
       protocol: TCP
   podSelector:
     matchLabels:
