@@ -918,7 +918,7 @@ rclone:
     resources:
 
 sshBastionServer:
-  enabled: false
+  enabled: true
   image:
     repository: mltooling/ssh-proxy
     tag: 0.1.11
