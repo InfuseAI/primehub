@@ -13,7 +13,6 @@
 <span id="jupyterhub-logo" class="pull-left">
   <a href="/"><img src='{{base_url}}logo' alt='PrimeHub - JupyterHub' class='jpy-logo' title='Home' style='height: 32px;'/></a>
 </span>
-
 {% endblock %}
 {% block announcement %}
 {% if announcement %}
@@ -32,3 +31,10 @@
 {{ super() }}
 {% endblock %}
 
+{% block nav_bar %}
+{% if user.spawner and user.spawner.active_group %}
+<div style="margin-bottom: 20px;"></div>
+{% else %}
+{{ super() }}
+{% endif %}
+{% endblock %}

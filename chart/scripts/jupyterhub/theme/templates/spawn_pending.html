@@ -65,6 +65,7 @@
 {% endblock %}
 
 {% block script %}
+{{ super() }}
 <script>
 (function(){
   var evtSource = new EventSource("{{ progress_url  }}");
@@ -154,7 +155,12 @@
       setProgress(RUNNING);
       setTimeout(function(){
         setProgress(DONE);
-        window.location.reload();
+        if (window.self === window.top) {
+          window.location.reload();
+        } else {
+          window.open(window.location,'_blank');
+          window.location = '/hub/home';
+        }
       }, 1600);
     }
     if (evt.failed) {
