@@ -143,6 +143,16 @@ spec:
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
+            {{- if eq .Values.primehub.mode "ee" }}
+            {{- if .Values.adminNotebook.enabled }}
+            - name: PRIMEHUB_FEATURE_MAINTENANCE_NOTEBOOK
+              value: "true"
+            {{- end }}
+            {{- end }}
+            {{- if .Values.grafana.enabled }}
+            - name: PRIMEHUB_FEATURE_GRAFANA
+              value: "true"
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}
