@@ -26,11 +26,39 @@
     <div id="advanced-setup" class="collapse">
       <input type="checkbox" name="safe_mode" id="safe_mode" >&nbsp;
       <label for="safe_mode">Enable Safe Mode <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Safe Mode mounts your persistent home directory under /home/jovyan/user."></i></label>
-      <br />
     {% if enable_kernel_gateway %}
+      <br />
       <input type="checkbox" name="kernel_gateway" id="kernel_gateway" >&nbsp;
       <label for="kernel_gateway">(Experimental) JupyterLab 1.0 with kernel gateway</label>
     {% endif %}
+      <br />
+      <input type="checkbox" name="ssh_server" id="ssh_server" >&nbsp;
+      <label for="ssh_server"> Enable SSH Server </label>
+      <div id='ssh-information'>
+        <p>
+          Before your SSH server is enabled, please generate a public key.
+        </p>
+        <p>
+          Then copy and paste the example below into your <code>~/.ssh/config</code>.
+        </p>
+        <p>
+          <pre>HOST jupyter
+  User jovyan
+  Hostname {{ ssh_config.hostname }}
+  Port 22
+  ForwardAgent yes
+  ProxyCommand ssh -W %h:%p -i ~/.ssh/id_rsa limited-user@{{ ssh_config.host }} -p {{ ssh_config.port }}
+  IdentityFile ~/.ssh/id_rsa
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null</pre>
+        </p>
+        <p>
+          After these steps, you will be able to successfully connect to your notebook.
+        </p>
+        <p>
+          <pre>$ ssh jupyter</pre>
+        </p>
+      </div>
     </div>
 
     <script type="text/javascript">

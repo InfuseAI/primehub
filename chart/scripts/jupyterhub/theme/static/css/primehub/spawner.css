@@ -4,7 +4,7 @@
 
 #group-resources .gutter {
   height: 2em;
-  margin-bottom: 10px;
+  margin-bottom: 7px;
 }
 
 #group-selector {
@@ -69,6 +69,20 @@
 
 #advanced-setup {
   margin-top: 10px;
+}
+
+#advanced-setup #ssh-information {
+  display: none;
+  padding: 0 0 0 20px;
+  line-height: 1.4em;
+}
+
+#advanced-setup #ssh-information p {
+  margin: 0.2em 0;
+}
+
+#advanced-setup #ssh_server:checked ~ #ssh-information {
+  display: block;
 }
 
 .primehub-logo {
