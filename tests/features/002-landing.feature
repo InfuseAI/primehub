@@ -45,7 +45,7 @@ Feature: Landing page
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click GoBack
     Then I am on the landing page
     When I logout from banner UI
