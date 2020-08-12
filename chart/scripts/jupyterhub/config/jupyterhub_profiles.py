@@ -792,6 +792,7 @@ class PrimeHubSpawner(KubeSpawner):
             raise Exception('no auth state')
         context = auth_state.get('launch_context', None)
         error = auth_state.get('error', None)
+        ssh_config = { 'host': '', 'hostname': '', 'port': '' }
 
         if error == BACKEND_API_UNAVAILABLE:
             return self.render_html('spawn_block.html', block_msg='Backend API unavailable. Please contact admin.')
@@ -809,7 +810,7 @@ class PrimeHubSpawner(KubeSpawner):
         except:
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        return self.render_html('groups.html', groups=groups, active_group=self.active_group, enable_kernel_gateway=enable_feature_kernel_gateway)
+        return self.render_html('groups.html', groups=groups, active_group=self.active_group, enable_kernel_gateway=enable_feature_kernel_gateway, ssh_config=ssh_config)
 
     def get_container_resource_usage(self, group):
         existing = []
