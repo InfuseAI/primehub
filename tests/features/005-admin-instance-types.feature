@@ -9,7 +9,7 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     And I should see element with test-id "instanceType"
@@ -30,7 +30,7 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     When I search "test-instance-type" in test-id "text-filter-name"

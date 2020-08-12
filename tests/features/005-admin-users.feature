@@ -9,7 +9,7 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     And I should see element with test-id "user"
@@ -31,7 +31,7 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     When I search "test-user" in test-id "text-filter-username"
@@ -67,7 +67,7 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
+    Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     When I search "test-user" in test-id "text-filter-username"

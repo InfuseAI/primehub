@@ -9,8 +9,6 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
-    When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
     And I should see element with test-id "group"
     When I click element with test-id "add-button"
@@ -30,8 +28,6 @@ Feature: Admin
     And I click login
     Then I am on the landing page
     When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "System" page
-    When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
