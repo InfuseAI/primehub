@@ -41,6 +41,7 @@ scope_required = get_primehub_config('scopeRequired')
 role_prefix = get_primehub_config('keycloak.rolePrefix', "")
 base_url = get_primehub_config('baseUrl', "/")
 enable_feature_kernel_gateway = get_primehub_config('kernelGateway', "")
+enable_feature_ssh_server = get_primehub_config('sshServer.enabled', "")
 jupyterhub_template_path = '/etc/jupyterhub/templates'
 start_notebook_config = get_primehub_config('startNotebookConfigMap')
 template_loader = Environment(
@@ -796,7 +797,6 @@ class PrimeHubSpawner(KubeSpawner):
             raise Exception('no auth state')
         context = auth_state.get('launch_context', None)
         error = auth_state.get('error', None)
-        ssh_config = { 'host': '', 'hostname': '', 'port': '' }
 
         if error == BACKEND_API_UNAVAILABLE:
             return self.render_html('spawn_block.html', block_msg='Backend API unavailable. Please contact admin.')
@@ -814,7 +814,16 @@ class PrimeHubSpawner(KubeSpawner):
         except:
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        return self.render_html('groups.html', groups=groups, active_group=self.active_group, enable_kernel_gateway=enable_feature_kernel_gateway, ssh_config=ssh_config)
+        ssh_config = dict(enabled=enable_feature_ssh_server,
+                          host=get_primehub_config('host', ''),
+                          hostname=self.user.spawner.pod_name,
+                          port=get_primehub_config('sshServer.servicePort', '2222'))
+
+        return self.render_html('groups.html',
+                                groups=groups,
+                                active_group=self.active_group,
+                                enable_kernel_gateway=enable_feature_kernel_gateway,
+                                ssh_config=ssh_config)
 
     def get_container_resource_usage(self, group):
         existing = []
@@ -872,8 +881,9 @@ class PrimeHubSpawner(KubeSpawner):
     def options_from_form(self, formdata):
         if enable_feature_kernel_gateway:
             self.enable_kernel_gateway = formdata.get('kernel_gateway', ['off']) == ['on']
+        if enable_feature_ssh_server:
+            self.enable_ssh_server = formdata.get('ssh_server', ['off']) == ['on']
         self.enable_safe_mode = formdata.get('safe_mode', ['off']) == ['on']
-        self.enable_ssh_server = formdata.get('ssh_server', ['off']) == ['on']
 
         self.log.debug("options_from_form for %s", self._log_name)
         if not hasattr(self, '_groups'):
