@@ -31,6 +31,7 @@
       <input type="checkbox" name="kernel_gateway" id="kernel_gateway" >&nbsp;
       <label for="kernel_gateway">(Experimental) JupyterLab 1.0 with kernel gateway</label>
     {% endif %}
+    {% if ssh_config.enabled %}
       <br />
       <input type="checkbox" name="ssh_server" id="ssh_server" >&nbsp;
       <label for="ssh_server"> Enable SSH Server </label>
@@ -59,6 +60,7 @@
           <pre>$ ssh jupyter</pre>
         </p>
       </div>
+    {% endif %}
     </div>
 
     <script type="text/javascript">

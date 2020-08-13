@@ -49,6 +49,10 @@ data:
       {{- if .Values.primehub.keycloak.rolePrefix }}
       rolePrefix: {{ .Values.primehub.keycloak.rolePrefix | quote }}
       {{- end}}
+    sshServer:
+      enabled: {{ .Values.sshBastionServer.enabled }}
+      servicePort: {{ .Values.sshBastionServer.service.port }}
+    host: {{ index .Values.ingress.hosts 0 }}
     {{- .Values.jupyterhub.primehub | toYaml | nindent 4 }}
 
 ---
