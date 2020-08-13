@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
 spec:
   selector:
     matchLabels:
       app: primehub-usage-db
-  serviceName: headless-{{ include "primehub-usage.fullname" . }}-db
+  serviceName: headless-{{ include "primehub-usage.name" . }}-db
   replicas: 1
   template:
     metadata:
@@ -32,7 +32,7 @@ spec:
         - containerPort: 5432
           name: db
         volumeMounts:
-        - name: {{ include "primehub-usage.fullname" . }}-data
+        - name: {{ include "primehub-usage.name" . }}-data
           mountPath: /var/lib/postgresql/data
           subPath: data
         - name: credentials
@@ -44,10 +44,10 @@ spec:
       volumes:
       - name: credentials
         secret:
-          secretName: {{ include "primehub-usage.fullname" . }}-db
+          secretName: {{ include "primehub-usage.name" . }}-db
   volumeClaimTemplates:
   - metadata:
-      name: {{ include "primehub-usage.fullname" . }}-data
+      name: {{ include "primehub-usage.name" . }}-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: null

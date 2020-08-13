@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-report-generator
+  name: {{ include "primehub-usage.name" . }}-report-generator
 spec:
   schedule: {{ .Values.usage.schedule | quote }}
   jobTemplate:
@@ -19,13 +19,13 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: username
-                  name: {{ include "primehub-usage.fullname" . }}-db
+                  name: {{ include "primehub-usage.name" . }}-db
             - name: PRIMEHUB_USAGE_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: {{ include "primehub-usage.fullname" . }}-db
+                  name: {{ include "primehub-usage.name" . }}-db
             - name: PRIMEHUB_USAGE_DB_HOST
-              value: {{ include "primehub-usage.fullname" . }}-db
+              value: {{ include "primehub-usage.name" . }}-db
           restartPolicy: OnFailure
 {{- end }}
