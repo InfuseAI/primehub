@@ -47,6 +47,8 @@ spec:
             - name: portal-default-covers
               mountPath: /usr/src/app/packages/client/dist/default-covers/
           env:
+            - name: PH_VERSION
+              value: {{ .Chart.AppVersion | quote }}
             - name: PORTAL_CONFIG_PATH
               value: '/etc/portal-config.yaml'
             {{- if .Values.primehub.keycloak.everyoneGroupId }}
