@@ -43,7 +43,7 @@
           Then copy and paste the example below into your <code>~/.ssh/config</code>.
         </p>
         <p>
-          <pre>HOST jupyter
+          <pre class='snippet'><code>HOST jupyter
   User jovyan
   Hostname {{ ssh_config.hostname }}
   Port 22
@@ -51,13 +51,13 @@
   ProxyCommand ssh -W %h:%p -i ~/.ssh/id_rsa limited-user@{{ ssh_config.host }} -p {{ ssh_config.port }}
   IdentityFile ~/.ssh/id_rsa
   StrictHostKeyChecking no
-  UserKnownHostsFile=/dev/null</pre>
+  UserKnownHostsFile=/dev/null</code></pre>
         </p>
         <p>
           After these steps, you will be able to successfully connect to your notebook.
         </p>
         <p>
-          <pre>$ ssh jupyter</pre>
+          <pre class='snippet'><code>$ ssh jupyter</code></pre>
         </p>
       </div>
     {% endif %}

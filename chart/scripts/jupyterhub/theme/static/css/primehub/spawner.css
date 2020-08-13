@@ -67,6 +67,31 @@
   transform: translate(-50%, -50%);
 }
 
+.snippet {
+    position: relative;
+    overflow: visible
+}
+
+.snippet code {
+    font-size: 14px;
+    line-height: 20px
+}
+
+.snippet .btn {
+    -webkit-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    opacity: 0;
+    padding: 2px 6px;
+    position: absolute;
+    right: 4px;
+    top: 4px
+}
+
+.snippet:hover .btn,.snippet .btn:focus {
+    opacity: 1
+}
+
 #advanced-setup {
   margin-top: 10px;
 }
