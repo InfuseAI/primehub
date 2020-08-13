@@ -155,6 +155,10 @@ spec:
             - name: PRIMEHUB_FEATURE_GRAFANA
               value: "true"
             {{- end }}
+            {{- if eq (include "primehub-usage.enabled" .) "true" }}
+            - name: PRIMEHUB_FEATURE_USAGE
+              value: {{ include "primehub-usage.enabled" . | quote }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}

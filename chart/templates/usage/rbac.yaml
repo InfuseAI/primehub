@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
 rules:
 - apiGroups: [""]
   resources:
@@ -15,20 +15,18 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
 subjects:
 - kind: ServiceAccount
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-db
-  labels:
-    {{- include "primehub-usage.labels" . | nindent 4 }}
+  name: {{ include "primehub-usage.name" . }}-db
 {{- end }}

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-db
+  name: {{ include "primehub-usage.name" . }}-db
   labels:
     app: primehub-usage-db
 spec:
@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "primehub-usage.fullname" . }}-api
+  name: {{ include "primehub-usage.name" . }}-api
   labels:
     app: primehub-usage-api
 spec:

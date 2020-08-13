@@ -461,3 +461,22 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 {{- printf "%v" $v | trimPrefix "," }}
 {{- end }}
+
+{{/*
+primehub usage
+*/}}
+{{- define "primehub-usage.name" -}}
+{{ include "primehub.name" . }}-usage
+{{- end }}
+
+{{- define "primehub-usage.api" -}}
+{{- printf "http://%s%s" (include "primehub-usage.name" .) "-api" -}}
+{{- end }}
+
+{{- define "primehub-usage.enabled" -}}
+  {{- if (and .Values.usage.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}

@@ -23,7 +23,7 @@ spec:
         - sh
         - -c
         - |
-          until printf "." && nc -z -w 2 {{ include "primehub-usage.fullname" . }}-db 5432; do
+          until printf "." && nc -z -w 2 {{ include "primehub-usage.name" . }}-db 5432; do
               sleep 2;
           done;
 
@@ -38,25 +38,25 @@ spec:
           valueFrom:
             secretKeyRef:
               key: username
-              name: {{ include "primehub-usage.fullname" . }}-db
+              name: {{ include "primehub-usage.name" . }}-db
         - name: PRIMEHUB_USAGE_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               key: password
-              name: {{ include "primehub-usage.fullname" . }}-db
+              name: {{ include "primehub-usage.name" . }}-db
         - name: PRIMEHUB_USAGE_DB_HOST
-          value: {{ include "primehub-usage.fullname" . }}-db
+          value: {{ include "primehub-usage.name" . }}-db
         - name: PRIMEHUB_USAGE_WATCHED_NAMESPACE
           value: {{ .Release.Namespace }}
         {{- if .Values.usage.appResources }}
         resources:
           {{ .Values.usage.appResources | toYaml | indent 10 | trim }}
         {{- end }}
-      serviceAccountName: {{ include "primehub-usage.fullname" . }}-db
+      serviceAccountName: {{ include "primehub-usage.name" . }}-db
       volumes:
       - name: credentials
         secret:
-          secretName: {{ include "primehub-usage.fullname" . }}-db
+          secretName: {{ include "primehub-usage.name" . }}-db
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -82,7 +82,7 @@ spec:
         - sh
         - -c
         - |
-          until printf "." && nc -z -w 2 {{ include "primehub-usage.fullname" . }}-db 5432; do
+          until printf "." && nc -z -w 2 {{ include "primehub-usage.name" . }}-db 5432; do
               sleep 2;
           done;
 
@@ -97,14 +97,14 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: username
-                name: {{ include "primehub-usage.fullname" . }}-db
+                name: {{ include "primehub-usage.name" . }}-db
           - name: PRIMEHUB_USAGE_DB_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: password
-                name: {{ include "primehub-usage.fullname" . }}-db
+                name: {{ include "primehub-usage.name" . }}-db
           - name: PRIMEHUB_USAGE_DB_HOST
-            value: {{ include "primehub-usage.fullname" . }}-db
+            value: {{ include "primehub-usage.name" . }}-db
           - name: FLASK_APP
             value: usage/api.py
         livenessProbe:
