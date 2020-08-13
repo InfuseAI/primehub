@@ -28,6 +28,8 @@ binaryData:
     {{ (.Files.Get "scripts/jupyterhub/theme/static/images/PrimeHub.png") | b64enc }}
   primehub-logo.png: |-
     {{ (.Files.Get "scripts/jupyterhub/theme/static/images/primehub-logo.png") | b64enc }}
+  clippy.svg: |-
+    {{ (.Files.Get "scripts/jupyterhub/theme/static/images/clippy.svg") | b64enc }}
 ---
 apiVersion: v1
 kind: ConfigMap
