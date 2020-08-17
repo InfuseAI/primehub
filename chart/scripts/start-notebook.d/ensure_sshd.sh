@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$START_SSH" == "true" ]; then
+if [ "$PRIMEHUB_START_SSH" == "true" ]; then
 
     # Check installed sshd
     if command -v sshd &>/dev/null; then
