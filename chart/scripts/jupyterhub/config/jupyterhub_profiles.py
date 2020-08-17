@@ -461,7 +461,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
         if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0 and not spawner.enable_kernel_gateway:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
         if spawner.enable_ssh_server:
-            spawner.environment.update({'START_SSH': 'true'})
+            spawner.environment.update({'PRIMEHUB_START_SSH': 'true'})
             spawner.extra_labels['ssh-bastion-server/notebook'] = 'true'
 
         if start_notebook_config:
@@ -816,7 +816,7 @@ class PrimeHubSpawner(KubeSpawner):
 
         ssh_config = dict(enabled=enable_feature_ssh_server,
                           host=get_primehub_config('host', ''),
-                          hostname=self.user.spawner.pod_name,
+                          hostname='{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub')),
                           port=get_primehub_config('sshServer.servicePort', '2222'))
 
         return self.render_html('groups.html',

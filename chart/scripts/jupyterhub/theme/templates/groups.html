@@ -35,12 +35,14 @@
       <br />
       <input type="checkbox" name="ssh_server" id="ssh_server" >&nbsp;
       <label for="ssh_server"> Enable SSH Server </label>
-      <div id='ssh-information'>
+      <div id="ssh-information">
+        🔑&emsp;<strong>In jupyter notebook</strong>
         <p>
-          Before your SSH server is enabled, please generate a public key.
+          Add your public key into <code>~/.ssh/authorized_keys</code> in your jupyter notebook. <a href="#">[Doc]</a>
         </p>
+        💻&emsp;<strong>In local machine</strong>
         <p>
-          Then copy and paste the example below into your <code>~/.ssh/config</code>.
+          Copy and paste the example below into your <code>~/.ssh/config</code>. Then replace <code>~/.ssh/id_rsa</code> with your private key location.
         </p>
         <p>
           <pre class='snippet'><code>HOST jupyter
@@ -48,8 +50,8 @@
   Hostname {{ ssh_config.hostname }}
   Port 22
   ForwardAgent yes
-  ProxyCommand ssh -W %h:%p -i ~/.ssh/id_rsa limited-user@{{ ssh_config.host }} -p {{ ssh_config.port }}
-  IdentityFile ~/.ssh/id_rsa
+  ProxyCommand ssh -W %h:%p -i <i>~/.ssh/id_rsa</i> limited-user@{{ ssh_config.host }} -p {{ ssh_config.port }}
+  IdentityFile <i>~/.ssh/id_rsa</i>
   StrictHostKeyChecking no
   UserKnownHostsFile=/dev/null</code></pre>
         </p>
