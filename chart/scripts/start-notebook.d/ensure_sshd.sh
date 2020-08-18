@@ -1,7 +1,6 @@
 #!/bin/bash
 
-if [ "$PRIMEHUB_START_SSH" == "true" ]; then
-
+ensure_sshd() {
     # Check installed sshd
     if command -v sshd &>/dev/null; then
         echo "Starting sshd"
@@ -27,6 +26,10 @@ if [ "$PRIMEHUB_START_SSH" == "true" ]; then
             echo "No permission to install sshd"
         fi
     fi
+}
+
+if [ "$START_SSH" == "true" ]; then
+    ensure_sshd &
 
     # Start publickey api server
     if command -v nohup &>/dev/null; then
