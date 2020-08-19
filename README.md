@@ -24,6 +24,11 @@ PrimeHub is an effortless infrastructure for machine learning built on top of Ku
 
 Please refer to [installation guide](INSTALL.md).
 
+### Katacoda
+Prefer a trial run before getting into a real installation!?
+
+Please visit our [installation scenario on Katacoda](https://www.katacoda.com/infuseai).
+
 ## Contributing
 
 We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
