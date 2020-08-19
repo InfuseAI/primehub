@@ -10,7 +10,7 @@ spec:
       template:
         spec:
           containers:
-          - name: hello
+          - name: report
             image: {{.Values.usage.image.repository}}:{{.Values.usage.image.tag}}
             imagePullPolicy: {{.Values.usage.image.pullPolicy}}
             command: ['/usr/local/bin/primehub-usage-report-generator.py']
