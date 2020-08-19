@@ -45,6 +45,11 @@ require(["jquery"], function(
     {% if user.spawner and not user.spawner.active_group %}
     window.top.location.reload();
     {% endif %}
+  } else {
+    // In non embedded mode, always go back to primehub console if launch_group is available.
+    {% if user.spawner and user.spawner.launch_group %}
+    window.top.location = '/console/g/{{ user.spawner.launch_group }}/hub';
+    {% endif %}
   }
 });
 </script>
