@@ -976,7 +976,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v0.0.3-alpha
+    tag: v0.0.4-alpha
 
   appResources:
     limits:
@@ -985,6 +985,14 @@ usage:
     requests:
       cpu: 50m
       memory: 256Mi
+
+  monitorResources:
+    limits:
+      cpu: 150m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
 
   dbImage:
     repository: postgres

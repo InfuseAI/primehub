@@ -117,4 +117,58 @@ spec:
         resources:
           {{ .Values.usage.appResources | toYaml | indent 10 | trim }}
         {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: primehub-usage-running-pods-monitor
+  labels:
+    app: primehub-usage-running-pods-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: primehub-usage-running-pods-monitor
+  template:
+    metadata:
+      labels:
+        app: primehub-usage-running-pods-monitor
+    spec:
+      initContainers:
+      - name: wait-for-postgresql
+        image: {{.Values.usage.initImage.repository}}:{{.Values.usage.initImage.tag}}
+        imagePullPolicy: {{.Values.usage.initImage.pullPolicy}}
+        command:
+        - sh
+        - -c
+        - |
+          until printf "." && nc -z -w 2 {{ include "primehub-usage.name" . }}-db 5432; do
+              sleep 2;
+          done;
+
+          echo 'PostgreSQL OK ✓'
+      containers:
+      - name: monitor
+        image: {{.Values.usage.image.repository}}:{{.Values.usage.image.tag}}
+        imagePullPolicy: {{.Values.usage.image.pullPolicy}}
+        command: ['/usr/local/bin/primehub-usage-running-pods-monitor.py']
+        env:
+        - name: PRIMEHUB_USAGE_DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: {{ include "primehub-usage.name" . }}-db
+        - name: PRIMEHUB_USAGE_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ include "primehub-usage.name" . }}-db
+        - name: PRIMEHUB_USAGE_DB_HOST
+          value: {{ include "primehub-usage.name" . }}-db
+        - name: PRIMEHUB_USAGE_WATCHED_NAMESPACE
+          value: {{ .Release.Namespace }}
+        {{- if .Values.usage.monitorResources }}
+        resources:
+          {{ .Values.usage.monitorResources | toYaml | indent 10 | trim }}
+        {{- end }}
 {{- end }}
