@@ -28,7 +28,7 @@ ensure_sshd() {
     fi
 }
 
-if [ "$START_SSH" == "true" ]; then
+if [ "$PRIMEHUB_START_SSH" == "true" ]; then
     ensure_sshd &
 
     # Start publickey api server
