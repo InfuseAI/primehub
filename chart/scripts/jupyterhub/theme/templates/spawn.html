@@ -190,17 +190,6 @@
 </script>
 {% endraw %}
 
-<script type="text/javascript">
-require(["jquery"], function(
-  $
-) {
-  {% if user.spawner and not user.spawner.active_group %}
-  if (window.self !== window.top) {
-    window.top.location.reload();
-  }
-  {% endif %}
-});
-</script>
 <script src="{{ static_url("components/primehub/spawner.js") }}"></script>
 <script src="{{ static_url("components/primehub/snippets.js") }}"></script>
 {% endblock %}
