@@ -1,15 +1,4 @@
-<div id="group-selector" class="form-group row" {% if active_group %}style="display: none"{% endif %}>
-  <div class="col-sm-12">
-    <label for="group">Group</label>
-    <select class="form-control" name="group">
-        {% for group in groups|sort(attribute='displayName') %}
-        <option value="{{ group.name }}">
-        {{ group.displayName }}
-        </option>
-        {% endfor %}
-    </select>
-  </div>
-</div>
+<input type="hidden" name="group"/>
 <div class="panel panel-default panel-spawner">
   <div class="panel-body">
     <label>Instance Types</label>

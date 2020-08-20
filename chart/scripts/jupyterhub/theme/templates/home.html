@@ -27,30 +27,16 @@
 require(["jquery"], function(
   $
 ) {
-  // Customize for jupyterhub in embedded mode.
-  if (window.self !== window.top) {
-    // Open in new tab when clicking "My server"
-    {% if default_server.active %}
-    $("#start").attr("target", "_blank");
-    {% endif %}
+  // Open in new tab when clicking "My server"
+  {% if default_server.active %}
+  $("#start").attr("target", "_blank");
+  {% endif %}
 
-    // On stop button is clicked, "My server" would be grayed out. And then change to "Start my server"
-    // In this case, we don't want to open in new tab
-    $("#stop").click(function() {
-      $("#start").removeAttr("target");
-    });
-
-    // This only happen while the jupyter server is just closed.
-    // The spanwner instance is recreated, to reload the page to resync the group-context
-    {% if user.spawner and not user.spawner.active_group %}
-    window.top.location.reload();
-    {% endif %}
-  } else {
-    // In non embedded mode, always go back to primehub console if launch_group is available.
-    {% if user.spawner and user.spawner.launch_group %}
-    window.top.location = '/console/g/{{ user.spawner.launch_group }}/hub';
-    {% endif %}
-  }
+  // On stop button is clicked, "My server" would be grayed out. And then change to "Start my server"
+  // In this case, we don't want to open in new tab
+  $("#stop").click(function() {
+    $("#start").removeAttr("target");
+  });
 });
 </script>
 

@@ -1,5 +1,10 @@
 // IntanceTypes / Images mustach rendering
 (function(){
+  // Precondition. The javascript should be only run in iframe.
+  if (window.top === window.self) {
+    return;
+  }
+
   // If user can not spawn anything hide start btn.
   var canSpawn = $('#you-can-not-pass').length === 0;
   var alphabetCompare = function(current, next) {
@@ -37,6 +42,16 @@
     Mustache.parse(groupUsageTemplate);
     Mustache.parse(itTemplate);
     Mustache.parse(imageTemplate);
+
+    var getActiveGroup = function() {
+      // parse the top window path.
+      // For example, '/console/g/phusers/hub' should be matched with the first group 'phusers'
+      var regex = /\/g\/([^/]*)\/hub$/;
+      var m = regex.exec(window.top.location.pathname);
+      if (m) {
+        return m[1];
+      }
+    }
 
     var updatePrimehubContext = function() {
       var url = window.groupFetchUri || '/hub/api/primehub/groups';
@@ -80,7 +95,6 @@
           $liTemplate.html(dataset.displayName);
           dsList.push($liTemplate);
         });
-        console.log(dsList);
         $('#dataset-list-ul').html(dsList);
       } else {
         $('#dataset-list-ul').html($('<li>None</li>'));
@@ -172,28 +186,30 @@
         $('div[role="image-not-match-gpu-instance"]').toggleClass('hide', false);
       }
     });
-
-    var $groupSelect = $('select[name="group"]');
     var reloadPage = function() {
       location.href = '/hub/spawn';
     };
-    $groupSelect.change(function() {
-      var that = this;
-      updatePrimehubContext()
-        .done(function(){
-          window.currentGroup = getCurrentGroup(that.value);
-          updateUsagesDashboard(currentGroup);
-          updateSpawnerOptions(currentGroup);
-        })
-        .fail(reloadPage);
-    });
-    // init
-    $groupSelect.val( $groupSelect.find('option').first().val() ).trigger("change");
+
+    var activeGroup = getActiveGroup();
+    if (!activeGroup) {
+      window.top.location.reload();
+      return;
+    }
+    $('input[name="group"]').val(activeGroup);
+
+    updatePrimehubContext()
+      .done(function(){
+        window.currentGroup = getCurrentGroup(activeGroup);
+        updateUsagesDashboard(currentGroup);
+        updateSpawnerOptions(currentGroup);
+      })
+      .fail(reloadPage);
+
     window.updateContextIntervalId = window.setInterval(function(){
       if (window.currentGroup) {
         updatePrimehubContext()
           .done(function(){
-            window.currentGroup = getCurrentGroup(window.currentGroup.name);
+            window.currentGroup = getCurrentGroup(activeGroup);
             updateUsagesDashboard(window.currentGroup);
           })
           .fail(reloadPage);
