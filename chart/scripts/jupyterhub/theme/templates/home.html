@@ -4,7 +4,12 @@
 <div class="container">
   <div class="row">
     <div class="text-center">
-      {% if user.spawner and user.spawner.active_group and user.spawner.launch_group and user.spawner.active_group != user.spawner.launch_group %}
+      {% if (user.spawner and
+             user.spawner.ready and
+             user.spawner.active_group and
+             user.spawner.launch_group and
+             user.spawner.active_group != user.spawner.launch_group)
+      %}
       <h3>The current server is launched by another group ({{ user.spawner.launch_group }})</h3>
       {% endif %}
 
