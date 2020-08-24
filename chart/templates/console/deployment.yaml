@@ -44,6 +44,9 @@ spec:
             - name: portal-config
               mountPath: /etc/portal-config.yaml
               subPath: portal-config.yaml
+            - name: home-config
+              mountPath: /etc/home-config.yaml
+              subPath: home-config.yaml
             - name: portal-default-covers
               mountPath: /usr/src/app/packages/client/dist/default-covers/
           env:
@@ -51,6 +54,8 @@ spec:
               value: {{ .Chart.AppVersion | quote }}
             - name: PORTAL_CONFIG_PATH
               value: '/etc/portal-config.yaml'
+            - name: HOME_CONFIG_PATH
+              value: '/etc/home-config.yaml'
             {{- if .Values.primehub.keycloak.everyoneGroupId }}
             - name: KC_EVERYONE_GROUP_ID
               value: {{ .Values.primehub.keycloak.everyoneGroupId }}
@@ -206,6 +211,9 @@ spec:
         - name: portal-config
           configMap:
             name: portal-config
+        - name: home-config
+          configMap:
+            name: home-config
         - name: portal-default-covers
           configMap:
             name: portal-default-covers
