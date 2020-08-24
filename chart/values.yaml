@@ -245,6 +245,7 @@ console:
   url: https://example.com/
   graphqlEndpoint: /graphql
   #locale: en
+  homeConfig: null
   portalConfig: null
     # services:
     #   Service portal setup example:
