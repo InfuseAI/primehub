@@ -7,8 +7,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     And I should see element with test-id "group"
     When I click element with test-id "add-button"
@@ -19,15 +19,15 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
 
   Scenario: Update group and connect to existing user
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
@@ -56,16 +56,13 @@ Feature: Admin
     When I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
     And I should see input in test-id "group/displayName" with value "e2e-test-group-display-name"
-    When I logout from banner UI
-    Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I wait for 2.0 seconds
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
     Then I can see the user limits are "1", "2 GB", and "1"
     And I can see the group resource limits are "2", "4GB", and "2"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
+    When I choose "Logout" in top-right menu
+    Then I am on login page

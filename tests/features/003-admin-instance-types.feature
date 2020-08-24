@@ -7,8 +7,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -21,15 +21,15 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "test-instance-type" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-instance-type"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
   
   Scenario: Update instance type and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -53,15 +53,12 @@ Feature: Admin
     When I click edit-button in row contains text "test-instance-type"
     Then I should see input in test-id "instanceType/name" with value "test-instance-type"
     And I should see input in test-id "instanceType/displayName" with value "test-instance-type-display-name"
-    When I logout from banner UI
-    Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I wait for 2.0 seconds
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
     Then I "should" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
+    When I choose "Logout" in top-right menu
+    Then I am on login page
