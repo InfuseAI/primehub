@@ -7,8 +7,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
@@ -21,15 +21,15 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-image"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
   
   Scenario: Update image and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
@@ -53,14 +53,12 @@ Feature: Admin
     When I click edit-button in row contains text "test-image"
     Then I should see input in test-id "image/name" with value "test-image"
     And I should see input in test-id "image/displayName" with value "test-image-display-name"
-    When I logout from banner UI
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
+    Then I "should" see images block contains "test-image-display-name" image with "Universal" type and "test-description" description
+    When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    Then I "should" see images block contains "test-image-type-display-name" image with "universal" type and "test-description" description
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub

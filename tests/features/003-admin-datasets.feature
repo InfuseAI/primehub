@@ -7,8 +7,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
@@ -22,15 +22,15 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "test-dataset" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-dataset"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
 
   Scenario: Update dataset and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
@@ -52,25 +52,23 @@ Feature: Admin
     When I click edit-button in row contains text "test-dataset"
     Then I should see input in test-id "dataset/name" with value "test-dataset"
     And I should see input in test-id "dataset/displayName" with value "test-dataset-display-name"
-    When I logout from banner UI
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
+    And I click element with xpath "//a[@href='#dataset-list']" in hub
+    Then I "should" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub
+    When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I click element with xpath "//a[@href='#dataset-list']"
-    Then I "should" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
 
   Scenario: Delete dataset
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
@@ -81,15 +79,13 @@ Feature: Admin
     When I click refresh
     And I search "test-dataset" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-dataset" 
-    When I logout from banner UI
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
+    And I click element with xpath "//a[@href='#dataset-list']" in hub
+    Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub
+    When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    And I click element with xpath "//a[@href='#dataset-list']"
-    Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub

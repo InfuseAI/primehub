@@ -16,8 +16,78 @@ After(async function(scenario) {
   return await this.stop();
 });
 
+defineStep("I click on PrimeHub icon", async function() {
+  await this.clickElementByXpath("//a[@href='/']");
+});
+
+defineStep("I choose group with name {string}", async function(name) {
+  await this.clickElementBySelector(".ant-select-selection__rendered");
+  await this.clickElementByXpath(`//li[text()='${name}-${this.E2E_SUFFIX}']`);
+  await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
+});
+
+defineStep("I choose {string} in top-right menu", async function(menuitem) {
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    await this.page.mouse.move(0, 0);
+    hovers = await this.page.$x("//span[contains(@class, 'ant-avatar ant-avatar-circle')]");
+    if (hovers.length > 0) {
+      await hovers[0].hover();
+      await this.page.waitFor(500);
+      break;
+    }
+    else console.log("Cannot find top-right icon");
+  }
+  await this.clickElementByXpath(`//li[text()='${menuitem}']`);
+  await this.takeScreenshot(`choose-${menuitem}-top-right-menu`);
+});
+
+defineStep("I choose {string} in sidebar menu", async function(menuitem) {
+  await this.clickElementByXpath(
+    `//div[@class='ant-layout-sider-children']//span[text()='${menuitem}']`);
+});
+
+defineStep("I am on the PrimeHub console {string} page", async function(menuitem) {
+  const xpathMap = {
+    'Home': "//title[text()='PrimeHub']", // temporarily used
+    'JupyterHub': "//title[text()='PrimeHub']", // temporarily used
+    'Jobs': "//h2[text()='Jobs']",
+    'Schedule': "//h2[text()='Job Schedule']",
+    'Models': "//h2[text()='Model Deployments']"
+  };
+  const urlMap = {
+    'Home': '/home', // temporarily used
+    'JupyterHub': '/hub', // temporarily used
+    'Jobs': `-${this.E2E_SUFFIX}/job`,
+    'Schedule': `-${this.E2E_SUFFIX}/schedule`,
+    'Models': `-${this.E2E_SUFFIX}/model-deployment`
+  };
+  await this.page.waitForXPath(xpathMap[menuitem]);
+
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    if (this.page.url().includes(urlMap[menuitem])) {
+      await this.takeScreenshot(`${menuitem}-page`);
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to go to ${menuitem} page`);
+});
+
+defineStep("I switch to {string} tab", async function(tabname) {
+  const urlMap = {
+    'JupyterHub': `-${this.E2E_SUFFIX}/hub`,
+    'JupyterLab': `/user/${this.USERNAME}/lab`
+  };
+  
+  const pages = await this.browser.pages();
+  const targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
+  await targetPage.bringToFront();
+  this.page = targetPage;
+  await this.takeScreenshot(`${tabname}-page`);
+});
+
 defineStep("I go to login page", async function() {
-  await this.page.goto(this.ADMIN_LANDING_URL);
+  await this.page.goto(this.HOME_URL);
   await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
@@ -128,10 +198,23 @@ defineStep("I click button of {string}", async function(title) {
   await this.clickElementByXpath(xpath);
 });
 
-defineStep("I click button of {string} of item {string}", async function(action, string) {
+defineStep("I click button of {string} of item {string} to wait for {string} dialogue", async function(action, string, dialog) {
   //tr[contains(.,'gabriel')]//button[contains(*,'Rerun')]
-  const xpath = `//tr[contains(.,'${string}')]//button[contains(*,'${action}')]`;
-  await this.clickElementByXpath(xpath);
+  const buttonXpath = `//tr[contains(.,'${string}')]//button[contains(*,'${action}')]`;
+  const dialogXpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${dialog}')]`;
+  let ret;
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    try { await this.clickElementByXpath(buttonXpath); } catch (e) {}
+    await this.checkElementExistByXPath('should exist', dialogXpath).then(
+      function(result) { ret = result; }
+    );
+    if (ret) {
+      await this.takeScreenshot(`${dialog}-dialogue`);
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to wait for ${dialog} dialogue`);
 });
 
 defineStep("I click svg button of {string} of item {string}", async function(action, string) {
@@ -156,9 +239,21 @@ defineStep("I click switch of {string}", async function(testId) {
 defineStep("I click link of {string} of {int}th item on list", async function(title, row) {
   //tr[1]//a[text()='create-job-test']
   const xpath = `//tr[${row}]//a[text()='${title}']`;
-  await this.clickElementByXpath(xpath);
-  await this.page.waitFor(500);
-  await this.takeScreenshot(`${title}-link`);
+  let ret;
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    try { await this.clickElementByXpath(xpath); } catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = !result; }
+    );
+    //await this.takeScreenshot(`retry-${retryCount}`);
+    //console.log(ret);
+    if (ret) {
+      await this.takeScreenshot(`click-${title}-link`);
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to click ${title} link`);
 });
 
 defineStep("I click element {string} of {string}", async function(element, title) {
@@ -180,25 +275,6 @@ defineStep("I fill {string} in input of {string}", async function(string, testId
   await this.page.type(selector, string);
 });
 
-
-// View
-defineStep("I go to InfuseAI login page", async function() {
-  await this.page.goto(this.ADMIN_LANDING_URL);
-  await this.page.hover("#kc-current-locale-link");
-  await this.clickByText("English", "div[@class='kc-dropdown']/ul//");
-  await this.page.waitForXPath("//title[text()='Log in to InfuseAI']");
-  const url = this.page.url();
-  expect(url).to.contain(this.KC_SERVER_URL);
-  await this.takeScreenshot(`login-page`);
-});
-
-defineStep("I am on InfuseAI login page", async function() {
-  await this.page.waitForXPath("//title[text()='Log in to InfuseAI']");
-  const url = this.page.url();
-  expect(url).to.contain(this.KC_SERVER_URL);
-});
-
-
 defineStep("I should see confirmation dialogue of {string}", async function(string) {
   //div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'Rerun')]
   await this.page.waitFor(500);
@@ -206,7 +282,6 @@ defineStep("I should see confirmation dialogue of {string}", async function(stri
   const xpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${string}')]`;
   await this.page.waitForXPath(xpath);
 });
-
 
 defineStep("I should see {int}th column of {int}th item is {string} on list", async function(col, row, text) {
   //tbody/tr[1]/td[1][contains(., 'Cancelled')]
@@ -224,7 +299,6 @@ defineStep("I should see {int}th column of {int}th item is {string} on list", as
   }
 });
 
-
 defineStep("I should see {string} in element {string} under active tab", async function(text, element) {
   //div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//textarea[contains(., 'test')]
   let xpath;
@@ -241,7 +315,6 @@ defineStep("I should see {string} in element {string} under active tab", async f
   }
   throw new Error(`Failed to find '${text}'`);
 });
-
 
 // Helper functions
 function testIdToSelector(testId) {

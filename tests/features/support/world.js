@@ -33,10 +33,10 @@ class World {
     else this.KC_PORT = '';
     this.PRIMEHUB_PORT = this.KC_PORT;
 
-    this.ADMIN_LANDING_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/console/landing`;
-    this.HUB_HOME_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/hub/home`;
-    this.HUB_ADMIN_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/hub/admin`;
+    this.HOME_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/console/g`;
     this.KC_SERVER_URL = `${this.KC_SCHEME}://${this.KC_DOMAIN}${this.KC_PORT}/auth/realms`;
+
+    this.context = null;
   }
 
   async start() {
@@ -110,14 +110,14 @@ class World {
     expect(result).to.eql(text);
   }
 
-  async clickElementBySelector(selector) {
-    await this.page.waitForSelector(selector, {visible: true});
-    await this.page.click(selector);
+  async clickElementBySelector(selector, context = this.page) {
+    await context.waitForSelector(selector, {visible: true});
+    await context.click(selector);
   }
 
-  async clickElementByXpath(xpath) {
-    await this.page.waitForXPath(xpath, {visible: true});
-    const [ui_element] = await this.page.$x(xpath);
+  async clickElementByXpath(xpath, context = this.page) {
+    await context.waitForXPath(xpath, {visible: true});
+    const [ui_element] = await context.$x(xpath);
     await ui_element.click();
   }
 
@@ -168,8 +168,8 @@ class World {
     }
   }
 
-  async checkElementExistByXPath(exist, xpath, timeout = 5) {
-    const [ui_element] = await this.page.$x(xpath, {timeout: timeout * 1000});
+  async checkElementExistByXPath(exist, xpath, context = this.page) {
+    const [ui_element] = await context.$x(xpath);
     return (exist.includes("not") === !ui_element) ? true : false;
   }
 

@@ -6,8 +6,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
@@ -18,24 +18,22 @@ Feature: Admin
     When I click refresh
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image"
-    When I logout from banner UI
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
+    Then I "should not" see images block contains "test-image-display-name" image with "Universal" type and "test-description" description
+    When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
-    Then I "should not" see images block contains "test-image-type-display-name" image with "universal" type and "test-description" description
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
 
   Scenario: Delete instance type
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -43,24 +41,22 @@ Feature: Admin
     And I delete a row with text "test-instance-type"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-instance-type"
-    When I logout from banner UI
-    Then I am on login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I choose group with name "e2e-test-group"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "JupyterHub" in sidebar menu
+    Then I am on the PrimeHub console "JupyterHub" page
+    When I go to the spawner page
     Then I "should not" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
+    When I choose "Logout" in top-right menu
+    Then I am on login page
 
   Scenario: Delete group
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
@@ -71,5 +67,5 @@ Feature: Admin
     When I click refresh
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-group" 
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page

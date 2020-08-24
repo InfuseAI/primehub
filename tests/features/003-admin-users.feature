@@ -7,8 +7,8 @@ Feature: Admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
@@ -22,15 +22,15 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "test-user" in test-id "text-filter-username"
     Then list-view table "should" contain row with "test-user"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
   
   Scenario: Update user info and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
@@ -58,15 +58,15 @@ Feature: Admin
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I "should" see element with xpath "//td[contains(text(), 'test-user')]"
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page
   
   Scenario: Delete user
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
@@ -77,5 +77,5 @@ Feature: Admin
     When I click refresh
     And I search "test-user" in test-id "text-filter-username"
     Then list-view table "should not" contain row with "test-user" 
-    When I logout from banner UI
+    When I choose "Logout" in top-right menu
     Then I am on login page

@@ -4,7 +4,7 @@ Feature: Login
   As a user
   I want to login
 
-  Scenario: User can't login the admin page via incorrect email and password
+  Scenario: User can't login via incorrect username and password
     Given I go to login page
     When I fill in the wrong credentials
     And I click login
@@ -12,22 +12,20 @@ Feature: Login
     And I wait for 3.0 seconds
     Then I am on login page
 
-  Scenario: User can login/logout the admin page via correct username and password
+  Scenario: User can login/logout the home page
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "Admin Dashboard" image in landing page
-    Then I am on the admin dashboard "Groups" page
-    When I logout from banner UI
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Logout" in top-right menu
     Then I am on login page
 
-  Scenario: User can login/logout the JupyterHab page
+  Scenario: User can login/logout the admin page
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
-    Then I am on the landing page
-    When I click "JupyterHub" image in landing page
-    Then I am on the spawner page
-    When I logout on JupyterHub page
-    Then I can logout from JupyterHub
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
+    Then I am on the admin dashboard "Groups" page
+    When I choose "Logout" in top-right menu
+    Then I am on login page
