@@ -12,7 +12,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-buffer-size: 8m
     nginx.ingress.kubernetes.io/proxy-cookie-path: / /console/
-    nginx.ingress.kubernetes.io/app-root: /console/landing
+    nginx.ingress.kubernetes.io/app-root: /console/g
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
