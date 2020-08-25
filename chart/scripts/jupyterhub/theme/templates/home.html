@@ -1,5 +1,10 @@
 {% extends "templates/home.html" %}
 
+{% block stylesheet %}
+{{ super() }}
+<link rel="stylesheet" href="{{ static_url("css/primehub/home.css") }}" type="text/css" />
+{% endblock %}
+
 {% block main %}
 <div class="container">
   <div class="row">
@@ -23,6 +28,38 @@
       My Server
       </a>
     </div>
+  </div>
+  <div class="row">
+    {% if default_server.active and default_server.ssh_config['enabled'] %}
+    <div id="ssh-information">
+      <h3>SSH Server Instruction</h3>
+      🔑&emsp;<strong>From your jupyter notebook</strong>
+      <p>
+        Add your public key into <code>~/.ssh/authorized_keys</code> in your jupyter notebook. <a href="#">[Doc]</a>
+      </p>
+      💻&emsp;<strong>From your local machine</strong>
+      <p>
+        Copy and paste the example below into your <code>~/.ssh/config</code>. Then replace <code>~/.ssh/id_rsa</code> with your private key location.
+      </p>
+      <p>
+        <pre class='snippet'><code>HOST jupyter
+  User jovyan
+  Hostname {{ default_server.ssh_config['hostname'] }}
+  Port 22
+  ForwardAgent yes
+  ProxyCommand ssh -W %h:%p -i <i>~/.ssh/id_rsa</i> limited-user@{{ default_server.ssh_config['host'] }} -p {{ default_server.ssh_config['port'] }}
+  IdentityFile <i>~/.ssh/id_rsa</i>
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null</code></pre>
+      </p>
+      <p>
+        After these steps, you will be able to successfully connect to your notebook.
+      </p>
+      <p>
+        <pre class='snippet'><code>$ ssh jupyter</code></pre>
+      </p>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock main %}
