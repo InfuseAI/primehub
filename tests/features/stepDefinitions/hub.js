@@ -118,27 +118,30 @@ defineStep("I {string} see images block contains {string} image with {string} ty
 });
 
 defineStep("I can see advanced settings", async function() {
+  let ret, element;
   const xpath = "//div[@aria-expanded='true']//label[text()='Enable Safe Mode ']";
-  let ret;
-
+  
   await this.clickElementByXpath("//a[@href='#advanced-setup']", context = this.context);
-
   await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = result; }
   );
   if (!ret) throw new Error("failed to get 'Enable Safe Mode' checkbox");
 
-  const [element] = await this.context.$x(xpath+'//i');
-  await element.hover();
-  await this.takeScreenshot("hover-information-tooltip");
-  
-  await this.checkElementExistByXPath(
-    'should exist', 
-    xpath+"//div[text()='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
-    context = this.context).then(
-      function(result) { ret = result; }
-  );
-  if (!ret) throw new Error("failed to get information tooltip");
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    [element] = await this.context.$x(xpath+'//i');
+    await element.hover();
+    await this.takeScreenshot("hover-information-tooltip");
+    
+    await this.checkElementExistByXPath(
+      'should exist', 
+      xpath+"//div[text()='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
+      context = this.context).then(
+        function(result) { ret = result; }
+    );
+    if (ret) return;
+    await this.page.waitFor(2000);
+  }
+  throw new Error("failed to get information tooltip");
 });
 
 defineStep("I can see the spawning page and wait for notebook started", async function() {
