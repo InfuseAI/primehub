@@ -42,6 +42,12 @@ require(["jquery"], function(
   $("#stop").click(function() {
     $("#start").removeAttr("target");
   });
+
+  // force refresh the access token in case to get 403 in the API call.
+  // please see ch12047
+  setTimeout(function(){
+    window.location.reload();
+  }, 5 * 60 * 1000);
 });
 </script>
 
