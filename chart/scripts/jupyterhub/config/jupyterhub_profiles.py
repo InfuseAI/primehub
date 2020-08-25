@@ -460,7 +460,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0 and not spawner.enable_kernel_gateway:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
-        if spawner.enable_ssh_server:
+        if spawner.ssh_config['enabled']:
             spawner.environment.update({'PRIMEHUB_START_SSH': 'true'})
             spawner.extra_labels['ssh-bastion-server/notebook'] = 'true'
 
@@ -647,7 +647,7 @@ class PrimeHubPodReflector(NamespacedResourceReflector):
 class PrimeHubSpawner(KubeSpawner):
     enable_kernel_gateway = None
     enable_safe_mode = False
-    enable_ssh_server = False
+    ssh_config = dict(enabled=False)
     _launch_group = None
     _active_group = None
 
@@ -810,16 +810,16 @@ class PrimeHubSpawner(KubeSpawner):
         except:
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        ssh_config = dict(enabled=enable_feature_ssh_server,
-                          host=get_primehub_config('host', ''),
-                          hostname='{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub')),
-                          port=get_primehub_config('sshServer.servicePort', '2222'))
+        self.user.spawner.ssh_config['host'] = get_primehub_config('host', '')
+        self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub'))
+        self.user.spawner.ssh_config['port'] = get_primehub_config('sshServer.servicePort', '2222')
 
         return self.render_html('groups.html',
                                 groups=groups,
                                 active_group=self.active_group,
                                 enable_kernel_gateway=enable_feature_kernel_gateway,
-                                ssh_config=ssh_config)
+                                enable_ssh_server=enable_feature_ssh_server,
+                                ssh_config=self.user.spawner.ssh_config)
 
     def get_container_resource_usage(self, group):
         existing = []
@@ -878,7 +878,7 @@ class PrimeHubSpawner(KubeSpawner):
         if enable_feature_kernel_gateway:
             self.enable_kernel_gateway = formdata.get('kernel_gateway', ['off']) == ['on']
         if enable_feature_ssh_server:
-            self.enable_ssh_server = formdata.get('ssh_server', ['off']) == ['on']
+            self.ssh_config['enabled'] = formdata.get('ssh_server', ['off']) == ['on']
         self.enable_safe_mode = formdata.get('safe_mode', ['off']) == ['on']
 
         self.log.debug("options_from_form for %s", self._log_name)

@@ -20,14 +20,14 @@
       <input type="checkbox" name="kernel_gateway" id="kernel_gateway" >&nbsp;
       <label for="kernel_gateway">(Experimental) JupyterLab 1.0 with kernel gateway</label>
     {% endif %}
-    {% if ssh_config.enabled %}
+    {% if enable_ssh_server %}
       <br />
       <input type="checkbox" name="ssh_server" id="ssh_server" >&nbsp;
       <label for="ssh_server"> Enable SSH Server </label>
       <div id="ssh-information">
         🔑&emsp;<strong>From your jupyter notebook</strong>
         <p>
-          Add your public key into <code>~/.ssh/authorized_keys</code> in your jupyter notebook. <a href="#">[Doc]</a>
+          Add your public key into <code>~/.ssh/authorized_keys</code> in your jupyter notebook. <a href="https://docs.primehub.io/docs/next/guide_manual/ssh-config#deploy-public-key-into-jupyterhub" rel="noreferrer" target="_blank">[Doc]</a>
         </p>
         💻&emsp;<strong>From your local machine</strong>
         <p>
