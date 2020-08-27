@@ -81,7 +81,6 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                             quotaCpu
                             quotaGpu
                             quotaMemory
-                            userVolumeCapacity
                             projectQuotaCpu
                             projectQuotaGpu
                             projectQuotaMemory
@@ -280,21 +279,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'defaultUserVolumeCapacity', None)
         user_capacity = auth_state['launch_context'].get(
             'volumeCapacity', None)
-        groups = auth_state['launch_context'].get('groups', [])
-        group_capacities = [
-            x.get(
-                'userVolumeCapacity',
-                None) for x in list(
-                filter(
-                    lambda x: x['name'] != 'everyone',
-                    groups))]
-        group_capacities = [x for x in group_capacities if x]
 
         if user_capacity:
             return user_capacity
-
-        if group_capacities:
-            return max(group_capacities)
 
         return default_capacity
 
