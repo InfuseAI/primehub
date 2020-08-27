@@ -2,9 +2,16 @@ function(request) {
   local pvc = request.object,
   local annotations = pvc.metadata.annotations,
   local group = annotations["primehub-group"],
-  local rwo_sc = if std.objectHas(annotations, "primehub-group-sc")
-    then annotations["primehub-group-sc"]
-    else "rook-block",
+  local pvc_spec = if std.objectHas(annotations, "primehub-group-sc")
+    then {
+      accessModes: [ "ReadWriteOnce" ],
+      storageClassName: annotations["primehub-group-sc"],
+      resources: pvc.spec.resources
+    }
+    else {
+      accessModes: [ "ReadWriteOnce" ],
+      resources: pvc.spec.resources
+    },
   local mount_options = if std.objectHas(annotations, "primehub-group-mount-options")
     then annotations["primehub-group-mount-options"]
     else "nfsvers=4.1",
@@ -120,11 +127,7 @@ function(request) {
             metadata: {
               name: "data"
             },
-            spec: {
-              accessModes: [ "ReadWriteOnce" ],
-              storageClassName: rwo_sc,
-              resources: pvc.spec.resources
-            }
+            spec: pvc_spec
           }
         ]
       }
