@@ -17,7 +17,10 @@ After(async function(scenario) {
 });
 
 defineStep("I click on PrimeHub icon", async function() {
-  await this.clickElementByXpath("//a[@href='/']");
+  if (this.PRIMEHUB_PORT) // workaround for ingress redirect issue
+    await this.page.goto(this.HOME_URL);
+  else
+    await this.clickElementByXpath("//a[@href='/']");
 });
 
 defineStep("I choose group with name {string}", async function(name) {
