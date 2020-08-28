@@ -9,6 +9,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "JupyterHub" in sidebar menu
     Then I am on the PrimeHub console "JupyterHub" page
     When I go to the spawner page

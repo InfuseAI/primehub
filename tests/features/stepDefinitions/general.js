@@ -81,12 +81,19 @@ defineStep("I switch to {string} tab", async function(tabname) {
     'JupyterHub': `-${this.E2E_SUFFIX}/hub`,
     'JupyterLab': `/user/${this.USERNAME}/lab`
   };
-  
-  const pages = await this.browser.pages();
-  const targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
-  await targetPage.bringToFront();
-  this.page = targetPage;
-  await this.takeScreenshot(`${tabname}-page`);
+  let pages, targetPage;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    pages = await this.browser.pages();
+    targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
+    if (targetPage) {
+      await targetPage.bringToFront();
+      this.page = targetPage;
+      await this.takeScreenshot(`${tabname}-page`);
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to switch to ${tabname} tab`);
 });
 
 defineStep("I go to login page", async function() {
