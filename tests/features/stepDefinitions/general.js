@@ -84,7 +84,7 @@ defineStep("I switch to {string} tab", async function(tabname) {
   let pages, targetPage;
   for (retryCount=0; retryCount < 5; retryCount++) {
     pages = await this.browser.pages();
-    for (i=0; i<pages.length; i++) console.log(pages[i].url);
+    for (i=0; i<pages.length; i++) console.log(`${i}:`, pages[i].url());
     targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
     if (targetPage) {
       await targetPage.bringToFront();
