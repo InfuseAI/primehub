@@ -49,6 +49,13 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: JOBSUBMISSION_GRAPHQLENDPOINT
+            value: {{ include "primehub.graphql.endpoint" . }}
+          - name: JOBSUBMISSION_GRAPHQLSECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "primehub.name" . }}-graphql
+                key: sharedSecret
           resources:
 {{ toYaml .Values.controller.resources | indent 12 }}
           volumeMounts:

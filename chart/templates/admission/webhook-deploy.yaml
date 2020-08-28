@@ -31,7 +31,10 @@ spec:
         - name: GRAPHQL_ENDPOINT
           value: {{ include "primehub.graphql.endpoint" . }}
         - name: GRAPHQL_SHARED_SECRET
-          value: {{ .Values.graphql.sharedGraphqlSecret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "primehub.name" . }}-graphql
+              key: sharedSecret
         - name: FLASK_DEBUG
           value: "false"
         - name: LOGURU_LEVEL

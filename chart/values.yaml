@@ -455,6 +455,11 @@ jupyterhub:
           secretKeyRef:
             name: primehub-client-jupyterhub
             key: client_secret
+      - name: GRAPHQL_SHARED_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: primehub-graphql
+            key: sharedSecret
     extraContainers: []
     extraVolumes:
     - name: primehub-hub-images
