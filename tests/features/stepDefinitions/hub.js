@@ -160,6 +160,7 @@ defineStep("I can see the spawning page and wait for notebook started", async fu
 
 defineStep("I can see the JupyterLab page", async function() {
   await this.page.waitForXPath("//title[text()='JupyterLab']");
+  await this.takeScreenshot("jupyter-lab");
 });
 
 defineStep("I stop my server in hub", async function() {
