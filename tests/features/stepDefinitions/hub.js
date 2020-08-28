@@ -130,7 +130,7 @@ defineStep("I can see advanced settings", async function() {
   for (retryCount=0; retryCount < 5; retryCount++) {
     await this.checkElementExistByXPath(
       'should exist', 
-      xpath+"//i[@title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
+      xpath+"//i[@data-original-title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
       context = this.context).then(
         function(result) { ret = result; }
     );
