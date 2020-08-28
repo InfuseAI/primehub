@@ -130,7 +130,7 @@ defineStep("I can see advanced settings", async function() {
   for (retryCount=0; retryCount < 5; retryCount++) {
     await this.checkElementExistByXPath(
       'should exist', 
-      xpath+"//i[@title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
+      xpath+"//i[@data-original-title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
       context = this.context).then(
         function(result) { ret = result; }
     );
@@ -160,6 +160,7 @@ defineStep("I can see the spawning page and wait for notebook started", async fu
 
 defineStep("I can see the JupyterLab page", async function() {
   await this.page.waitForXPath("//title[text()='JupyterLab']");
+  await this.takeScreenshot("jupyter-lab");
 });
 
 defineStep("I stop my server in hub", async function() {

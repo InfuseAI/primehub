@@ -147,8 +147,8 @@ workflows:
   release_builds:
     jobs:
       - unit_test
-  #    - e2e
-  #    - e2e_ee
+      - e2e
+      - e2e_ee
       - build:
           filters:
             tags:
@@ -164,6 +164,6 @@ workflows:
               only:
                 - master
     jobs:
+      - e2e_scheduled
       - e2e_installed_ph:
           context: e2e-demo-a
-  #    - e2e_scheduled

@@ -17,7 +17,10 @@ After(async function(scenario) {
 });
 
 defineStep("I click on PrimeHub icon", async function() {
-  await this.clickElementByXpath("//a[@href='/']");
+  if (this.PRIMEHUB_PORT) // workaround for ingress redirect issue
+    await this.page.goto(this.HOME_URL);
+  else
+    await this.clickElementByXpath("//a[@href='/']");
 });
 
 defineStep("I choose group with name {string}", async function(name) {
@@ -78,12 +81,21 @@ defineStep("I switch to {string} tab", async function(tabname) {
     'JupyterHub': `-${this.E2E_SUFFIX}/hub`,
     'JupyterLab': `/user/${this.USERNAME}/lab`
   };
-  
-  const pages = await this.browser.pages();
-  const targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
-  await targetPage.bringToFront();
-  this.page = targetPage;
-  await this.takeScreenshot(`${tabname}-page`);
+  let pages, targetPage;
+  if (tabname in urlMap) tabname = urlMap[tabname];
+
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    pages = await this.browser.pages();
+    targetPage = pages.find(ele => ele.url().includes(tabname));
+    if (targetPage) {
+      await targetPage.bringToFront();
+      this.page = targetPage;
+      await this.takeScreenshot("switch-tab");
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to switch to ${tabname} tab`);
 });
 
 defineStep("I go to login page", async function() {

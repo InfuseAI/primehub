@@ -9,6 +9,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "JupyterHub" in sidebar menu
     Then I am on the PrimeHub console "JupyterHub" page
     When I go to the spawner page
@@ -65,7 +66,6 @@ Feature: Hub
     Then list-view table "should" contain row with "test-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "JupyterHub" in sidebar menu
     Then I am on the PrimeHub console "JupyterHub" page
     When I go to the spawner page
@@ -77,7 +77,7 @@ Feature: Hub
     And I wait for 4.0 seconds 
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
-    When I switch to "JupyterHub" tab
+    When I switch to "/console/g/phusers/hub" tab
     Then I am on the PrimeHub console "JupyterHub" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu
