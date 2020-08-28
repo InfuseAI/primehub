@@ -90,7 +90,7 @@ defineStep("I switch to {string} tab", async function(tabname) {
     if (targetPage) {
       await targetPage.bringToFront();
       this.page = targetPage;
-      await this.takeScreenshot(`${tabname}-page`);
+      await this.takeScreenshot("switch-tab");
       return;
     }
     await this.page.waitFor(2000);
