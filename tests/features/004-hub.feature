@@ -77,7 +77,7 @@ Feature: Hub
     And I wait for 4.0 seconds 
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
-    When I switch to "JupyterHub" tab
+    When I switch to "/console/g/phusers/hub" tab
     Then I am on the PrimeHub console "JupyterHub" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu

@@ -82,10 +82,11 @@ defineStep("I switch to {string} tab", async function(tabname) {
     'JupyterLab': `/user/${this.USERNAME}/lab`
   };
   let pages, targetPage;
+  if (tabname in urlMap) tabname = urlMap[tabname];
+
   for (retryCount=0; retryCount < 5; retryCount++) {
     pages = await this.browser.pages();
-    for (i=0; i<pages.length; i++) console.log(`${i}:`, pages[i].url());
-    targetPage = pages.find(ele => ele.url().includes(urlMap[tabname]));
+    targetPage = pages.find(ele => ele.url().includes(tabname));
     if (targetPage) {
       await targetPage.bringToFront();
       this.page = targetPage;
