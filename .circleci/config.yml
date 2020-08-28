@@ -148,8 +148,7 @@ workflows:
     jobs:
       - unit_test
       - e2e
-      #- e2e_ee
-      - e2e_scheduled
+      - e2e_ee
       - build:
           filters:
             tags:
