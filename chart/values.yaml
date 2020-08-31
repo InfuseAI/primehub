@@ -455,6 +455,11 @@ jupyterhub:
           secretKeyRef:
             name: primehub-client-jupyterhub
             key: client_secret
+      - name: GRAPHQL_SHARED_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: primehub-graphql
+            key: sharedSecret
     extraContainers: []
     extraVolumes:
     - name: primehub-hub-images
@@ -493,12 +498,6 @@ jupyterhub:
       tag: jh-5c94e4f4
     networkPolicy:
       enabled: true
-    extraEnv:
-      - name: KC_CLIENT_SECRET
-        valueFrom:
-          secretKeyRef:
-            key: client_secret
-            name: primehub-client-jupyterhub
     extraConfig:
       primehub_config_main.py: |
         exec(open("/srv/primehub/primehub_config.py").read())

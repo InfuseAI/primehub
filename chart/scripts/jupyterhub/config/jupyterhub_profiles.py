@@ -51,7 +51,7 @@ if role_prefix:
     role_prefix += ':'
 
 graphql_endpoint = get_primehub_config('graphqlEndpoint')
-graphql_secret = get_primehub_config('graphqlSecret')
+graphql_secret = os.environ.get('GRAPHQL_SHARED_SECRET', get_primehub_config('graphqlSecret'))
 fs_group_id = get_config('singleuser.fsGid')
 
 autoscaling_enabled = get_config('scheduling.userScheduler.enabled')
