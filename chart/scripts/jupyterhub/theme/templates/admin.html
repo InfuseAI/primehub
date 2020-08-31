@@ -70,13 +70,10 @@
         <a role="button" class="stop-server btn btn-xs btn-danger{% if not spawner.active %} hidden{% endif %}">
         stop server
         </a>
-        <a role="button" class="start-server btn btn-xs btn-primary{% if spawner.active %} hidden{% endif %}">
-        start server
-        </a>
       </td>
       <td class="server-col col-sm-1 text-center">
         {%- if admin_access %}
-        <a role="button" class="access-server btn btn-xs btn-primary{% if not spawner.active %} hidden{% endif %}">
+        <a role="button" class="access-server btn btn-xs btn-primary{% if not spawner.active %} hidden{% endif %}" target="_blank">
         access server
         </a>
         {%- endif %}
