@@ -235,7 +235,7 @@ console:
   replicas: 1
   image:
     repository: infuseai/primehub-console
-    tag: latest
+    tag: v3.0-dcc0c90d
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -302,7 +302,7 @@ graphql:
   replicas: 1
   image:
     repository: infuseai/primehub-console-graphql
-    tag: latest
+    tag: v3.0-dcc0c90d
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -332,7 +332,7 @@ graphql:
 watcher:
   image:
     repository: infuseai/primehub-console-watcher
-    tag: latest
+    tag: v3.0-dcc0c90d
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -669,7 +669,7 @@ controller:
 
   image:
     repository: infuseai/primehub-controller-ee
-    tag: latest
+    tag: v3.0-052fbd67
     # pullPolicy: IfNotPresent
 
   proxy:
