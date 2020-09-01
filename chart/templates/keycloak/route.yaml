@@ -28,7 +28,7 @@ spec:
   {{- if $route.tls.enabled }}
   tls:
     insecureEdgeTerminationPolicy: {{ $route.tls.insecureEdgeTerminationPolicy }}
-[]    termination: {{ $route.tls.termination }}
+    termination: {{ $route.tls.termination }}
   {{- end }}
 {{- end -}}
 {{- end }}
