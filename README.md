@@ -4,46 +4,54 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
 [![CircleCI](https://circleci.com/gh/InfuseAI/primehub.svg?style=svg)](https://circleci.com/gh/InfuseAI/primehub)
 
-# PrimeHub
+# PrimeHub Community Edition
 
-This repo contains a *Helm chart* for PrimeHub and a guide to use it.
+Welcome to PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environment*, *easy dataset loading*, *management of various resources* and *access-control*. All of these are designed from *project/team-centric* concept. 
 
-## About
+In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterprise Edition](https://www.infuseai.io/).
 
-PrimeHub is an effortless infrastructure for machine learning built on top of Kubernetes.
+To IT leaders, PrimeHub gives flexibility and administration authority to configure resources and settings for their teams, as well as to pave the way and manage productionized workloads.
 
-## Features
+To Data scientists, PrimeHub provides JupyterHub-ready environment which is just few-clicks away.
+
+In this community repository, it contains a *Helm Chart* to PrimeHub CE and a guide of PrimeHub CE installation by *Helm*.
+
+## Fundamental Features
 
 - Opinionated JupyterHub distribution
 - Group & user based resource management
 - Instance, image & secret management
 - Support different types of dataset
 - Dataset uploader
+- SSH server (allow access into JupyterHub via *ssh* remotely)
+
+### What makes PrimeHub different
+
+Please see the [comparison](Comparison.md).
+
+### Designs & Concepts
+
+Learn more about the designs & concepts of PrimeHub [here](https://docs.primehub.io/docs/design/architecture).
 
 ## Installation
 
-Please refer to [installation guide](INSTALL.md).
+Please see the [installation guide](INSTALL.md).
 
-### Katacoda
+### The scenario on Katacoda
+
 Prefer a trial run before getting into a real installation!?
 
-Please visit our [installation scenario on Katacoda](https://www.katacoda.com/infuseai).
+Please visit our [installation scenario on Katacoda](https://www.katacoda.com/infuseai) to feel it.
 
-## Contributing
+## Contributions
 
-We welcome contributions. See [Contributing](CONTRIBUTING.md) to get started.
-
-## Designs & Concepts
-
-Read more about the designs & concepts of PrimeHub [here](https://docs.primehub.io/docs/design/architecture).
+We welcome contributions. See the [Contributing guildline](CONTRIBUTING.md) to get started.
 
 ## Project Status
 
-This project is still in early stage, things changes quickly and may contain
-some unexpected features, but we plan to make this rock solid and release more
-features with the community. Suggestions and discussions are welcome and
+PrimeHub CE is released along with PrimeHub EE. The project has been developed steadily. We keeps improving robustness, enhancing user experience and releasing [more features](https://docs.primehub.io/docs/next/comparison) with the community. Suggestions and discussions are welcome and
 appreciated.
 
-## Comparison with other open-sourced or free plan
+## Documentation
 
-Please refer to [comparison](Comparison.md).
+Please visit our [documentation](https://docs.primehub.io/) site to learn more about PrimeHub.
