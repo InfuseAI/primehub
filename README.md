@@ -31,7 +31,7 @@ Please see the [comparison](Comparison.md).
 
 ### Designs & Concepts
 
-Primehub is built on top of well-designed distributed systems. We use Kubernetes as the orchestration platform and utilize it's resource management and fault-tolerance abilities.
+Primehub is built on top of well-designed distributed systems. We use Kubernetes as the orchestration platform and utilize its resource management and fault-tolerance abilities.
 
 You can read more about the designs & concepts of PrimeHub [here](https://docs.primehub.io/docs/design/architecture).
 
