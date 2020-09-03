@@ -6,15 +6,15 @@
 
 # PrimeHub Community Edition
 
-Welcome to PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environment*, *easy dataset loading*, *management of various resources* and *access-control*. All of these are designed from *project/team-centric* concept. 
+Welcome to the PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environments*, *easy dataset loading*, and *management of various resources* and *access-control*. All of these are designed from *a project/team-centric* concept. 
 
 In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterprise Edition](https://www.infuseai.io/).
 
 To IT leaders, PrimeHub gives flexibility and administration authority to configure resources and settings for their teams, as well as to pave the way and manage productionized workloads.
 
-To Data scientists, PrimeHub provides JupyterHub-ready environment which is just few-clicks away.
+To data scientists, PrimeHub provides JupyterHub-ready environments only just a few clicks away.
 
-In this community repository, it contains a *Helm Chart* to PrimeHub CE and a guide of PrimeHub CE installation by *Helm*.
+This community repository contains a *Helm Chart* for PrimeHub CE and a guide on how to install PrimeHub CE with *Helm*.
 
 ## Fundamental Features
 
@@ -43,11 +43,11 @@ Please see the [installation guide](INSTALL.md).
 
 Prefer a trial run before getting into a real installation!?
 
-Please visit our [installation scenario on Katacoda](https://www.katacoda.com/infuseai) to feel it.
+Please visit our [installation scenario on Katacoda](https://www.katacoda.com/infuseai) to try it out.
 
 ## Contributions
 
-We welcome contributions. See the [Contributing guildline](CONTRIBUTING.md) to get started.
+We welcome contributions. Take a look at our [contributing guildlines](CONTRIBUTING.md) to get started.
 
 ### Setting up development environment
 
@@ -103,7 +103,7 @@ We welcome contributions. See the [Contributing guildline](CONTRIBUTING.md) to g
 
 ### Other PrimeHub Components
 
-PrimeHub consists several other components, you may also want to check out these repositories.
+PrimeHub consists of several other components--you may also want to check out these repositories.
 
 #### PrimeHub Console
 
@@ -115,11 +115,11 @@ PrimeHub Console contains the admin UI and GraphQL API server of PrimeHub.
 
 - https://github.com/InfuseAI/primehub-admission
 
-PrimeHub-admission is a critical component of PrimeHub. It's responsible for validating resource capacity and mutating kubernetes objects with required information.
+PrimeHub-admission is a critical component of PrimeHub. It's responsible for validating resource capacity and mutating Kubernetes objects with required information.
 
 ## Project Status
 
-PrimeHub CE is released along with PrimeHub EE. The project has been developed steadily. We keeps improving robustness, enhancing user experience and releasing [more features](https://docs.primehub.io/docs/next/comparison) with the community. Suggestions and discussions are welcome and
+PrimeHub CE is released alongside PrimeHub EE. The project has been developed steadily. We keep improving PrimeHub's robustness, enhancing user experience and are releasing [more features](https://docs.primehub.io/docs/next/comparison) with the community. Suggestions and discussions are always welcome and
 appreciated.
 
 ## Documentation
