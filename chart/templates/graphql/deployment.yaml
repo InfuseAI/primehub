@@ -56,7 +56,7 @@ spec:
             - name: KC_API_BASEURL
               value: {{ include "primehub.keycloak.url" . }}
             - name: KC_OIDC_BASEURL
-              value: {{ include "primehub.keycloak.url" . }}
+              value: {{ include "primehub.keycloak.appUrl" . }}
             - name: KC_REALM
               value: {{ .Values.primehub.keycloak.realm}}
             {{- if .Values.primehub.keycloak.everyoneGroupId }}
