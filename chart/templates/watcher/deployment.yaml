@@ -34,7 +34,7 @@ spec:
           {{- end }}
           env:
             - name: KC_API_BASEURL
-              value: {{ include "primehub.keycloak.url" . }}
+              value: {{ include "primehub.keycloak.appUrl" . }}
             - name: KC_OIDC_BASEURL
               value: {{ include "primehub.keycloak.appUrl" . }}
             - name: KC_REALM
