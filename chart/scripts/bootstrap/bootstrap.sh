@@ -132,7 +132,6 @@ function update_client_maintenance_proxy() {
   local proxy_encrypted_key=$(echo -n $client_secret | sha1sum| cut -c -32)
 
   kubectl -n "$PRIMEHUB_NAMESPACE" create secret generic $secret_name \
-    --from-literal=url=${KC_URL}/realms/$KC_REALM \
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
     --from-literal=proxy_encrypted_key=$proxy_encrypted_key \
@@ -167,7 +166,7 @@ function create_default_resources() {
   # Create group: phusers
   print_info "Create group: $PH_GROUP"
   kc_group_create PH_GROUP $KC_REALM $PH_GROUP ${DIR}/group-${PH_GROUP}.json
-  if [ "$PRIMEHUB_MODE" == "deploy" ]; then 
+  if [ "$PRIMEHUB_MODE" == "deploy" ]; then
     print_info "Enable deployment by default at deploy mode"
     kc_group_update $KC_REALM $PH_GROUP_ID 'attributes.enabled-deployment=["true"]'
   fi
