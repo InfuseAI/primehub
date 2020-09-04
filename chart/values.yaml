@@ -2,11 +2,14 @@ primehub:
   mode: ce
   scheme: http
   keycloak:
+    ## Only used when 'keycloak.deploy' is false
     scheme: http
     domain:
     #port:
     username: keycloak
     password:
+    #svcUrl: http://keycloak-http.default/auth
+
     realm: primehub
     everyoneGroupId:
     clientId: admin-ui
@@ -14,6 +17,7 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   sharedVolumeStorageClass: ""
+
 ingress:
   enabled: true
   annotations:

@@ -34,7 +34,7 @@ Global
 {{/*
 Keycloak
 */}}
-{{- define "primehub.keycloak.url" -}}
+{{- define "primehub.keycloak.appUrl" -}}
 {{- if .Values.keycloak.deploy -}}
 {{- printf "%s/auth" (include "primehub.url" .) }}
 {{- else }}
@@ -43,6 +43,16 @@ Keycloak
 {{- else -}}
 {{- printf "%s://%s/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) }}
 {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "primehub.keycloak.url" -}}
+{{- if .Values.keycloak.deploy -}}
+{{- printf "http://keycloak-http.%s/auth" .Release.Namespace}}
+{{- else if .Values.primehub.keycloak.svcUrl -}}
+{{- .Values.primehub.keycloak.svcUrl }}
+{{- else -}}
+{{ include "primehub.keycloak.appUrl" . }}
 {{- end -}}
 {{- end -}}
 

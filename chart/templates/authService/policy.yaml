@@ -1,4 +1,4 @@
-{{- if .Values.istio.enabled }}  
+{{- if .Values.istio.enabled }}
 apiVersion: authentication.istio.io/v1alpha1
 kind: Policy
 metadata:
@@ -8,8 +8,8 @@ spec:
     - name: primehub-admin-notebook
   origins:
     - jwt:
-        issuer: "{{ include "primehub.keycloak.url" . }}/realms/{{ .Values.primehub.keycloak.realm}}"
-        jwksUri: "{{ include "primehub.keycloak.url" . }}/realms/{{ .Values.primehub.keycloak.realm}}/protocol/openid-connect/certs"
+        issuer: "{{ include "primehub.keycloak.appUrl" . }}/realms/{{ .Values.primehub.keycloak.realm}}"
+        jwksUri: "{{ include "primehub.keycloak.appUrl" . }}/realms/{{ .Values.primehub.keycloak.realm}}/protocol/openid-connect/certs"
   principalBinding: USE_ORIGIN
 
 ---
