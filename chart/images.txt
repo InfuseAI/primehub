@@ -34,4 +34,4 @@ bitnami/minideb:stretch
 mltooling/ssh-proxy:0.1.11
 busybox:1.31
 postgres:12
-infuseai/primehub-usage:v0.0.5-alpha
+infuseai/primehub-usage:v0.0.7-alpha
