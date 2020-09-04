@@ -98,7 +98,7 @@ Graphql
 */}}
 {{- define "primehub.graphql.path" -}}/api{{- end -}}
 {{- define "primehub.graphql.endpoint" -}}
-{{- printf "%s%s%s" (include "primehub.url" .) (include "primehub.graphql.path" .) "/graphql" -}}
+http://{{ include "primehub.name" . }}-graphql{{include "primehub.graphql.path" .}}/graphql
 {{- end -}}
 {{- define "primehub.graphql.pullSecret" -}}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.graphql.image.credentials.registry (printf "%s:%s" .Values.graphql.image.credentials.username .Values.graphql.image.credentials.password | b64enc) | b64enc -}}
