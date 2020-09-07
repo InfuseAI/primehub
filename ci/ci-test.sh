@@ -5,9 +5,14 @@ cleanup() {
   if [ -f "tests/report/cucumber_report.json" ]; then
     node tests/report/generate_e2e_report.js
   fi
+
   # print pod and event info when job failed
   echo "pods in all namespaces"
   kubectl get pod --all-namespaces
+
+  echo "bootstrap logs"
+  kubectl -n hub logs jobs/primehub-bootstrap
+
   echo "events in all namespaces"
   kubectl get events --all-namespaces
 }

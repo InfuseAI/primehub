@@ -17,21 +17,32 @@ function print_error() {
 
 ############################################################
 # Keycloak Utiltiies - All fuctions are idempotent.
-function kc_login() {
-  if [[ -z ${ADMIN_UI_CLIENT_ID:+x} || -z ${ADMIN_UI_CLIENT_SECRET:+x} ]]; then
+function kc_login_master() {
     print_section "Login to keycloak by user $KC_USER"
     $KCADM config credentials \
       --server $KC_URL \
       --realm master \
       --user $KC_USER \
       --password $KC_PASSWORD
+}
+
+function kc_login() {
+  if [[ -z ${ADMIN_UI_CLIENT_ID:+x} || -z ${ADMIN_UI_CLIENT_SECRET:+x} ]]; then
+    kc_login_master
   else
+    set +e
     print_section "Login to keycloak by service account $ADMIN_UI_CLIENT_ID"
     $KCADM config credentials \
         --server $KC_URL \
         --realm $KC_REALM \
         --client $ADMIN_UI_CLIENT_ID \
         --secret $ADMIN_UI_CLIENT_SECRET
+    login_success=$?
+    set -e
+    if [ "$login_success" != "0" ]; then
+      print_section "First time to setup $KC_REALM, fallback to login by user $KC_USER"
+      kc_login_master
+    fi
   fi
 }
 
