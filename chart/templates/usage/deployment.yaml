@@ -171,4 +171,5 @@ spec:
         resources:
           {{ .Values.usage.monitorResources | toYaml | indent 10 | trim }}
         {{- end }}
+      serviceAccountName: {{ include "primehub-usage.name" . }}-db
 {{- end }}
