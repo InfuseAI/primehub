@@ -24,7 +24,7 @@ Feature: Admin
     Then list-view table "should" contain row with "test-user"
     When I choose "Logout" in top-right menu
     Then I am on login page
-  
+  @wip
   Scenario: Update user info and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
