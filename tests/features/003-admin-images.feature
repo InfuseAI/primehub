@@ -56,8 +56,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     Then I "should" see images block contains "test-image-display-name" image with "Universal" type and "test-description" description
     When I choose "Logout" in top-right menu

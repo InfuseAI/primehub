@@ -55,8 +55,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     And I click element with xpath "//a[@href='#dataset-list']" in hub
     Then I "should" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub
@@ -82,8 +82,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     And I click element with xpath "//a[@href='#dataset-list']" in hub
     Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub

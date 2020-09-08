@@ -10,8 +10,8 @@ Feature: Hub
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     Then I can see advanced settings
     When I choose "Logout" in top-right menu
@@ -23,8 +23,8 @@ Feature: Hub
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     And I wait for 2.0 seconds
     And I choose instance type with name "test-instance-type"
@@ -35,8 +35,8 @@ Feature: Hub
     And I wait for 4.0 seconds 
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
-    When I switch to "JupyterHub" tab
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I switch to "Notebooks" tab
+    Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -66,8 +66,8 @@ Feature: Hub
     Then list-view table "should" contain row with "test-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     And I choose instance type
     And I choose image with name "test-image"
@@ -78,7 +78,7 @@ Feature: Hub
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
     When I switch to "/console/g/phusers/hub" tab
-    Then I am on the PrimeHub console "JupyterHub" page
+    Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page

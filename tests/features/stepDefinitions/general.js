@@ -52,14 +52,14 @@ defineStep("I choose {string} in sidebar menu", async function(menuitem) {
 defineStep("I am on the PrimeHub console {string} page", async function(menuitem) {
   const xpathMap = {
     'Home': "//title[text()='PrimeHub']", // temporarily used
-    'JupyterHub': "//title[text()='PrimeHub']", // temporarily used
+    'Notebooks': "//title[text()='PrimeHub']", // temporarily used
     'Jobs': "//h2[text()='Jobs']",
     'Schedule': "//h2[text()='Job Schedule']",
     'Models': "//h2[text()='Model Deployments']"
   };
   const urlMap = {
     'Home': '/home', // temporarily used
-    'JupyterHub': '/hub', // temporarily used
+    'Notebooks': '/hub', // temporarily used
     'Jobs': `-${this.E2E_SUFFIX}/job`,
     'Schedule': `-${this.E2E_SUFFIX}/schedule`,
     'Models': `-${this.E2E_SUFFIX}/model-deployment`
@@ -78,7 +78,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 
 defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
-    'JupyterHub': `-${this.E2E_SUFFIX}/hub`,
+    'Notebooks': `-${this.E2E_SUFFIX}/hub`,
     'JupyterLab': `/user/${this.USERNAME}/lab`
   };
   let pages, targetPage;

@@ -59,8 +59,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     Then I can see the user limits are "1", "2 GB", and "1"
     And I can see the group resource limits are "2", "4GB", and "2"
