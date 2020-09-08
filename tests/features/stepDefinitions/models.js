@@ -28,11 +28,11 @@ defineStep("I go to the deployment detail page with name {string}", async functi
     throw new Error(`failed to go to deployment detail page with name ${name}`);
 });
 
-defineStep("I wait for attribute {string} with value {string}", {timeout: 310 * 1000}, async function(att, value) {
+defineStep("I wait for attribute {string} with value {string}", {timeout: 320 * 1000}, async function(att, value) {
     let ele, text, xpath = `//div[text()='${att}']/following-sibling::div`;
     if (att === 'Status') xpath += '//strong';
 
-    for (retryCount=0; retryCount < 10; retryCount++) {
+    for (retryCount=0; retryCount < 20; retryCount++) {
         try {
             [ele] = await this.page.$x(xpath);
             text = await (await ele.getProperty('textContent')).jsonValue();
@@ -41,7 +41,7 @@ defineStep("I wait for attribute {string} with value {string}", {timeout: 310 * 
         console.log(`${att}: ${text}`);
         if (text != value) {
             await this.takeScreenshot(`wait-for-${att}-${value}`);
-            await this.page.waitFor(10 * 1000);
+            await this.page.waitFor(15000);
         }
         else {
             return;
