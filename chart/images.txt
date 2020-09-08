@@ -16,10 +16,10 @@ gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 metacontroller/jsonnetd:0.1
 metacontroller/metacontroller:0.2
 prom/statsd-exporter:v0.9.0
-infuseai/primehub-console:v3.0-1a673601
-infuseai/primehub-console-graphql:v3.0-1a673601
-infuseai/primehub-console-watcher:v3.0-1a673601
-infuseai/primehub-console-model-deploy:v3.0-1a673601
+infuseai/primehub-console:v3.0-88bd6e7d
+infuseai/primehub-console-graphql:v3.0-88bd6e7d
+infuseai/primehub-console-watcher:v3.0-88bd6e7d
+infuseai/primehub-console-model-deploy:v3.0-88bd6e7d
 seldonio/seldon-core-executor:1.1.0
 fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 minio/minio:RELEASE.2020-06-14T18-32-17Z
