@@ -140,11 +140,11 @@ defineStep("I can see advanced settings", async function() {
   throw new Error("failed to get information tooltip");
 });
 
-defineStep("I can see the spawning page and wait for notebook started", async function() {
+defineStep("I can see the spawning page and wait for notebook started", {timeout: 320 * 1000}, async function() {
   let ret;
   await this.context.waitForXPath("//div[@id='custom-progress-bar']");
   await this.takeScreenshot("spawning-page");
-  for (retryCount=0; retryCount < 10; retryCount++) {
+  for (retryCount=0; retryCount < 20; retryCount++) {
     await this.checkElementExistByXPath('should exist', "//a[@id='start']", context = this.context).then(
       function(result) { ret = result; }
     );
@@ -153,7 +153,7 @@ defineStep("I can see the spawning page and wait for notebook started", async fu
       return;
     }
     else
-      await this.page.waitFor(5000);
+      await this.page.waitFor(15000);
   }
   throw new Error("failed to start notebook");
 });

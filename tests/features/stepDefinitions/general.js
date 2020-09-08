@@ -141,15 +141,16 @@ defineStep("I click login", async function() {
 });
 
 defineStep("I click {string} button", async function(string) {
-  return await this.clickByText(string);
-});
-
-defineStep("I click GoBack", async function() {
-  return await this.page.goBack();
+  await this.clickByText(string);
 });
 
 defineStep("I click refresh", async function() {
   await await this.page.reload();
+});
+
+defineStep("I click escape", async function() {
+  await this.page.keyboard.press('Escape');
+  await this.page.waitFor(1000);
 });
 
 defineStep("I {string} see element with xpath {string}", async function(exist, string) {
@@ -198,7 +199,6 @@ defineStep("the login heading should be {string}", async function(heading) {
 
 defineStep("I click tab of {string}", async function(title) {
   //div[@role='tab'][contains(.,'Reset Password')]
-  const element = "span";
   const xpath = `//div[@role='tab'][contains(.,'${title}')]`;
   await this.clickElementByXpath(xpath);
   await this.page.waitFor(1000);
@@ -274,8 +274,13 @@ defineStep("I click element {string} of {string}", async function(element, title
 });
 
 defineStep("I type {string} to {string} text field", async function(text, id) {
-  await this.page.type(`#${id}`, text);
-  await this.takeScreenshot(`type-${text}-to-${id}`);
+  const selector = `#${id}`;
+  await this.page.waitForSelector(selector, {visible: true});
+  await this.page.focus(selector);
+  await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
+  await this.page.keyboard.press("Backspace");
+  await this.page.type(selector, text);
+  await this.takeScreenshot(`type-${text}-to-${id}`.replace(/\//g, '-'));
 });
 
 // Input
@@ -320,7 +325,7 @@ defineStep("I should see {string} in element {string} under active tab", async f
     try {
       await this.page.waitForXPath(xpath, {timeout: 5 * 1000});
       console.log(`Found '${content[index]}'`);
-      await this.takeScreenshot(`element-${element}-show-${content[index]}`);
+      await this.takeScreenshot(`element-${element}-under-active-tab`);
       return;
     }
     catch (e) {}

@@ -58,6 +58,9 @@ customImage:
 jobSubmission:
   enabled: true
 
+modelDeployment:
+  enabled: true
+
 adminNotebook:
   enabled: false
 EOF
