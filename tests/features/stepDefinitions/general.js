@@ -116,6 +116,22 @@ defineStep("I click element with xpath {string}", async function(string) {
   await this.clickElementByXpath(string);
 });
 
+defineStep("I click element with xpath {string} and wait for navigation", async function(xpath) {
+  let ret;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { await this.clickElementByXpath(xpath); } catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = !result; }
+    );
+    if (ret) {
+      await this.takeScreenshot("click-and-wait-for-navigation");
+      return;
+    }
+    await this.page.waitFor(2000);
+  }
+  throw new Error(`failed to click ${xpath}`);
+});
+
 defineStep("I fill in {string} with {string}", async function(string, string2) {
   return await this.input(string, string2);
 });
@@ -246,26 +262,6 @@ defineStep("I click switch of {string}", async function(testId) {
   //div[@data-testid='user/enabled']//button
   const xpath = `//div[@data-testid='${testId}']//button`;
   await this.clickElementByXpath(xpath);
-});
-
-defineStep("I click link of {string} of {int}th item on list", async function(title, row) {
-  //tr[1]//a[text()='create-job-test']
-  const xpath = `//tr[${row}]//a[text()='${title}']`;
-  let ret;
-  for (retryCount=0; retryCount < 3; retryCount++) {
-    try { await this.clickElementByXpath(xpath); } catch (e) {}
-    await this.checkElementExistByXPath('should exist', xpath).then(
-      function(result) { ret = !result; }
-    );
-    //await this.takeScreenshot(`retry-${retryCount}`);
-    //console.log(ret);
-    if (ret) {
-      await this.takeScreenshot(`click-${title}-link`);
-      return;
-    }
-    await this.page.waitFor(2000);
-  }
-  throw new Error(`failed to click ${title} link`);
 });
 
 defineStep("I click element {string} of {string}", async function(element, title) {
