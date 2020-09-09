@@ -11,7 +11,7 @@ defineStep("I am on the create job page", async function() {
 defineStep("I wait for job {string} succeeded", {timeout: 310 * 1000}, async function(jobname) {
     await this.page.waitForXPath(`//h2[text()='Job: ${jobname}']`);
     var text = '';
-    for (retryCount=0; retryCount < 10; retryCount++) {
+    for (retryCount=0; retryCount < 30; retryCount++) {
         try {
             const [element] = await this.page.$x("//div[text()='Status']/following-sibling::div//strong");
             text = await (await element.getProperty('textContent')).jsonValue();
@@ -20,7 +20,7 @@ defineStep("I wait for job {string} succeeded", {timeout: 310 * 1000}, async fun
         console.log(`Job status: ${text}`);
         if (text != "Succeeded") {
             await this.takeScreenshot("wait-for-job-succeeded");
-            await this.page.waitFor(6 * 1000);
+            await this.page.waitFor(10000);
         }
         else {
             return;
