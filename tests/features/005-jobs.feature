@@ -19,7 +19,7 @@ Feature: Job Submission
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='create-job-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
     When I click tab of "Logs"
     Then I should see "test" in element "div" under active tab
@@ -38,7 +38,7 @@ Feature: Job Submission
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click element with xpath "//tr[1]//a[text()='create-job-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
     When I click tab of "Logs"
     Then I should see "test" in element "div" under active tab
@@ -60,7 +60,7 @@ Feature: Job Submission
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='clone-job-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
     When I click tab of "Logs"
     Then I should see "clone-test" in element "div" under active tab
@@ -87,7 +87,7 @@ Feature: Job Submission
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Cancelled" on list
     When I click element with xpath "//tr[1]//a[text()='cancel-job-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Cancelled"
+    Then I wait for attribute "Status" with value "Cancelled" in job upper pane
     And I wait for attribute "Message" with value "Cancelled by user"
     When I click tab of "Logs"
     Then I should see "cannot get log|(no data)" in element "div" under active tab

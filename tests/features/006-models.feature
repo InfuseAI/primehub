@@ -65,7 +65,7 @@ Feature: Model Deployment
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
     When I choose "Logout" in top-right menu
@@ -99,9 +99,9 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
+    Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -129,7 +129,7 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Models" in sidebar menu
@@ -150,9 +150,9 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
+    Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -175,7 +175,7 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    Then I wait for attribute "Status" with value "Succeeded"
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "default backend - 404" in element "div" under active tab
     When I choose "Logout" in top-right menu
