@@ -19,3 +19,25 @@ defineStep("I type {string} to command text field", async function(command) {
     await this.page.type("#command", text);
     await this.takeScreenshot(`type-${command}-to-command`);
 });
+
+defineStep("I wait for attribute {string} with value {string} in job upper pane", {timeout: 320 * 1000}, async function(att, value) {
+    const attributeMap = { 'Status': 0, 'Duration': 1, 'Finished': 2, 'Schedule': 3, 'User': 4 };
+    let ele, text;
+
+    for (retryCount=0; retryCount < 20; retryCount++) {
+        try {
+            ele = await this.page.$x("//tbody//td");
+            text = await (await ele[attributeMap[att]].getProperty('textContent')).jsonValue();
+        }
+        catch (e) {}
+        console.log(`${att}: ${text}`);
+        if (text != value) {
+            await this.takeScreenshot(`wait-for-${att}-${value}`);
+            await this.page.waitFor(15000);
+        }
+        else {
+            return;
+        }
+    }
+    throw new Error(`failed to wait for ${att} with value ${value}`);
+});
