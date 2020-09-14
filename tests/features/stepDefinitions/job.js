@@ -33,7 +33,7 @@ defineStep("I wait for attribute {string} with value {string} in job upper pane"
         console.log(`${att}: ${text}`);
         if (text != value) {
             await this.takeScreenshot(`wait-for-${att}-${value}`);
-            await this.page.waitFor(15000);
+            await this.page.waitForTimeout(15000);
         }
         else {
             return;

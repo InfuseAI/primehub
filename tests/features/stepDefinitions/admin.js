@@ -40,7 +40,7 @@ defineStep("I search {string} in test-id {string}", async function(name, testId)
   const selector = testIdToSelector(testId);
   await this.inputText(selector, name);
   await this.page.keyboard.press("Enter");
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.takeScreenshot(`search-${name}`);
 });
 
@@ -52,7 +52,7 @@ defineStep("I search my username in name filter", async function() {
   await this.page.keyboard.press("Backspace");
   await this.page.type(selector, this.USERNAME);
   await this.page.keyboard.press("Enter");
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.takeScreenshot(`search-${this.USERNAME}`);
 });
 
@@ -72,7 +72,7 @@ defineStep("I delete a row with text {string}", async function(string) {
   // xpath: //tr[contains(., 'string')]//button[@data-testid='delete-button']
   const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//button[@data-testid='delete-button']`;
   await this.clickElementByXpath(xpath);
-  await this.page.waitFor(3*1000);
+  await this.page.waitForTimeout(3*1000);
   // press OK button in popup
   const okButtonXPath = `//button[contains(., 'OK')]`;
   await this.clickElementByXpath(okButtonXPath);
@@ -118,7 +118,7 @@ defineStep("boolean input with test-id {string} should have value {string}", asy
 
 defineStep("I select option {string} in admin dashboard", async function(name) {
   await this.clickElementByXpath("//div[contains(@class, 'ant-select-selection--single')]");
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.clickElementByXpath(`//li[text()='${name}']`);
   await this.takeScreenshot(`select-option-${name}`);
 });
