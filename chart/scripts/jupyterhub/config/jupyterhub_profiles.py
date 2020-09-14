@@ -990,6 +990,10 @@ class PrimeHubHomeHandler(BaseHandler):
         group = self.get_query_argument("group", default=None)
         if user.spawner:
             user.spawner.set_active_group(group)
+            # If it is spawning, show the spawn pending page.
+            if user.spawner.pending == 'spawn':
+                self.redirect(url)
+                return
 
         html = self.render_template(
             'home.html',
