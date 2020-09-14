@@ -35,7 +35,7 @@ defineStep("I choose {string} in top-right menu", async function(menuitem) {
     hovers = await this.page.$x("//span[contains(@class, 'ant-avatar ant-avatar-circle')]");
     if (hovers.length > 0) {
       await hovers[0].hover();
-      await this.page.waitFor(500);
+      await this.page.waitForTimeout(500);
       break;
     }
     else console.log("Cannot find top-right icon");
@@ -71,7 +71,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
       await this.takeScreenshot(`${menuitem}-page`);
       return;
     }
-    await this.page.waitFor(2000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to go to ${menuitem} page`);
 });
@@ -93,7 +93,7 @@ defineStep("I switch to {string} tab", async function(tabname) {
       await this.takeScreenshot("switch-tab");
       return;
     }
-    await this.page.waitFor(2000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to switch to ${tabname} tab`);
 });
@@ -127,7 +127,7 @@ defineStep("I click element with xpath {string} and wait for navigation", async 
       await this.takeScreenshot("click-and-wait-for-navigation");
       return;
     }
-    await this.page.waitFor(2000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to click ${xpath}`);
 });
@@ -166,7 +166,7 @@ defineStep("I click refresh", async function() {
 
 defineStep("I click escape", async function() {
   await this.page.keyboard.press('Escape');
-  await this.page.waitFor(1000);
+  await this.page.waitForTimeout(1000);
 });
 
 defineStep("I {string} see element with xpath {string}", async function(exist, string) {
@@ -180,7 +180,7 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
 });
 
 defineStep("I wait for {float} seconds", async function(float) {
-  await this.page.waitFor(float * 1000);
+  await this.page.waitForTimeout(float * 1000);
 });
 
 defineStep("I choose radio button with name {string}", async function(name) {
@@ -217,7 +217,7 @@ defineStep("I click tab of {string}", async function(title) {
   //div[@role='tab'][contains(.,'Reset Password')]
   const xpath = `//div[@role='tab'][contains(.,'${title}')]`;
   await this.clickElementByXpath(xpath);
-  await this.page.waitFor(1000);
+  await this.page.waitForTimeout(1000);
   await this.takeScreenshot(`${title}-tab`);
 });
 
@@ -240,7 +240,7 @@ defineStep("I click button of {string} of item {string} to wait for {string} dia
       await this.takeScreenshot(`${dialog}-dialogue`);
       return;
     }
-    await this.page.waitFor(2000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to wait for ${dialog} dialogue`);
 });
@@ -290,7 +290,7 @@ defineStep("I fill {string} in input of {string}", async function(string, testId
 
 defineStep("I should see confirmation dialogue of {string}", async function(string) {
   //div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'Rerun')]
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.takeScreenshot(`confirmation-dialogue-${string}`);
   const xpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${string}')]`;
   await this.page.waitForXPath(xpath);

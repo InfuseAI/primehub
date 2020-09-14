@@ -23,7 +23,7 @@ defineStep("I go to the deployment detail page with name {string}", async functi
             await this.takeScreenshot(`deployment-detail-page-${name}`);
             return;
         }
-        await this.page.waitFor(2000);
+        await this.page.waitForTimeout(2000);
     }
     throw new Error(`failed to go to deployment detail page with name ${name}`);
 });
@@ -41,7 +41,7 @@ defineStep("I wait for attribute {string} with value {string}", {timeout: 320 * 
         console.log(`${att}: ${text}`);
         if (text != value) {
             await this.takeScreenshot(`wait-for-${att}-${value}`);
-            await this.page.waitFor(15000);
+            await this.page.waitForTimeout(15000);
         }
         else {
             return;
