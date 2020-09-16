@@ -32,6 +32,7 @@ except Exception:
 
 primehub_version = get_primehub_config('version')
 keycloak_url = get_primehub_config('keycloak.url')
+keycloak_app_url = get_primehub_config('keycloak.appUrl')
 realm = get_primehub_config('keycloak.realm')
 
 oidc_client_secret = get_primehub_config('clientSecret')
@@ -113,7 +114,7 @@ def fetch_context(user_id):
     return {}
 
 class PrimehubOidcMixin(OAuth2Mixin):
-    _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_url, realm)
+    _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
     _OAUTH_ACCESS_TOKEN_URL = '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
 class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
@@ -121,7 +122,7 @@ class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
 
 class OIDCLogoutHandler(LogoutHandler):
     kc_logout_url = '%s/realms/%s/protocol/openid-connect/logout' % (
-        keycloak_url, realm)
+        keycloak_app_url, realm)
 
     async def get(self):
         await self.default_handle_logout()
