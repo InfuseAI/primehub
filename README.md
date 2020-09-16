@@ -83,13 +83,13 @@ We welcome contributions. Take a look at our [contributing guildlines](CONTRIBUT
 
    cat <<EOF > primehub-values.yaml
    primehub:
-   domain: ${PRIMEHUB_DOMAIN}
+     domain: ${PRIMEHUB_DOMAIN}
    ingress:
-   annotations:
-   kubernetes.io/ingress.allow-http: "true"
-   nginx.ingress.kubernetes.io/ssl-redirect: "false"
-   hosts:
-   -  ${PRIMEHUB_DOMAIN}
+     annotations:
+       kubernetes.io/ingress.allow-http: "true"
+       nginx.ingress.kubernetes.io/ssl-redirect: "false"
+     hosts:
+     -  ${PRIMEHUB_DOMAIN}
    EOF
 
    helm upgrade \
