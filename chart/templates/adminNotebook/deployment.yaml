@@ -94,6 +94,7 @@ spec:
             - --oauth-uri=/oauth
             - --resources=uri=/*|roles=realm-management:realm-admin
             - --upstream-url=http://127.0.0.1:8888
+            - --skip-openid-provider-tls-verify
             - --verbose=true
           resources:
             limits:
