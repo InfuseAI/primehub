@@ -1,6 +1,6 @@
 {{- if .Values.keycloak.deploy }}
 {{- $highAvailability := gt (int .Values.keycloak.replicas) 1 -}}
-{{- $frontendUrlArg := not .Values.primehub.keycloak.svcUrl | ternary "" (printf "-Dkeycloak.frontendUrl=%s/auth" (include "primehub.url" .) ) -}}
+{{- $frontendUrlArg := printf "-Dkeycloak.frontendUrl=%s/auth" (include "primehub.url" .) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,5 +14,5 @@ data:
     set -o errexit
     set -o nounset
 
-    exec /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0 {{ .Values.keycloak.extraArgs }}{{ $frontendUrlArg }}{{- if $highAvailability }} -c standalone-ha.xml{{ else }} -c standalone.xml{{ end }}
+    exec /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0 {{ $frontendUrlArg }}{{ .Values.keycloak.extraArgs }}{{- if $highAvailability }} -c standalone-ha.xml{{ else }} -c standalone.xml{{ end }}
 {{- end }}
