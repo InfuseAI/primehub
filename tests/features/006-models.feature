@@ -56,7 +56,7 @@ Feature: Model Deployment
     And I copy value from "Endpoint" attribute
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
-    When I click "Create Job" button
+    When I click "New job" button
     Then I am on the create job page
     When I choose radio button with name "test-instance-type"
     And I choose radio button with name "test-image"
