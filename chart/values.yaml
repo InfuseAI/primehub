@@ -481,6 +481,8 @@ jupyterhub:
     enabled: false
 
   hub:
+    # Maximum number of consecutive failures to allow before shutting down JupyterHub.
+    consecutiveFailureLimit: 0
     extraEnv:
       - name: KC_CLIENT_SECRET
         valueFrom:
