@@ -2,7 +2,7 @@ const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
 defineStep("I am on the create job page", async function() {
-    await this.page.waitForXPath("//h2[text()='Create Job']");
+    await this.page.waitForXPath("//h2[text()='New Job']");
     const url = this.page.url();
     expect(url).to.contain(`-${this.E2E_SUFFIX}/job/create`);
     await this.takeScreenshot("create-job-page");

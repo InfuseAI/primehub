@@ -10,7 +10,7 @@ Feature: Job Submission
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
-    When I click "Create Job" button
+    When I click "New Job" button
     Then I am on the create job page
     When I choose radio button with name "test-instance-type"
     And I choose radio button with name "test-image"
@@ -75,7 +75,7 @@ Feature: Job Submission
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
-    When I click "Create Job" button
+    When I click "New Job" button
     Then I am on the create job page
     When I choose radio button with name "test-instance-type"
     And I choose radio button with name "test-image"
