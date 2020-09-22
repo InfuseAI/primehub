@@ -254,6 +254,7 @@ defineStep("I click svg button of {string} of item {string}", async function(act
 
 defineStep("I click button of {string} on confirmation dialogue", async function(action) {
   //div[@class='ant-modal-confirm-body-wrapper']//button[contains(.,'Yes')]
+  await this.waitForTimeout(500);
   const xpath = `//div[@class='ant-modal-confirm-body-wrapper']//button[contains(.,'${action}')]`;
   await this.clickElementByXpath(xpath);
 });
