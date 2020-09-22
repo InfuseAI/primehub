@@ -749,10 +749,15 @@ customImage:
 
 # Job Submission
 jobSubmission:
-  enabled: false
+  enabled: true
   workingDirSize: 5Gi
   defaultActiveDeadlineSeconds: 86400
   defaultTTLSecondsAfterFinished: 604800
+  # Artifact. Require phfs
+  artifact:
+    enabled: false
+    limitSizeMb: 100
+    limitFiles: 1000
 
 # Model Deployment
 modelDeployment:

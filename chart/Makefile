@@ -31,7 +31,12 @@ primehub-controller-update-scripts: check-yq check-jq
 	@mkdir -p scripts/controller/custom_image; \
 		cd scripts/controller/custom_image; \
 		echo "Syncing 'custom_image'"; \
-		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/scripts/custom_image" | jq -r '.[].download_url' | grep -v -e "^null$$" | xargs -I{} curl -s -OL {}; \
+		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/ee/scripts/custom_image?ref=master" | jq -r '.[].download_url' | grep -v -e "^null$$" | xargs -I{} curl -s -OL {}; \
+		chmod +x ./*.sh
+	@mkdir -p scripts/controller/job; \
+		cd scripts/controller/job; \
+		echo "Syncing 'job'"; \
+		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/ee/scripts/job?ref=master" | jq -r '.[].download_url' | grep -v -e "^null$$" | xargs -I{} curl -s -OL {}; \
 		chmod +x ./*.sh
 	@echo "Done"
 
