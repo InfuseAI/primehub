@@ -2,9 +2,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-custom-image-scripts
+  name: primehub-controller-custom-image-scripts
 data:
 {{ (.Files.Glob "scripts/controller/custom_image/*").AsConfig | indent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primehub-controller-job-scripts
+data:
+{{ (.Files.Glob "scripts/controller/job/*").AsConfig | indent 2 }}
 ---
 apiVersion: v1
 kind: ConfigMap
