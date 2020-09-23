@@ -20,7 +20,7 @@ copy_artifacts() {
   ARTIFACTS_SRC=${ARTIFACTS_SRC:-"artifacts"}
   ARTIFACTS_DEST=${ARTIFACTS_DEST:-"/phfs/jobArtifacts/${PHJOB_NAME}"}
   FILE_COUNT_MAX=$PHJOB_ARTIFACT_LIMIT_FILES
-  TOTAL_SIZE_MAX=$(($((PHJOB_ARTIFACT_LIMIT_SIZE_MB))*1024*1024))
+  TOTAL_SIZE_MAX=$PHJOB_ARTIFACT_LIMIT_SIZE_MB
 
   if [[ ! -e ${ARTIFACTS_SRC} ]]; then
     echo "Artifacts: no artifact found"
@@ -52,9 +52,9 @@ copy_artifacts() {
   fi
 
   # Check file size
-  TOTAL_SIZE=$(du -d 0 "${ARTIFACTS_SRC}" | cut -f 1)
+  TOTAL_SIZE=$(du -m -d 0 "${ARTIFACTS_SRC}" | cut -f 1)
   if (( $TOTAL_SIZE > $TOTAL_SIZE_MAX )); then
-    echo "Artifact: Total size exceeds in ${ARTIFACTS_SRC}. ($((TOTAL_SIZE)) > $((TOTAL_SIZE_MAX)))"
+    echo "Artifact: Total size exceeds in ${ARTIFACTS_SRC}. ($((TOTAL_SIZE))M > $((TOTAL_SIZE_MAX))M)"
     return
   fi
 
