@@ -54,7 +54,7 @@ spec:
           - name: JOBSUBMISSION_GRAPHQLSECRET
             valueFrom:
               secretKeyRef:
-                name: {{ include "primehub.name" . }}-graphql
+                name: {{ include "primehub.name" . }}-graphql-shared-secret
                 key: sharedSecret
           resources:
 {{ toYaml .Values.controller.resources | indent 12 }}
