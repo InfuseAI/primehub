@@ -596,7 +596,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
 
     def attach_usage_annoations(self, spawner):
-        usage_annotation = dict(component='jupyter',
+        usage_annotation = dict(component='notebook',
                                 component_name=spawner.pod_name,
                                 group=spawner.user_options.get('group', {}).get('name', ''),
                                 user=spawner.user.name,
