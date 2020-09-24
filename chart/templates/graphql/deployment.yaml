@@ -100,7 +100,7 @@ spec:
             - name: SHARED_GRAPHQL_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "primehub.name" . }}-graphql
+                  name: {{ include "primehub.name" . }}-graphql-shared-secret
                   key: sharedSecret
             - name: APP_PREFIX
               value: {{ include "primehub.graphql.path" . }}

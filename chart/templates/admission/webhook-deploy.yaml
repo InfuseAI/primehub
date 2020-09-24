@@ -33,7 +33,7 @@ spec:
         - name: GRAPHQL_SHARED_SECRET
           valueFrom:
             secretKeyRef:
-              name: {{ include "primehub.name" . }}-graphql
+              name: {{ include "primehub.name" . }}-graphql-shared-secret
               key: sharedSecret
         - name: FLASK_DEBUG
           value: "false"

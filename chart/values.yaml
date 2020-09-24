@@ -492,7 +492,7 @@ jupyterhub:
       - name: GRAPHQL_SHARED_SECRET
         valueFrom:
           secretKeyRef:
-            name: primehub-graphql
+            name: primehub-graphql-shared-secret
             key: sharedSecret
     extraContainers: []
     extraVolumes:
