@@ -193,3 +193,19 @@ defineStep("I {string} see element with xpath {string} in hub", async function(e
 defineStep("I click element with xpath {string} in hub", async function(string) {
   await this.clickElementByXpath(string, context = this.context);
 });
+
+defineStep("I check the group warning message against group {string}", async function(name) {
+  // group selector: ${NAME}-display-name-${E2E_SUFFIX}
+  // warning message: ${NAME}-${E2E_SUFFIX}
+  const xpath = `//h3[text()='The current server is launched by another group (${name}-${this.E2E_SUFFIX})']`;
+  let ele, text, ret;
+
+  [ele] = await this.page.$x("//div[@class='ant-select-selection-selected-value']");
+  text = await (await ele.getProperty('textContent')).jsonValue();
+
+  await this.checkElementExistByXPath('should not exist', xpath, context = this.context).then(
+      function(result) { ret = result; }
+  );
+  if (ret !== (text === `${name}-display-name-${this.E2E_SUFFIX}`))
+    throw new Error("the group warning message is existed: ", !ret);
+});

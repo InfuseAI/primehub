@@ -29,6 +29,15 @@ defineStep("I choose group with name {string}", async function(name) {
   await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
 });
 
+defineStep("I switch group", async function() {
+  await this.clickElementBySelector(".ant-select-selection__rendered");
+  await this.page.keyboard.press('ArrowDown');
+  await this.page.keyboard.press('ArrowDown');
+  await this.page.keyboard.press('Enter');
+  await this.page.waitForTimeout(500);
+  await this.takeScreenshot("switch-group");
+});
+
 defineStep("I choose {string} in top-right menu", async function(menuitem) {
   for (retryCount=0; retryCount < 3; retryCount++) {
     await this.page.mouse.move(0, 0);
@@ -133,22 +142,27 @@ defineStep("I click element with xpath {string} and wait for navigation", async 
 });
 
 defineStep("I fill in {string} with {string}", async function(string, string2) {
-  return await this.input(string, string2);
+  await this.input(string, string2);
 });
 
 defineStep("I fill in the wrong credentials", async function() {
   await this.input("username", this.USERNAME);
-  return await this.input("password", "wrong password");
+  await this.input("password", "wrong password");
 });
 
 defineStep("I fill in the correct username credentials", async function() {
   await this.input("username", this.USERNAME);
-  return await this.input("password", this.PASSWORD);
+  await this.input("password", this.PASSWORD);
 });
 
 defineStep("I fill in the correct email credentials", async function() {
   await this.input("username", this.USER_EMAIL);
-  return await this.input("password", this.PASSWORD);
+  await this.input("password", this.PASSWORD);
+});
+
+defineStep("I fill in the username {string} and password {string}", async function(username, password) {
+  await this.input("username", `${username}-${this.E2E_SUFFIX}`);
+  await this.input("password", password);
 });
 
 defineStep("I click login", async function() {

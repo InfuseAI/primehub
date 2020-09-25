@@ -37,6 +37,9 @@ Feature: Hub
     Then I can see the JupyterLab page
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
+    And I check the group warning message against group "e2e-test-group"
+    And I switch group
+    And I check the group warning message against group "e2e-test-group"
     And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
