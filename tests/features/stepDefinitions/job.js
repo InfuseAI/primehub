@@ -8,7 +8,7 @@ defineStep("I am on the create job page", async function() {
     await this.takeScreenshot("create-job-page");
 });
 
-defineStep("I type {string} to command text field", async function(command) {
+defineStep("I type {string} to command text field", {timeout: 300 * 1000}, async function(command) {
     let text;
     switch (command) {
         case 'endpoint curl test':
