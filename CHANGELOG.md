@@ -3,6 +3,12 @@
 ## Upcoming
 ### What's New
 
+## 3.0.1
+### What's New
+
+- [Bugfix] Fix spawning page issue (ch12374)
+
+
 ## 3.0.0
 ### What's New
 
