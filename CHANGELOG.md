@@ -3,6 +3,8 @@
 ## Upcoming
 ### What's New
 
+- **Support Self-Signed Certificate**. Please refer to the enterprise edition documentation here. https://docs.primehub.io/docs/next/getting_started/configure-self-signed-ca
+
 ## 3.0.0
 ### What's New
 
