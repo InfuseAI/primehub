@@ -164,6 +164,10 @@ spec:
             - name: PRIMEHUB_FEATURE_USAGE
               value: {{ include "primehub-usage.enabled" . | quote }}
             {{- end }}
+            {{- if .Values.jobSubmission.enabled }}
+            - name: JOB_DEFAULT_ACTIVE_DEADLINE_SEC
+              value: {{ .Values.jobSubmission.defaultActiveDeadlineSeconds | quote }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}
