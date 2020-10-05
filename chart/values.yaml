@@ -755,7 +755,7 @@ jobSubmission:
   defaultTTLSecondsAfterFinished: 604800
   # Artifact. Require phfs
   artifact:
-    enabled: false
+    enabled: true
     limitSizeMb: 100
     limitFiles: 1000
 
