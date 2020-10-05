@@ -1015,7 +1015,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v0.0.7-alpha
+    tag: v0.0.8-alpha
 
   appResources:
     limits:
