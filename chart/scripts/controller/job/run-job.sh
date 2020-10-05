@@ -8,6 +8,7 @@ PHJOB_NAME=${PHJOB_NAME:-job-$(date '+%Y%m%d%H%M%S')}
 PHJOB_ARTIFACT_ENABLED=${PHJOB_ARTIFACT_ENABLED:-false}
 PHJOB_ARTIFACT_LIMIT_SIZE_MB=${PHJOB_ARTIFACT_LIMIT_SIZE_MB:-100}
 PHJOB_ARTIFACT_LIMIT_FILES=${PHJOB_ARTIFACT_LIMIT_FILES:-1000}
+PHJOB_ARTIFACT_RETENTION_SECONDS=${PHJOB_ARTIFACT_RETENTION_SECONDS:-604800}
 
 COMMAND=$1
 
@@ -16,11 +17,12 @@ COMMAND=$1
 # To test artifact copy. We can use
 # PHJOB_ARTIFACT_ENABLED=true ARTIFACTS_SRC='/tmp/artifacts/src' ARTIFACTS_DEST="/tmp/artifacts/$(date '+%Y%m%d-%H%M%S')" ./run-job.sh "echo hello"
 copy_artifacts() {
-  ARTIFACTS_DRYRUN=${ARTIFACTS_DRYRUN:-false}
-  ARTIFACTS_SRC=${ARTIFACTS_SRC:-"artifacts"}
-  ARTIFACTS_DEST=${ARTIFACTS_DEST:-"/phfs/jobArtifacts/${PHJOB_NAME}"}
-  FILE_COUNT_MAX=$PHJOB_ARTIFACT_LIMIT_FILES
-  TOTAL_SIZE_MAX=$PHJOB_ARTIFACT_LIMIT_SIZE_MB
+  local ARTIFACTS_DRYRUN=${ARTIFACTS_DRYRUN:-false}
+  local ARTIFACTS_SRC=${ARTIFACTS_SRC:-"artifacts"}
+  local ARTIFACTS_DEST=${ARTIFACTS_DEST:-"/phfs/jobArtifacts/${PHJOB_NAME}"}
+  local FILE_COUNT_MAX=$PHJOB_ARTIFACT_LIMIT_FILES
+  local TOTAL_SIZE_MAX=$PHJOB_ARTIFACT_LIMIT_SIZE_MB
+  local RETENTION=$PHJOB_ARTIFACT_RETENTION_SECONDS
 
   if [[ ! -e ${ARTIFACTS_SRC} ]]; then
     echo "Artifacts: no artifact found"
@@ -66,7 +68,14 @@ copy_artifacts() {
     echo "Copy artifacts from ${ARTIFACTS_SRC} to ${ARTIFACTS_DEST}"
   fi
 
-  echo "Artifacts: ($((FILE_COUNT)) files / $((TOTAL_SIZE)) bytes) uploaded"
+  # Metadata
+  mkdir -p "${ARTIFACTS_DEST}/.metadata"
+  if (( $RETENTION > 0 )); then
+    echo "$(($(date +%s) + $RETENTION))" >> "${ARTIFACTS_DEST}/.metadata/expiredAt"
+  fi
+
+  # Prompt information
+  echo "Artifacts: ($((FILE_COUNT)) files / $((TOTAL_SIZE)) MB) uploaded"
 }
 
 # Run Command
