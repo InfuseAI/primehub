@@ -758,6 +758,8 @@ jobSubmission:
     enabled: false
     limitSizeMb: 100
     limitFiles: 1000
+    # how long will the artifact would be removed.
+    retentionSeconds: 604800
 
 # Model Deployment
 modelDeployment:
