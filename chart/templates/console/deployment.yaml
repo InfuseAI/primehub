@@ -145,6 +145,14 @@ spec:
             - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
               value: "true"
             {{- end }}
+            {{- if .Values.store.phfs.enabled }}
+            - name: PRIMEHUB_FEATURE_PHFS
+              value: "true"
+            {{- end }}
+            {{- if .Values.jobSubmission.artifact.enabled }}
+            - name: PRIMEHUB_FEATURE_JOB_ARTIFACT
+              value: "true"
+            {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.console.extraEnv }}
             - name: {{ $key }}
