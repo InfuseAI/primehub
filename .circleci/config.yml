@@ -89,7 +89,7 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
-  e2e_scheduled:
+  e2e_regression:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -101,10 +101,28 @@ jobs:
       - run:
           name: End-to-end tests
           environment:
-            E2E_SCHEDULED: "true"
+            E2E_REGRESSION: "true"
           command: |
             ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
 
+  e2e_normal_user:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            E2E_NORMAL_USER: "true"
+          command: |
+            ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
 
@@ -149,6 +167,10 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
+      - e2e_regression
+      - e2e_normal_user
+      - e2e_installed_ph:
+          context: e2e-demo-a
       - build:
           filters:
             tags:
@@ -164,6 +186,7 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_scheduled
+      - e2e_regression
+      - e2e_normal_user
       - e2e_installed_ph:
           context: e2e-demo-a

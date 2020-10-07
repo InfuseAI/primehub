@@ -147,12 +147,15 @@ export E2E_SUFFIX=$(openssl rand -hex 6)
 export E2E_SCHEDULED=${E2E_SCHEDULED:-false}
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-tags="@released and not @ee and not @scheduled and not @wip"
+tags="@released and not @normal-user and not @ee and not @regression and not @wip"
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="@released and not @scheduled and not @wip"
+  tags="@released and not @normal-user and not @regression and not @wip"
 fi
-if [[ "$E2E_SCHEDULED" == "true" ]]; then
-  tags="@scheduled"
+if [[ "$E2E_REGRESSION" == "true" ]]; then
+  tags="@regression"
+fi
+if [[ "$E2E_NORMAL_USER" == "true" ]]; then
+  tags="(@released or @normal-user) and (not @admin-user) and (not @regression and not @wip)"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js

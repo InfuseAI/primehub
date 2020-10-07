@@ -3,6 +3,7 @@ Feature: Admin
   In order to manage users
   I want to change settings
 
+  @admin-user
   Scenario: Create user
     Given I go to login page
     When I fill in the correct username credentials
@@ -30,6 +31,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @admin-user
   Scenario: User can see expected results when no group is available
     Given I go to login page
     When I fill in the username "test-user" and password "password"
@@ -46,6 +48,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @admin-user
   Scenario: Update user info and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
@@ -82,6 +85,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @admin-user
   Scenario: Delete user
     Given I go to login page
     When I fill in the correct username credentials
@@ -98,5 +102,25 @@ Feature: Admin
     When I click refresh
     And I search "test-user" in test-id "text-filter-username"
     Then list-view table "should not" contain row with "test-user" 
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @normal-user
+  Scenario: Switch my role from admin to normal user
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
+    Then I am on the admin dashboard "Groups" page
+    When I click "Users" in admin dashboard
+    Then I am on the admin dashboard "Users" page
+    When I click element with test-id "edit-button"
+    Then I "should" see element with xpath "//div[@data-testid='user/isAdmin']"
+    When I check boolean input with test-id "user/isAdmin"
+    And I click element with xpath "//button/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    When I click element with test-id "edit-button"
+    Then boolean input with test-id "user/isAdmin" should have value "false"
     When I choose "Logout" in top-right menu
     Then I am on login page
