@@ -34,7 +34,7 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
   sudo mv kubectl /usr/local/bin
 
 K3D_VERSION=3.0.0-rc.6
-HELM_VERSION=3.2.4
+HELM_VERSION=3.3.4
 
 # Install k3d
 curl -sLo k3d https://github.com/rancher/k3d/releases/download/v${K3D_VERSION}/k3d-linux-amd64 && \
