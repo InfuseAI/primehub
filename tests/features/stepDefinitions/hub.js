@@ -24,6 +24,26 @@ defineStep("I go to the spawner page", async function() {
   throw new Error("failed to go to the spawner page");
 });
 
+defineStep("I go to the notebooks admin page", async function() {
+  let frame, ret;
+  let xpath = "//title[text()='JupyterHub']";
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { frame = this.page.frames()[1]; }
+    catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath, context = frame).then(
+      function(result) { ret = result; }
+    );
+    if (ret) {
+      await this.page.waitForTimeout(2000);
+      this.context = frame;
+      await this.takeScreenshot("notebooks-admin-page");
+      return;
+    }
+    await this.page.waitForTimeout(1000);
+  }
+  throw new Error("failed to go to the notebooks admin page");
+});
+
 defineStep("I click element with selector {string} in hub", async function(selector) {
   await this.clickElementBySelector(selector, context = this.context);
 });
@@ -178,6 +198,40 @@ defineStep("I stop my server in hub", async function() {
     }
   }
   throw new Error("failed to stop my server");
+});
+
+defineStep("I access my server in notebooks admin", async function() {
+  await this.clickElementByXpath(
+    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'access server')]`, context = this.context);
+});
+
+defineStep("I stop my server in notebooks admin", async function() {
+  await this.clickElementByXpath(
+    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'stop server')]`, context = this.context);
+  await this.page.waitForTimeout(20000);
+  // might sometimes failed, blocked by ch13256
+  /*
+  const xpath = `//tr[@data-user='${this.USERNAME}']//a[text()='stopping...']`;
+  let ele, ret;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { 
+      [ele] = await this.context.$x(xpath, {timeout: 5000});
+      await ele.click();
+    } 
+    catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
+      function(result) { ret = !result; }
+    );
+    console.log('click stop server');
+    if (ret) {
+      console.log('stopped');
+      await this.takeScreenshot("stop-my-server");
+      return;
+    }
+    await this.page.waitForTimeout(2000);
+  }
+  throw new Error('failed to stop my server in notebooks admin page');
+  */
 });
 
 defineStep("I {string} see element with xpath {string} in hub", async function(exist, string) {

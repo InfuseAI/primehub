@@ -63,15 +63,23 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'Home': "//title[text()='PrimeHub']", // temporarily used
     'Notebooks': "//title[text()='PrimeHub']", // temporarily used
     'Jobs': "//h2[text()='Jobs']",
-    'Schedule': "//h2[text()='Job Schedule']",
-    'Models': "//h2[text()='Model Deployments']"
+    'NewJob': "//h2[text()='New Job']",
+    'Schedule': "//h2[text()='Schedule']",
+    'NewSchedule': "//h2[text()='New Schedule']",
+    'UpdateSchedule': "//h2[contains(text(), 'Schedule:')]",
+    'Models': "//h2[text()='Model Deployments']",
+    'CreateDeployment': "//h2[text()='Create Deployment']"
   };
   const urlMap = {
     'Home': '/home', // temporarily used
     'Notebooks': '/hub', // temporarily used
     'Jobs': `-${this.E2E_SUFFIX}/job`,
+    'NewJob': `-${this.E2E_SUFFIX}/job/create`,
     'Schedule': `-${this.E2E_SUFFIX}/schedule`,
-    'Models': `-${this.E2E_SUFFIX}/model-deployment`
+    'NewSchedule': `-${this.E2E_SUFFIX}/schedule/create`,
+    'UpdateSchedule': `-${this.E2E_SUFFIX}/schedule/schedule-`,
+    'Models': `-${this.E2E_SUFFIX}/model-deployment`,
+    'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`
   };
   await this.page.waitForXPath(xpathMap[menuitem]);
 
@@ -88,7 +96,8 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
     'Notebooks': `-${this.E2E_SUFFIX}/hub`,
-    'JupyterLab': `/user/${this.USERNAME}/lab`
+    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'NotebooksAdmin': 'console/cms/default/jupyterhub'
   };
   let pages, targetPage;
   if (tabname in urlMap) tabname = urlMap[tabname];
@@ -139,6 +148,22 @@ defineStep("I click element with xpath {string} and wait for navigation", async 
     await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to click ${xpath}`);
+});
+
+defineStep("I click element with xpath {string} and wait for xpath {string} appearing", async function(xpath, waitXpath) {
+  let ret;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { await this.clickElementByXpath(xpath); } catch (e) {}
+    await this.checkElementExistByXPath('should exist', waitXpath).then(
+      function(result) { ret = result; }
+    );
+    if (ret) {
+      await this.takeScreenshot("click-and-wait-for-appearing");
+      return;
+    }
+    await this.page.waitForTimeout(2000);
+  }
+  throw new Error(`failed to click ${xpath} and wait for ${waitXpath} appearing`);
 });
 
 defineStep("I fill in {string} with {string}", async function(string, string2) {
