@@ -2,6 +2,7 @@
 Feature: Model Deployment
   Basic tests
 
+  @admin-user
   Scenario: User can see expected results when model deployment enabled/disabled
     Given I go to login page
     When I fill in the correct username credentials

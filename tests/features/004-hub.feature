@@ -78,7 +78,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @scheduled
+  @regression
   Scenario: Regression test with official latest jupyter/base-notebook
     Given I go to login page
     When I fill in the correct username credentials
