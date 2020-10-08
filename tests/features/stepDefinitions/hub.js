@@ -194,7 +194,6 @@ defineStep("I stop my server in hub", async function() {
     }
     catch (e) {
       await this.takeScreenshot("server-stopped");
-      await this.page.waitForTimeout(10000); //ch13256:[Bug] the 'stop my server' button is always shown
       return;
     }
   }
