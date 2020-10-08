@@ -3,6 +3,11 @@
 ## Upcoming
 ### What's New
 
+## 3.0.2
+### What's New
+
+- [Bugfix] Fix user group graphql connection (ch12594)
+
 ## 3.0.1
 ### What's New
 
