@@ -194,6 +194,7 @@ defineStep("I stop my server in hub", async function() {
     }
     catch (e) {
       await this.takeScreenshot("server-stopped");
+      await this.page.waitForTimeout(10000); //ch13256:[Bug] the 'stop my server' button is always shown
       return;
     }
   }
@@ -208,7 +209,7 @@ defineStep("I access my server in notebooks admin", async function() {
 defineStep("I stop my server in notebooks admin", async function() {
   await this.clickElementByXpath(
     `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'stop server')]`, context = this.context);
-  await this.page.waitForTimeout(20000);
+  await this.page.waitForTimeout(10000);
   // might sometimes failed, blocked by ch13256
   /*
   const xpath = `//tr[@data-user='${this.USERNAME}']//a[text()='stopping...']`;
