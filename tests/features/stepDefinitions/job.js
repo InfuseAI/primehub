@@ -1,13 +1,6 @@
 const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
-defineStep("I am on the create job page", async function() {
-    await this.page.waitForXPath("//h2[text()='New Job']");
-    const url = this.page.url();
-    expect(url).to.contain(`-${this.E2E_SUFFIX}/job/create`);
-    await this.takeScreenshot("create-job-page");
-});
-
 defineStep("I type {string} to command text field", {timeout: 300 * 1000}, async function(command) {
     let text;
     switch (command) {

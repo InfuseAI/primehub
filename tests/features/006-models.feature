@@ -25,7 +25,7 @@ Feature: Model Deployment
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
-    Then I am on the create deployment page
+    Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
     Then I am on login page
   
@@ -38,7 +38,7 @@ Feature: Model Deployment
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
-    Then I am on the create deployment page
+    Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test" to "name" text field
     And I choose radio button with name "test-instance-type"
     And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage" text field
@@ -58,7 +58,7 @@ Feature: Model Deployment
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
-    Then I am on the create job page
+    Then I am on the PrimeHub console "NewJob" page
     When I choose radio button with name "test-instance-type"
     And I choose radio button with name "test-image"
     And I type "deployment-endpoint-test" to "displayName" text field

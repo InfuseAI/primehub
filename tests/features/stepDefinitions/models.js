@@ -1,13 +1,6 @@
 const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
-defineStep("I am on the create deployment page", async function() {
-    await this.page.waitForXPath("//h2[text()='Create Deployment']");
-    const url = this.page.url();
-    expect(url).to.contain(`-${this.E2E_SUFFIX}/model-deployment/create`);
-    await this.takeScreenshot("create-deployment-page");
-});
-
 defineStep("I go to the deployment detail page with name {string}", async function(name) {
     let cardXpath = `//div[@class='ant-card-body']//h2[text()='${name}']`;
     let titleXpath = `//h2[text()='Deployment: ${name}']`;
