@@ -15,7 +15,7 @@ Feature: Admin
     Then I should see element with test-id "group/name"
     And I should see element with test-id "group/displayName"
     When I type "e2e-test-group" to element with test-id "group/name"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
@@ -49,7 +49,7 @@ Feature: Admin
     And I click my username
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
@@ -79,7 +79,7 @@ Feature: Admin
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
     And I check boolean input with test-id "group/enabledDeployment"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
