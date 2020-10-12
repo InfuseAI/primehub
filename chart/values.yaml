@@ -946,6 +946,7 @@ rclone:
       tag: v1.2.6
       pullPolicy: IfNotPresent
     resources: {}
+    tolerations: []
 
   csiAttacher:
     image:
