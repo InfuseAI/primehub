@@ -4,6 +4,7 @@
 ### What's New
 
 - **Support Self-Signed Certificate**. Please refer to the enterprise edition documentation here. https://docs.primehub.io/docs/next/getting_started/configure-self-signed-ca
+- **Support Job Artifact**: Users can output files generated from a job. The generated files can be downloaded later from the job UI.
 
 ## 3.0.1
 ### What's New
@@ -360,7 +361,7 @@ After primehub upgrade:
 
 - **License Key Management(Beta)** You can now obtain trial license and install PrimeHub and experience EE .
 - **Make persistent home directory under user path :** Make users be able to mount their persistence volume to `/home/jovyan/user`, by `Enable Safe Mode` in the spwaner advanced settings.
-- **Support repo2docker image:** Make images built by [repo2docker](docs/design/repo2docker.md) be able to run on PrimeHub. 
+- **Support repo2docker image:** Make images built by [repo2docker](docs/design/repo2docker.md) be able to run on PrimeHub.
 - Upgrade default helm version from 2.11.0 to 2.16.1 - #ch3127
 - Keycloak v8 supported.
 - We rename our `Custom Image` feature to `Image builder`.
@@ -449,11 +450,11 @@ After primehub upgrade:
   For ingress customization, we unify the ingress setting to `ingress.*` rather than `<component>.ingress.*` in each component.
 
 - **groupvolume&gitsync:** Change the primehub-groupvolume and primehub-gitsync installation from manually install to primehub helm chart.
-  
+
   To migrate groupvolume and gitsync to primehub helm chart, please use `make primehub-upgarde` to upgrade primehub.
 
   If don't want to migrate, please add the following config into `helm_override/primehub.yaml`
-  
+
   ```yaml
   groupvolume:
     enabled: false
@@ -463,7 +464,7 @@ After primehub upgrade:
 
 - **groupvolume:** Now, group volume (pvc and pv) is created when creating a group (with a shared volume) in admin UI. And may need to change the default storage class and group volume storage class helm settings.
 
-  If you overwrite 
+  If you overwrite
   ```yaml
   jupyterhub:
     custom:
@@ -705,14 +706,14 @@ N/A
 - Script to check if the service account token valid #ch3764
 Workspace
 - Provide a tool to detect and fix orphan mount & rbdmap #ch3460
-- Create `ImageSpec` and `ImageSpecJob` CRD #ch3807    
+- Create `ImageSpec` and `ImageSpecJob` CRD #ch3807
 - [Custom image v1] Evaluate Tekton pipelines for image building #ch3076
 - [Custom image v1] Evaluate if metacontroller satisfy the operator needs #ch3086
 - [Custom image v1] Setup Google container registry for storing built images #ch3083
 - Design Training Job Submission MVP #ch2724
 - Workspace: Admin Console UI Changes #ch1278
 
-### Security 
+### Security
 
 - k8s CVE-2019-11253 mitigation and advisories #ch3808
 
@@ -738,17 +739,17 @@ Workspace
 - [Bug][CI][Kind] no instance type and image can be found #ch3991
 - cloud provisioner - quota on everyone group #ch1957
 - user portal broken after group removal #ch3003
-- Reproduce the group volume migration issue and find the solution #ch3012  
+- Reproduce the group volume migration issue and find the solution #ch3012
 - investigate dev-gcp's use of load balancer #ch3933
 
 ### Third Party
 
-- Upgrade cert-manager #ch2673    
+- Upgrade cert-manager #ch2673
 - Upgrade Grafana dashboard to 6.3.0 and support unified ingress #ch1725
 - followup node-problem-detector #ch2088
 - [gpu] a preview image contains nvdashboard plugin (predefine layout for UX) #ch3768
 - Survey nvdashboard jupyter plugin #ch2220
-    
+
 ### Document
 
 - build docs and provide as help site as part of primehub installation #ch1746
@@ -939,7 +940,7 @@ Change `starndard` to other pvc storage class if needed.
 - **[Downtime Required] Migrate primehub-groupvolume.**
 
   After upgrade v1.7.0 primehub-groupvolume, need to run migration script to migrate exist project-volume and dataset-volume.
-  
+
   After migrating primehub-groupvolume until running the migration process, user pod can not access the data in project and dataset volume.
 
   For the production environment, it's better to schedule downtime upgrade with customer, or we need to let customer known user will encounter data access error during the upgrade process.
@@ -957,7 +958,7 @@ Change `starndard` to other pvc storage class if needed.
       PRIMEHUB_CONSOLE_DOCKER_PASSWORD=
       ```
 
-      The value can be found from 
+      The value can be found from
 
       ```
       kubectl -n primehub get secret gitlab-registry -o jsonpath='{.data.\.dockerconfigjson}' | base64 --decode | jq .
@@ -966,7 +967,7 @@ Change `starndard` to other pvc storage class if needed.
   2. Add the helm override yaml.
 
       Old sample (admin-ui.yaml):
-    
+
       ```yaml
       primehub:
         keycloakUrl: https://id.example.com/auth
@@ -975,24 +976,24 @@ Change `starndard` to other pvc storage class if needed.
         appPrefix: /admin
         crdNamespace: hub
       ```
-    
+
       Should migrate to new one (primehub-console.yaml):
-    
+
       ```yaml
       keycloak:
         url: https://id.example.com/auth
-    
+
       ui:
         locale: en
         url: https://example.com/admin
         appPrefix: /admin
-    
+
       graphql:
         crdNamespace: hub
       ```
-    
+
       Before install primehub-console, you should remove old admin-ui release:
-    
+
       ```
       helm del --purge admin-ui
       ```
@@ -1030,7 +1031,7 @@ Change `starndard` to other pvc storage class if needed.
 
 - [Optional] Migrate to unified domain name
 
-  1. Add `PRIMEHUB_FEATURE_USER_PORTAL=true`, `PRIMEHUB_DOMAIN=` and `PRIMEHUB_SCHEME=` to `.env`. 
+  1. Add `PRIMEHUB_FEATURE_USER_PORTAL=true`, `PRIMEHUB_DOMAIN=` and `PRIMEHUB_SCHEME=` to `.env`.
   2. Add new [Valid Redirect URIs](https://www.keycloak.org/docs/6.0/server_admin/index.html#oidc-clients) to all affected keycloak clients. (e.g. `admin-ui`, `jupyterhub`, `maintenance-proxy`)
   3. For more information, please see [docs/design/user-portal.md](docs/design/user-portal.md)
 
@@ -1113,7 +1114,7 @@ Change `starndard` to other pvc storage class if needed.
 2. To use the kubectl plugins, set the `$PRIMEHUB_HOME/bin` in the PATH environment variables or copy binaries inside to where the env `$PATH` can resolve it. Here are the kubectl plugins provided
 
         # shortcut to run ceph command
-        kubectl ceph 
+        kubectl ceph
         # shortcut to run rbd command
         kubectl rbd
         # wrapper of kubectl scale
@@ -1189,7 +1190,7 @@ Al hail Himalaya!
             kubernetes_version: v1.12.4-rancher1-1    <--- leave v1.12.4. This is used for rke
             system_images:
               etcd: rancher/coreos-etcd:v3.2.24
-              kubernetes: rancher/hyperkube:v1.12.7-rancher1    <-----    
+              kubernetes: rancher/hyperkube:v1.12.7-rancher1    <-----
               alpine: rancher/rke-tools:v0.1.16
               nginx_proxy: rancher/rke-tools:v0.1.16
 
