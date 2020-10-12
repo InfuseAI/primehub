@@ -929,35 +929,35 @@ minio:
 
 rclone:
   # use /var/snap/microk8s/common/var/lib/kubelet with microk8s
-  kubeletPath:
+  kubeletPath: /var/lib/kubelet
 
   nodeDriverRegistrar:
     image:
       repository: quay.io/k8scsi/csi-node-driver-registrar
       tag: v1.1.0
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
   rclone:
     image:
       repository: wunderio/csi-rclone
       tag: v1.2.6
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
   csiAttacher:
     image:
       repository: quay.io/k8scsi/csi-attacher
       tag: v1.1.1
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
   csiClusterDriverRegistrar:
     image:
       repository: quay.io/k8scsi/csi-cluster-driver-registrar
       tag: v1.0.1
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
 sshBastionServer:
   enabled: true
