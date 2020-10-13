@@ -79,7 +79,7 @@ spec:
           {{- end }}
       {{- with .Values.rclone.rclone.tolerations }}
       tolerations:
-        {{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
         - name: plugin-dir
