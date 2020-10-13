@@ -18,7 +18,7 @@ Feature: Model Deployment
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see element with test-id "group/enabledDeployment"
     And I check boolean input with test-id "group/enabledDeployment"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
