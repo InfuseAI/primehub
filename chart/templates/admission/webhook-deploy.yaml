@@ -78,7 +78,7 @@ spec:
           {{- toYaml .Values.admission.resources | nindent 10 }}
         env:
         - name: IMAGE_PREFIX
-          value: "primehub.airgap:5000/"
+          value: {{ .Values.admission.podImageReplacing.imagePrefix }}
         - name: FLASK_DEBUG
           value: "false"
         volumeMounts:

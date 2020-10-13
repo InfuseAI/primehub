@@ -385,6 +385,8 @@ admission:
     repository: infuseai/primehub-admission
     tag: "29c8243d73"
     pullPolicy: IfNotPresent
+  podImageReplacing:
+    imagePrefix: "primehub.airgap:5000/"
   resources:
     limits:
       cpu: 1000m
