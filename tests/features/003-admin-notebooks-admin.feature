@@ -1,4 +1,4 @@
-@released @admin-user
+@wip @admin-user
 Feature: Notebooks Admin
   Basic tests
 
