@@ -122,6 +122,8 @@ spec:
             {{- end }}
             - name: GRAPHQL_ENDPOINT
               value: {{ include "primehub.graphql.path" . }}/graphql
+            - name: GRAPHQL_SVC_ENDPOINT
+              value: {{ include "primehub.graphql.endpoint" . }}
             - name: APP_PREFIX
               value: {{ include "primehub.console.path" . }}
             {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
