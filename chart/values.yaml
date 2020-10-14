@@ -1007,7 +1007,7 @@ sshBastionServer:
     affinity: {}
 
 usage:
-  enabled: false
+  enabled: true
   dbUser: postgres
   dbPassword: mysecretpassword
 
