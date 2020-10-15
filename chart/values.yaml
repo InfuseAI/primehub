@@ -354,6 +354,8 @@ graphql:
     requests:
       cpu: 100m
       memory: 512Mi
+  probe: {}
+  #  timeoutSeconds: 1
 
   nodeSelector: {}
 
