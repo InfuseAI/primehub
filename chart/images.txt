@@ -20,6 +20,7 @@ infuseai/primehub-console:latest
 infuseai/primehub-console-graphql:latest
 infuseai/primehub-console-watcher:latest
 infuseai/primehub-console-model-deploy:latest
+infuseai/primehub-usage:v1.0.0
 seldonio/seldon-core-executor:1.1.0
 fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 minio/minio:RELEASE.2020-06-14T18-32-17Z
@@ -34,4 +35,3 @@ bitnami/minideb:stretch
 mltooling/ssh-proxy:0.1.11
 busybox:1.31
 postgres:12
-infuseai/primehub-usage:v0.0.8-alpha

@@ -1007,7 +1007,7 @@ sshBastionServer:
     affinity: {}
 
 usage:
-  enabled: false
+  enabled: true
   dbUser: postgres
   dbPassword: mysecretpassword
 
@@ -1019,7 +1019,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v0.0.8-alpha
+    tag: v1.0.0
 
   appResources:
     limits:
