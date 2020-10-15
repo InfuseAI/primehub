@@ -186,12 +186,18 @@ spec:
           livenessProbe:
             initialDelaySeconds: 60
             periodSeconds: 5
+            {{- if .Values.graphql.probe.timeoutSeconds }}
+            timeoutSeconds: {{ .Values.graphql.probe.timeoutSeconds }}
+            {{- end }}
             httpGet:
               port: http
               path: {{ include "primehub.graphql.path" . }}/health
           readinessProbe:
             initialDelaySeconds: 10
             periodSeconds: 10
+            {{- if .Values.graphql.probe.timeoutSeconds }}
+            timeoutSeconds: {{ .Values.graphql.probe.timeoutSeconds }}
+            {{- end }}
             httpGet:
               port: http
               path: {{ include "primehub.graphql.path" . }}/health
