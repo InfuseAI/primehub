@@ -946,6 +946,45 @@ class PrimeHubSpawner(KubeSpawner):
                     self.periodic_check_event_timer.stop()
                     self.periodic_check_event_timer = None
 
+class StopSpawningHandler(BaseHandler):
+    @web.authenticated
+    async def get(self, for_user=None):
+        user = current_user = self.current_user
+        self.log.debug('current user: %s', user.name)
+        self.log.debug('for user: %s', for_user)
+        if for_user is not None and for_user != user.name:
+            if not user.admin:
+                raise web.HTTPError(
+                    403, "Only admins can spawn on behalf of other users"
+                )
+
+            user = self.find_user(for_user)
+            if user is None:
+                raise web.HTTPError(404, "No such user: %s" % for_user)
+        spawner = user.spawner
+        if not spawner.active:
+            self.log.debug('Spawner is not active')
+            self.finish()
+            return
+        auth_state = await user.get_auth_state()
+        error = auth_state.get('error', None)
+        if error == BACKEND_API_UNAVAILABLE:
+            self.finish(dict(error=error))
+
+        def _remove_spawner(f=None):
+            if f and f.exception():
+                return
+            self.log.info("Deleting spawner %s", spawner._log_name)
+            self.db.delete(spawner.orm_spawner)
+            user.spawners.pop(spawner.name, None)
+            self.db.commit()
+
+        await user.stop()
+        if spawner.pending is not None:
+            _remove_spawner()
+
+        self.finish()
+
 class ResourceUsageHandler(BaseHandler):
     @web.authenticated
     async def get(self, for_user=None):
@@ -1078,6 +1117,7 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
     c.JupyterHub.extra_handlers = [
             (r"/api/primehub/groups", ResourceUsageHandler),
             (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
+            (r"/api/primehub/users/([^/]+)/stop-spawning", StopSpawningHandler),
             (r"/primehub/home", PrimeHubHomeHandler),
             ]
 
