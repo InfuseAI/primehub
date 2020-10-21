@@ -80,9 +80,9 @@ spec:
               value: {{ .Values.customImage.registryEndpoint | quote }}
             {{- end }}
             {{- end }}
-            {{- if .Values.modelDeployment.enabled }}
+            {{- if eq (include "primehub-deployment.enabled" .) "true" }}
             - name: PRIMEHUB_FEATURE_MODEL_DEPLOYMENT
-              value: {{ .Values.modelDeployment.enabled | quote }}
+              value: {{ include "primehub-deployment.enabled" . | quote }}
             {{- end }}
             {{- if .Values.console.readOnlyOnInstanceTypeAndImage }}
             - name: READ_ONLY_ON_INSTANCE_TYPE_AND_IMAGE
