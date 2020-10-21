@@ -1,6 +1,17 @@
 {% extends "page.html"%}
 {% block main %}
 <div class="container">
+  <div id="spawner-mask" class="load-mask">
+    <div class="primehub-spinner">
+      <span class="primehub-logo">
+        <img src="{{ static_url("images/primehub-logo.png") }}" alt="">
+      </span>
+      <div style="text-align: center">Canceling</div>
+      <div class="line-spinner">
+        <div class="inner"></div>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div id="custom-progress-bar" class="custom-progress-bar">
       <ul class="progress-bar-inner">
@@ -8,7 +19,9 @@
           <div class="dot">
             <div class="dot-inner"></div>
           </div>
-          <div class="label label--start">Preparing</div>
+          <div class="label label--start">Preparing
+            <div><span><a href="/hub/api/primehub/users/{{user.escaped_name}}/stop-spawning" class="cancel-spawn">Cancel</a></span></div>
+          </div>
           <div class="bar">
             <div class="bar-left"></div>
             <div class="bar-middle"></div>
@@ -19,7 +32,9 @@
           <div class="dot">
             <div class="dot-inner"></div>
           </div>
-          <div class="label label--start">Pulling</div>
+          <div class="label label--start">Pulling
+            <div><span><a href="/hub/api/primehub/users/{{user.escaped_name}}/stop-spawning" class="cancel-spawn">Cancel</a></span></div>
+          </div>
           <div class="bar">
             <div class="bar-left"></div>
             <div class="bar-middle"></div>
@@ -30,7 +45,9 @@
           <div class="dot">
             <div class="dot-inner"></div>
           </div>
-          <div class="label label--start">Creating</div>
+          <div class="label label--start">Creating
+            <div><span><a href="/hub/api/primehub/users/{{user.escaped_name}}/stop-spawning" class="cancel-spawn">Cancel</a></span></div>
+          </div>
           <div class="bar">
             <div class="bar-left"></div>
             <div class="bar-middle"></div>
@@ -41,7 +58,9 @@
           <div class="dot">
             <div class="dot-inner"></div>
           </div>
-          <div class="label label--start">Running</div>
+          <div class="label label--start">Running
+            <div><span><a href="/hub/api/primehub/users/{{user.escaped_name}}/stop-spawning" class="cancel-spawn">Cancel</a></span></div>
+          </div>
           <div class="bar">
             <div class="bar-left"></div>
             <div class="bar-middle"></div>
@@ -72,6 +91,7 @@
   var progressBar = $('#custom-progress-bar');
   var progressMessage = $("#progress-message");
   var progressLog = $("#progress-log");
+  var cancelSpawn = $(".cancel-spawn");
   // Regex for parse the pod log.
   const STAT_SET = 'in-progress done warning error';
   const IN_PROGRESS = 'in-progress';
@@ -172,6 +192,9 @@
     }
 
   };
+  cancelSpawn.on('click', function(event) {
+    $('#spawner-mask').addClass('active');
+  });
 })();
 </script>
 {% endblock %}
