@@ -11,7 +11,7 @@ services:
     image: "/console/default-covers/job-submission.png"
   {{- end }}
   {{- end }}
-  {{- if .Values.modelDeployment.enabled }}
+  {{- if eq (include "primehub-deployment.enabled" .) "true" }}
   - name: Model Deployment (Alpha)
     uri: "/console/model-deployment"
     image: "/console/default-covers/model-deployment.png"

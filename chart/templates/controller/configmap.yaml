@@ -28,7 +28,7 @@ data:
       phfsEnabled: {{ include "primehub.phfs.enabled" . }}
       phfsPVC: {{ include "primehub.store.pvcName" . }}
     modelDeployment:
-      enabled: {{ .Values.modelDeployment.enabled }}
+      enabled: {{ include "primehub-deployment.enabled" . | quote }}
       primehubUrl: {{ include "primehub.url" . }}
       engineContainer:
         image:

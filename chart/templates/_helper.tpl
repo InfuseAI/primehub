@@ -484,7 +484,25 @@ primehub usage
 {{- end }}
 
 {{- define "primehub-usage.enabled" -}}
+  {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") -}}
   {{- if (and .Values.usage.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}
+
+
+{{/*
+primehub deployment
+*/}}
+{{- define "primehub-deployment.enabled" -}}
+  {{- if and (eq .Values.primehub.mode "ee") .Values.modelDeployment.enabled -}}
+    true
+  {{- else if eq .Values.primehub.mode "deploy" -}}
     true
   {{- else -}}
     false
