@@ -757,7 +757,7 @@ jobSubmission:
   workingDirSize: 5Gi
   defaultActiveDeadlineSeconds: 86400
   defaultTTLSecondsAfterFinished: 604800
-  jobTTLSeconds: 0
+  jobTTLSeconds: 2592000
   jobLimit: 0
   # Artifact. Require phfs
   artifact:
