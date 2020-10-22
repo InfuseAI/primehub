@@ -34,13 +34,13 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.fluentd.tolerations }}
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
         - key: "nvidia.com/gpu"
           operator: "Exists"
           effect: "NoSchedule"
+      {{- with .Values.fluentd.tolerations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:

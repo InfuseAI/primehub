@@ -77,8 +77,10 @@ spec:
           resources:
             {{ .Values.rclone.rclone.resources | toYaml | indent 12 | trim }}
           {{- end }}
-      {{- with .Values.rclone.rclone.tolerations }}
       tolerations:
+        - effect: NoSchedule
+          operator: Exists
+      {{- with .Values.rclone.rclone.tolerations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
