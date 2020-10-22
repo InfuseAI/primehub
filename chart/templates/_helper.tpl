@@ -34,7 +34,7 @@ Global
 {{/*
 Keycloak
 */}}
-{{- define "primehub.keycloak.url" -}}
+{{- define "primehub.keycloak.appUrl" -}}
 {{- if .Values.keycloak.deploy -}}
 {{- printf "%s/auth" (include "primehub.url" .) }}
 {{- else }}
@@ -43,6 +43,16 @@ Keycloak
 {{- else -}}
 {{- printf "%s://%s/auth" .Values.primehub.keycloak.scheme (include "primehub.keycloak.domain" .) }}
 {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "primehub.keycloak.url" -}}
+{{- if .Values.keycloak.deploy -}}
+{{- printf "http://keycloak-http.%s/auth" .Release.Namespace}}
+{{- else if .Values.primehub.keycloak.svcUrl -}}
+{{- .Values.primehub.keycloak.svcUrl }}
+{{- else -}}
+{{ include "primehub.keycloak.appUrl" . }}
 {{- end -}}
 {{- end -}}
 
@@ -88,7 +98,7 @@ Graphql
 */}}
 {{- define "primehub.graphql.path" -}}/api{{- end -}}
 {{- define "primehub.graphql.endpoint" -}}
-{{- printf "%s%s%s" (include "primehub.url" .) (include "primehub.graphql.path" .) "/graphql" -}}
+http://{{ include "primehub.name" . }}-graphql{{include "primehub.graphql.path" .}}/graphql
 {{- end -}}
 {{- define "primehub.graphql.pullSecret" -}}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.graphql.image.credentials.registry (printf "%s:%s" .Values.graphql.image.credentials.username .Values.graphql.image.credentials.password | b64enc) | b64enc -}}
@@ -474,7 +484,25 @@ primehub usage
 {{- end }}
 
 {{- define "primehub-usage.enabled" -}}
+  {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") -}}
   {{- if (and .Values.usage.enabled) -}}
+    true
+  {{- else -}}
+    false
+  {{- end -}}
+  {{- else -}}
+    false
+  {{- end -}}
+{{- end -}}
+
+
+{{/*
+primehub deployment
+*/}}
+{{- define "primehub-deployment.enabled" -}}
+  {{- if and (eq .Values.primehub.mode "ee") .Values.modelDeployment.enabled -}}
+    true
+  {{- else if eq .Values.primehub.mode "deploy" -}}
     true
   {{- else -}}
     false

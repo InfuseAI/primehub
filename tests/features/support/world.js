@@ -37,6 +37,7 @@ class World {
     this.KC_SERVER_URL = `${this.KC_SCHEME}://${this.KC_DOMAIN}${this.KC_PORT}/auth/realms`;
 
     this.context = null;
+    this.copyText = null;
   }
 
   async start() {

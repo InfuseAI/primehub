@@ -33,7 +33,7 @@ spec:
         - name: GRAPHQL_SHARED_SECRET
           valueFrom:
             secretKeyRef:
-              name: {{ include "primehub.name" . }}-graphql
+              name: {{ include "primehub.name" . }}-graphql-shared-secret
               key: sharedSecret
         - name: FLASK_DEBUG
           value: "false"
@@ -78,7 +78,7 @@ spec:
           {{- toYaml .Values.admission.resources | nindent 10 }}
         env:
         - name: IMAGE_PREFIX
-          value: "primehub.airgap:5000/"
+          value: {{ .Values.admission.podImageReplacing.imagePrefix }}
         - name: FLASK_DEBUG
           value: "false"
         volumeMounts:

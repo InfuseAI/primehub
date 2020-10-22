@@ -11,6 +11,18 @@ rules:
   - get
   - list
   - watch
+- apiGroups: ["apps"]
+  resources:
+  - deployments
+  verbs:
+  - list
+- apiGroups:
+  - primehub.io
+  resources:
+  - phjobs
+  - phdeployments
+  verbs:
+  - list
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

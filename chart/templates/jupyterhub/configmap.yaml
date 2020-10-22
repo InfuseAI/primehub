@@ -45,6 +45,7 @@ data:
     phfsPVC: {{ include "primehub.store.pvcName" . }}
     keycloak:
       url: {{ include "primehub.keycloak.url" . }}
+      appUrl: {{ include "primehub.keycloak.appUrl" . }}
       realm: {{ .Values.primehub.keycloak.realm }}
       clientId: {{ include "primehub.jupyterhub.clientId" . }}
       {{- if .Values.primehub.keycloak.rolePrefix }}

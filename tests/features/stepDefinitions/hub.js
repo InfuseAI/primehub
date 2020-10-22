@@ -14,14 +14,34 @@ defineStep("I go to the spawner page", async function() {
       function(result) { ret = result; }
     );
     if (ret) {
-      await this.page.waitFor(2000);
+      await this.page.waitForTimeout(2000);
       this.context = frame;
       await this.takeScreenshot("spawner-page");
       return;
     }
-    await this.page.waitFor(1000);
+    await this.page.waitForTimeout(1000);
   }
   throw new Error("failed to go to the spawner page");
+});
+
+defineStep("I go to the notebooks admin page", async function() {
+  let frame, ret;
+  let xpath = "//title[text()='JupyterHub']";
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { frame = this.page.frames()[1]; }
+    catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath, context = frame).then(
+      function(result) { ret = result; }
+    );
+    if (ret) {
+      await this.page.waitForTimeout(2000);
+      this.context = frame;
+      await this.takeScreenshot("notebooks-admin-page");
+      return;
+    }
+    await this.page.waitForTimeout(1000);
+  }
+  throw new Error("failed to go to the notebooks admin page");
 });
 
 defineStep("I click element with selector {string} in hub", async function(selector) {
@@ -41,14 +61,14 @@ defineStep("I choose image", async function() {
 defineStep("I choose instance type with name {string}", async function(name) {
   const selector = `#it-container input[value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementBySelector(selector, context = this.context);
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.takeScreenshot(`choose-instance-type-${name}-${this.E2E_SUFFIX}`);
 });
 
 defineStep("I choose image with name {string}", async function(name) {
   const selector = `#image-container input[value='${name}-${this.E2E_SUFFIX}']`;
   await this.clickElementBySelector(selector, context = this.context);
-  await this.page.waitFor(500);
+  await this.page.waitForTimeout(500);
   await this.takeScreenshot(`choose-image-${name}-${this.E2E_SUFFIX}`);
 });
 
@@ -135,25 +155,25 @@ defineStep("I can see advanced settings", async function() {
         function(result) { ret = result; }
     );
     if (ret) return;
-    await this.page.waitFor(2000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error("failed to get information tooltip");
 });
 
-defineStep("I can see the spawning page and wait for notebook started", async function() {
+defineStep("I can see the spawning page and wait for notebook started", {timeout: 320 * 1000}, async function() {
   let ret;
   await this.context.waitForXPath("//div[@id='custom-progress-bar']");
   await this.takeScreenshot("spawning-page");
-  for (retryCount=0; retryCount < 10; retryCount++) {
+  for (retryCount=0; retryCount < 20; retryCount++) {
     await this.checkElementExistByXPath('should exist', "//a[@id='start']", context = this.context).then(
       function(result) { ret = result; }
     );
     if (ret){
-      await this.page.waitFor(15000);
+      await this.page.waitForTimeout(15000);
       return;
     }
     else
-      await this.page.waitFor(5000);
+      await this.page.waitForTimeout(15000);
   }
   throw new Error("failed to start notebook");
 });
@@ -169,7 +189,7 @@ defineStep("I stop my server in hub", async function() {
     try {
       await this.context.waitForSelector(selector, {visible: true, timeout: 5000});
       await this.context.click(selector);
-      await this.page.waitFor(1000);
+      await this.page.waitForTimeout(1000);
       console.log("still stopping my server");
     }
     catch (e) {
@@ -178,6 +198,40 @@ defineStep("I stop my server in hub", async function() {
     }
   }
   throw new Error("failed to stop my server");
+});
+
+defineStep("I access my server in notebooks admin", async function() {
+  await this.clickElementByXpath(
+    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'access server')]`, context = this.context);
+});
+
+defineStep("I stop my server in notebooks admin", async function() {
+  await this.clickElementByXpath(
+    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'stop server')]`, context = this.context);
+  await this.page.waitForTimeout(20000);
+  // might sometimes failed, blocked by ch13256
+  /*
+  const xpath = `//tr[@data-user='${this.USERNAME}']//a[text()='stopping...']`;
+  let ele, ret;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try { 
+      [ele] = await this.context.$x(xpath, {timeout: 5000});
+      await ele.click();
+    } 
+    catch (e) {}
+    await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
+      function(result) { ret = !result; }
+    );
+    console.log('click stop server');
+    if (ret) {
+      console.log('stopped');
+      await this.takeScreenshot("stop-my-server");
+      return;
+    }
+    await this.page.waitForTimeout(2000);
+  }
+  throw new Error('failed to stop my server in notebooks admin page');
+  */
 });
 
 defineStep("I {string} see element with xpath {string} in hub", async function(exist, string) {
@@ -192,4 +246,20 @@ defineStep("I {string} see element with xpath {string} in hub", async function(e
 
 defineStep("I click element with xpath {string} in hub", async function(string) {
   await this.clickElementByXpath(string, context = this.context);
+});
+
+defineStep("I check the group warning message against group {string}", async function(name) {
+  // group selector: ${NAME}-display-name-${E2E_SUFFIX}
+  // warning message: ${NAME}-${E2E_SUFFIX}
+  const xpath = `//h3[text()='The current server is launched by another group (${name}-${this.E2E_SUFFIX})']`;
+  let ele, text, ret;
+
+  [ele] = await this.page.$x("//div[@class='ant-select-selection-selected-value']");
+  text = await (await ele.getProperty('textContent')).jsonValue();
+
+  await this.checkElementExistByXPath('should not exist', xpath, context = this.context).then(
+      function(result) { ret = result; }
+  );
+  if (ret !== (text === `${name}-display-name-${this.E2E_SUFFIX}`))
+    throw new Error("the group warning message is existed: ", !ret);
 });

@@ -32,6 +32,7 @@ except Exception:
 
 primehub_version = get_primehub_config('version')
 keycloak_url = get_primehub_config('keycloak.url')
+keycloak_app_url = get_primehub_config('keycloak.appUrl')
 realm = get_primehub_config('keycloak.realm')
 
 oidc_client_secret = get_primehub_config('clientSecret')
@@ -113,7 +114,7 @@ def fetch_context(user_id):
     return {}
 
 class PrimehubOidcMixin(OAuth2Mixin):
-    _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_url, realm)
+    _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
     _OAUTH_ACCESS_TOKEN_URL = '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
 class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
@@ -121,7 +122,7 @@ class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
 
 class OIDCLogoutHandler(LogoutHandler):
     kc_logout_url = '%s/realms/%s/protocol/openid-connect/logout' % (
-        keycloak_url, realm)
+        keycloak_app_url, realm)
 
     async def get(self):
         await self.default_handle_logout()
@@ -595,7 +596,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_annotations['auditing.gpu_limit'] = str(spawner.extra_resource_limits.get('nvidia.com/gpu', 0))
 
     def attach_usage_annoations(self, spawner):
-        usage_annotation = dict(component='jupyter',
+        usage_annotation = dict(component='notebook',
                                 component_name=spawner.pod_name,
                                 group=spawner.user_options.get('group', {}).get('name', ''),
                                 user=spawner.user.name,
@@ -990,6 +991,10 @@ class PrimeHubHomeHandler(BaseHandler):
         group = self.get_query_argument("group", default=None)
         if user.spawner:
             user.spawner.set_active_group(group)
+            # If it is spawning, show the spawn pending page.
+            if user.spawner.pending == 'spawn':
+                self.redirect(url)
+                return
 
         html = self.render_template(
             'home.html',

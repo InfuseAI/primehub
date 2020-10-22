@@ -40,7 +40,10 @@
 {{ super() }}
 <script>
   // In non in embedded mode, always go back to primehub console
-  if (window.self === window.top) {
+  // (except spawn-pending page, please see ch12374)
+  if (window.self === window.top &&
+      !window.location.pathname.startsWith('/hub/spawn-pending'))
+  {
     {% if user.spawner and user.spawner.launch_group %}
     window.top.location = '/console/g/{{ user.spawner.launch_group }}/hub';
     {% else %}

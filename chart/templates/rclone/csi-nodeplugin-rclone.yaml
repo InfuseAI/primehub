@@ -77,6 +77,10 @@ spec:
           resources:
             {{ .Values.rclone.rclone.resources | toYaml | indent 12 | trim }}
           {{- end }}
+      {{- with .Values.rclone.rclone.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: plugin-dir
           hostPath:

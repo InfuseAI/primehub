@@ -56,7 +56,7 @@ spec:
             - name: KC_API_BASEURL
               value: {{ include "primehub.keycloak.url" . }}
             - name: KC_OIDC_BASEURL
-              value: {{ include "primehub.keycloak.url" . }}
+              value: {{ include "primehub.keycloak.appUrl" . }}
             - name: KC_REALM
               value: {{ .Values.primehub.keycloak.realm}}
             {{- if .Values.primehub.keycloak.everyoneGroupId }}
@@ -100,7 +100,7 @@ spec:
             - name: SHARED_GRAPHQL_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "primehub.name" . }}-graphql
+                  name: {{ include "primehub.name" . }}-graphql-shared-secret
                   key: sharedSecret
             - name: APP_PREFIX
               value: {{ include "primehub.graphql.path" . }}
@@ -186,12 +186,18 @@ spec:
           livenessProbe:
             initialDelaySeconds: 60
             periodSeconds: 5
+            {{- if .Values.graphql.probe.timeoutSeconds }}
+            timeoutSeconds: {{ .Values.graphql.probe.timeoutSeconds }}
+            {{- end }}
             httpGet:
               port: http
               path: {{ include "primehub.graphql.path" . }}/health
           readinessProbe:
             initialDelaySeconds: 10
             periodSeconds: 10
+            {{- if .Values.graphql.probe.timeoutSeconds }}
+            timeoutSeconds: {{ .Values.graphql.probe.timeoutSeconds }}
+            {{- end }}
             httpGet:
               port: http
               path: {{ include "primehub.graphql.path" . }}/health

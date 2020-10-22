@@ -56,8 +56,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     Then I "should" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
     When I choose "Logout" in top-right menu

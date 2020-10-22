@@ -16,7 +16,6 @@ export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
 primehub:
-  mode: ${PRIMEHUB_MODE}
   domain: ${PRIMEHUB_DOMAIN}
   port: ${PRIMEHUB_PORT}
 keycloak:
@@ -47,20 +46,12 @@ jupyterhub:
     storage:
       dynamic:
         storageClass: ${STORAGE_CLASS}
-EOF
-
-if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  cat <<EOF >> primehub-values.yaml
-
-customImage:
-  enabled: true
-
-jobSubmission:
-  enabled: true
-
 adminNotebook:
   enabled: false
 EOF
+
+if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
+  values_ee='--values ../examples/ee-values.yaml'
 fi
 
 helm upgrade \
@@ -68,6 +59,7 @@ helm upgrade \
   --install \
   --create-namespace \
   --namespace hub  \
+  $values_ee \
   --values primehub-values.yaml \
   --values k3d/primehub-override.yaml
 

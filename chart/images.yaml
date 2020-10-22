@@ -1,0 +1,169 @@
+primehub-all:
+  # Core
+  busybox: &busybox busybox:1.31
+  primehub-admission: &primehub-admission infuseai/primehub-admission:29c8243d73
+  primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
+
+  # Controller
+  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:latest
+  kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
+
+  # Primehub Console
+  primehub-console: &primehub-console infuseai/primehub-console:latest
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:latest
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:latest
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:latest
+
+  # Metacontroller
+  metacontroller: &metacontroller metacontroller/metacontroller:0.2
+  jsonnetd: &jsonnetd metacontroller/jsonnetd:0.1
+  git-sync: &git-sync k8s.gcr.io/git-sync:v3.0.1
+  volume-nfs: &volume-nfs k8s.gcr.io/volume-nfs:0.8
+
+  # Keycloak
+  keycloak: &keycloak jboss/keycloak:8.0.1
+  bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:11.5.0-debian-9-r60
+  minideb: &minideb bitnami/minideb:stretch
+  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:e1e29f10
+
+  # Jupyterhub
+  pause: &pause gcr.io/google_containers/pause:3.0
+  jupyterhub-k8s: &jupyterhub-k8s infuseai/jupyterhub-k8s:jh-5c94e4f4
+  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.1.0
+  k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
+  statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
+
+  # Dataset Uploader
+  dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
+  tusd: &tusd infuseai/tusd:0.1.1
+
+  # Model deployment
+  seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.1.0
+
+  # SSH Bastion Server
+  ssh-proxy: &ssh-proxy mltooling/ssh-proxy:0.1.11
+
+  # Usage
+  primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.0
+  postgres: &postgres postgres:12
+
+  # PrimeHub Store
+  minio: &minio minio/minio:RELEASE.2020-06-14T18-32-17Z
+  mc: &mc minio/mc:RELEASE.2020-05-28T23-43-36Z
+  csi-attacher: &csi-attacher quay.io/k8scsi/csi-attacher:v1.1.1
+  csi-cluster-driver-registrar: &csi-cluster-driver-registrar quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
+  csi-node-driver-registrar: &csi-node-driver-registrar quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+  csi-rclone: &csi-rclone wunderio/csi-rclone:v1.2.6
+
+  # Log Collector
+  fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
+
+primehub-ee:
+  # Core
+  busybox: *busybox
+  primehub-admission: *primehub-admission
+  primehub-bootstrap: *primehub-bootstrap
+
+  # Controller
+  primehub-controller-ee: *primehub-controller-ee
+  kube-rbac-proxy: *kube-rbac-proxy
+
+  # Primehub Console
+  primehub-console: *primehub-console
+  primehub-console-graphql: *primehub-console-graphql
+  primehub-console-watcher: *primehub-console-watcher
+
+  # Metacontroller
+  metacontroller: *metacontroller
+  jsonnetd: *jsonnetd
+  git-sync: *git-sync
+  volume-nfs: *volume-nfs
+
+  # Keycloak
+  keycloak: *keycloak
+  bitnami-postgresql: *bitnami-postgresql
+  minideb: *minideb
+  primehub-keycloak-theme: *primehub-keycloak-theme
+
+  # Jupyterhub
+  pause: *pause
+  jupyterhub-k8s: *jupyterhub-k8s
+  configurable-http-proxy: *configurable-http-proxy
+  k8s-image-awaiter: *k8s-image-awaiter
+  statsd-exporter: *statsd-exporter
+
+  # Dataset Uploader
+  dataset-upload-web-front-end: *dataset-upload-web-front-end
+  tusd: *tusd
+
+  # Model deployment
+  seldon-core-executor: *seldon-core-executor
+
+  # SSH Bastion Server
+  ssh-proxy: *ssh-proxy
+
+  # Usage
+  primehub-usage: *primehub-usage
+  postgres: *postgres
+
+  # PrimeHub Store
+  minio: *minio
+  mc: *mc
+  csi-attacher: *csi-attacher
+  csi-cluster-driver-registrar: *csi-cluster-driver-registrar
+  csi-node-driver-registrar: *csi-node-driver-registrar
+  csi-rclone: *csi-rclone
+
+  # Log Collector
+  fluentd-kubernetes-daemonset: *fluentd-kubernetes-daemonset
+
+primehub-deploy:
+  # Core
+  busybox: *busybox
+  primehub-admission: *primehub-admission
+  primehub-bootstrap: *primehub-bootstrap
+
+  # Controller
+  primehub-controller-ee: *primehub-controller-ee
+  kube-rbac-proxy: *kube-rbac-proxy
+
+  # Primehub Console
+  primehub-console-model-deploy: *primehub-console-model-deploy
+  primehub-console-graphql: *primehub-console-graphql
+  primehub-console-watcher: *primehub-console-watcher
+
+  # Metacontroller
+  metacontroller: *metacontroller
+  jsonnetd: *jsonnetd
+
+  # Keycloak
+  keycloak: *keycloak
+  bitnami-postgresql: *bitnami-postgresql
+  minideb: *minideb
+  primehub-keycloak-theme: *primehub-keycloak-theme
+
+  # Model deployment
+  seldon-core-executor: *seldon-core-executor
+
+  # Usage
+  primehub-usage: *primehub-usage
+  postgres: *postgres
+
+primehub-admin-notebook:
+  primehub-admin-notebook: infuseai/primehub-admin-notebook:dd029e8112
+  keycloak-gatekeeper: keycloak/keycloak-gatekeeper:6.0.1
+
+primehub-jupyter-images:
+  base-notebook: infuseai/docker-stacks:base-notebook-27d623dc
+  base-notebook-gpu: infuseai/docker-stacks:base-notebook-27d623dc-gpu
+  pytorch-notebook: infuseai/docker-stacks:pytorch-notebook-27d623dc
+  pytorch-notebook-gpu: infuseai/docker-stacks:pytorch-notebook-27d623dc-gpu
+  tensorflow-notebook: infuseai/docker-stacks:tensorflow-notebook-27d623dc
+  tensorflow-notebook-gpu: infuseai/docker-stacks:tensorflow-notebook-27d623dc-gpu
+  tensorflow-notebook-tf-v2: infuseai/docker-stacks:tensorflow-notebook-tf-v2-27d623dc
+  tensorflow-notebook-tf-v2-gpu: infuseai/docker-stacks:tensorflow-notebook-27d623dc-gpu-cuda-10
+
+primehub-model-images:
+  model-tensorflow2-mnist-0-1: infuseai/model-tensorflow2-mnist:v0.1.0
+  model-tensorflow2-mnist-0-2: infuseai/model-tensorflow2-mnist:v0.2.0
+

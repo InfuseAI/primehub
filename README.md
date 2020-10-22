@@ -2,11 +2,11 @@
 
 [![GitHub release](https://img.shields.io/github/release/infuseAI/primehub/all.svg?style=flat-square)](https://github.com/infuseAI/primehub/releases)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
-[![CircleCI](https://circleci.com/gh/InfuseAI/primehub.svg?style=svg)](https://circleci.com/gh/InfuseAI/primehub)
+[![CircleCI](https://circleci.com/gh/InfuseAI/primehub.svg?style=shield)](https://circleci.com/gh/InfuseAI/primehub)
 
 # PrimeHub Community Edition
 
-Welcome to PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environment*, *easy dataset loading*, *management of various resources* and *access-control*. All of these are designed from *project/team-centric* concept. 
+Welcome to the PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environments*, *easy dataset loading*, and *management of various resources* and *access-control*. All of these are designed from *a project/team-centric* concept. 
 
 In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterprise Edition↗](https://www.infuseai.io/primehub).
 
@@ -14,7 +14,7 @@ To IT leaders, PrimeHub gives flexibility and administration authority to config
 
 To Data scientists, PrimeHub provides JupyterNotebook-ready environment which is just few-clicks away.
 
-In this community repository, it contains a *Helm Chart* to PrimeHub CE and a guide of PrimeHub CE installation by *Helm*.
+This community repository contains a *Helm Chart* for PrimeHub CE and a guide on how to install PrimeHub CE with *Helm*.
 
 ## Fundamental Features
 
@@ -45,7 +45,7 @@ We welcome contributions. See the [Set up dev environment](DevEnvironment.md) an
 
 ## Project Status
 
-PrimeHub CE is released along with PrimeHub EE. The project has been developed steadily. We keeps improving robustness, enhancing user experience and releasing [more features](https://docs.primehub.io/docs/next/comparison) with the community. Suggestions and discussions are welcome and
+PrimeHub CE is released alongside PrimeHub EE. The project has been developed steadily. We keep improving PrimeHub's robustness, enhancing user experience and are releasing [more features](https://docs.primehub.io/docs/next/comparison) with the community. Suggestions and discussions are always welcome and
 appreciated.
 
 ## Documentation

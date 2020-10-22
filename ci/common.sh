@@ -1,4 +1,4 @@
-HELM_VERSION=v3.2.4
+HELM_VERSION=v3.3.4
 
 function info() {
   echo -e "\033[0;32m$1\033[0m"

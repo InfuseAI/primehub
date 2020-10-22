@@ -39,7 +39,7 @@ Feature: Admin
     And I should see input in test-id "image/displayName" with value "test-image"
     When I type "test-image-display-name" to element with test-id "image/displayName"
     And I type "test-description" to element with test-id "image/description"
-    And I type "jupyter/base-notebook:e255f1aa00b2" to element with xpath "//div[@data-testid='image/url']//input"
+    And I type "jupyter/datascience-notebook:b90cce83f37b" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
@@ -56,8 +56,8 @@ Feature: Admin
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "JupyterHub" in sidebar menu
-    Then I am on the PrimeHub console "JupyterHub" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
     Then I "should" see images block contains "test-image-display-name" image with "Universal" type and "test-description" description
     When I choose "Logout" in top-right menu

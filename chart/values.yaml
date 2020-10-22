@@ -2,11 +2,14 @@ primehub:
   mode: ce
   scheme: http
   keycloak:
+    ## Only used when 'keycloak.deploy' is false
     scheme: http
     domain:
     #port:
     username: keycloak
     password:
+    #svcUrl: http://keycloak-http.default/auth
+
     realm: primehub
     everyoneGroupId:
     clientId: admin-ui
@@ -14,6 +17,7 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   sharedVolumeStorageClass: ""
+
 ingress:
   enabled: true
   annotations:
@@ -118,6 +122,29 @@ keycloak:
     httpsPort: 8443
     httpsNodePort: ""
     jgroupsPort: 7600
+  existingSecretKey: password
+  jgroups:
+    discoveryProtocol: dns.DNS_PING
+    discoveryProperties: >
+      "dns_query={{ template "keycloak.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.keycloak.clusterDomain }}"
+  extraEnv: |
+    - name: PROXY_ADDRESS_FORWARDING
+      value: "true"
+  livenessProbe: |
+    httpGet:
+      path: {{ if ne .Values.keycloak.basepath "" }}/{{ .Values.keycloak.basepath }}{{ end }}/
+      port: http
+    initialDelaySeconds: 300
+    timeoutSeconds: 5
+  readinessProbe: |
+    httpGet:
+      path: {{ if ne .Values.keycloak.basepath "" }}/{{ .Values.keycloak.basepath }}{{ end }}/realms/master
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 1
+  restartPolicy: Always
+  podManagementPolicy: Parallel
+
   prometheus:
     operator:
       enabled: false
@@ -152,6 +179,11 @@ keycloak:
       memory: 64Mi
   serviceAccount:
     create: false
+  securityContext:
+    fsGroup: 1000
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
   basepath: auth
   cli:
     enabled: true
@@ -322,6 +354,8 @@ graphql:
     requests:
       cpu: 100m
       memory: 512Mi
+  probe: {}
+  #  timeoutSeconds: 1
 
   nodeSelector: {}
 
@@ -353,6 +387,8 @@ admission:
     repository: infuseai/primehub-admission
     tag: "29c8243d73"
     pullPolicy: IfNotPresent
+  podImageReplacing:
+    imagePrefix: "primehub.airgap:5000/"
   resources:
     limits:
       cpu: 1000m
@@ -449,6 +485,8 @@ jupyterhub:
     enabled: false
 
   hub:
+    # Maximum number of consecutive failures to allow before shutting down JupyterHub.
+    consecutiveFailureLimit: 0
     extraEnv:
       - name: KC_CLIENT_SECRET
         valueFrom:
@@ -458,7 +496,7 @@ jupyterhub:
       - name: GRAPHQL_SHARED_SECRET
         valueFrom:
           secretKeyRef:
-            name: primehub-graphql
+            name: primehub-graphql-shared-secret
             key: sharedSecret
     extraContainers: []
     extraVolumes:
@@ -715,10 +753,19 @@ customImage:
 
 # Job Submission
 jobSubmission:
-  enabled: false
+  enabled: true
   workingDirSize: 5Gi
   defaultActiveDeadlineSeconds: 86400
   defaultTTLSecondsAfterFinished: 604800
+  jobTTLSeconds: 0
+  jobLimit: 0
+  # Artifact. Require phfs
+  artifact:
+    enabled: true
+    limitSizeMb: 100
+    limitFiles: 1000
+    # how long will the artifact would be removed.
+    retentionSeconds: 604800
 
 # Model Deployment
 modelDeployment:
@@ -888,35 +935,36 @@ minio:
 
 rclone:
   # use /var/snap/microk8s/common/var/lib/kubelet with microk8s
-  kubeletPath:
+  kubeletPath: /var/lib/kubelet
 
   nodeDriverRegistrar:
     image:
       repository: quay.io/k8scsi/csi-node-driver-registrar
       tag: v1.1.0
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
   rclone:
     image:
       repository: wunderio/csi-rclone
       tag: v1.2.6
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
+    tolerations: []
 
   csiAttacher:
     image:
       repository: quay.io/k8scsi/csi-attacher
       tag: v1.1.1
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
   csiClusterDriverRegistrar:
     image:
       repository: quay.io/k8scsi/csi-cluster-driver-registrar
       tag: v1.0.1
       pullPolicy: IfNotPresent
-    resources:
+    resources: {}
 
 sshBastionServer:
   enabled: true
@@ -964,7 +1012,7 @@ sshBastionServer:
     affinity: {}
 
 usage:
-  enabled: false
+  enabled: true
   dbUser: postgres
   dbPassword: mysecretpassword
 
@@ -976,7 +1024,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v0.0.4-alpha
+    tag: v1.0.0
 
   appResources:
     limits:
