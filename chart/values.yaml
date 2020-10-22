@@ -946,8 +946,8 @@ rclone:
 
   rclone:
     image:
-      repository: wunderio/csi-rclone
-      tag: v1.2.6
+      repository: infuseai/csi-rclone
+      tag: v1.2.7-rebuild
       pullPolicy: IfNotPresent
     resources: {}
     tolerations: []
