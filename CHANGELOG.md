@@ -5,6 +5,7 @@
 
 - **Support Self-Signed Certificate**. Please refer to the enterprise edition documentation here. https://docs.primehub.io/docs/next/getting_started/configure-self-signed-ca
 - **Support Job Artifact**: Users can output files generated from a job. The generated files can be downloaded later from the job UI.
+- Support canceling a spawning notebook.
 
 ## 3.0.1
 ### What's New
