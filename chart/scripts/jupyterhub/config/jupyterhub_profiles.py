@@ -60,6 +60,8 @@ autoscaling_enabled = get_config('scheduling.userScheduler.enabled')
 phfs_enabled = get_primehub_config('phfsEnabled', False)
 phfs_pvc = get_primehub_config('phfsPVC', '')
 
+grantSudo = get_primehub_config('grantSudo', True)
+
 # Support old group volume convention.
 support_old_group_volume_convention = os.environ.get(
     'SUPPORT_OLD_GROUP_VOLUME_CONVENTION', False) == "true"
@@ -442,7 +444,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 'GROUP_ID': spawner.user_options.get('group', {}).get('id', ''),
                 'GROUP_NAME': spawner.user_options.get('group', {}).get('name', ''),
                 'INSTANCE_TYPE': spawner.user_options.get('instance_type', ''),
-                'IMAGE_NAME': spawner.user_options.get('image', '')
+                'IMAGE_NAME': spawner.user_options.get('image', ''),
+                'GRANT_SUDO': 'yes' if grantSudo == True else 'no'
             }
         )
 

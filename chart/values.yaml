@@ -17,6 +17,7 @@ primehub:
     #maxSockets:
     #maxFreeSockets:
   sharedVolumeStorageClass: ""
+  grantSudo: true
 
 ingress:
   enabled: true
