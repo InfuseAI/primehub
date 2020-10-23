@@ -971,9 +971,7 @@ class StopSpawningHandler(BaseHandler):
         if error == BACKEND_API_UNAVAILABLE:
             self.finish(dict(error=error))
 
-        def _remove_spawner(f=None):
-            if f and f.exception():
-                return
+        def _remove_spawner():
             self.log.info("Deleting spawner %s", spawner._log_name)
             self.db.delete(spawner.orm_spawner)
             user.spawners.pop(spawner.name, None)
