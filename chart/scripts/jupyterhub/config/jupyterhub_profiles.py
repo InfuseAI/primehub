@@ -981,7 +981,7 @@ class StopSpawningHandler(BaseHandler):
         if spawner.pending is not None:
             _remove_spawner()
 
-        self.finish()
+        self.redirect(url_path_join(self.hub.base_url, 'spawn', user.escaped_name))
 
 class ResourceUsageHandler(BaseHandler):
     @web.authenticated
