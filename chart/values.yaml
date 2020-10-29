@@ -707,7 +707,7 @@ controller:
 
   image:
     repository: infuseai/primehub-controller-ee
-    tag: v3.1-f5c4b01f
+    tag: v3.1-8871d8fe
     # pullPolicy: IfNotPresent
 
   proxy:
