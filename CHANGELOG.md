@@ -3,9 +3,117 @@
 ## Upcoming
 ### What's New
 
-- **Support Self-Signed Certificate**. Please refer to the enterprise edition documentation here. https://docs.primehub.io/docs/next/getting_started/configure-self-signed-ca
-- **Support Job Artifact**: Users can output files generated from a job. The generated files can be downloaded later from the job UI.
 - Support canceling a spawning notebook.
+
+## 3.1.0
+
+### What's new
+
+### Available in CE
+
+- **Support Self-Signed Certificate**. Please refer to the enterprise edition documentation here. https://docs.primehub.io/docs/next/getting_started/configure-self-signed-ca
+- **Server-to-Server Connection**.
+
+#### Spawner
+
+- Disable JupyterHub consecutive_failure_limit due to it will auto restart hub process (ch12897)
+- [Bugfix] when user is spawning a jupyter pod, and user clicks "my server" in jupyterhub page, he will see the spawning status without header (ch12374)
+
+#### Server-to-Server Connection
+
+- Modify CI and e2e testing to use non-nip endpoint (ch12072)
+- Update the doc for s2s connection (ch13029)
+- Admin-notebook oidc supports both ex/internal keycloak (ch12039)
+- JupyterHub oidc support both ex/internal URL (ch12037)
+- Grafana oidc supports both ex/internal URL (ch12038)
+- Review and modify primehub-console to support default use internal URL to connect keycloak for oidc (ch12109)
+- [Bug] Cannot load page group-context ui page for non-admin user in in-cluster keycloak settings (ch12915)
+
+#### Group-Context Sidebar Menu
+
+- Remove group in list view column for job/schedule/model (ch12287)
+- [Bugfix] when admin click "access server" in jupyterhub admin in new UI, it will open jupyterlab in iframe (ch12364)
+
+#### Admin Portal
+
+- Update Group setup ui in admin portal. (ch12940)
+- Admin portal to user portal sidebar UX enhancement (ch12330)
+- [Bugfix] Failed to create group (ch13273)
+
+#### Users
+
+- [Bugfix] Failed to connect user to group (ch12594)
+- [Bugfix] Should not show the everyone group in the user page (ch12254)
+
+#### Datasets
+
+- Remove GPU/CPU quota columns from create/edit dataset tables (ch12469)
+- [Bugfix] Datasets page is broken by clicking "Add" then clicking "Back" (ch12512)
+
+#### Miscellaneous
+
+- [CE][Popularity] README revamp (ch11958)
+- [CE DX] Auto generate secrets & tokens if not provided (ch11353)
+
+### EE Only
+
+- **Support Job Artifact**: Users can output files generated from a job. The generated files can be downloaded later from the job UI.
+- **Submit Job from Jupyter Notebook**: User can submit job by our notebook plugin on notebook directly.
+- **On-Prem Usage Reporting**.
+
+#### Job Submission
+
+- Make job timeout configurable based on group and job (ch10336)
+- Show resource information in job submission form (ch12332)
+- PhJobs should change to Failed state if group is not found. (ch12092)
+- Streamline headings/titles in Job Submission (ch10276)
+- [Bugfix] cannot clone job when job contain specific char or newline char. (ch12179)
+- [Bugfix] Submitted job by general users shows "{"code":"INTERNAL_ERROR","message":"Request failed with status code 403"}" in log (ch13189)
+
+
+#### Job Submission Artifacts
+
+- Design document Job submission artifacts (ch12305)
+- Implement the artifact retention (ch12303)
+- Implement the proxy to download API (ch12614)
+- Job Submission UI: Implement Artifact Tab (ch12299)
+- Implement graphql PHFS list API (ch12292)
+- Implement artifacts copy logic (ch12294)
+- Job submission UI: Move basic information from tab to upper pane. (ch12298)
+- Implement REST download api (ch12302)
+
+#### Submit Job from Jupyter Notebook
+
+- Publish the jupyterlab extension to NPM (ch12799)
+- Papermill: check installed and run notebook as a job (ch12911)
+- Update base image to install extension and papermill (ch12800)
+- Submit a notebook as a job in jupyterlab (ch11908)
+- Improve the error message in graphql (ch12592)
+- Add necessary environment variables in job submission controller for primehub-job package (ch11901)
+- Using the ipywidgets to show the job status (ch11910)
+
+#### PrimeHub Store
+
+- [Bugfix] PrimeHub store settings would be missing if primehub store changes to enabled. (ch12644)
+
+
+#### On-Prem Usage Reporting
+
+- On-prem usage design document (ch11426)
+- Tool to patch non usage-annotated pods (ch11823)
+- Detailed usage report (ch12665)
+- Change download file name of usage report (ch13121)
+
+
+#### Miscellaneous
+
+- Update the ceph default version to 13.2.7 (ch12885)
+- Update base image's JL to 1.2.7 (ch12823)
+- Simplified EE installation using public chart (ch10393)
+- [Bugfix] The csi-nodeplugin-rclone DaemonSet need to add tolerations (ch13118)
+- [Bugfix] Applying CRD yaml creates an item with wrong ID on Keycloak (ch12994)
+- [Bugfix] A scheduled job is failed because pod already exists (ch11074)
+- [Bugfix] PrimeHub 3.0 internal keycloak chart issues (ch12435)
 
 ## 3.0.1
 ### What's New
@@ -20,21 +128,21 @@
 - **New PrimeHub UI.**: We change our portal ui to provide the better user experience.
 - **SSH Bastion Server feature**. It's disabled by default in EE. To enable it, please follow https://docs.primehub.io/docs/next/getting_started/configure-ssh-server#enable-ssh-bastion-server-feature
 
-### New Primehub UI
+#### New Primehub UI
 
 - Group Context: Add a global group selector on top-right corner.
 - Integrate our components in new entry portal.
 
-### SSH Server
+#### SSH Server
 
 - Merge ssh-proxy-server chart into PrimeHub chart #ch11274
 - Install sshd should not block start-notebook.d #ch11962
 
-### Dataset
+#### Dataset
 
 - Deprecate the launch group only features for dataset #ch11020
 
-### Miscellaneous
+#### Miscellaneous
 
 - Support default storageClass #ch11886
 - Primehub Chart includes metacontroller and keycloak #ch11128
@@ -44,7 +152,7 @@
 
 - **Primehub Usage(Alpha)**: [PrimeHub Usage](https://docs.primehub.io/docs/next/design/usage) provides administrators a overall insight of the usage of the PrimeHub.
 
-### Primehub Usage
+#### Primehub Usage
 
 - Verify usage data with stackdriver's log #ch11822
 - Implement the usage report generator #ch6613
@@ -52,7 +160,7 @@
 - Add big-query importer !1055
 - Usage component docker/helm integration. #ch6616
 
-### Miscellaneous
+#### Miscellaneous
 
 - Add rook rgw support !1040
 - Add legacy pod migration helper !1059
