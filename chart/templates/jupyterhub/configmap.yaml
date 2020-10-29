@@ -43,6 +43,7 @@ data:
     graphqlEndpoint: {{ include "primehub.graphql.endpoint" . }}
     phfsEnabled: {{ include "primehub.phfs.enabled" . }}
     phfsPVC: {{ include "primehub.store.pvcName" . }}
+    grantSudo: {{ .Values.primehub.grantSudo }}
     keycloak:
       url: {{ include "primehub.keycloak.url" . }}
       appUrl: {{ include "primehub.keycloak.appUrl" . }}

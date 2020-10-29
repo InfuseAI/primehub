@@ -24,6 +24,7 @@ data:
     customImage:
 {{ toYaml .Values.customImage | indent 6 }}
     jobSubmission:
+      grantSudo: {{ .Values.primehub.grantSudo }}
 {{ toYaml .Values.jobSubmission | indent 6 }}
       phfsEnabled: {{ include "primehub.phfs.enabled" . }}
       phfsPVC: {{ include "primehub.store.pvcName" . }}
