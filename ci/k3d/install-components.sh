@@ -60,6 +60,7 @@ helm upgrade \
   --create-namespace \
   --namespace hub  \
   $values_ee \
+  --timeout 30m \
   --values primehub-values.yaml \
   --values k3d/primehub-override.yaml
 

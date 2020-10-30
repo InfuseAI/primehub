@@ -46,3 +46,9 @@ controller:
   resources:
     requests:
       cpu: 0m
+minio:
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 512Mi 
