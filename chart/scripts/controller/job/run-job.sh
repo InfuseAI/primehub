@@ -82,7 +82,7 @@ fi
 
 # Run Command
 if command -v sudo > /dev/null && [[ "$GRANT_SUDO" == "true" ]] && [[ -n $USER ]]; then
-  exec sudo -E -H -u $USER PATH=$PATH bash -c "$COMMAND"
+  sudo -E -H -u $USER PATH=$PATH bash -c "$COMMAND"
 else
   bash -c "$COMMAND"
 fi
