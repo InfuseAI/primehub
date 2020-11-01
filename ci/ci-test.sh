@@ -159,6 +159,7 @@ if [[ "$E2E_NORMAL_USER" == "true" ]]; then
 fi
 echo "$tags"
 echo "sleep..."
+env > all.env
 sleep 10000
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js
