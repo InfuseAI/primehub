@@ -913,8 +913,12 @@ minio:
   affinity: {}
 
   resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
     requests:
-      memory: 512Mi
+      cpu: 150m
+      memory: 64Mi
 
   s3gateway:
     enabled: false
@@ -943,14 +947,26 @@ rclone:
       repository: quay.io/k8scsi/csi-node-driver-registrar
       tag: v1.1.0
       pullPolicy: IfNotPresent
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
 
   rclone:
     image:
       repository: infuseai/csi-rclone
       tag: v1.2.7-rebuild
       pullPolicy: IfNotPresent
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
     tolerations: []
 
   csiAttacher:
@@ -958,14 +974,26 @@ rclone:
       repository: quay.io/k8scsi/csi-attacher
       tag: v1.1.1
       pullPolicy: IfNotPresent
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
 
   csiClusterDriverRegistrar:
     image:
       repository: quay.io/k8scsi/csi-cluster-driver-registrar
       tag: v1.0.1
       pullPolicy: IfNotPresent
-    resources: {}
+    resources:
+      limits:
+        cpu: 100m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 16Mi
 
 sshBastionServer:
   enabled: true
