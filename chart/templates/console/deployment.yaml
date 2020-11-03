@@ -186,7 +186,10 @@ spec:
             {{- toYaml .Values.console.resources | nindent 12 }}
         {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
         - name: reloader
-          image: busybox
+          image: "{{ .Values.console.reloaderImage.repository }}:{{ .Values.console.reloaderImage.tag }}"
+          {{- if .Values.console.reloaderImage.pullPolicy }}
+          imagePullPolicy: {{ .Values.console.reloaderImage.pullPolicy }}
+          {{- end }}
           command:
           - "sh"
           - "-c"

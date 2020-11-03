@@ -265,6 +265,10 @@ metacontroller:
 console:
   enableUserPortal: true
   replicas: 1
+  reloaderImage:
+    repository: busybox
+    pullPolicy: IfNotPresent
+    tag: 1.31
   image:
     repository: infuseai/primehub-console
     tag: v3.1-1ec73d0b
@@ -332,6 +336,10 @@ console:
 
 graphql:
   replicas: 1
+  reloaderImage:
+    repository: busybox
+    pullPolicy: IfNotPresent
+    tag: 1.31
   image:
     repository: infuseai/primehub-console-graphql
     tag: v3.1-1ec73d0b
