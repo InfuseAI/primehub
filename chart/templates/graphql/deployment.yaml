@@ -205,7 +205,10 @@ spec:
             {{- toYaml .Values.graphql.resources | nindent 12 }}
         {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
         - name: reloader
-          image: busybox
+          image: "{{ .Values.graphql.reloaderImage.repository }}:{{ .Values.graphql.reloaderImage.tag }}"
+          {{- if .Values.graphql.reloaderImage.pullPolicy }}
+          imagePullPolicy: {{ .Values.graphql.reloaderImage.pullPolicy }}
+          {{- end }}
           command:
           - "sh"
           - "-c"
