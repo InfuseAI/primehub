@@ -15,7 +15,7 @@ memory_cpu_limits=$(kubectl get pod --all-namespaces -o=custom-columns='NAMESPAC
 none_pattern="<none>"
 if [[ $memory_cpu_limits =~ $none_pattern ]]; then
     echo "[ERROR] All Primehub's pods should have cpu/memory limits"
-    #exit 1
+    exit 1
 fi
 
 echo "tests finished"
