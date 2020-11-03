@@ -10,11 +10,23 @@ primehub:
 customImage:
   enabled: true
 
+store:
+  enabled: true
+  phfs:
+    enabled: true
+  logPersistence:
+    enabled: false
+
 jobSubmission:
   enabled: true
+  artifact:
+    enabled: true
+
+usage:
+  enabled: false
 
 modelDeployment:
   enabled: true
 
 adminNotebook:
-  enabled: true
+  enabled: false
