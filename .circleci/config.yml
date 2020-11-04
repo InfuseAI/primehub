@@ -165,7 +165,7 @@ workflows:
   release_builds:
     jobs:
       - unit_test
-      - e2e
+      #- e2e
       - e2e_ee
       - build:
           filters:
