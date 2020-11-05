@@ -53,7 +53,8 @@ primehub-all:
   csi-attacher: &csi-attacher quay.io/k8scsi/csi-attacher:v1.1.1
   csi-cluster-driver-registrar: &csi-cluster-driver-registrar quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
   csi-node-driver-registrar: &csi-node-driver-registrar quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
-  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.7-rebuild
+  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-13-g9b79578 
+  #infuseai/csi-rclone:v1.2.7-rebuild
 
   # Log Collector
   fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
