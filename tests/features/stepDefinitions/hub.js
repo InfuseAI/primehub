@@ -192,6 +192,7 @@ defineStep("I can see the spawning page and wait for log {string}", {timeout: 12
         for (i = 0; i < ele.length; i++) {
           try { 
             await ele[i].click();
+            await this.takeScreenshot("cancel-spawning");
             return;
           }
           catch (e) {}
