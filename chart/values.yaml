@@ -966,7 +966,7 @@ rclone:
   rclone:
     image:
       repository: infuseai/csi-rclone
-      tag: v1.2.7-rebuild
+      tag: v1.2.0-13-g9b79578
       pullPolicy: IfNotPresent
     resources:
       limits:
