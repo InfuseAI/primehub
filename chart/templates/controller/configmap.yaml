@@ -28,6 +28,8 @@ data:
 {{ toYaml .Values.jobSubmission | indent 6 }}
       phfsEnabled: {{ include "primehub.phfs.enabled" . }}
       phfsPVC: {{ include "primehub.store.pvcName" . }}
+    monitoringAgent:
+{{ toYaml .Values.monitoringAgent | indent 6 }}
     modelDeployment:
       enabled: {{ include "primehub-deployment.enabled" . | quote }}
       primehubUrl: {{ include "primehub.url" . }}
