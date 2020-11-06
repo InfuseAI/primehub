@@ -12,9 +12,9 @@ customImage:
 
 store:
   enabled: true
-  accessKey: "AKIAIOSFODNN7EXAMPLE"
-  secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-  bucket: "primehub"
+  #accessKey: "AKIAIOSFODNN7EXAMPLE"
+  #secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  #bucket: "primehub"
   phfs:
     enabled: true
   logPersistence:
