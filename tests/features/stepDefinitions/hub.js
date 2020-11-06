@@ -4,7 +4,7 @@ const { expect } = require("chai");
 defineStep("I go to the spawner page", async function() {
   let frame, ret;
   let xpath = "//h4[text()='Select your notebook settings']";
-  for (retryCount=0; retryCount < 5; retryCount++) {
+  for (retryCount=0; retryCount < 10; retryCount++) {
     try {
       frame = this.page.frames()[1];
       await frame.click("#start");
@@ -19,7 +19,7 @@ defineStep("I go to the spawner page", async function() {
       await this.takeScreenshot("spawner-page");
       return;
     }
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(2000);
   }
   throw new Error("failed to go to the spawner page");
 });
@@ -176,6 +176,34 @@ defineStep("I can see the spawning page and wait for notebook started", {timeout
       await this.page.waitForTimeout(15000);
   }
   throw new Error("failed to start notebook");
+});
+
+defineStep("I can see the spawning page and wait for log {string}", {timeout: 120 * 1000}, async function(log) {
+  let xpath = `//div[@class='progress-log-event' and contains(text(), '${log}')]`, ret;
+  await this.context.waitForXPath("//div[@id='custom-progress-bar']");
+  await this.takeScreenshot("spawning-page");
+  for (retryCount=0; retryCount < 20; retryCount++) {
+    await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
+      function(result) { ret = result; }
+    );
+    if (ret){
+      const ele = await this.context.$x("//a[@class='cancel-spawn']");
+      if (ele.length > 0) {
+        for (i = 0; i < ele.length; i++) {
+          try { 
+            await ele[i].click();
+            await this.takeScreenshot("cancel-spawning");
+            return;
+          }
+          catch (e) {}
+        }
+      }
+      else throw new Error("failed to click cancel link");
+    }
+    else
+      await this.page.waitForTimeout(6000);
+  }
+  throw new Error(`failed to wait for log: ${log}`);
 });
 
 defineStep("I can see the JupyterLab page", async function() {

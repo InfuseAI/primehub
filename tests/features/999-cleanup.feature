@@ -18,6 +18,13 @@ Feature: Admin
     When I click refresh
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image"
+    When I search "error-image" in test-id "text-filter-name"
+    And I delete a row with text "error-image"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "error-image"
+    When I click refresh
+    And I search "error-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "error-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"

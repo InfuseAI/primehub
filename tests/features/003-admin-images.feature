@@ -21,6 +21,13 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should" contain row with "test-image"
+    When I click element with test-id "add-button"
+    Then I should see element with test-id "image/name"
+    When I type "error-image" to element with test-id "image/name"
+    And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "error-image" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "error-image"
     When I choose "Logout" in top-right menu
     Then I am on login page
   
@@ -53,6 +60,22 @@ Feature: Admin
     When I click edit-button in row contains text "test-image"
     Then I should see input in test-id "image/name" with value "test-image"
     And I should see input in test-id "image/displayName" with value "test-image-display-name"
+    When I click "Images" in admin dashboard
+    Then I am on the admin dashboard "Images" page
+    When I search "error-image" in test-id "text-filter-name"
+    And I click edit-button in row contains text "error-image"
+    Then I should see input in test-id "image/name" with value "error-image"
+    When I type "error-url" to element with xpath "//div[@data-testid='image/url']//input"
+    And I click element with test-id "connect-button"
+    And I wait for 4.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
+    And I click element with xpath "//button/span[text()='OK']"
+    And I wait for 4.0 seconds
+    And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "error-image" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "error-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
