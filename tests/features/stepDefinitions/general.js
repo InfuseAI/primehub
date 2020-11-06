@@ -97,7 +97,8 @@ defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
     'Notebooks': `-${this.E2E_SUFFIX}/hub`,
     'JupyterLab': `/user/${this.USERNAME}/lab`,
-    'NotebooksAdmin': 'console/cms/default/jupyterhub'
+    'NotebooksAdmin': 'console/cms/default/jupyterhub',
+    'JobDetail': `-${this.E2E_SUFFIX}/job/`
   };
   let pages, targetPage;
   if (tabname in urlMap) tabname = urlMap[tabname];
