@@ -5,6 +5,12 @@
 
 - Support canceling a spawning notebook.
 
+## 3.1.1
+- [Bugfix] Failed to view artifacts (ch13273)
+
+### Upgrade Notes
+- The image version of `csi-rclone` image changes in this upgrade. The pods with phfs mounted need to restart after upgrading or they cannot access the phfs data.
+
 ## 3.1.0
 
 ### What's new
