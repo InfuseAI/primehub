@@ -1,7 +1,7 @@
 @released @ee
 Feature: Job Submission
   Basic tests
-  @focus
+
   Scenario: User can create job and save artifact
     Given I go to login page
     When I fill in the correct username credentials
@@ -15,7 +15,6 @@ Feature: Job Submission
     When I choose radio button with name "test-instance-type"
     And I choose radio button with name "test-image"
     And I type "create-job-test" to "displayName" text field
-    #And I type "echo 'test'" to "command" text field
     And I type "artifact test" to command text field
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
@@ -23,13 +22,9 @@ Feature: Job Submission
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
     When I click tab of "Artifacts"
-    # click link, "//a[text()='sub/test.txt']"
     And I click element with xpath "//a[text()='sub/test.txt']"
-    # change tab
     And I switch to "sub/test.txt" tab
-    # verify text
-    Then I "should" see element with xpath "//pre[text()='hello from sub']"
-    # change tab
+    Then I "should" see element with xpath "//pre[contains(text(), 'hello from sub')]"
     And I switch to "JobDetail" tab
     When I click tab of "Logs"
     Then I should see "test" in element "div" under active tab
