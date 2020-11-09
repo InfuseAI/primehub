@@ -6,7 +6,14 @@
 - Support canceling a spawning notebook.
 
 ## 3.1.1
-- [Bugfix] Failed to view artifacts (ch13273)
+
+- [Bugfix] Failed to view artifacts (ch13745)
+- [Bugfix] Missing controller part of artifact retention (ch12303)
+- [Bugfix] Fix job's timout not working issue (ch13584)
+- [Bugfix] Fix airgap issue (ch13759)
+- [Bugfix] Phfs in notebook is not editable when file is empty (ch13160)
+- [Bugfix] Group name duplicate verification should case insensitive (ch13672)
+- [Bugfix] Group name should transfer to lowercase when fetch artifacts info from minio
 
 ### Upgrade Notes
 - The image version of `csi-rclone` image changes in this upgrade. The pods with phfs mounted need to restart after upgrading or they cannot access the phfs data.
