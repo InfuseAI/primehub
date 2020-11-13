@@ -155,6 +155,10 @@ spec:
             - name: PRIMEHUB_FEATURE_JOB_ARTIFACT
               value: "true"
             {{- end }}
+            {{- if .Values.jobSubmission.monitoring.enabled }}
+            - name: PRIMEHUB_FEATURE_JOB_MONITORING
+              value: "true"
+            {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.console.extraEnv }}
             - name: {{ $key }}
