@@ -4,6 +4,7 @@
 ### What's New
 
 - Support canceling a spawning notebook.
+- [Feature] Support Job Resources Monitoring
 
 ## 3.1.1
 
