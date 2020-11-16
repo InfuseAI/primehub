@@ -42,7 +42,7 @@
         Copy and paste the example below into your <code>~/.ssh/config</code>. Then replace <code>~/.ssh/id_rsa</code> with your private key location.
       </p>
       <p>
-        <pre class='snippet'><code>HOST jupyter
+        <pre class='snippet'><code>HOST {{ default_server.ssh_config['hostname'] }}
   User jovyan
   Hostname {{ default_server.ssh_config['hostname'] }}
   Port 22
