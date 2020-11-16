@@ -45,7 +45,7 @@ primehub-all:
   ssh-proxy: &ssh-proxy mltooling/ssh-proxy:0.1.11
 
   # Usage
-  primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.0
+  primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.1
   postgres: &postgres postgres:12
 
   # PrimeHub Store
