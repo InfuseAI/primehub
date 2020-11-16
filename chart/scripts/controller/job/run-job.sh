@@ -109,6 +109,9 @@ if [[ "${GRANT_SUDO}" == "true" ]]; then
   fi
 fi
 
+# Refresh ldconfig cache
+ldconfig
+
 monitoring_start
 
 # Run Command
