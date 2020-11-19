@@ -1,4 +1,4 @@
-@wip @admin-user
+@released @admin-user
 Feature: Admin
   Delete some created resources
 
