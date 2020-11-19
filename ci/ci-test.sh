@@ -2,8 +2,10 @@
 set -e
 
 cleanup() {
-  echo "delete created phschedule"
-  kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-${E2E_SUFFIX}
+  if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
+    echo "delete created phschedule"
+    kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-${E2E_SUFFIX}
+  fi
 
   if [ -f "tests/report/cucumber_report.json" ]; then
     node tests/report/generate_e2e_report.js
@@ -162,4 +164,4 @@ if [[ "$E2E_NORMAL_USER" == "true" ]]; then
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js
-return 0
+kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-${E2E_SUFFIX}
