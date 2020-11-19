@@ -3,8 +3,9 @@
 ## Upcoming
 ### What's New
 
-- Support canceling a spawning notebook.
 - [Feature] Support Job Resources Monitoring
+- [Feature] Support Model URI in model deployment. It allows users to deploy a model from model URI with a pre-packaged model server. It is no longer necessary to re-build a model image in order to deploy a new model.
+- Support canceling a spawning notebook.
 
 ## 3.1.1
 
