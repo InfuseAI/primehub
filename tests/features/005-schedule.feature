@@ -53,7 +53,7 @@ Feature: Job Schedule
     Then I should see "update-test" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
-
+  @wip
   Scenario: User can delete schedule
     Given I go to login page
     When I fill in the correct username credentials
