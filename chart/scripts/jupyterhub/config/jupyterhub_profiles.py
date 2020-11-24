@@ -815,7 +815,7 @@ class PrimeHubSpawner(KubeSpawner):
     def get_container_resource_usage(self, group):
         existing = []
         for pod in self.primehub_pod_reflector.pods.values():
-            if pod.metadata.labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) and \
+            if pod.metadata.labels and pod.metadata.labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) and \
                 (pod.status.phase == "Pending" or pod.status.phase == "Running"):
                 existing += pod.spec.containers
 
