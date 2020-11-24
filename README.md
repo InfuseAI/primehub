@@ -12,7 +12,7 @@ In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterp
 
 To IT leaders, PrimeHub gives flexibility and administration authority to configure resources and settings for their teams, as well as to pave the way and manage productionized workloads.
 
-To Data scientists, PrimeHub provides JupyterNotebook-ready environment which is just few-clicks away.
+To Data scientists, PrimeHub provides Jupyter Notebook-ready environment which is just few-clicks away.
 
 This community repository contains a *Helm Chart* for PrimeHub CE and a guide on how to install PrimeHub CE with *Helm*.
 
