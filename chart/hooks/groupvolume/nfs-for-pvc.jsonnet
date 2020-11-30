@@ -77,7 +77,7 @@ function(request) {
               "primehub-group": group}
           },
           spec: {
-            serviceAccountName: "primehub-metacontroller",
+            serviceAccountName: "primehub-metacontroller-webhook",
             affinity: {
               podAntiAffinity: {
                 preferredDuringSchedulingIgnoredDuringExecution: [

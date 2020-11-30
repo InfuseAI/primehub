@@ -18,5 +18,5 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://primehub-metacontroller.{{ .Release.Namespace }}/service
+        url: http://primehub-metacontroller-webhook.{{ .Release.Namespace }}/service
 {{- end }}

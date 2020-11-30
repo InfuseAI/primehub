@@ -1,11 +1,13 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: primehub-metacontroller
+  name: primehub-metacontroller-webhook
 spec:
   selector:
-    app: primehub-metacontroller
+    app: primehub-metacontroller-webhook
     role: webhook-server
   ports:
   - port: 80
     targetPort: 8080
+{{- end }}

@@ -27,7 +27,7 @@ seLinuxContext:
 supplementalGroups:
   type: RunAsAny
 users:
-- system:serviceaccount:{{ .Release.Namespace }}:primehub-metacontroller
+- system:serviceaccount:{{ .Release.Namespace }}:primehub-metacontroller-webhook
 volumes:
 - configMap
 - secret
