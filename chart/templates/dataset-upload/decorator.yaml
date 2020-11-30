@@ -24,6 +24,6 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://primehub-dataset-upload.{{ .Release.Namespace }}/dataset-upload
+        url: http://primehub-metacontroller.{{ .Release.Namespace }}/dataset-upload
 {{- end }}
 {{- end }}

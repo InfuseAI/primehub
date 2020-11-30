@@ -27,8 +27,7 @@ seLinuxContext:
 supplementalGroups:
   type: RunAsAny
 users:
-- system:serviceaccount:{{ .Release.Namespace }}:primehub-groupvolume
-- system:serviceaccount:{{ .Release.Namespace }}:primehub-gitsync
+- system:serviceaccount:{{ .Release.Namespace }}:primehub-metacontroller
 volumes:
 - configMap
 - secret

@@ -29,3 +29,10 @@ roleRef:
   name: metacontroller
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: primehub-metacontroller
+  namespace: {{ .Release.Namespace }}
+{{- end }}

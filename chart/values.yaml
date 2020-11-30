@@ -261,6 +261,22 @@ metacontroller:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  webhook:
+    replicas: 1
+    image:
+      repository: metacontroller/jsonnetd
+      tag: 0.1
+      pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
 
 # Primehub console
 console:
