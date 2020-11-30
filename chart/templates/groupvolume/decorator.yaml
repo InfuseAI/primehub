@@ -23,7 +23,7 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://primehub-metacontroller.{{ .Release.Namespace }}/nfs-for-pvc
+        url: http://primehub-metacontroller-webhook.{{ .Release.Namespace }}/nfs-for-pvc
 ---
 apiVersion: metacontroller.k8s.io/v1alpha1
 kind: DecoratorController
@@ -44,6 +44,6 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://primehub-metacontroller.{{ .Release.Namespace }}/group-pv
+        url: http://primehub-metacontroller-webhook.{{ .Release.Namespace }}/group-pv
 {{- end }}
 {{- end }}

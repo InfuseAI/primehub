@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: primehub-metacontroller
+  name: primehub-metacontroller-webhook
 spec:
   replicas: {{ .Values.metacontroller.webhook.replicas }}
   selector:
     matchLabels:
-      app: primehub-metacontroller
+      app: primehub-metacontroller-webhook
   template:
     metadata:
       labels:
-        app: primehub-metacontroller
+        app: primehub-metacontroller-webhook
         role: webhook-server
       annotations:
         sidecar.istio.io/inject: "false"
@@ -42,5 +42,5 @@ spec:
       volumes:
       - name: hooks
         configMap:
-          name: primehub-metacontroller
+          name: primehub-metacontroller-webhook
 {{- end }}

@@ -19,6 +19,6 @@ spec:
   hooks:
     sync:
       webhook:
-        url: http://primehub-metacontroller.{{ .Release.Namespace }}/gitsync
+        url: http://primehub-metacontroller-webhook.{{ .Release.Namespace }}/gitsync
 {{- end }}
 {{- end }}
