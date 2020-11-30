@@ -1,0 +1,22 @@
+{{- if .Values.sshBastionServer.enabled }}
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: {{ include "ssh-bastion-server.name" . }}-service
+spec:
+  resources:
+  - apiVersion: v1
+    resource: pods
+    labelSelector:
+      matchLabels:
+        {{- toYaml .Values.sshBastionServer.ssh.target.matchLabels | nindent 8 }}
+  attachments:
+  - apiVersion: v1
+    resource: services
+    updateStrategy:
+      method: InPlace
+  hooks:
+    sync:
+      webhook:
+        url: http://primehub-metacontroller.{{ .Release.Namespace }}/service
+{{- end }}
