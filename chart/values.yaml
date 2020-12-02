@@ -475,19 +475,6 @@ datasetUpload:
         requests:
           cpu: 200m
           memory: 128Mi
-  metacontrollerHooks:
-    replicas: 1
-    image:
-      repository: metacontroller/jsonnetd
-      tag: 0.1
-      pullPolicy: IfNotPresent
-    resources:
-      limits:
-        cpu: 50m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 128Mi
 
 # Jupyterhub
 jupyterhub:
@@ -664,25 +651,6 @@ jupyterhub:
 # Group Volume (shared volume over nfs)
 groupvolume:
   enabled: true
-
-  replicas: 1
-
-  image:
-    repository: metacontroller/jsonnetd
-    tag: 0.1
-    pullPolicy: IfNotPresent
-
-  resources:
-    limits:
-      cpu: 50m
-      memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 128Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-
   storageClass: null
   nfs:
     image:
@@ -693,25 +661,6 @@ groupvolume:
 # Gitsync Dataset
 gitsync:
   enabled: true
-
-  replicas: 1
-
-  image:
-    repository: metacontroller/jsonnetd
-    tag: 0.1
-    pullPolicy: IfNotPresent
-
-  resources:
-    limits:
-      cpu: 50m
-      memory: 128Mi
-    requests:
-      cpu: 50m
-      memory: 128Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-
   daemonset:
     delayInit: false
     image:
@@ -1055,23 +1004,6 @@ sshBastionServer:
   netpol:
     enabled: true
     kubeApiPort: 6443
-  metacontroller:
-    replicas: 1
-    image:
-      repository: metacontroller/jsonnetd
-      tag: 0.1
-      pullPolicy: IfNotPresent
-    resources:
-      limits:
-        cpu: 50m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 128Mi
-    nodeSelector: {}
-    tolerations: []
-    affinity: {}
-
 usage:
   enabled: true
   dbUser: postgres
