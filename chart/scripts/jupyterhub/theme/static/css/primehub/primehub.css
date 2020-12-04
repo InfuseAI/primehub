@@ -161,10 +161,9 @@ label.disabled {
 }
 
 .cancel-spawn {
-  display: none;
-  font-size: 6pt;
-  margin-top: 14px;
-  text-decoration: underline;
+  display: inline-block;
+  font-size: 11pt;
+  margin-bottom: 30px;
 }
 
 .in-progress .cancel-spawn, .error .cancel-spawn {
