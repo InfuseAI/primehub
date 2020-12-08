@@ -95,11 +95,47 @@ Feature: Hub
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click element with selector "#start" in hub
-    And I wait for 4.0 seconds 
+    And I wait for 4.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
     When I switch to "/console/g/phusers/hub" tab
     Then I am on the PrimeHub console "Notebooks" page
+    And I stop my server in hub
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @weekly
+  Scenario: User can start/stop the JupyterLab server with GPU
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
+    When I go to the spawner page
+    And I wait for 2.0 seconds
+    And I choose instance type with name "test-instance-type-gpu"
+    And I choose image with name "test-image-gpu"
+    And I click element with selector "input[value='Start Notebook']" in hub
+    Then I can see the spawning page and wait for notebook started
+    When I click element with selector "#start" in hub
+    And I wait for 4.0 seconds
+    And I switch to "JupyterLab" tab
+    Then I can see the JupyterLab page
+    When I click element with xpath "//div[text()='File']"
+    And I click element with xpath "//div[@class='lm-Menu-itemLabel p-Menu-itemLabel' and text()='Close All Tabs']"
+    #When I click element with xpath "//button[@title='New Launcher']"
+    And I click the "Terminal" card in the launcher
+    And I input "nvidia-smi > tmp.txt" command in the terminal
+    And I open "tmp.txt" file in the file browser
+    Then I "should" see element with xpath "//div[@class='CodeMirror-code']//span[contains(text(), 'Driver Version: 418.67')]"
+    And I "should" see element with xpath "//div[@class='CodeMirror-code']//span[contains(text(), 'CUDA Version: 10.1')]"
+    When I switch to "Notebooks" tab
+    Then I am on the PrimeHub console "Notebooks" page
+    And I check the group warning message against group "e2e-test-group"
+    And I switch group
+    And I check the group warning message against group "e2e-test-group"
     And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page

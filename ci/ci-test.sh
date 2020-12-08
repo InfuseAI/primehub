@@ -2,6 +2,11 @@
 set -e
 
 cleanup() {
+  if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
+    echo "resize nodepool to zero"
+    gcloud container clusters resize $CI_CLUSTER_NAME --node-pool $POOL_NAME --num-nodes 0 --project $PROJECT_ID --zone $ZONE --quiet
+  fi
+
   if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
     echo "delete created phschedule"
     kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-2d${E2E_SUFFIX}
@@ -149,18 +154,31 @@ fi
 KC_REALM_DEPLOY="$(cut -d' ' -f2 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM))"
 export KC_REALM=${KC_REALM:-$KC_REALM_DEPLOY}
 export E2E_SUFFIX=$(openssl rand -hex 6)
-export E2E_SCHEDULED=${E2E_SCHEDULED:-false}
+if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
+  echo "activate account"
+  gcloud auth activate-service-account gitlab-ci@primehub-demo.iam.gserviceaccount.com --key-file=<(echo $GCP_SA_JSON_PRIMEHUB_DEMO)
+  echo "resize nodepool to scale up required resources"
+  gcloud container clusters resize $CI_CLUSTER_NAME --node-pool $POOL_NAME --num-nodes $NUM_NODES --project $PROJECT_ID --zone $ZONE --quiet
+fi
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-tags="@released and not @normal-user and not @ee and not @regression and not @wip"
+# TODO: reorganize test suite and tags
+tags="@released and not (@weekly or @normal-user or @ee or @regression or @wip)"
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="@released and not @normal-user and not @regression and not @wip"
+  tags="@released and not (@weekly or @normal-user or @regression or @wip)"
+fi
+if [[ "${E2E_SCHEDULED}" == "weekly" ]]; then
+  tags="(@released or @weekly) and not (@normal-user or @regression or @wip)"
 fi
 if [[ "$E2E_REGRESSION" == "true" ]]; then
   tags="@regression"
 fi
 if [[ "$E2E_NORMAL_USER" == "true" ]]; then
-  tags="(@released or @normal-user) and (not @admin-user) and (not @regression and not @wip)"
+  tags="(@released or @normal-user) and not (@weekly or @admin-user or @regression or @wip)"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js
+if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
+  echo "resize nodepool to zero"
+  gcloud container clusters resize $CI_CLUSTER_NAME --node-pool $POOL_NAME --num-nodes 0 --project $PROJECT_ID --zone $ZONE --quiet
+fi

@@ -181,3 +181,44 @@ Feature: Model Deployment
     Then I should see "default backend - 404" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
+
+  @weekly
+  Scenario: User can create deployment with GPU
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Models" in sidebar menu
+    Then I am on the PrimeHub console "Models" page
+    When I click "Create Deployment" button
+    Then I am on the PrimeHub console "CreateDeployment" page
+    When I type "create-deployment-test-gpu" to "name" text field
+    And I choose radio button with name "test-instance-type-gpu"
+    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage" text field
+    And I click element with xpath "//span[text()='Deploy']"
+    Then I am on the PrimeHub console "Models" page
+    When I go to the deployment detail page with name "create-deployment-test-gpu"
+    Then I wait for attribute "Status" with value "Deployed"
+    And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
+    When I click tab of "Logs"
+    Then I should see "kernel reported version is: 418.67.0" in element "div" under active tab
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @weekly
+  Scenario: User can delete deployment with GPU
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Models" in sidebar menu
+    Then I am on the PrimeHub console "Models" page
+    When I go to the deployment detail page with name "create-deployment-test-gpu"
+    And I click "Delete" button
+    And I click button of "Yes" on confirmation dialogue
+    Then I am on the PrimeHub console "Models" page
+    And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
+    When I choose "Logout" in top-right menu
+    Then I am on login page

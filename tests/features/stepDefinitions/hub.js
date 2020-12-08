@@ -291,3 +291,40 @@ defineStep("I check the group warning message against group {string}", async fun
   if (ret !== (text === `${name}-display-name-${this.E2E_SUFFIX}`))
     throw new Error("the group warning message is existed: ", !ret);
 });
+
+defineStep("I click the {string} card in the launcher", async function(name) {
+  await this.clickElementByXpath(`//p[text()='${name}']`);
+  await this.page.waitForTimeout(3000);
+  await this.takeScreenshot(`click-${name}`);
+});
+
+defineStep("I input {string} command in the terminal", async function(command) {
+  await this.clickElementBySelector(".xterm-cursor-layer");
+  await this.page.keyboard.type(command);
+  await this.page.keyboard.press('Enter');
+  await this.page.waitForTimeout(500);
+  await this.takeScreenshot("input-command-terminal");
+});
+
+defineStep("I open {string} file in the file browser", async function(name) {
+  let ele;
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    try {
+      await this.page.waitForXPath(
+        "//li[@data-id='filebrowser' and @class='p-TabBar-tab']",
+        {timeout: 5000});
+      await this.page.click("//li[@data-id='filebrowser' and @class='p-TabBar-tab']");
+      await this.takeScreenshot("click-file-browser");
+    }
+    catch (e) {}
+
+    [ele] = await this.page.$x(`//span[@class='jp-DirListing-itemText' and text()='${name}']`);
+    if (ele) {
+      const { x, y, width, height } = await ele.boundingBox();
+      await this.page.mouse.click(x, y, { clickCount: 2 });
+      await this.takeScreenshot("open-file");
+      return;
+    }
+  }
+  throw new Error("failed to open file");
+});

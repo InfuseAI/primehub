@@ -98,3 +98,30 @@ Feature: Job Submission
     Then I should see "cannot get log|(no data)" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
+
+  @weekly
+  Scenario: User can create job with GPU
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click "New Job" button
+    Then I am on the PrimeHub console "NewJob" page
+    When I choose radio button with name "test-instance-type-gpu"
+    And I choose radio button with name "test-image-gpu"
+    And I type "gpu-job-test" to "displayName" text field
+    And I type "gpu driver info" to command text field
+    And I click "Submit" button
+    Then I am on the PrimeHub console "Jobs" page
+    When I click element with xpath "//tr[1]//a[text()='gpu-job-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    And I wait for attribute "Message" with value "Job completed"
+    When I click tab of "Monitoring"
+    Then I "should" see element with xpath "//div[@class='']//h3[text()='GPU Device Usage']"
+    When I click tab of "Logs"
+    Then I should see "NVIDIA-SMI 418.67       Driver Version: 418.67       CUDA Version: 10.1" in element "div" under active tab
+    When I choose "Logout" in top-right menu
+    Then I am on login page

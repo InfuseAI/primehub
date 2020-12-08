@@ -10,6 +10,9 @@ defineStep("I type {string} to command text field", {timeout: 300 * 1000}, async
         case 'artifact test':
             text = "echo 'test'\nmkdir -p artifacts/sub\necho 'hello from sub' > artifacts/sub/test.txt";
             break;
+        case 'gpu driver info':
+            text = "nvidia-smi\nsleep 20";
+            break;
     }
     await this.page.waitForSelector("#command", {visible: true});
     await this.page.type("#command", text);

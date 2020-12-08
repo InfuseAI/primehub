@@ -89,6 +89,25 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+  e2e_installed_ph_weekly:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            INSTALLED_PH: "true"
+            E2E_SCHEDULED: "weekly"
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+
   e2e_regression:
     machine:
       image: ubuntu-1604:202004-01
@@ -173,16 +192,27 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-  scheduled_workflow:
+  daily_workflow:
     triggers:
       - schedule:
-          cron: "0 21 * * *"
+          cron: "0 21 * * 0,1,3,4,5,6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - e2e_normal_user
+      - e2e_installed_ph:
+          context: e2e-demo-a
+  weekly_workflow:
+    triggers:
+      - schedule:
+          cron: "0 21 * * 2"
           filters:
             branches:
               only:
                 - master
     jobs:
       - e2e_regression
-      - e2e_normal_user
-      - e2e_installed_ph:
+      - e2e_installed_ph_weekly:
           context: e2e-demo-a
