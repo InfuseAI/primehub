@@ -5,10 +5,7 @@ metadata:
   name: primehub-metacontroller-webhook
 data:
   {{- tpl (.Files.Glob "hooks/gitsync/*").AsConfig . | nindent 2 }}
-  {{- tpl (.Files.Glob "hooks/ssh-bastion-server/*").AsConfig . | nindent 2 }}
-# EE Only
-{{- if eq .Values.primehub.mode "ee" }}
   {{- tpl (.Files.Glob "hooks/groupvolume/*").AsConfig . | nindent 2 }}
+  {{- tpl (.Files.Glob "hooks/ssh-bastion-server/*").AsConfig . | nindent 2 }}
   {{- tpl (.Files.Glob "hooks/dataset-upload/*").AsConfig . | nindent 2 }}
-{{- end }}
 {{- end }}
