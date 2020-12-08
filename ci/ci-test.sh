@@ -2,7 +2,7 @@
 set -e
 
 cleanup() {
-  if [[ "$TEST_GPU" == "true" ]]; then
+  if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
     echo "resize nodepool to zero"
     gcloud container clusters resize $CI_CLUSTER_NAME --node-pool $POOL_NAME --num-nodes 0 --project $PROJECT_ID --zone $ZONE --quiet
   fi
@@ -154,7 +154,7 @@ fi
 KC_REALM_DEPLOY="$(cut -d' ' -f2 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM))"
 export KC_REALM=${KC_REALM:-$KC_REALM_DEPLOY}
 export E2E_SUFFIX=$(openssl rand -hex 6)
-if [[ "$TEST_GPU" == "true" ]]; then
+if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
   echo "activate account"
   gcloud auth activate-service-account gitlab-ci@primehub-demo.iam.gserviceaccount.com --key-file=<(echo $GCP_SA_JSON_PRIMEHUB_DEMO)
   echo "resize nodepool to scale up required resources"
@@ -178,7 +178,7 @@ if [[ "$E2E_NORMAL_USER" == "true" ]]; then
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js
-if [[ "$TEST_GPU" == "true" ]]; then
+if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
   echo "resize nodepool to zero"
   gcloud container clusters resize $CI_CLUSTER_NAME --node-pool $POOL_NAME --num-nodes 0 --project $PROJECT_ID --zone $ZONE --quiet
 fi
