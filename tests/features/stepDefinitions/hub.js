@@ -187,7 +187,7 @@ defineStep("I can see the spawning page and wait for log {string}", {timeout: 12
       function(result) { ret = result; }
     );
     if (ret){
-      const [ele] = await this.context.$x("//a[@class='cancel-spawn']");
+      const [ele] = await this.context.$x("//a[contains(@class, 'cancel-spawn')]");
       if (ele) {
         await ele.click();
         await this.takeScreenshot("cancel-spawning");
