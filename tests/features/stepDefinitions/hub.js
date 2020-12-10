@@ -187,21 +187,15 @@ defineStep("I can see the spawning page and wait for log {string}", {timeout: 12
       function(result) { ret = result; }
     );
     if (ret){
-      const ele = await this.context.$x("//a[@class='cancel-spawn']");
-      if (ele.length > 0) {
-        for (i = 0; i < ele.length; i++) {
-          try { 
-            await ele[i].click();
-            await this.takeScreenshot("cancel-spawning");
-            return;
-          }
-          catch (e) {}
-        }
+      const [ele] = await this.context.$x("//a[contains(@class, 'cancel-spawn')]");
+      if (ele) {
+        await ele.click();
+        await this.takeScreenshot("cancel-spawning");
+        return;
       }
       else throw new Error("failed to click cancel link");
     }
-    else
-      await this.page.waitForTimeout(6000);
+    else await this.page.waitForTimeout(6000);
   }
   throw new Error(`failed to wait for log: ${log}`);
 });
