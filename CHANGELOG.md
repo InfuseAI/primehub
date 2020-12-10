@@ -2,10 +2,89 @@
 
 ## Upcoming
 ### What's New
+### Avaliable in CE
+### EE only
+
+## 3.2.0
+
+### What's New
+
+### Avaliable in CE
+
+- Support canceling a spawning notebook.
+
+#### SSH Server
+
+- The default user volume permission is too open for SSH on microk8s singlenode cluster (ch13675)
+
+#### Miscellaneous
+
+- PrimeHub-graphql can configure liveness and readness timeout second by helm value (ch13382)
+- [Bugfix] Group name duplicate verification should case insensitive. (ch13672)
+- Group selector - saved the last selected group (ch12426)
+
+### EE only
 
 - [Feature] Support Job Resources Monitoring
 - [Feature] Support Model URI in model deployment. It allows users to deploy a model from model URI with a pre-packaged model server. It is no longer necessary to re-build a model image in order to deploy a new model.
-- Support canceling a spawning notebook.
+
+#### Jobs Monitoring
+
+- Implement Hardware usage UI in the Job component (ch13364)
+- Implement GraphQL to output metrics (ch13362)
+- Update controller to inject job-agent at init-container (ch13360)
+- Implement metric collector agent (ch13357)
+- design doc for job monitoring (ch13432)
+- job resource monitoring final check (ch13433)
+- [job submission monitoring] switch to long interval will direct to the blank page (ch13885)
+
+#### Model Deployment
+
+- PhDeployment controller handle model loading error case (ch13588)
+- PhDeployment controller support model uri (ch13132)
+- Prepare the tensorflow2 framework image (ch13129)
+- Deploy by model file - UI tweak (ch13997)
+- Model file final check (ch13138)
+- Reorganize the model deployment document (ch13597)
+- Design document for model file support (ch13134)
+- Support env variables for model deployment (ch13731)
+- Refactor the airgap image tarball logic (ch12996)
+- Provide a way to change the PRIMEHUB_AIRGAPPED image prefix (ch13000)
+- [Bugfix] Cannot download files of model uri in GKE (ch14009)
+
+#### Job Submission Artifacts
+
+- Implement the artifact retention (ch12303)
+
+
+#### PrimeHub Usage Refactory
+
+- Shrink the primehub-usage image size (ch13516)
+
+#### Miscellaneous
+
+- Handle the error situation while number of jobs are increased (ch13416)
+- All pods should have cpu/memory limits - Job Artifact / primehub-store (ch13707)
+- [Bugfix] fix airgap issues in v3.1.1 (ch13832)
+- [Bugfix] model deploymet should support all gpu resource (ch13562)
+- [Bugfix] Cannot run job when artifact and phfs are not enabled (ch13811)
+- [Bugfix] Group name should transfer to lowercase when fetch artifacts info from minio (ch13665)
+- [Bugfix] Schedule job's timeout is not working (ch13584)
+- [Bugfix] failed to view artifacts (ch13745)
+- [Bugfix] Add primehub store configuration document (ch13525)
+- [Bugfix] Phfs in notebook is not editable when file is empty (ch13160)
+- [Bugfix] Failed to access GPU in job submission (ch13904)
+- Update primehub-install script to support feature of PrimeHub 3.1 (ch13386)
+- Image Error Handling (ch13328)
+- Custom software apt-install for notebooks and jobs (ch13330)
+- Allow users to search Jobs/Schedule tables by name (ch11741)
+- Primehub-store should have tolerations for GPU node (ch13249)
+- Artifact open in new tab (ch13409)
+- Cleanup completed Job (ch13340)
+- Modify to cd to the path and submit a notebook from jupyterlab (ch13396)
+- PrimeHub EE can be installed by Makefile only provide domain name (ch13564)
+- Provide the instructions to install our jupyterlab extension (ch12803)
+- Primehub Postflight Checklist (ch12622)
 
 ## 3.1.1
 
