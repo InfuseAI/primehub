@@ -5,15 +5,15 @@ primehub-all:
   primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
 
   # Controller
-  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:latest
-  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:latest
+  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:v3.2-0802d7c8
+  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:latest
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:latest
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:latest
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:latest
+  primehub-console: &primehub-console infuseai/primehub-console:v3.2-faa25a6c
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v3.2-faa25a6c
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v3.2-faa25a6c
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v3.2-faa25a6c
 
   # Metacontroller
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
