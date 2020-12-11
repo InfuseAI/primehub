@@ -835,12 +835,6 @@ class PrimeHubSpawner(KubeSpawner):
         role_groups = [group for group in context['groups']
                        if group['name'] == 'everyone']
 
-        filtered_groups = [group for group in context['groups']
-                           if group.get('projectQuotaCpu', None) != 0 and
-                           group.get('quotaCpu', None) != 0 and
-                           group.get('projectQuotaMemory', None) != 0 and
-                           group.get('quotaMemory', None) != 0]
-
         groups = [
             {
                 **(group),
@@ -849,7 +843,7 @@ class PrimeHubSpawner(KubeSpawner):
                     'instanceTypes': self.merge_group_properties('instanceTypes', [group] + role_groups)
                 }),
                 'usage': self.get_container_resource_usage(group)
-            } for group in filtered_groups]
+            } for group in context['groups'] if group['name'] != 'everyone']
 
         if not len(groups):
             raise Exception(

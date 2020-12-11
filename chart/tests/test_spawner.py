@@ -100,11 +100,11 @@ class TestGroupsFromCtx(unittest.TestCase):
                 'instanceTypes': []
             }
         ]}
+        with self.assertRaises(Exception) as ex:
+            mock_spawner()._groups_from_ctx(context)
 
-        result = mock_spawner()._groups_from_ctx(context)
-
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['name'], 'everyone')
+        self.assertEqual(str(
+            ex.exception), 'Not enough resource limit in your groups, please contact admin.')
 
     def test_user_has_group(self):
         context = {'groups': [
@@ -134,7 +134,7 @@ class TestGroupsFromCtx(unittest.TestCase):
                        'name': 'default-instance'},
                       result[0]['instanceTypes'])
 
-    def test_user_has_group_with_zero_group_cpu_limit(self):
+    def test_group_without_display_name(self):
         context = {'groups': [
             {
                 'name': 'everyone',
@@ -149,161 +149,6 @@ class TestGroupsFromCtx(unittest.TestCase):
             },
             {
                 'name': 'phuser',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': None,
-                'quotaMemory': None,
-                'projectQuotaCpu': 0,
-                'projectQuotaMemory': None,
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            }
-        ]}
-        result = mock_spawner()._groups_from_ctx(context)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['name'], 'phuser')
-
-    def test_user_has_group_with_zero_personal_cpu_limit(self):
-        context = {'groups': [
-            {
-                'name': 'everyone',
-                'instanceTypes': [{'name': 'default-instance',
-                                   'global': True}],
-                'images': [{'name': 'default-image',
-                            'global': True}],
-                'quotaCpu': 0,
-                'quotaMemory': 0,
-                'projectQuotaCpu': 0,
-                'projectQuotaMemory': 0,
-            },
-            {
-                'name': 'phuser',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': 0,
-                'quotaMemory': None,
-                'projectQuotaCpu': None,
-                'projectQuotaMemory': None,
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            }
-        ]}
-        result = mock_spawner()._groups_from_ctx(context)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['name'], 'phuser')
-
-    def test_user_has_group_with_zero_group_memory_limit(self):
-        context = {'groups': [
-            {
-                'name': 'everyone',
-                'instanceTypes': [{'name': 'default-instance',
-                                   'global': True}],
-                'images': [{'name': 'default-image',
-                            'global': True}],
-                'quotaCpu': 0,
-                'quotaMemory': 0,
-                'projectQuotaCpu': 0,
-                'projectQuotaMemory': 0,
-            },
-            {
-                'name': 'phuser',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': None,
-                'quotaMemory': None,
-                'projectQuotaCpu': None,
-                'projectQuotaMemory': 0,
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            }
-        ]}
-        result = mock_spawner()._groups_from_ctx(context)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['name'], 'phuser')
-
-    def test_user_has_group_with_zero_personal_memory_limit(self):
-        context = {'groups': [
-            {
-                'name': 'everyone',
-                'instanceTypes': [{'name': 'default-instance',
-                                   'global': True}],
-                'images': [{'name': 'default-image',
-                            'global': True}],
-                'quotaCpu': 0,
-                'quotaMemory': 0,
-                'projectQuotaCpu': 0,
-                'projectQuotaMemory': 0,
-            },
-            {
-                'name': 'phuser',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': None,
-                'quotaMemory': 0,
-                'projectQuotaCpu': None,
-                'projectQuotaMemory': None,
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            }
-        ]}
-        result = mock_spawner()._groups_from_ctx(context)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]['name'], 'phuser')
-
-    def test_group_without_disply_name(self):
-        context = {'groups': [
-            {
-                'name': 'everyone',
-                'instanceTypes': [{'name': 'default-instance',
-                                   'global': True}],
-                'images': [{'name': 'default-image',
-                            'global': True}],
-                'quotaCpu': 0,
-                'quotaMemory': 0,
-                'projectQuotaCpu': 0,
-                'projectQuotaMemory': 0,
-            },
-            {
-                'name': 'phuser',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': None,
-                'quotaMemory': 0,
-                'projectQuotaCpu': None,
-                'projectQuotaMemory': None,
                 'instanceTypes': [{'name': 'phuser-instance',
                                    'global': False}],
                 'images': [{'name': 'phuser-image',
@@ -314,7 +159,7 @@ class TestGroupsFromCtx(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['displayName'], 'phuser')
 
-    def test_group_with_disply_name(self):
+    def test_group_with_display_name(self):
         context = {'groups': [
             {
                 'name': 'everyone',
@@ -330,17 +175,6 @@ class TestGroupsFromCtx(unittest.TestCase):
             {
                 'name': 'phuser',
                 'displayName': 'Default',
-                'instanceTypes': [{'name': 'phuser-instance',
-                                   'global': False}],
-                'images': [{'name': 'phuser-image',
-                            'global': False}],
-            },
-            {
-                'name': 'guest',
-                'quotaCpu': None,
-                'quotaMemory': 0,
-                'projectQuotaCpu': None,
-                'projectQuotaMemory': None,
                 'instanceTypes': [{'name': 'phuser-instance',
                                    'global': False}],
                 'images': [{'name': 'phuser-image',

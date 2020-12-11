@@ -53,6 +53,35 @@
       }
     }
 
+    var checkInstanceTypesQuota = function(currentGroup) {
+      // parse the top window path.
+      var quota = {
+        'cpu': $.isNumeric(currentGroup.quotaCpu) && parseFloat(currentGroup.quotaCpu),
+        'memory': $.isNumeric(currentGroup.quotaMemory) && parseFloat(currentGroup.quotaMemory),
+        'gpu': $.isNumeric(currentGroup.quotaGpu) && parseInt(currentGroup.quotaGpu),
+      }
+      for (var i = 0; i < currentGroup.instanceTypes.length; i++) {
+        itData = currentGroup.instanceTypes[i];
+        $itRadio = $('#instance_type-item-' + i);
+        $itLabel = $itRadio.parents('label');
+
+        $itLabel.removeClass('disabled');
+        $itRadio.removeAttr('disabled');
+        var itQuota = {
+          'cpu': itData.spec['limits.cpu'],
+          'memory': parseFloat(itData.spec['limits.memory'].slice(0, -1)),
+          'gpu': 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'],
+        }
+        var disabled = Object.keys(quota).reduce((h, k) => {
+          return (quota[k] !== false && itQuota[k] !== false && quota[k] < itQuota[k]) || h;
+        }, false);
+        if (disabled) {
+          $itLabel.addClass('disabled');
+          $itRadio.attr('disabled', 'disabled');
+        }
+      }
+    }
+
     var updatePrimehubContext = function() {
       var url = window.groupFetchUri || '/hub/api/primehub/groups';
       var dfd = $.Deferred();
@@ -99,6 +128,14 @@
       } else {
         $('#dataset-list-ul').html($('<li>None</li>'));
       }
+
+      for (var i = 0; i < currentGroup.instanceTypes.length; i++) {
+        spec = currentGroup.instanceTypes[i].spec;
+        var resourceLimits = ["CPU: ", spec['limits.cpu'], " / Memory: ", spec['limits.memory'], " / GPU: ", spec['limits.nvidia.com/gpu']].join('');
+        $itInfo = $('#instance_type-item-info-icon-' + i);
+        $itInfo.attr('title', resourceLimits);
+      }
+      checkInstanceTypesQuota(currentGroup);
     };
 
     var updateSpawnerOptions = function(currentGroup) {
@@ -123,8 +160,11 @@
 
       $itContainer.html(Mustache.render(itTemplate, currentGroup.instanceTypes));
       $imageContainer.html(Mustache.render(imageTemplate, currentGroup.images));
+
+      checkInstanceTypesQuota(currentGroup);
+
       $('[data-toggle="tooltip"]').tooltip();
-      $('input:radio[name="instance_type"]:first').trigger('click');
+      $('input:radio[name="instance_type"][disabled!="disabled"]:first').trigger('click');
       $('input:radio[name="image"][disabled!="disabled"]:first').trigger('click');
 
       $('#spawn_form input[type=submit]').on('click', function(evt) {
@@ -157,7 +197,7 @@
       $it = $(event.target);
       itIndex = +$it.data('index');
       itData = currentGroup.instanceTypes[itIndex];
-      cpuOnly = itData.spec['limits.nvidia.com/gpu'] <= 0;
+      cpuOnly = 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'] <= 0;
       $images = $('label.image-option');
       $images.removeClass('disabled');
       $images.find('input[type="radio"]').removeAttr('disabled');
@@ -178,7 +218,7 @@
       $('div[role="image-not-match-gpu-instance"]').toggleClass('hide', true);
       $currentIt = $('input:radio[name="instance_type"]:checked');
       itData = currentGroup.instanceTypes[itIndex];
-      itHasGpu = itData.spec['limits.nvidia.com/gpu'] > 0;
+      itHasGpu = 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'] > 0;
       $image = $(event.target);
       imageIndex = +$image.data('index');
       imageData = currentGroup.images[imageIndex];
