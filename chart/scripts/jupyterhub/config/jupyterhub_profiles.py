@@ -843,7 +843,7 @@ class PrimeHubSpawner(KubeSpawner):
                     'instanceTypes': self.merge_group_properties('instanceTypes', [group] + role_groups)
                 }),
                 'usage': self.get_container_resource_usage(group)
-            } for group in context['groups']]
+            } for group in context['groups'] if group['name'] != 'everyone']
 
         if not len(groups):
             raise Exception(
