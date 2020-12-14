@@ -1123,8 +1123,8 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
     c.JupyterHub.authenticate_prometheus = False
     c.JupyterHub.template_vars = { 'primehub_version': primehub_version }
     c.JupyterHub.logo_file = '/usr/local/share/jupyterhub/static/images/PrimeHub.png'
-    c.PrimeHubSpawner.start_timeout = get_primehub_config('SPAWNER_START_TIMEOUT', 300)
-    c.PrimeHubSpawner.http_timeout = get_primehub_config('SPAWNER_HTTP_TIMEOUT', 30)
+    c.PrimeHubSpawner.start_timeout = get_primehub_config('spawnerStartTimeout', 300)
+    c.PrimeHubSpawner.http_timeout = get_primehub_config('spawnerHttpTimeout', 30)
     c.NamespacedResourceReflector.timeout_seconds = 45
 
     if not base_url:
