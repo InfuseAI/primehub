@@ -647,6 +647,8 @@ jupyterhub:
     pod-anti-affinity-preferred: []
     pod-anti-affinity-required: []
     startNotebookConfigMap: start-notebook-d
+    spawnerStartTimeout: 300
+    spawnerHttpTimeout: 30
 
 # Group Volume (shared volume over nfs)
 groupvolume:
