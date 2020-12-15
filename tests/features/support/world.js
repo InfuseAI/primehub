@@ -26,6 +26,7 @@ class World {
     this.PASSWORD = process.env.PH_PASSWORD;
     this.DEBUG = process.env.DEBUG;
     this.E2E_SUFFIX = process.env.E2E_SUFFIX;
+    this.SPAWNER_START_TIMEOUT = process.env.SPAWNER_START_TIMEOUT;
 
     // To run tests in different setup,
     // kind -> port# is need; gcp -> port# isn't need
