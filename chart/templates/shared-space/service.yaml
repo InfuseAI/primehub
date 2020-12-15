@@ -1,0 +1,17 @@
+{{- if eq (include "primehub.phfs.enabled" .) "true" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "primehub.fullname" . }}-shared-space-tusd
+  labels:
+    app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+  ports:
+  - name: tus
+    port: 1080
+    targetPort: 1080
+  sessionAffinity: None
+  type: ClusterIP
+{{- end }}
