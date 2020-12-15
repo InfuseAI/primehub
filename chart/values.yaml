@@ -647,7 +647,10 @@ jupyterhub:
     pod-anti-affinity-preferred: []
     pod-anti-affinity-required: []
     startNotebookConfigMap: start-notebook-d
+
+    # timeout from spawning to spawned
     spawnerStartTimeout: 300
+    # timeout for the http server in a spawned pod (the creating phase in the progress)
     spawnerHttpTimeout: 30
 
 # Group Volume (shared volume over nfs)
