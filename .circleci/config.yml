@@ -119,8 +119,10 @@ jobs:
             ./ci/setup_env.sh
       - run:
           name: End-to-end tests
+          no_output_timeout: 20m
           environment:
             E2E_REGRESSION: "true"
+            SPAWNER_START_TIMEOUT: 600
           command: |
             ./ci/ci-test.sh
       - store_artifacts:

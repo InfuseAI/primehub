@@ -62,7 +62,8 @@ helm upgrade \
   $values_ee \
   --timeout 30m \
   --values primehub-values.yaml \
-  --values k3d/primehub-override.yaml
+  --values k3d/primehub-override.yaml \
+  --set jupyterhub.primehub.spawnerStartTimeout=${SPAWNER_START_TIMEOUT}
 
 # change requests.cpu to 0.1 to make sure shared runner can have enough resource
 kubectl -n hub patch instancetype cpu-1 -p '{"spec":{"requests.cpu":0.1}}' --type merge || true

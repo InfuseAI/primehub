@@ -72,6 +72,20 @@ defineStep("I choose image with name {string}", async function(name) {
   await this.takeScreenshot(`choose-image-${name}-${this.E2E_SUFFIX}`);
 });
 
+defineStep("I choose latest TensorFlow image", async function() {
+  let ele;
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    ele = await this.context.$x("//input[contains(@value, 'tf-') and not(@disabled)]");
+    if (ele.length > 0) {
+      await ele[ele.length-1].click();
+      await this.page.waitForTimeout(500);
+      await this.takeScreenshot("choose-latest-tensorflow-image");
+      return;
+    }
+  }
+  throw new Error("failed to choose latest TensorFlow image");
+});
+
 defineStep("I can see the user limits are {string}, {string}, and {string}", async function(cpu, mem, gpu) {
   var xpath = "//tr[@id='user-limits-body']";
   var element, text;
@@ -160,20 +174,20 @@ defineStep("I can see advanced settings", async function() {
   throw new Error("failed to get information tooltip");
 });
 
-defineStep("I can see the spawning page and wait for notebook started", {timeout: 320 * 1000}, async function() {
+defineStep("I can see the spawning page and wait for notebook started", {timeout: -1}, async function() {
   let ret;
   await this.context.waitForXPath("//div[@id='custom-progress-bar']");
   await this.takeScreenshot("spawning-page");
-  for (retryCount=0; retryCount < 20; retryCount++) {
+  for (retryCount=0; retryCount < this.SPAWNER_START_TIMEOUT; retryCount+=10) {
     await this.checkElementExistByXPath('should exist', "//a[@id='start']", context = this.context).then(
       function(result) { ret = result; }
     );
     if (ret){
-      await this.page.waitForTimeout(15000);
+      await this.page.waitForTimeout(1000);
       return;
     }
     else
-      await this.page.waitForTimeout(15000);
+      await this.page.waitForTimeout(10000);
   }
   throw new Error("failed to start notebook");
 });
