@@ -5,6 +5,10 @@
 ### Avaliable in CE
 ### EE only
 
+## 3.2.1
+
+- [Bugfix] Fix PhDeploymentController crashloopback if can not find group in response.
+
 ## 3.2.0
 
 ### What's New

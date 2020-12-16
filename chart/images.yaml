@@ -5,7 +5,7 @@ primehub-all:
   primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
 
   # Controller
-  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:v3.2-0802d7c8
+  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:v3.2-420e4bbc
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 
