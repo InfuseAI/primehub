@@ -2,47 +2,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "primehub.fullname" . }}-shared-space-tusd
+  name: {{ include "primehub-shared-space.tusd.name" . }}
   labels:
-    app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+    app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.tusd.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+      app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+        app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
         - name: tusd
-          image: tusproject/tusd:v1.4.0
+          image: "{{ .Values.tusd.image.repository }}:{{ .Values.tusd.image.tag }}"
           ports:
           - containerPort: 1080
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ .Values.tusd.image.pullPolicy }}
           volumeMounts:
           - name: tus-volume
             mountPath: /srv/tusd-data/data
           command:
           - tusd
           args:
+          - -behind-proxy
           - --hooks-dir
           - /srv/tusd-hooks
-          - -base-path
-          - /shared/space/tusd/files/
-          - -metrics-path
-          - /shared/space/tusd/metrics/
-          - -behind-proxy
           securityContext:
             runAsUser: 0
           resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
-            requests:
-              cpu: 200m
-              memory: 128Mi
+            {{- toYaml .Values.tusd.resources | nindent 12 }}
       volumes:
         - name: tus-volume
           emptyDir: {}

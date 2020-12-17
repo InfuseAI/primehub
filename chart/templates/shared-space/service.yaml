@@ -2,12 +2,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "primehub.fullname" . }}-shared-space-tusd
+  name: {{ include "primehub-shared-space.tusd.name" . }}
   labels:
-    app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+    app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   selector:
-    app.kubernetes.io/name: {{ include "primehub.fullname" . }}-shared-space-tusd
+    app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
   ports:
   - name: tus
     port: 1080

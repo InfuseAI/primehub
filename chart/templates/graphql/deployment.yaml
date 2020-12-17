@@ -164,6 +164,8 @@ spec:
                 secretKeyRef:
                   name: {{ include "primehub.name" . }}-graphql
                   key: storeSecretKey
+            - name: PRIMEHUB_SHARED_SPACE_TUSD_ENDPOINT
+              value: {{ include "primehub-shared-space.tusd.endpoint" . }}
             {{- if .Values.store.logPersistence.enabled }}
             - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
               value: "true"
