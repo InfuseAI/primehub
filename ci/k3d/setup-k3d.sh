@@ -47,14 +47,20 @@ kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apis
 
 # nginx
 echo "init nginx-ingress"
-helm repo add stable https://kubernetes-charts.storage.googleapis.com
-helm install nginx-ingress stable/nginx-ingress --create-namespace --namespace nginx-ingress --version=1.31.0 --set controller.hostNetwork=true
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --create-namespace \
+    --namespace nginx-ingress \
+    --version=3.15.2 \
+    --set controller.hostNetwork=true \
+    --set controller.admissionWebhooks.enabled=false \
+    --set defaultBackend.enabled=true
 kubectl apply -f k3d/nginx-config.yaml
 
 (
-  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-controller &&
-  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-default-backend &&
-  kubectl port-forward -n nginx-ingress svc/nginx-ingress-controller ${PRIMEHUB_PORT}:80 --address ${BIND_ADDRESS} > /dev/null 2>&1
+  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-ingress-nginx-controller &&
+  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-ingress-nginx-defaultbackend &&
+  kubectl port-forward -n nginx-ingress svc/nginx-ingress-ingress-nginx-controller ${PRIMEHUB_PORT}:80 --address ${BIND_ADDRESS} > /dev/null 2>&1
 )&
 
 # Label nodes
