@@ -53,11 +53,13 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
     --namespace nginx-ingress \
     --version=3.15.2 \
     --set controller.hostNetwork=true \
-    --set controller.admissionWebhooks.enabled=false
+    --set controller.admissionWebhooks.enabled=false \
+    --set defaultBackend.enabled=true
 kubectl apply -f k3d/nginx-config.yaml
 
 (
   kubectl -n nginx-ingress rollout status deploy/nginx-ingress-ingress-nginx-controller &&
+  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-ingress-nginx-defaultbackend &&
   kubectl port-forward -n nginx-ingress svc/nginx-ingress-ingress-nginx-controller ${PRIMEHUB_PORT}:80 --address ${BIND_ADDRESS} > /dev/null 2>&1
 )&
 
