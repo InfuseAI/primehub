@@ -57,9 +57,8 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
 kubectl apply -f k3d/nginx-config.yaml
 
 (
-  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-controller &&
-  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-default-backend &&
-  kubectl port-forward -n nginx-ingress svc/nginx-ingress-controller ${PRIMEHUB_PORT}:80 --address ${BIND_ADDRESS} > /dev/null 2>&1
+  kubectl -n nginx-ingress rollout status deploy/nginx-ingress-ingress-nginx-controller &&
+  kubectl port-forward -n nginx-ingress svc/nginx-ingress-ingress-nginx-controller ${PRIMEHUB_PORT}:80 --address ${BIND_ADDRESS} > /dev/null 2>&1
 )&
 
 # Label nodes
