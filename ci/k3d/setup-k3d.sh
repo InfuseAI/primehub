@@ -47,8 +47,8 @@ kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apis
 
 # nginx
 echo "init nginx-ingress"
-helm repo add stable https://kubernetes-charts.storage.googleapis.com
-helm install nginx-ingress stable/nginx-ingress --create-namespace --namespace nginx-ingress --version=1.31.0 --set controller.hostNetwork=true
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm install nginx-ingress ingress-nginx/ingress-nginx --create-namespace --namespace nginx-ingress --version=3.15.2 --set controller.hostNetwork=true
 kubectl apply -f k3d/nginx-config.yaml
 
 (
