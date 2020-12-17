@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
-    ssl-redirect: "false"
+  ssl-redirect: "false"
 kind: ConfigMap
 metadata:
-  name: nginx-ingress-controller
+  name: nginx-ingress-ingress-nginx-controller
   namespace: nginx-ingress
