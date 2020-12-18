@@ -135,14 +135,23 @@ defineStep("I {string} see instance types block contains {string} instanceType w
 
 defineStep("I {string} see images block contains {string} image with {string} type and {string} description", async function(exist, name, type, desc) {
   let ret;
-  let xpath = `//div[@id='image-container']//strong[text()='${name}-${this.E2E_SUFFIX} (${type})']`;
+  let xpath = `//div[@id='image-container']//strong[contains(text(), '${name}-${this.E2E_SUFFIX}')]`;
   
   await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
   );
-  if (!ret) throw new Error(`failed to check image '${name}-${this.E2E_SUFFIX} (${type})' is existed`);
+  if (!ret) throw new Error(`failed to check image '${name}-${this.E2E_SUFFIX}' is existed`);
   
   if (!exist.includes('not')) {
+    const [element] = await this.context.$x(xpath+'//i');
+    await element.hover();
+    await this.takeScreenshot("hover-information-tooltip");
+
+    await this.checkElementExistByXPath(exist, xpath+`//div[text()='${type}']`, context = this.context).then(
+      function(result) { ret = result; }
+    );
+    if (!ret) throw new Error(`failed to get '${type}' information tooltip`);
+
     xpath += `//..//p[text()='${desc}-${this.E2E_SUFFIX}']`;
     await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
