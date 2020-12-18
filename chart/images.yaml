@@ -36,7 +36,7 @@ primehub-all:
 
   # Dataset Uploader
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
-  tusd: &tusd infuseai/tusd:0.1.1
+  primehub-tusd: &primehub-tusd infuseai/tusd:0.1.1
 
   # Model deployment
   seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.1.0
@@ -58,6 +58,10 @@ primehub-all:
 
   # Log Collector
   fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
+
+  # Tusd Uploader
+  tusd: &tusd tusproject/tusd:v1.4.0
+
 
 primehub-ee:
   # Core
@@ -96,7 +100,7 @@ primehub-ee:
 
   # Dataset Uploader
   dataset-upload-web-front-end: *dataset-upload-web-front-end
-  tusd: *tusd
+  primehub-tusd: *primehub-tusd
 
   # Model deployment
   seldon-core-executor: *seldon-core-executor
@@ -118,6 +122,9 @@ primehub-ee:
 
   # Log Collector
   fluentd-kubernetes-daemonset: *fluentd-kubernetes-daemonset
+
+  # Tusd Uploader
+  tusd: *tusd
 
 primehub-deploy:
   # Core
