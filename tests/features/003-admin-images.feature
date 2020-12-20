@@ -82,7 +82,7 @@ Feature: Admin
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
-    Then I "should" see images block contains "test-image-display-name" image with "Universal" type and "test-description" description
+    Then I "should" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -146,6 +146,6 @@ Feature: Admin
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
-    Then I "should" see images block contains "test-image-gpu-display-name" image with "GPU" type and "test-description-gpu" description
+    Then I "should" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page

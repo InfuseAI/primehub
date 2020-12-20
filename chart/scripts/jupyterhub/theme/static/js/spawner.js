@@ -154,8 +154,10 @@
 
       for (var i = 0; i < currentGroup.images.length; i++) {
         currentGroup.images[i].index = i;
-        var type = currentGroup.images[i].spec.type;
-        currentGroup.images[i].typeLabel = typeTextList[type];
+        var spec = currentGroup.images[i].spec;
+        var isGroupImage = spec.groupName && spec.groupName.length > 0;
+        var label = (isGroupImage ? 'Group' : 'System') + ' / ' + typeTextList[spec.type];
+        currentGroup.images[i].typeLabel = label;
       }
 
       $itContainer.html(Mustache.render(itTemplate, currentGroup.instanceTypes));
