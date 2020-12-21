@@ -2,6 +2,9 @@
 
 ## Upcoming
 ### What's New
+
+- **Notebook Log**: Users can see logs for the notebook server. It is especially useful to investigate the reason why the jupyter server cannot launch successfully.
+
 ### Avaliable in CE
 ### EE only
 
