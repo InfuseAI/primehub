@@ -7,6 +7,13 @@
 
 ### Avaliable in CE
 ### EE only
+### Action Required
+- In this version, we start to collect anonymous usage behavior by default to ensure that we can deliver the best PrimeHub experience. To disable tracking, please set the value as follows.
+
+  ```
+  telemetry:
+    enabled: false
+  ```
 
 ## 3.2.1
 

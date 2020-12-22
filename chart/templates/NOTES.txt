@@ -8,6 +8,7 @@ To get the login account, please enter the following commands:
   echo "password: $(kubectl -n {{ .Release.Namespace}} get secret primehub-bootstrap -o jsonpath='{.data.password}' | base64 --decode)"
 
 {{ if .Values.sshBastionServer.enabled }}
+## SSH Server
 SSH Bastion Server is enabled. Please expose bastion server service
 
 The configuration is
@@ -22,4 +23,14 @@ data:
 
 For more information, please see
 https://kubernetes.github.io/ingress-nginx/user-guide/exposing-tcp-udp-services/
+{{- end }}
+
+{{- if .Values.telemetry.enabled }}
+## Telemetry
+We collect anonymous usage behavior to ensure that we can deliver the best PrimeHub experience for you. To opt out and disable this feature, please configure your settings with the following:
+
+'''
+telemetry:
+  enabled: false
+'''
 {{- end }}
