@@ -25,6 +25,9 @@ cleanup() {
 
   echo "events in all namespaces"
   kubectl get events --all-namespaces
+
+  echo "describe node information"
+  kubectl describe node
 }
 trap "cleanup" ERR
 
