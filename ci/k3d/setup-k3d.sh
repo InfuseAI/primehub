@@ -54,7 +54,12 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
     --version=3.15.2 \
     --set controller.hostNetwork=true \
     --set controller.admissionWebhooks.enabled=false \
+    --set controller.updateStrategy.type=RollingUpdate \
+    --set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
+    --set controller.updateStrategy.rollingUpdate.maxSurge=1 \
     --set defaultBackend.enabled=true
+
+
 kubectl apply -f k3d/nginx-config.yaml
 
 (

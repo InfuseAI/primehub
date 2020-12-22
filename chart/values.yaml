@@ -476,6 +476,20 @@ datasetUpload:
           cpu: 200m
           memory: 128Mi
 
+tusd:
+  replicas: 1
+  image:
+    repository: tusproject/tusd
+    tag: v1.4.0
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 200m
+      memory: 128Mi
+
 # Jupyterhub
 jupyterhub:
   enabled: true

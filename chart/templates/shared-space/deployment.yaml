@@ -1,0 +1,45 @@
+{{- if eq (include "primehub.phfs.enabled" .) "true" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "primehub-shared-space.tusd.name" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.tusd.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: tusd
+          image: "{{ .Values.tusd.image.repository }}:{{ .Values.tusd.image.tag }}"
+          ports:
+          - containerPort: 1080
+          imagePullPolicy: {{ .Values.tusd.image.pullPolicy }}
+          volumeMounts:
+          - name: tus-volume
+            mountPath: /srv/tusd-data/data
+          command:
+          - tusd
+          args:
+          - -behind-proxy
+          - --hooks-dir
+          - /srv/tusd-hooks
+          securityContext:
+            runAsUser: 0
+          resources:
+            {{- toYaml .Values.tusd.resources | nindent 12 }}
+      volumes:
+        - name: tus-volume
+          emptyDir: {}
+{{- end }}

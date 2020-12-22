@@ -183,6 +183,21 @@ Store
 {{- end -}}
 
 {{/*
+shared space
+*/}}
+{{- define "primehub-shared-space.name" -}}
+{{ include "primehub.fullname" . }}-shared-space
+{{- end }}
+
+{{- define "primehub-shared-space.tusd.name" -}}
+{{ include "primehub-shared-space.name" . }}-tusd
+{{- end }}
+
+{{- define "primehub-shared-space.tusd.endpoint" -}}
+{{- printf "http://%s%s" (include "primehub-shared-space.tusd.name" .) ":1080/files/" -}}
+{{- end }}
+
+{{/*
 Keycloak
 */}}
 {{- define "keycloak.name" -}}
