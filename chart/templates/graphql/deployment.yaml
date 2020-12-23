@@ -39,6 +39,8 @@ spec:
           imagePullPolicy: {{ .Values.graphql.image.pullPolicy }}
           {{- end }}
           env:
+            - name: PH_VERSION
+              value: {{ .Chart.AppVersion | quote }}
             {{- if .Values.datasetUpload.enabled }}
             - name: PRIMEHUB_FEATURE_DATASET_UPLOAD
               value: {{ .Values.datasetUpload.enabled | quote }}
@@ -176,6 +178,10 @@ spec:
               value: {{ include "primehub-usage.enabled" . | quote }}
             - name: PRIMEHUB_USAGE_REPORT_API_HOST
               value: {{ include "primehub-usage.api" . }}
+            {{- end }}
+            {{- if .Values.telemetry.enabled }}
+            - name: PRIMEHUB_FEATURE_TELEMETRY
+              value: {{ .Values.telemetry.enabled | quote }}
             {{- end }}
             {{- range $key, $value := .Values.graphql.extraEnv }}
             - name: {{ $key }}
