@@ -1,0 +1,29 @@
+#!/bin/sh
+
+echo "Upload $TUS_ID ($TUS_SIZE bytes) finished"
+info=`cat /dev/stdin`
+
+filename=`echo $info | jq .Upload.MetaData.filename`
+filename="${filename%\"}"
+filename="${filename#\"}"
+
+tus_id=`echo $info | jq .Upload.ID`
+tus_id="${tus_id%\"}"
+tus_id="${tus_id#\"}"
+
+dirpath=`echo $info | jq .Upload.MetaData.dirpath`
+dirpath="${dirpath%\"}"
+dirpath="${dirpath#\"}"
+
+mkdir -p "/srv/tusd-data/data/$dirpath"
+
+echo $filename
+echo $tus_id
+mv "/srv/tusd-data/data/$tus_id" "/srv/tusd-data/data/$dirpath/$filename"
+rm "/srv/tusd-data/data/$tus_id.info"
+
+if [ ${filename: -4} == ".zip" ]; then
+  name=$(echo "$filename" | cut -f 1 -d '.')
+  unzip -o /srv/tusd-data/data/$dirpath/$filename -d /srv/tusd-data/data/$dirpath
+  rm "/srv/tusd-data/data/$dirpath/$filename"
+fi
