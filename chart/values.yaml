@@ -464,10 +464,7 @@ datasetUpload:
         requests:
           cpu: 200m
           memory: 256Mi
-    tusdImage:
-      repository: infuseai/tusd
-      tag: 0.1.1
-      pullPolicy: IfNotPresent
+    tusd:
       resources:
         limits:
           cpu: 200m

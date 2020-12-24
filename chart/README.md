@@ -171,10 +171,7 @@ jupyterhub:
 Parameter | Description | Default
 --- | --- | ---
 `datasetUpload.enabled` | If dataset upload server enabled | `true`
-`datasetUpload.interface.tusdImage.repository` | The dataset upload tusd image repository | `infuseai/tusd`
-`datasetUpload.interface.tusdImage.tag` | The dataset upload tusd image tag | Please see [values.yaml](values.yaml)
-`datasetUpload.interface.tusdImage.pullPolicy` | The dataset upload tusd image pull policy |  `IfNotPresent`
-`datasetUpload.interface.tusdImage.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
+`datasetUpload.interface.tusd.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
 `datasetUpload.interface.webFrontEndImage.repository` | The dataset upload frontend image repository | `infuseai/dataset-upload-web-front-end`
 `datasetUpload.interface.webFrontEndImage.tag` | The dataset upload frontend image tag | Please see [values.yaml](values.yaml)
 `datasetUpload.interface.webFrontEndImage.pullPolicy` | The dataset upload frontend image pull policy | `IfNotPresent`

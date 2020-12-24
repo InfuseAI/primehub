@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primehub-dataset-upload-hooks
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: primehub-dataset-upload
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  {{- tpl (.Files.Glob "scripts/dataset-upload/*").AsConfig . | nindent 2 }}

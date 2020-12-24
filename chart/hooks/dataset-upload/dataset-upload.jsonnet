@@ -35,6 +35,14 @@ function(request) {
         },
       }
     else {},
+  local mount_hooks = {
+    name: "tus-hooks",
+    configMap: {
+      name: "primehub-dataset-upload-hooks",
+      // converted from octal 0755
+      defaultMode: 493
+    }
+  },
 
   local deploy = {
     apiVersion: "apps/v1",
@@ -63,17 +71,21 @@ function(request) {
           containers: [
             {
               name: "tusd",
-              image: "{{.Values.datasetUpload.interface.tusdImage.repository}}:{{.Values.datasetUpload.interface.tusdImage.tag}}",
+              image: "{{.Values.tusd.image.repository}}:{{.Values.tusd.image.tag}}",
               ports: [
                 {
                   "containerPort": 1080
                 }
               ],
-              imagePullPolicy: "{{.Values.datasetUpload.interface.tusdImage.pullPolicy}}",
+              imagePullPolicy: "{{.Values.tusd.image.pullPolicy}}",
               volumeMounts: [
                 {
                     mountPath: "/srv/tusd-data/data",
                     name: "tus-volume"
+                },
+                {
+                    mountPath: "/srv/tusd-hooks",
+                    name: "tus-hooks"
                 }
               ],
               command: ["tusd"],
@@ -117,11 +129,12 @@ function(request) {
                   value: tusd_path
                 },
               ],
-              resources: {{.Values.datasetUpload.interface.tusdImage.resources|toJson}}
+              resources: {{.Values.datasetUpload.interface.tusd.resources|toJson}}
             },
           ],
           volumes: [
-            mount_volume
+            mount_volume,
+            mount_hooks
           ],
         },
       },
