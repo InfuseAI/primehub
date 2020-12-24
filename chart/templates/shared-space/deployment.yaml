@@ -19,7 +19,21 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+      annotations:
+        checksum/config-map: {{ include (print .Template.BasePath "/shared-space/configmap.yaml") . | sha256sum }}
     spec:
+      initContainers:
+        - name: minio-mc
+          image: "{{ .Values.minio.mcImage.repository }}:{{ .Values.minio.mcImage.tag }}"
+          imagePullPolicy: {{ .Values.minio.mcImage.pullPolicy }}
+          command:
+          - /bin/sh
+          args:
+          - -c
+          - 'cp /usr/bin/mc /opt/bin'
+          volumeMounts:
+          - name: bin-volume
+            mountPath: /opt/bin
       containers:
         - name: tusd
           image: "{{ .Values.tusd.image.repository }}:{{ .Values.tusd.image.tag }}"
@@ -29,6 +43,12 @@ spec:
           volumeMounts:
           - name: tus-volume
             mountPath: /srv/tusd-data/data
+          - name: tus-hooks
+            mountPath: /srv/tusd-hooks
+          - name: bin-volume
+            mountPath: /opt/bin
+          - name: minio-configuration
+            mountPath: /config
           command:
           - tusd
           args:
@@ -39,7 +59,27 @@ spec:
             runAsUser: 0
           resources:
             {{- toYaml .Values.tusd.resources | nindent 12 }}
+          env:
+            - name: MINIO_ENDPOINT
+              value: {{ template "minio.fullname" . }}
+            - name: MINIO_PORT
+              value: {{ .Values.minio.service.port | quote }}
+            - name: BUCKET_NAME
+              value: {{ .Values.store.bucket }}
       volumes:
         - name: tus-volume
           emptyDir: {}
+        - name: bin-volume
+          emptyDir: {}
+        - name: minio-configuration
+          projected:
+            sources:
+            - configMap:
+                name: {{ template "minio.fullname" . }}
+            - secret:
+                name: {{ if .Values.minio.existingSecret }}{{ .Values.minio.existingSecret }}{{ else }}{{ template "minio.fullname" . }}{{ end }}
+        - name: tus-hooks
+          configMap:
+            name: {{ include "primehub-shared-space.tusd.name" . }}-hooks
+            defaultMode: 0555
 {{- end }}
