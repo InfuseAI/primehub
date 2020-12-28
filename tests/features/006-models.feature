@@ -41,7 +41,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test" to "name" text field
     And I choose radio button with name "test-instance-type"
-    And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage" text field
+    And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -83,7 +83,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Update" button
-    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage" text field
+    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click "Confirm and Deploy" button
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -197,7 +197,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "model-uri-test" to "name" text field
     And I choose radio button with name "test-instance-type"
-    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage" text field
+    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage input" text field
     And I type "gs://primehub-models/tensorflow2/mnist/" to "modelURI" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Models" page
@@ -358,7 +358,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test-gpu" to "name" text field
     And I choose radio button with name "test-instance-type-gpu"
-    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage" text field
+    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
