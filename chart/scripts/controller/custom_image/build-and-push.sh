@@ -7,6 +7,8 @@ readonly PUSH_FAILED=3
 readonly PUSH_SECRET_AUTHFILE=/push-secret/.dockerconfigjson
 readonly PULL_SECRET_AUTHFILE=/pull-secret/.dockerconfigjson
 
+readonly SKIP_TLS_VERIFY={SKIP_TLS_VERIFY:-false}
+
 function init() {
   echo "[Step: init]"
   echo "Generating Dockerfile"
@@ -41,7 +43,11 @@ function build() {
 
 function push() {
   echo "[Step: push]"
-  buildah --storage-driver overlay --authfile $PUSH_SECRET_AUTHFILE push --format docker $TARGET_IMAGE
+  if [ "$SKIP_TLS_VERIFY" == "true" ]; then
+    buildah --storage-driver overlay --authfile $PUSH_SECRET_AUTHFILE push --tls-verify=false --format docker $TARGET_IMAGE
+  else
+    buildah --storage-driver overlay --authfile $PUSH_SECRET_AUTHFILE push --format docker $TARGET_IMAGE
+  fi
   [[ $? -ne 0 ]] && { exit $PUSH_FAILED; }
   echo
 }
