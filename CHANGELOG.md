@@ -15,6 +15,10 @@
     enabled: false
   ```
 
+## 3.2.2
+
+- [Bugfix] job artifacts can not be accessed from PrimeHub console
+
 ## 3.2.1
 
 - [Bugfix] Fix PhDeploymentController crashloopback if can not find group in response.
