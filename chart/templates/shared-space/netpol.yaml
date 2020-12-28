@@ -1,0 +1,25 @@
+{{- if eq (include "primehub.phfs.enabled" .) "true" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+    helm.sh/chart: {{ include "primehub.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "primehub-shared-space.tusd.name" . }}-ingress
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ include "primehub.name" . }}-graphql
+    ports:
+    - port: 1080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "primehub-shared-space.tusd.name" . }}
+  policyTypes:
+  - Ingress
+{{- end }}
