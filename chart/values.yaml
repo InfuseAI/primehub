@@ -734,6 +734,7 @@ customImage:
   #registryUsername: _json_key
   #registryPassword: _password_
   #pushRepoPrefix: gcr.io/_prefix_
+  insecureSkipVerify: false
   pushSecretName: primehub-controller-custom-image-push-secret
 
   buildJob:
