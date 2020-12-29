@@ -23,12 +23,10 @@ log "Upload $TUS_ID ($TUS_SIZE bytes) finished"
 info=`cat /dev/stdin`
 
 tus_id=$TUS_ID
-filename=`echo $info | jq .Upload.MetaData.filename`
-filename="${filename%\"}"
-filename="${filename#\"}"
-dirpath=`echo $info | jq .Upload.MetaData.dirpath`
-dirpath="${dirpath%\"}"
-dirpath="${dirpath#\"}"
+filename=`echo $info | jq -r .Upload.MetaData.filename`
+
+# normalize group name by lowercase and replace '-' to '_'
+dirpath=`echo $info | jq -r .Upload.MetaData.dirpath | awk 'BEGIN { FS="/" } { gsub("-", "_", $2) } { print "groups/"tolower($2)"/upload" }'`
 
 log metadata "$(echo $info | jq -c .Upload.MetaData)"
 log "tus_id $tus_id, filename $filename, dirpath $dirpath, bucket $BUCKET_NAME"
