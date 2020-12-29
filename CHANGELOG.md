@@ -4,6 +4,7 @@
 ### What's New
 
 - **Notebook Log**: Users can see logs for the notebook server. It is especially useful to investigate the reason why the jupyter server cannot launch successfully.
+- **Group Admin Image Management**: The system admin can assign a group member with group admin permission, and the group admin can manage their group images. It will improve work productivity across a group/team through managing images for a group.
 
 ### Avaliable in CE
 ### EE only
