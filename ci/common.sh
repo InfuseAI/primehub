@@ -37,7 +37,6 @@ function helm::update_dependency() {
   info "[Helm] Update dependency"
   pushd $CHART_ROOT
   # helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-  # helm repo add keycloak https://kubernetes-charts.storage.googleapis.com/
   # helm dependency update
   popd
 }

@@ -7,7 +7,7 @@
 2. Install nginx-ingress if necessary.
 
    ```
-    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add stable https://charts.helm.sh/stable
     helm install nginx-ingress stable/nginx-ingress --create-namespace --namespace nginx-ingress --version=1.31.0 --set controller.hostNetwork=true
     kubectl apply -f k3d/nginx-config.yaml
    ```
