@@ -1070,6 +1070,7 @@ usage:
       memory: 256Mi
 
   dbStorage: 64Gi
+  dbStorageClass: null
 
   # cronjob schedule for the report generator
   schedule: "0 0 * * *"
