@@ -50,7 +50,7 @@ spec:
       name: {{ include "primehub-usage.name" . }}-data
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: {{ .Values.usage.dbStorageClass | quote }}
+      storageClassName: {{ .Values.usage.dbStorageClass }}
       resources:
         requests:
           storage: {{ .Values.usage.dbStorage }}
