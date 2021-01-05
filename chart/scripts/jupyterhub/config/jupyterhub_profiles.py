@@ -1,8 +1,5 @@
 from kubespawner.clients import shared_client
 from kubespawner import KubeSpawner
-from pprint import pprint
-import kubernetes.client
-import re
 import json
 import urllib
 import uuid
@@ -12,16 +9,13 @@ import time
 from z2jh import get_config
 from tornado import gen, httpclient, web
 from tornado.auth import OAuth2Mixin
-from oauthenticator.generic import GenericLoginHandler, GenericOAuthenticator
+from oauthenticator.generic import GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
 from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
 from jupyterhub.utils import url_path_join
-from kubespawner.objects import make_pvc
-from kubernetes.client.models import V1LabelSelector
 from kubernetes.client.rest import ApiException
 from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
 from jinja2 import Environment, FileSystemLoader
-from kubespawner.traitlets import Callable
 from kubespawner.reflector import NamespacedResourceReflector
 
 try:
@@ -159,6 +153,14 @@ class OIDCAuthenticator(GenericOAuthenticator):
     login_handler = OIDCLoginHandler
     logout_handler = OIDCLogoutHandler
 
+    @default("authorize_url")
+    def _authorize_url_default(self):
+        return '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
+
+    @default("token_url")
+    def _token_url_default(self):
+        return '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
+
     @gen.coroutine
     def verify_access_token(self, user):
         auth_state = yield user.get_auth_state()
@@ -186,7 +188,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
     @gen.coroutine
     def refresh_user(self, user, handler=None):
         # prevent multiple graphql calls
-        if isinstance(handler, (LoginHandler, GenericLoginHandler, OAuthCallbackHandler)):
+        if isinstance(handler, (LoginHandler, OAuthCallbackHandler)):
             self.log.debug('skip refresh user in handler: %s', handler)
             return False
 
@@ -798,7 +800,8 @@ class PrimeHubSpawner(KubeSpawner):
         try:
             groups = self._groups_from_ctx(context)
             self._groups = groups
-        except:
+        except Exception:
+            self.log.error('Failed to fetch groups', exc_info=True)
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
         self.user.spawner.ssh_config['host'] = get_primehub_config('host', '')
@@ -813,20 +816,38 @@ class PrimeHubSpawner(KubeSpawner):
                                 ssh_config=self.user.spawner.ssh_config)
 
     def get_container_resource_usage(self, group):
+        try:
+            return self._get_container_resource_usage(group)
+        except Exception:
+            self.log.error('Failed to calculate resource usages', exc_info=True)
+
+    def _get_container_resource_usage(self, group):
         existing = []
-        for pod in self.primehub_pod_reflector.pods.values():
-            if pod.metadata.labels and pod.metadata.labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) and \
-                (pod.status.phase == "Pending" or pod.status.phase == "Running"):
-                existing += pod.spec.containers
+        for item in self.primehub_pod_reflector.pods.values():
+            pod = item
+            if not isinstance(item, dict):
+                pod = item.to_dict()
+
+            labels = pod.get('metadata', {}).get('labels', None)
+            phase = pod.get('status', {}).get('phase', None)
+            if labels and labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) \
+                    and (phase == "Pending" or phase == "Running"):
+                existing += pod.get('spec', {}).get('containers', {})
+
+        def limit_of(container, name):
+            return container.get('resources', {}).get('limits', {}).get(name, 0)
+
+        def has_limit(container):
+            return container.get('resources', {}).get('limits', {})
 
         cpu, gpu, mem = (0, 0, 0)
         # some functions are under primehub_utils.py
-        cpu = sum([float(convert_cpu_values_to_float(container.resources.limits.get('cpu', 0)))
-                   for container in existing if container.resources.limits])
-        gpu = sum([int(container.resources.limits.get('nvidia.com/gpu', 0))
-                   for container in existing if container.resources.limits])
-        mem = sum([int(convert_mem_resource_to_bytes(container.resources.limits.get('memory', 0)))
-                   for container in existing if container.resources.limits])
+        cpu = sum([float(convert_cpu_values_to_float(limit_of(container, 'cpu')))
+                   for container in existing if has_limit(container)])
+        gpu = sum([int(limit_of(container, 'nvidia.com/gpu'))
+                   for container in existing if has_limit(container)])
+        mem = sum([int(convert_mem_resource_to_bytes(limit_of(container, 'memory')))
+                   for container in existing if has_limit(container)])
         mem = round(float(mem / GiB()), 1) # convert to GB
 
         return {'cpu': cpu, 'gpu': gpu, 'memory': mem}
@@ -834,7 +855,6 @@ class PrimeHubSpawner(KubeSpawner):
     def _groups_from_ctx(self, context):
         role_groups = [group for group in context['groups']
                        if group['name'] == 'everyone']
-
         groups = [
             {
                 **(group),

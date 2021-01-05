@@ -383,13 +383,18 @@ class TestImageToOverride(unittest.TestCase):
             }
         }
         self.spawner.apply_kubespawner_override(self.spawner.image_to_override(image, 0))
-        pod = make_pod(name='test',
+
+        pod_def = dict(name='test',
             image='jupyter/singleuser:latest',
-            image_pull_secret=self.spawner.image_pull_secrets,
             cmd=['jupyterhub-singleuser'],
             port=8888,
-            image_pull_policy='IfNotPresent'
-        )
+            image_pull_policy='IfNotPresent')
+
+        try:
+            pod = make_pod(image_pull_secret=self.spawner.image_pull_secrets, **pod_def)
+        except Exception:
+            pod = make_pod(image_pull_secrets=self.spawner.image_pull_secrets, **pod_def)
+
         self.assertEqual(pod.spec.image_pull_secrets[0].name, 'image-test')
 
 def mock_for_options_from_form(spawner):
