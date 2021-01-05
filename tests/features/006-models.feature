@@ -236,7 +236,7 @@ Feature: Model Deployment
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "...Download to see more... 305647406407e-07" in element "div" under active tab
+    Then I should see "...Download to see more... 110475311987e-07" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -289,7 +289,7 @@ Feature: Model Deployment
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
+    Then I should see "...Download to see more... 110475311987e-07|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
