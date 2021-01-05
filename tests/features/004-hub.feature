@@ -86,6 +86,7 @@ Feature: Hub
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
     Then list-view table "should" contain row with "test-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
