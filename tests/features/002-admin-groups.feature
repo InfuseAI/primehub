@@ -36,6 +36,9 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
