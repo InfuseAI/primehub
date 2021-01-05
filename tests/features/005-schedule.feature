@@ -1,4 +1,4 @@
-@released @ee
+@released @daily @ee
 Feature: Job Schedule
   Basic tests
 
@@ -7,7 +7,6 @@ Feature: Job Schedule
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click "New Schedule" button
@@ -32,7 +31,6 @@ Feature: Job Schedule
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click element with xpath "//td[text()='create-schedule-test']//..//button[2]" and wait for navigation
@@ -59,7 +57,6 @@ Feature: Job Schedule
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click element with xpath "//td[text()='update-schedule-test']//..//button[3]" and wait for xpath "//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'Delete')]" appearing

@@ -8,7 +8,6 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     And I "should" see element with xpath "//span[text()='Model Deployment is not enabled for this group. Please contact your administrator to enable it.']"
@@ -21,7 +20,6 @@ Feature: Model Deployment
     And I click element with test-id "confirm-button"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -34,7 +32,6 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -53,32 +50,15 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
-    #When I click tab of "Information"
-    #And I copy value from "Endpoint" attribute
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click "New Job" button
-    #Then I am on the PrimeHub console "NewJob" page
-    #When I choose radio button with name "test-instance-type"
-    #And I choose radio button with name "test-image"
-    #And I type "deployment-endpoint-test" to "displayName" text field
-    #And I type "endpoint curl test" to command text field
-    #And I click "Submit" button
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  # will add to daily workflow
+  @daily
   Scenario: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -95,25 +75,31 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
+    When I click tab of "Information"
+    And I copy value from "Endpoint" attribute
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click "New Job" button
+    Then I am on the PrimeHub console "NewJob" page
+    When I choose radio button with name "test-instance-type"
+    And I choose radio button with name "test-image"
+    And I type "deployment-endpoint-test" to "displayName" text field
+    And I type "endpoint curl test" to command text field
+    And I click "Submit" button
+    Then I am on the PrimeHub console "Jobs" page
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  # will add to daily workflow
+  @daily
   Scenario: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -126,18 +112,18 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "True"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
-    #When I choose "Models" in sidebar menu
-    #Then I am on the PrimeHub console "Models" page
-    #When I go to the deployment detail page with name "create-deployment-test"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
+    And I click button of "Yes" on confirmation dialogue
+    Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
+    When I choose "Models" in sidebar menu
+    Then I am on the PrimeHub console "Models" page
+    When I go to the deployment detail page with name "create-deployment-test"
     When I click tab of "Information"
     And I click "Start" button
     And I click button of "Yes" on confirmation dialogue
@@ -148,24 +134,24 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
+    And I click button of "Yes" on confirmation dialogue
+    Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -173,37 +159,28 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I am on the PrimeHub console "Models" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "default backend - 404" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Model URI: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "model-uri-test" to "name" text field
     And I choose radio button with name "test-instance-type"
-    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage input" text field
+    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.3" to "modelImage input" text field
     And I type "gs://primehub-models/tensorflow2/mnist/" to "modelURI" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
     Then I wait for attribute "Status" with value "Deployed"
-    And I wait for attribute "Model Image" with value "infuseai/tensorflow2-prepackaged_rest:v0.4.2"
+    And I wait for attribute "Model Image" with value "infuseai/tensorflow2-prepackaged_rest:v0.4.3"
     And I wait for attribute "Model URI" with value "gs://primehub-models/tensorflow2/mnist/"
     When I click tab of "Logs"
     Then I should see "Running on http://0.0.0.0:9000/" in element "div" under active tab
@@ -211,33 +188,15 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
-    #When I click tab of "Information"
-    #And I copy value from "Endpoint" attribute
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click "New Job" button
-    #Then I am on the PrimeHub console "NewJob" page
-    #When I choose radio button with name "test-instance-type"
-    #And I choose radio button with name "test-image"
-    #And I type "deployment-endpoint-test" to "displayName" text field
-    #And I type "endpoint curl test" to command text field
-    #And I click "Submit" button
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "...Download to see more... 076605555252e-06" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  # will add to daily workflow
-  @wip
+  @daily
   Scenario: Model URI: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -254,26 +213,31 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Model URI" with value "gs://seldon-models/keras/mnist"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
+    When I click tab of "Information"
+    And I copy value from "Endpoint" attribute
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click "New Job" button
+    Then I am on the PrimeHub console "NewJob" page
+    When I choose radio button with name "test-instance-type"
+    And I choose radio button with name "test-image"
+    And I type "deployment-endpoint-test" to "displayName" text field
+    And I type "endpoint curl test" to command text field
+    And I click "Submit" button
+    Then I am on the PrimeHub console "Jobs" page
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "...Download to see more... 305647406407e-07" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  # will add to daily workflow
-  @wip
+  @daily
   Scenario: Model URI: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -286,18 +250,18 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "True"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
-    #When I choose "Models" in sidebar menu
-    #Then I am on the PrimeHub console "Models" page
-    #When I go to the deployment detail page with name "model-uri-test"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
+    And I click button of "Yes" on confirmation dialogue
+    Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
+    When I choose "Models" in sidebar menu
+    Then I am on the PrimeHub console "Models" page
+    When I go to the deployment detail page with name "model-uri-test"
     When I click tab of "Information"
     And I click "Start" button
     And I click button of "Yes" on confirmation dialogue
@@ -308,24 +272,24 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
+    When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
+    And I click button of "Yes" on confirmation dialogue
+    Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
+    Then I wait for attribute "Status" with value "Succeeded" in job upper pane
+    When I click tab of "Logs"
+    Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Model URI: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -333,15 +297,6 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I am on the PrimeHub console "Models" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='model-uri-test']"
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
-    #When I click button of "Rerun" of item "deployment-endpoint-test" to wait for "Rerun" dialogue
-    #And I click button of "Yes" on confirmation dialogue
-    #Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
-    #When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
-    #Then I wait for attribute "Status" with value "Succeeded" in job upper pane
-    #When I click tab of "Logs"
-    #Then I should see "default backend - 404" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -351,7 +306,6 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -375,7 +329,6 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"

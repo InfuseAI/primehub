@@ -2,6 +2,7 @@
 Feature: Admin
   Delete some created resources
 
+  @daily
   Scenario: Delete image
     Given I go to login page
     When I fill in the correct username credentials
@@ -27,7 +28,6 @@ Feature: Admin
     Then list-view table "should not" contain row with "error-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -54,7 +54,6 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-image-gpu"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -62,6 +61,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Delete instance type
     Given I go to login page
     When I fill in the correct username credentials
@@ -77,7 +77,6 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-instance-type"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -101,7 +100,6 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-instance-type-gpu"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -109,6 +107,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Delete group
     Given I go to login page
     When I fill in the correct username credentials

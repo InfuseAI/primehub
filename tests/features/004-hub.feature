@@ -4,12 +4,12 @@ Feature: Hub
   As a user,
   I want to spawn a hub and do something.
 
+  @daily
   Scenario: User can see advanced settings
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -17,12 +17,12 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can cancel spawning while chose error image
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -40,7 +40,6 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -135,7 +134,6 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page

@@ -1,4 +1,4 @@
-@released @admin-user
+@released @daily @admin-user
 Feature: Admin
   In order to manage datasets
   I want to change settings
@@ -54,7 +54,6 @@ Feature: Admin
     And I should see input in test-id "dataset/displayName" with value "test-dataset-display-name"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -81,7 +80,6 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-dataset" 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page

@@ -71,7 +71,7 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
-  e2e_installed_ph:
+  e2e_installed_ph_daily:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -84,6 +84,7 @@ jobs:
           name: End-to-end tests
           environment:
             INSTALLED_PH: "true"
+            E2E_SCHEDULED: "daily"
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
@@ -188,6 +189,12 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
+      - e2e_normal_user
+      - e2e_installed_ph_daily:
+          context: e2e-demo-a
+      - e2e_regression
+      - e2e_installed_ph_weekly:
+          context: e2e-demo-a
       - build:
           filters:
             tags:
@@ -204,7 +211,7 @@ workflows:
                 - master
     jobs:
       - e2e_normal_user
-      - e2e_installed_ph:
+      - e2e_installed_ph_daily:
           context: e2e-demo-a
   weekly_workflow:
     triggers:

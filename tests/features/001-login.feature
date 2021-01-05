@@ -1,4 +1,4 @@
-@released
+@released @daily
 Feature: Login
   In order to manage system
   As a user

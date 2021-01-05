@@ -7,7 +7,6 @@ Feature: Job Submission
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
@@ -31,12 +30,12 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can rerun job
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     And I click button of "Rerun" of item "create-job-test" to wait for "Rerun" dialogue
@@ -49,13 +48,13 @@ Feature: Job Submission
     Then I should see "test" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
-  
+
+  @daily
   Scenario: User can clone job
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
@@ -72,12 +71,12 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can cancel job
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
@@ -105,7 +104,6 @@ Feature: Job Submission
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
