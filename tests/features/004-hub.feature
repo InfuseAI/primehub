@@ -10,6 +10,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -23,6 +24,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -40,6 +42,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -86,6 +89,7 @@ Feature: Hub
     Then list-view table "should" contain row with "test-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -109,6 +113,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -134,6 +139,7 @@ Feature: Hub
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page

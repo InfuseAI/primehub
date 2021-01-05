@@ -8,6 +8,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     And I "should" see element with xpath "//span[text()='Model Deployment is not enabled for this group. Please contact your administrator to enable it.']"
@@ -20,6 +21,7 @@ Feature: Model Deployment
     And I click element with test-id "confirm-button"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -32,6 +34,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -59,6 +62,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -100,6 +104,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -152,6 +157,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -168,6 +174,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -197,6 +204,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -238,6 +246,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -290,6 +299,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
@@ -306,6 +316,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I click "Create Deployment" button
@@ -329,6 +340,7 @@ Feature: Model Deployment
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"

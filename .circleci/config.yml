@@ -122,6 +122,7 @@ jobs:
           name: End-to-end tests
           no_output_timeout: 20m
           environment:
+            PRIMEHUB_MODE: ee
             E2E_REGRESSION: "true"
             SPAWNER_START_TIMEOUT: 600
           command: |

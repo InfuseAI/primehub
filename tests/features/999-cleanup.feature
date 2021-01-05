@@ -28,6 +28,7 @@ Feature: Admin
     Then list-view table "should not" contain row with "error-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -54,6 +55,7 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-image-gpu"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -77,6 +79,7 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-instance-type"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
@@ -100,6 +103,7 @@ Feature: Admin
     Then list-view table "should not" contain row with "test-instance-type-gpu"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I go to the spawner page
