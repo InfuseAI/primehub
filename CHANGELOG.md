@@ -5,8 +5,10 @@
 
 - **Notebook Log**: Users can see logs for the notebook server. It is especially useful to investigate the reason why the jupyter server cannot launch successfully.
 - **Group Admin Image Management**: The system admin can assign a group member with group admin permission, and the group admin can manage their group images. It will improve work productivity across a group/team through managing images for a group.
+- **Shared space upload**: Users can upload files to PHFS from the sidebar menu `Share Files`.
 
 ### Avaliable in CE
+
 ### EE only
 
 - [Bugfix] Usage DB storage class should be configurable (ch14237)
