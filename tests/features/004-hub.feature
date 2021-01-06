@@ -4,6 +4,7 @@ Feature: Hub
   As a user,
   I want to spawn a hub and do something.
 
+  @daily
   Scenario: User can see advanced settings
     Given I go to login page
     When I fill in the correct username credentials
@@ -17,6 +18,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can cancel spawning while chose error image
     Given I go to login page
     When I fill in the correct username credentials
@@ -63,6 +65,31 @@ Feature: Hub
     Then I am on login page
 
   @regression
+  Scenario: User can start the TensorBoard
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
+    When I go to the spawner page
+    And I choose instance type
+    And I choose latest TensorFlow image
+    And I click element with selector "input[value='Start Notebook']" in hub
+    Then I can see the spawning page and wait for notebook started
+    When I click element with selector "#start" in hub
+    And I wait for 4.0 seconds
+    And I switch to "JupyterLab" tab
+    Then I can see the JupyterLab page
+    When I click the "Tensorboard" card in the launcher
+    Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
+    When I switch to "/console/g/phusers/hub" tab
+    Then I am on the PrimeHub console "Notebooks" page
+    #And I stop my server in hub
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @regression
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     Given I go to login page
     When I fill in the correct username credentials
@@ -101,31 +128,6 @@ Feature: Hub
     When I switch to "/console/g/phusers/hub" tab
     Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
-  @regression
-  Scenario: User can start the TensorBoard
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
-    And I choose instance type
-    And I choose latest TensorFlow image
-    And I click element with selector "input[value='Start Notebook']" in hub
-    Then I can see the spawning page and wait for notebook started
-    When I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
-    And I switch to "JupyterLab" tab
-    Then I can see the JupyterLab page
-    When I click the "Tensorboard" card in the launcher
-    Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
-    When I switch to "/console/g/phusers/hub" tab
-    Then I am on the PrimeHub console "Notebooks" page
-    #And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 

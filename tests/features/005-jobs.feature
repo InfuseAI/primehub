@@ -31,6 +31,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can rerun job
     Given I go to login page
     When I fill in the correct username credentials
@@ -49,7 +50,8 @@ Feature: Job Submission
     Then I should see "test" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
-  
+
+  @daily
   Scenario: User can clone job
     Given I go to login page
     When I fill in the correct username credentials
@@ -72,6 +74,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: User can cancel job
     Given I go to login page
     When I fill in the correct username credentials

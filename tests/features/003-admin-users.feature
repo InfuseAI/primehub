@@ -1,4 +1,4 @@
-@released
+@released @daily
 Feature: Admin
   In order to manage users
   I want to change settings

@@ -166,19 +166,21 @@ if [[ "$E2E_SCHEDULED" == "weekly" ]]; then
 fi
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-# TODO: reorganize test suite and tags
-tags="@released and not (@weekly or @normal-user or @ee or @regression or @wip)"
+tags="@released and not (@weekly or @daily or @normal-user or @ee or @regression or @wip)"
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="@released and not (@weekly or @normal-user or @regression or @wip)"
+  tags="@released and not (@weekly or @daily or @normal-user or @regression or @wip)"
+fi
+if [[ "${E2E_SCHEDULED}" == "daily" ]]; then
+  tags="(@released or @daily) and not (@weekly or @normal-user or @regression or @wip)"
 fi
 if [[ "${E2E_SCHEDULED}" == "weekly" ]]; then
-  tags="(@released or @weekly) and not (@normal-user or @regression or @wip)"
+  tags="(@released or @daily or @weekly) and not (@normal-user or @regression or @wip)"
 fi
 if [[ "$E2E_REGRESSION" == "true" ]]; then
   tags="@regression"
 fi
 if [[ "$E2E_NORMAL_USER" == "true" ]]; then
-  tags="(@released or @normal-user) and not (@weekly or @admin-user or @regression or @wip)"
+  tags="(@released or @normal-user) and not (@weekly or @daily or @admin-user or @regression or @wip)"
 fi
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js

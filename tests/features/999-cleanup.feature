@@ -2,6 +2,7 @@
 Feature: Admin
   Delete some created resources
 
+  @daily
   Scenario: Delete image
     Given I go to login page
     When I fill in the correct username credentials
@@ -62,6 +63,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Delete instance type
     Given I go to login page
     When I fill in the correct username credentials
@@ -109,6 +111,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @daily
   Scenario: Delete group
     Given I go to login page
     When I fill in the correct username credentials

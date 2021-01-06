@@ -71,7 +71,7 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
-  e2e_installed_ph:
+  e2e_installed_ph_daily:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -84,6 +84,7 @@ jobs:
           name: End-to-end tests
           environment:
             INSTALLED_PH: "true"
+            E2E_SCHEDULED: "daily"
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
@@ -121,6 +122,7 @@ jobs:
           name: End-to-end tests
           no_output_timeout: 20m
           environment:
+            PRIMEHUB_MODE: ee
             E2E_REGRESSION: "true"
             SPAWNER_START_TIMEOUT: 600
           command: |
@@ -204,7 +206,7 @@ workflows:
                 - master
     jobs:
       - e2e_normal_user
-      - e2e_installed_ph:
+      - e2e_installed_ph_daily:
           context: e2e-demo-a
   weekly_workflow:
     triggers:
