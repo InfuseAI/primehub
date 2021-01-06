@@ -8,6 +8,9 @@
 
 ### Avaliable in CE
 ### EE only
+
+- [Bugfix] Usage DB storage class should be configurable (ch14237)
+
 ### Action Required
 - In this version, we start to collect anonymous usage behavior by default to ensure that we can deliver the best PrimeHub experience. To disable tracking, please set the value as follows.
 
@@ -15,6 +18,9 @@
   telemetry:
     enabled: false
   ```
+
+- Please delete `{ReleaseName}-usage-db` StatefulSet before executing helm upgrade, because ch14237 changes the value of storageClass.
+
 
 ## 3.2.2
 
