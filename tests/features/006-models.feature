@@ -181,13 +181,13 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "model-uri-test" to "name" text field
     And I choose radio button with name "test-instance-type"
-    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.3" to "modelImage input" text field
+    And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage input" text field
     And I type "gs://primehub-models/tensorflow2/mnist/" to "modelURI" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "model-uri-test"
     Then I wait for attribute "Status" with value "Deployed"
-    And I wait for attribute "Model Image" with value "infuseai/tensorflow2-prepackaged_rest:v0.4.3"
+    And I wait for attribute "Model Image" with value "infuseai/tensorflow2-prepackaged_rest:v0.4.2"
     And I wait for attribute "Model URI" with value "gs://primehub-models/tensorflow2/mnist/"
     When I click tab of "Logs"
     Then I should see "Running on http://0.0.0.0:9000/" in element "div" under active tab
@@ -236,7 +236,7 @@ Feature: Model Deployment
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "...Download to see more... 110475311987e-07" in element "div" under active tab
+    Then I should see "...Download to see more... 305647406407e-07" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -289,7 +289,7 @@ Feature: Model Deployment
     When I click element with xpath "//tr[1]//a[text()='deployment-endpoint-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
-    Then I should see "...Download to see more... 110475311987e-07|503 Service Temporarily Unavailable" in element "div" under active tab
+    Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
