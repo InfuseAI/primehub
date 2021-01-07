@@ -201,7 +201,7 @@ defineStep("I can see the spawning page and wait for notebook started", {timeout
   throw new Error("failed to start notebook");
 });
 
-defineStep("I can see the spawning page and wait for log {string}", {timeout: 120 * 1000}, async function(log) {
+defineStep("I can see the spawning page and wait for log {string}", async function(log) {
   let xpath = `//div[@class='progress-log-event' and contains(text(), '${log}')]`, ret;
   await this.context.waitForXPath("//div[@id='custom-progress-bar']");
   await this.takeScreenshot("spawning-page");
@@ -209,15 +209,7 @@ defineStep("I can see the spawning page and wait for log {string}", {timeout: 12
     await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = result; }
     );
-    if (ret){
-      const [ele] = await this.context.$x("//a[contains(@class, 'cancel-spawn')]");
-      if (ele) {
-        await ele.click();
-        await this.takeScreenshot("cancel-spawning");
-        return;
-      }
-      else throw new Error("failed to click cancel link");
-    }
+    if (ret) return;
     else await this.page.waitForTimeout(6000);
   }
   throw new Error(`failed to wait for log: ${log}`);

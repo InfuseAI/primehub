@@ -33,7 +33,12 @@ Feature: Hub
     And I choose image with name "error-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for log "[Warning] Error: ErrImagePull"
-    And I go to the spawner page
+    When I click tab of "Logs"
+    Then I should see "waiting to start: image can" in element "div" under active tab
+    Then I should see "t be pulled" in element "div" under active tab
+    When I click tab of "Notebooks"
+    And I click element with xpath "//a[text()='Cancel']" in hub
+    Then I go to the spawner page
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -51,7 +56,14 @@ Feature: Hub
     And I choose image with name "test-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
-    When I click element with selector "#start" in hub
+    When I click tab of "Logs"
+    Then I should see "start the standard notebook command" in element "div" under active tab
+    Then I should see "Set username to: jovyan" in element "div" under active tab
+    Then I should see "usermod: no changes" in element "div" under active tab
+    Then I should see "Granting jovyan sudo access and appending /opt/conda/bin to sudo PATH" in element "div" under active tab
+    Then I should see "--ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab" in element "div" under active tab
+    When I click tab of "Notebooks"
+    And I click element with selector "#start" in hub
     And I wait for 4.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
