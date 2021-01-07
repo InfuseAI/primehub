@@ -34,8 +34,7 @@ Feature: Hub
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for log "[Warning] Error: ErrImagePull"
     When I click tab of "Logs"
-    Then I should see "waiting to start: image can" in element "div" under active tab
-    Then I should see "t be pulled" in element "div" under active tab
+    Then I should see "waiting to start: image can't be pulled" in element "div" under active tab
     When I click tab of "Notebooks"
     And I click element with xpath "//a[text()='Cancel']" in hub
     Then I go to the spawner page

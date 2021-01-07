@@ -359,7 +359,7 @@ defineStep("I should see {string} in element {string} under active tab", async f
   let xpath;
   let content = text.split("|");
   for (index = 0; index < content.length; index++) {
-    xpath = `//div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//${element}[contains(., '${content[index]}')]`;
+    xpath = `//div[@class="ant-tabs-tabpane ant-tabs-tabpane-active"]//${element}[contains(., "${content[index]}")]`;
     try {
       await this.page.waitForXPath(xpath, {timeout: 5 * 1000});
       console.log(`Found '${content[index]}'`);
