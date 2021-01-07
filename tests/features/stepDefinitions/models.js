@@ -3,7 +3,7 @@ const { expect } = require("chai");
 
 defineStep("I go to the deployment detail page with name {string}", async function(name) {
     let cardXpath = `//div[@class='ant-card-body']//h2[text()='${name}']`;
-    let titleXpath = `//h2[text()='Deployment: ${name}']`;
+    let titleXpath = `//span[@class='ant-breadcrumb-link']//span[text()='Deployment: ${name}']`;
     let ele, ret;
     for (retryCount=0; retryCount < 5; retryCount++) {
         [ele] = await this.page.$x(cardXpath, {timeout: 5000});
