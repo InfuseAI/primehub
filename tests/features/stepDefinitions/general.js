@@ -59,16 +59,17 @@ defineStep("I choose {string} in sidebar menu", async function(menuitem) {
 });
 
 defineStep("I am on the PrimeHub console {string} page", async function(menuitem) {
+  const prefix = "//span[@class='ant-breadcrumb-link']";
   const xpathMap = {
     'Home': "//title[text()='PrimeHub']", // temporarily used
-    'Notebooks': "//title[text()='PrimeHub']", // temporarily used
-    'Jobs': "//h2[text()='Jobs']",
-    'NewJob': "//h2[text()='New Job']",
-    'Schedule': "//h2[text()='Schedule']",
-    'NewSchedule': "//h2[text()='New Schedule']",
-    'UpdateSchedule': "//h2[contains(text(), 'Schedule:')]",
-    'Models': "//h2[text()='Model Deployments']",
-    'CreateDeployment': "//h2[text()='Create Deployment']"
+    'Notebooks': `${prefix}//span[text()='Notebooks']`,
+    'Jobs': `${prefix}//a[text()='Jobs']`,
+    'NewJob': `${prefix}//span[text()='New Job']`,
+    'Schedule': `${prefix}//a[text()='Schedule']`,
+    'NewSchedule': `${prefix}//span[text()='New Schedule']`,
+    'UpdateSchedule': `${prefix}//span[contains(text(), 'Schedule:')]`,
+    'Models': `${prefix}//a[text()='Model Deployments']`,
+    'CreateDeployment': `${prefix}//span[text()='Create Deployment']`
   };
   const urlMap = {
     'Home': '/home', // temporarily used
