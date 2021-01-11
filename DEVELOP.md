@@ -30,13 +30,13 @@
    ```
    PRIMEHUB_DOMAIN=1.2.3.4.nip.io # fill the correct domain according to your dev environment
 
-   cat <<EOF > primehub-values.yaml
+   cat <<EOF > primehub.yaml
    primehub:
    domain: ${PRIMEHUB_DOMAIN}
    ingress:
-   annotations:
-   kubernetes.io/ingress.allow-http: "true"
-   nginx.ingress.kubernetes.io/ssl-redirect: "false"
+     annotations:
+       kubernetes.io/ingress.allow-http: "true"
+       nginx.ingress.kubernetes.io/ssl-redirect: "false"
    hosts:
    -  ${PRIMEHUB_DOMAIN}
    EOF
@@ -46,13 +46,15 @@
      --install \
      --create-namespace \
      --namespace hub  \
-     --values primehub-values.yaml
+     --values primehub.yaml
 
    ```
 
 ## Other PrimeHub Components
 
 PrimeHub consists several other components, you may also want to check out these repositories.
+
+For developing locally with each components, please refer to the `DEVELOP.md` in each repositories.
 
 ### PrimeHub Console
 
@@ -65,3 +67,9 @@ PrimeHub Console contains the admin UI and GraphQL API server of PrimeHub.
 - https://github.com/InfuseAI/primehub-admission
 
 PrimeHub-admission is a critical component of PrimeHub. It's responsible for validating resource capacity and mutating kubernetes objects with required information.
+
+### PrimeHub Controller
+
+- https://github.com/InfuseAI/primehub-controller
+
+PrimeHub-controller handles advanced features like image builder, job submission...etc. It watches PrimeHub CRDs and do the magic for you.
