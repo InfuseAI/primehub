@@ -39,6 +39,7 @@ class World {
 
     this.context = null;
     this.copyText = null;
+    this.scenarioName = null;
   }
 
   async start() {
@@ -188,7 +189,7 @@ class World {
     var hours = (today.getHours()>9) ? today.getHours() : '0'+today.getHours();
     var minutes = (today.getMinutes()>9) ? today.getMinutes() : '0'+today.getMinutes();
     var seconds = (today.getSeconds()>9) ? today.getSeconds() : '0'+today.getSeconds();
-    await this.page.screenshot({path: 'e2e/screenshots/'+hours+'-'+minutes+'-'+seconds+'-'+filename+'.png'});
+    await this.page.screenshot({path: `e2e/screenshots/${this.scenarioName}/${hours}-${minutes}-${seconds}-${filename}.png`});
   }
 
   async exportPageContent(filename) {

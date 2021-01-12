@@ -1,18 +1,21 @@
 const { defineStep, After, Before } = require("cucumber");
 const { expect } = require("chai");
+const fs = require("fs");
 
 Before(async function(scenario) {
   console.log(`\nScenario: ${scenario.pickle.name}`);
+  this.scenarioName = scenario.pickle.name.replace(/\/| |:|"|'|\.|_/g, '-');
+  await fs.mkdirSync(`e2e/screenshots/${this.scenarioName}`);
   return await this.start();
 });
 
 After(async function(scenario) {
-  const scenarioName = scenario.pickle.name.replace(/\/| /g, '-');
   if (scenario.result.status === 'failed') {
-    console.log("Scenario failed, exporting latest page content...");
-    await this.exportPageContent(scenarioName);
+    await this.exportPageContent(this.scenarioName);
+    await this.takeScreenshot(`After-${this.scenarioName}`);
   }
-  await this.takeScreenshot(`After-${scenarioName}`);
+  else
+    await fs.rmdirSync(`e2e/screenshots/${this.scenarioName}`, {recursive: true});
   return await this.stop();
 });
 
