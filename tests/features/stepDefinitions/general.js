@@ -72,7 +72,9 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewSchedule': `${prefix}//span[text()='New Schedule']`,
     'UpdateSchedule': `${prefix}//span[contains(text(), 'Schedule:')]`,
     'Models': `${prefix}//a[text()='Model Deployments']`,
-    'CreateDeployment': `${prefix}//span[text()='Create Deployment']`
+    'CreateDeployment': `${prefix}//span[text()='Create Deployment']`,
+    'Images': `${prefix}//a[text()='Images']`,
+    'NewImage': `${prefix}//span[text()='New Images']`
   };
   const urlMap = {
     'Home': '/home', // temporarily used
@@ -83,7 +85,9 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewSchedule': `-${this.E2E_SUFFIX}/schedule/create`,
     'UpdateSchedule': `-${this.E2E_SUFFIX}/schedule/schedule-`,
     'Models': `-${this.E2E_SUFFIX}/model-deployment`,
-    'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`
+    'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`,
+    'Images': `-${this.E2E_SUFFIX}/images`,
+    'NewImage': `-${this.E2E_SUFFIX}/images/create`
   };
   await this.page.waitForXPath(xpathMap[menuitem]);
 

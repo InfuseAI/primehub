@@ -75,6 +75,41 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @normal-user
+  Scenario: User can start/stop the JupyterLab server with group image
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
+    When I go to the spawner page
+    And I wait for 2.0 seconds
+    And I choose instance type with name "test-instance-type"
+    And I click element with xpath "//div[@id='image-container']//input[contains(@value, 'test-group-image')]" in hub
+    And I click element with selector "input[value='Start Notebook']" in hub
+    Then I can see the spawning page and wait for notebook started
+    When I click tab of "Logs"
+    Then I should see "start the standard notebook command" in element "div" under active tab
+    Then I should see "Set username to: jovyan" in element "div" under active tab
+    Then I should see "usermod: no changes" in element "div" under active tab
+    Then I should see "Granting jovyan sudo access and appending /opt/conda/bin to sudo PATH" in element "div" under active tab
+    Then I should see "--ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab" in element "div" under active tab
+    When I click tab of "Notebooks"
+    And I click element with selector "#start" in hub
+    And I wait for 4.0 seconds
+    And I switch to "JupyterLab" tab
+    Then I can see the JupyterLab page
+    When I switch to "Notebooks" tab
+    Then I am on the PrimeHub console "Notebooks" page
+    And I check the group warning message against group "e2e-test-group"
+    And I switch group
+    And I check the group warning message against group "e2e-test-group"
+    And I stop my server in hub
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
   @regression
   Scenario: User can start the TensorBoard
     Given I go to login page
