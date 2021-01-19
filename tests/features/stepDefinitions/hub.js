@@ -135,12 +135,12 @@ defineStep("I {string} see instance types block contains {string} instanceType w
 
 defineStep("I {string} see images block contains {string} image with {string} type and {string} description", async function(exist, name, type, desc) {
   let ret;
-  let xpath = `//div[@id='image-container']//strong[contains(text(), '${name}-${this.E2E_SUFFIX}')]`;
+  let xpath = `//div[@id='image-container']//strong[contains(text(), '${name}')]`;
   
   await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
   );
-  if (!ret) throw new Error(`failed to check image '${name}-${this.E2E_SUFFIX}' is existed`);
+  if (!ret) throw new Error(`failed to check image '${name}' is existed`);
   
   if (!exist.includes('not')) {
     const [element] = await this.context.$x(xpath+'//i');
@@ -152,11 +152,11 @@ defineStep("I {string} see images block contains {string} image with {string} ty
     );
     if (!ret) throw new Error(`failed to get '${type}' information tooltip`);
 
-    xpath += `//..//p[text()='${desc}-${this.E2E_SUFFIX}']`;
+    xpath += `//..//p[contains(text(), '${desc}')]`;
     await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
     );
-    if (!ret) throw new Error(`failed to get '${desc}-${this.E2E_SUFFIX}' image description`);
+    if (!ret) throw new Error(`failed to get '${desc}' image description`);
   }
 });
 

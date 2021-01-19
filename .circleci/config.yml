@@ -191,7 +191,7 @@ workflows:
       #- e2e
       - e2e_ee
       - e2e_normal_user
-      - e2e_installed_ph_daily:
+      - e2e_installed_ph_weekly:
           context: e2e-demo-a
       - build:
           filters:

@@ -42,18 +42,28 @@ defineStep("I switch group", async function() {
 });
 
 defineStep("I choose {string} in top-right menu", async function(menuitem) {
+  const xpath = `//li[text()='${menuitem}']`;
+  let ret;
   for (retryCount=0; retryCount < 3; retryCount++) {
     await this.page.mouse.move(0, 0);
     hovers = await this.page.$x("//span[contains(@class, 'ant-avatar ant-avatar-circle')]");
     if (hovers.length > 0) {
       await hovers[0].hover();
       await this.page.waitForTimeout(500);
-      break;
     }
     else console.log("Cannot find top-right icon");
+
+    await this.clickElementByXpath(xpath);
+    await this.page.waitForNavigation();
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = !result; }
+    );
+    if (ret) {
+      await this.takeScreenshot(`choose-${menuitem}-top-right-menu`);
+      return;
+    }
+    await this.page.waitForTimeout(1000);
   }
-  await this.clickElementByXpath(`//li[text()='${menuitem}']`);
-  await this.takeScreenshot(`choose-${menuitem}-top-right-menu`);
 });
 
 defineStep("I choose {string} in sidebar menu", async function(menuitem) {
