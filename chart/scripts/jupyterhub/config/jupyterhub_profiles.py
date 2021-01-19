@@ -6,6 +6,7 @@ import uuid
 import os
 import tornado.ioloop
 import time
+import jupyterhub.handlers
 from z2jh import get_config
 from tornado import gen, httpclient, web
 from tornado.auth import OAuth2Mixin
@@ -17,6 +18,23 @@ from kubernetes.client.rest import ApiException
 from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
 from jinja2 import Environment, FileSystemLoader
 from kubespawner.reflector import NamespacedResourceReflector
+
+
+# MONKEY-PATCH [START]
+# set cookie every time
+# https://github.com/InfuseAI/jupyterhub/commit/65b63e757e6c6197173c50d82404fb6b46a4a488
+def monkey_patched_set_login_cookie(self, user):
+    self.log.debug("set_hub_cookie for user[%s]" % user)
+    self.original_set_login_cookie(user)
+    # create and set a new cookie token for the hub
+    self.set_hub_cookie(user)
+
+
+jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.BaseHandler.set_login_cookie
+jupyterhub.handlers.BaseHandler.set_login_cookie = monkey_patched_set_login_cookie
+print("apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
+# MONKEY-PATCH [END]
+
 
 try:
     # it is for local development
