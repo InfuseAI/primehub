@@ -187,10 +187,9 @@ workflows:
   version: 2
   release_builds:
     jobs:
-      #- unit_test
-      #- e2e
+      - unit_test
+      - e2e
       - e2e_ee
-      - e2e_normal_user
       - build:
           filters:
             tags:

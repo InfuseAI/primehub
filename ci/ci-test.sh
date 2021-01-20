@@ -96,7 +96,6 @@ export PH_PASSWORD=${PH_PASSWORD:-$(openssl rand -hex 16)}
 export PRIMEHUB_STORAGE_CLASS=local-path
 export PRIMEHUB_MODE=${PRIMEHUB_MODE:-ce}
 export SPAWNER_START_TIMEOUT=${SPAWNER_START_TIMEOUT:-300}
-export MAX_MODEL_DEPLOY=2
 
 rm -f env_file
 echo CLUSTER_NAME=$CLUSTER_NAME >> env_file
