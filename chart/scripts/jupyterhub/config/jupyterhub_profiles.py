@@ -943,43 +943,6 @@ class PrimeHubSpawner(KubeSpawner):
         self.log.warning("overriding fs_group_id to %s", fs_group_id)
         return fs_group_id
 
-    @gen.coroutine
-    def _start(self):
-        try:
-            # check only if autoscaling is not enabled
-            if autoscaling_enabled != True:
-                self.periodic_check_event_timer = tornado.ioloop.PeriodicCallback(self.check_event, 500)
-                self.periodic_check_event_timer.start()
-
-            result = yield super()._start()
-            return result
-        except ApiException as e:
-            if e.status == 410: # only handle resources validation webhook
-                self.log.error("Resources validation webhook: {}".format(e))
-                json_body = json.loads(str(e).split("HTTP response body:")[1].replace("'", "\""))
-                raise Exception(json_body['reason'])
-            else:
-                json_body = json.loads(str(e).split("HTTP response body:")[1].replace("'", "\""))
-
-                # This is the temp workaround and wait for the fix from k8s: https://github.com/kubernetes/kubernetes/pull/72751
-                if "admission webhook" in json_body['message'] and "resources-validation-webhook" in json_body["message"]:
-                    raise Exception(json_body['message'].split("denied the request:")[1])
-
-                raise Exception(json_body['message'])
-
-    def check_event(self):
-        if not hasattr(self, '_start_future'):
-            self.log.debug(time.ctime())
-            self.log.debug('check_event waits for _start_future')
-            return
-        start_future = self._start_future
-        if not start_future.done():
-            for event in self.events:
-                if "Insufficient" in event.message and ("cpu" in event.message or "memory" in event.message or "gpu" in event.message):
-                    self._start_future.set_exception(Exception(event.message))
-                    self.stop()
-                    self.periodic_check_event_timer.stop()
-                    self.periodic_check_event_timer = None
 
 class StopSpawningHandler(BaseHandler):
     @web.authenticated
