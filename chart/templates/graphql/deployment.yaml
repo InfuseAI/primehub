@@ -133,6 +133,16 @@ spec:
                 secretKeyRef:
                   name: authoritative-secret
                   key: max_group
+            - name: MAX_NODE
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: max_node
+            - name: MAX_MODEL_DEPLOY
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: max_model_deploy
             - name: LICENSED_TO
               valueFrom:
                 secretKeyRef:
