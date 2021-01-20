@@ -40,7 +40,7 @@ Feature: Admin
     Then I am on login page
 
   @normal-user
-  Scenario: Enable model deployment feature
+  Scenario: Enable model deployment and assign group admin
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
@@ -50,12 +50,15 @@ Feature: Admin
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
-    And I check boolean input with test-id "group/enabledDeployment"
+    When I check boolean input with test-id "group/enabledDeployment"
+    # checkbox of group admin
+    And I click element with xpath "//table//input"
     And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-group"
     When I click edit-button in row contains text "e2e-test-group"
     Then boolean input with test-id "group/enabledDeployment" should have value "true"
+    And I "should" see element with xpath "//table//span[@class='ant-checkbox ant-checkbox-checked']"
     When I choose "Logout" in top-right menu
     Then I am on login page

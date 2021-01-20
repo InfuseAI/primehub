@@ -1,9 +1,9 @@
-@released @daily
+@released
 Feature: Admin
   In order to manage users
   I want to change settings
 
-  @admin-user
+  @admin-user @daily
   Scenario: Create user
     Given I go to login page
     When I fill in the correct username credentials
@@ -31,7 +31,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user
+  @admin-user @daily
   Scenario: User can see expected results when no group is available
     Given I go to login page
     When I fill in the username "test-user" and password "password"
@@ -48,7 +48,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user
+  @admin-user @daily
   Scenario: Update user info and connect to existing group
     Given I go to login page
     When I fill in the correct username credentials
@@ -85,7 +85,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user
+  @admin-user @daily
   Scenario: Delete user
     Given I go to login page
     When I fill in the correct username credentials
@@ -106,13 +106,24 @@ Feature: Admin
     Then I am on login page
 
   @normal-user
-  Scenario: Switch my role from admin to normal user
+  Scenario: Remove myself from group admin and switch my role to normal user
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
+    When I search "e2e-test-group" in test-id "text-filter-name"
+    And I click edit-button in row contains text "e2e-test-group"
+    Then I "should" see element with xpath "//table//span[@class='ant-checkbox ant-checkbox-checked']"
+    # checkbox of group admin
+    When I click element with xpath "//table//input"
+    And I click element with test-id "confirm-button"
+    And I wait for 2.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "e2e-test-group"
+    When I click edit-button in row contains text "e2e-test-group"
+    Then I "should" see element with xpath "//table//span[@class='ant-checkbox']"
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     When I click element with test-id "edit-button"

@@ -33,6 +33,32 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @normal-user
+  Scenario: Create group image
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Images" in sidebar menu
+    Then I am on the PrimeHub console "Images" page
+    When I click "New Image" button
+    Then I am on the PrimeHub console "NewImage" page
+    When I type "test-group-image" to "displayName" text field
+    And I type "test-group-image-description" to "description" text field
+    And I type "jupyter/datascience-notebook:b90cce83f37b" to "url" text field
+    And I click "Create" button
+    Then I "should" see element with xpath "//a[text()='test-group-image']"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
+    When I go to the spawner page
+    Then I "should" see images block contains "test-group-image" image with "Group / Universal" type and "test-group-image-description" description
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
   @daily
   Scenario: Create error image and connect to existing group
     Given I go to login page

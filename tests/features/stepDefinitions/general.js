@@ -42,18 +42,28 @@ defineStep("I switch group", async function() {
 });
 
 defineStep("I choose {string} in top-right menu", async function(menuitem) {
+  const xpath = `//li[text()='${menuitem}']`;
+  let ret;
   for (retryCount=0; retryCount < 3; retryCount++) {
     await this.page.mouse.move(0, 0);
     hovers = await this.page.$x("//span[contains(@class, 'ant-avatar ant-avatar-circle')]");
     if (hovers.length > 0) {
       await hovers[0].hover();
       await this.page.waitForTimeout(500);
-      break;
     }
     else console.log("Cannot find top-right icon");
+
+    await this.clickElementByXpath(xpath);
+    await this.page.waitForNavigation();
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = !result; }
+    );
+    if (ret) {
+      await this.takeScreenshot(`choose-${menuitem}-top-right-menu`);
+      return;
+    }
+    await this.page.waitForTimeout(1000);
   }
-  await this.clickElementByXpath(`//li[text()='${menuitem}']`);
-  await this.takeScreenshot(`choose-${menuitem}-top-right-menu`);
 });
 
 defineStep("I choose {string} in sidebar menu", async function(menuitem) {
@@ -72,7 +82,9 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewSchedule': `${prefix}//span[text()='New Schedule']`,
     'UpdateSchedule': `${prefix}//span[contains(text(), 'Schedule:')]`,
     'Models': `${prefix}//a[text()='Model Deployments']`,
-    'CreateDeployment': `${prefix}//span[text()='Create Deployment']`
+    'CreateDeployment': `${prefix}//span[text()='Create Deployment']`,
+    'Images': `${prefix}//a[text()='Images']`,
+    'NewImage': `${prefix}//span[text()='New Images']`
   };
   const urlMap = {
     'Home': '/home', // temporarily used
@@ -83,7 +95,9 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewSchedule': `-${this.E2E_SUFFIX}/schedule/create`,
     'UpdateSchedule': `-${this.E2E_SUFFIX}/schedule/schedule-`,
     'Models': `-${this.E2E_SUFFIX}/model-deployment`,
-    'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`
+    'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`,
+    'Images': `-${this.E2E_SUFFIX}/images`,
+    'NewImage': `-${this.E2E_SUFFIX}/images/create`
   };
   await this.page.waitForXPath(xpathMap[menuitem]);
 
