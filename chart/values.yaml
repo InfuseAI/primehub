@@ -491,22 +491,6 @@ tusd:
 jupyterhub:
   enabled: true
 
-  ingress:
-    enabled: false
-
-  scheduling:
-    userScheduler:
-      resources:
-        limits:
-          cpu: 50m
-          memory: 256Mi
-        requests:
-          cpu: 50m
-          memory: 256Mi
-
-  debug:
-    enabled: false
-
   hub:
     # Maximum number of consecutive failures to allow before shutting down JupyterHub.
     consecutiveFailureLimit: 0
@@ -555,8 +539,8 @@ jupyterhub:
       mountPath: /srv/primehub
       readOnly: true
     image:
-      name: infuseai/jupyterhub-k8s
-      tag: jh-5c94e4f4
+      name: jupyterhub/k8s-hub
+      tag: '0.10.6'
     networkPolicy:
       enabled: true
     extraConfig:
@@ -569,6 +553,10 @@ jupyterhub:
       requests:
         cpu: 100m
         memory: 512Mi
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: true
 
   proxy:
     https:
@@ -618,17 +606,40 @@ jupyterhub:
     networkTools:
       image:
         name: jupyterhub/k8s-network-tools
-        tag: 0.9-b51ffeb
+        tag: '0.10.6'
+        pullPolicy: ''
+        pullSecrets: []
 
+  # prePuller relates to the hook|continuous-image-puller DaemonsSets
   prePuller:
+    annotations: {}
+    resources:
+      limits:
+        cpu: 50m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 256Mi
+    extraTolerations: []
+
+    # hook relates to the hook-image-awaiter Job and hook-image-puller DaemonSet
     hook:
       enabled: false
-      image:
-        name: jupyterhub/k8s-image-awaiter
-        tag: 0.9-b51ffeb
+      nodeSelector: {}
+      tolerations: []
+      resources:
+        limits:
+          cpu: 50m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi
+    continuous:
+      enabled: false
 
   scheduling:
     userScheduler:
+      enabled: false
       resources:
         limits:
           cpu: 50m
