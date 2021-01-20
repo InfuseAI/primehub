@@ -270,14 +270,14 @@ spec:
               type: string
             max_group:
               type: integer
+            max_model_deploy:
+              type: integer
             max_node:
               type: integer
             reason:
               type: string
             started_at:
               type: string
-          required:
-          - max_group
           type: object
       type: object
   version: v1alpha1
