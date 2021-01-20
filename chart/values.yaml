@@ -675,43 +675,12 @@ jupyterhub:
     # timeout for the http server in a spawned pod (the creating phase in the progress)
     spawnerHttpTimeout: 30
 
-# Group Volume (shared volume over nfs)
-groupvolume:
-  enabled: true
-  storageClass: null
-  nfs:
-    image:
-      repository: k8s.gcr.io/volume-nfs
-      tag: 0.8
-      pullPolicy: IfNotPresent
-
-# Gitsync Dataset
-gitsync:
-  enabled: true
-  daemonset:
-    delayInit: false
-    image:
-      repository: k8s.gcr.io/git-sync
-      tag: v3.1.3
-      pullPolicy: IfNotPresent
-
-# Telemetry
-telemetry:
-  enabled: true
-
-#                   ____________   ______           __
-#                  / ____/ ____/  / ____/__  ____ _/ /___  __________  _____
-#  ____________   / __/ / __/    / /_  / _ \/ __ `/ __/ / / / ___/ _ \/ ___/  ____________
-# /_____/_____/  / /___/ /___   / __/ /  __/ /_/ / /_/ /_/ / /  /  __(__  )  /_____/_____/
-#               /_____/_____/  /_/    \___/\__,_/\__/\__,_/_/   \___/____/
-
-
 # Primehub controller
 controller:
   replicaCount: 1
 
   image:
-    repository: infuseai/primehub-controller-ee
+    repository: infuseai/primehub-controller
     tag: latest
     # pullPolicy: IfNotPresent
 
@@ -756,6 +725,38 @@ customImage:
       requests:
         cpu: 500m
         memory: 100Mi
+
+# Group Volume (shared volume over nfs)
+groupvolume:
+  enabled: true
+  storageClass: null
+  nfs:
+    image:
+      repository: k8s.gcr.io/volume-nfs
+      tag: 0.8
+      pullPolicy: IfNotPresent
+
+# Gitsync Dataset
+gitsync:
+  enabled: true
+  daemonset:
+    delayInit: false
+    image:
+      repository: k8s.gcr.io/git-sync
+      tag: v3.1.3
+      pullPolicy: IfNotPresent
+
+# Telemetry
+telemetry:
+  enabled: true
+
+
+#                   ____________   ______           __
+#                  / ____/ ____/  / ____/__  ____ _/ /___  __________  _____
+#  ____________   / __/ / __/    / /_  / _ \/ __ `/ __/ / / / ___/ _ \/ ___/  ____________
+# /_____/_____/  / /___/ /___   / __/ /  __/ /_/ / /_/ /_/ / /  /  __(__  )  /_____/_____/
+#               /_____/_____/  /_/    \___/\__,_/\__/\__,_/_/   \___/____/
+
 
 # Job Submission
 jobSubmission:

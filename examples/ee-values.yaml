@@ -7,6 +7,10 @@
 primehub:
   mode: ee
 
+controller:
+  image:
+    repository: infuseai/primehub-controller-ee
+
 customImage:
   enabled: true
 
