@@ -2,6 +2,12 @@
 
 ## Upcoming
 ### What's New
+### Action Required
+### Avaliable in CE
+### EE only
+
+## 3.3.0
+### What's New
 
 - **Notebook Log**: Users can see logs for the notebook server. It is especially useful to investigate the reason why the jupyter server cannot launch successfully.
 - **Group Admin Image Management**: The system admin can assign a group member with group admin permission, and the group admin can manage their group images. It will improve work productivity across a group/team through managing images for a group.
@@ -9,11 +15,34 @@
 
 ### Avaliable in CE
 
+#### Notebook Logs
+
+- Implement the jupyter log endpoint
+- Implement the notebook log retry logic
+- Implement the notebook page
+
+#### Group Admin: Image Management
+
+- Add group Image support in API
+- Group admin support
+- Group Admin: Image Management Final Check
+- Allow group admins to manage group images in user portal
+- Change the list items of images in spawner pages
+
+#### Shared Space: Upload
+
+- [Final Check] Shared space upload
+- Implement the shared space upload UI
+- Add network policy for tusd
+- tusd supports to upload file to minio
+- Implements the tus compatible endpoint
+- dataset upload and phfs upload use the same tus image
+- [Bugfix] The upload group name should follow the notebook mount logic
+
 ### EE only
 
-- [Bugfix] Usage DB storage class should be configurable (ch14237)
-
 ### Action Required
+
 - In this version, we start to collect anonymous usage behavior by default to ensure that we can deliver the best PrimeHub experience. To disable tracking, please set the value as follows.
 
   ```
@@ -23,6 +52,53 @@
 
 - Please delete `{ReleaseName}-usage-db` StatefulSet before executing helm upgrade, because ch14237 changes the value of storageClass.
 
+#### [Model Deployment] Deploy by Model File
+
+- Model Deployment: Advanced document
+- Add pre-packaged servers documents
+- Implement the pytorch model server and document
+- Update model deployment tutorials for pre-packaged image suggestion
+- model image input field suggestion per supported pre-packaged servers
+- [Bugfix] Cannot remove model URI in model deployment update
+- [Tutorial] Deploy a Model by Pre-packaged Server (PHFS)
+
+#### User Behavior Telemetry
+
+- Telemetry supports EE relative metrics
+- Telemetry Support
+
+#### PrimeHub Usage Refactory
+
+- Usage DB storage class should be configurable
+
+#### Miscellaneous
+
+- Update default image with job submit extension on demo cluster
+- Use 24hr instead of 12hr in metrics chart
+- Add cancel button when notebook is spawning
+- update image list in docs sites
+- scheduled automated test of GPU feature
+- Merge the three admission webhook pod to single pod
+- Merge metacontroller jsonnetd webhook to single pods
+- remove graphql workspace relative code
+- simplify all user portal headings/breadcrumb
+- basic e2e test to cover notebook logs feature
+- Add information icon to Monitoring timespan
+- reorganize scheduled e2e tests
+- z2jh vendor upgrade poc
+- long execution time while using installed package in PHFS
+- Provide model deployment example with pre-processing, post-processing, and third party library
+- Make Buildah support self-signed certificate
+- tensorflow2 model server enhancement: support image input
+- tensorflow2 model server: upgrade to 2.4.0
+- e2e test: deployed by model file
+- e2e test: launch tensorboard
+- [Documentation] install specific common custom software without reinstalling for jobs
+- [Bugfix] PhDeploymentController crashloopback if can not find group in response
+- [Bugfix] graphql should compare group names in the lower case
+- [Bugfix] job artifacts can not be accessed from PrimeHub console on demo.c
+- [Bugfix] InstanceTypes/Images are not shown in spawner when a group set "zero" of any type of quota
+- [Bugfix] Usage DB storage class should be configurable
 
 ## 3.2.2
 
