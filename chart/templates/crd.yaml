@@ -221,8 +221,6 @@ spec:
               type: object
         status:
           type: object
-          required:
-          - jobCondition
           properties:
             jobCondition:
               type: object
@@ -233,7 +231,3 @@ spec:
                   type: string
                 phase:
                   type: string
-              required:
-              - image
-              - jobName
-              - phase
