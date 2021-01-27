@@ -1,0 +1,249 @@
+#! /bin/bash
+
+PRIMEHUB_NAMESPACE=${PRIMEHUB_NAMESPACE:-hub}
+LOGS_PATH=$(pwd)
+LOGS_TAIL=10000
+
+info() {
+  echo -e "\033[0;32m$1\033[0m"
+}
+
+warn() {
+  echo -e "\033[0;93m$1\033[0m"
+}
+
+error() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+check_k8s_cluster() {
+  if kubectl version --request-timeout=3 > /dev/null; then
+    return 0
+  fi
+  return -1
+}
+
+check_primehub_required_bin() {
+  if [[ "$(command -v jq)" != "" && "$(command -v yq)" != "" && "$(command -v helm)" != "" && "$(command -v kubectl)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+check_infrastructure() {
+  if ! check_primehub_required_bin; then
+    error "[Pre-check Failed] Not install PrimeHub requested app"
+    exit 1
+  fi
+
+  if ! check_k8s_cluster; then
+    error "[Pre-check Failed] No kubernetes cluster running"
+    exit 1
+  fi
+}
+
+search_helm_release() {
+  local release=$1
+  if [[ "$(helm ls -A -f "^${release}$" | grep -v NAME)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+usage() {
+  local SELF=`basename $0`
+  if [[ "$(basename "$0")" == kubectl-* ]]; then # invoked as plugin
+    SELF="kubectl primehub"
+  fi
+  cat <<EOF
+Usage:
+  $SELF [status] [notebook|job|gitsync|nfs|image-builder|deploy|system] : Show the Pod status of PrimeHub
+  $SELF diagnose [--path <path>] [--tail <#line>]                       : Run diagnostic to collect logs
+  $SELF version                                                         : Show PrimeHub Version
+  $SELF -h,--help                                                       : Show this message
+Options:
+  --path <path>     : Path to store diagnose log      (Default: ${LOGS_PATH})
+  --tail <#line>    : Number of line to collect log   (Default: ${LOGS_TAIL})
+EOF
+}
+
+primehub::status::check_support_filter()
+{
+  local filter=$1
+  local support_fileter="all notebook job gitsync nfs image-builder deploy system"
+  for f in $support_fileter; do
+    if [ "$f" == "$filter" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+primehub::status() {
+  local filter=${1:-}
+  if primehub::status::check_support_filter $filter; then shift; fi
+  if ! search_helm_release primehub; then
+    error "[Error] PrimeHub is not installed"
+    return 1
+  fi
+  local all_pods="kubectl get pods -n ${PRIMEHUB_NAMESPACE}"
+  case "$filter" in
+    notebook)
+      info "[Notebooks] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E "^jupyter-|^NAME"
+      ;;
+    job)
+      info "[PHJobs] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^job-|^NAME'
+      ;;
+    gitsync)
+      info "[GitSync] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^gitsync-|^NAME'
+      ;;
+    nfs)
+      info "[ShareVolume] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^nfs-|^NAME'
+      ;;
+    image-builder)
+      info "[ImageBuilder] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^image-|^NAME'
+      ;;
+    deploy)
+      info "[ModelDeploy] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^deploy-|^NAME'
+      ;;
+    system)
+      info "[PrimeHub System] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@ | grep -E '^primehub-|^hub-|^proxy-|^csi-|^dataset-upload-|^ssh-bastion-server-|^NAME'
+      ;;
+    all|*)
+      info "[Pods] ${PRIMEHUB_NAMESPACE} namespaces" >&2
+      $all_pods $@
+      ;;
+  esac
+}
+
+primehub::version() {
+  if ! search_helm_release primehub; then
+    error "[Error] PrimeHub is not installed"
+    return 1
+  fi
+  info "[PrimeHub Version]"
+  helm ls -A -f primehub
+}
+
+primehub::diagnose::parse_options() {
+  while (( "$#" )); do
+    case "${1:-}" in
+      --path)
+        if ! primehub::diagnose::check_path_permission ${2:-}; then
+          usage
+          return 1
+        fi
+        LOGS_PATH=${2:-}
+        shift
+      ;;
+      --tail)
+        if ! primehub::diagnose::check_tail ${2:-}; then
+          usage
+          return 1
+        fi
+        LOGS_TAIL=${2:-}
+        shift
+      ;;
+    esac
+    shift || (usage; return 1)
+  done
+  return 0
+}
+
+primehub::diagnose::check_path_permission() {
+  local path=${1}
+  if [ "${path}" == "" ]; then
+    error "[Error] Should provide path"
+    return 1
+  elif ! mkdir -p ${path} 2> /dev/null; then
+    error "[Error] Can not access path: $path"
+    return 1
+  fi
+  return 0
+}
+
+primehub::diagnose::check_tail() {
+  local tail=${1}
+  local re='^[0-9]+$'
+  if [[ $tail == "" ]] ;then
+    error "[Error] Should provide tail"
+    return 1
+  elif ! [[ $tail =~ $re ]] ; then
+    error "[Error] Tail is not a number: $tail"
+    return 1
+  fi
+
+  return 0
+}
+
+primehub::diagnose () {
+  local i=0
+  primehub::diagnose::parse_options $@ || return 1
+  local logs_name=primehub-log-$(date +'%Y%m%d%H%M')
+  local logs_path=$(realpath ${LOGS_PATH}/$logs_name)
+
+  mkdir -p ${logs_path}
+  info "[Collect] K8s Node Info"
+  mkdir -p ${logs_path}/describe
+  helm ls -A > ${logs_path}/k8s_helms
+  kubectl get nodes -o wide > ${logs_path}/k8s_nodes
+  kubectl describe node > ${logs_path}/describe/node
+  echo "100% [Collect] K8s node information"
+
+  info "[Collect] K8s Pods Info"
+  DATA=$(kubectl get pods -o json --all-namespaces | jq '.items[] | "\(.metadata.namespace) \(.metadata.name) \(.spec.containers[].name)"' -r)
+  COUNT=$(echo $DATA | awk '{print NF}')
+  IFS=$'\n\t'
+  kubectl get pods -A -o wide > ${logs_path}/k8s_pods
+  for pod_info in $DATA; do
+      namespace=$(echo $pod_info | cut -d' ' -f1)
+      name=$(echo $pod_info | cut -d' ' -f2)
+      container=$(echo $pod_info | cut -d' ' -f3)
+
+      PCT=$(( 100*(++i)/COUNT*3 ))
+
+      printf "%3d%% [Collect] %s/%s:%s\n" $PCT ${namespace} ${name} ${container}
+      mkdir -p ${logs_path}/logs/$namespace/$name/
+      kubectl logs -n ${namespace} $name -c ${container} --tail ${LOGS_TAIL} > ${logs_path}/logs/${namespace}/${name}/${container}.log &
+
+      mkdir -p ${logs_path}/describe/${namespace}/
+      kubectl describe pod -n ${namespace} ${name} > ${logs_path}/describe/${namespace}/${name}
+  done
+  info "[Compressing] ${logs_path}.tgz"
+  tar czf ${logs_name}.tgz -C ${LOGS_PATH} ${logs_name}
+  echo "  Log archive: $(realpath ${logs_path}.tgz)"
+  info "[Done]"
+}
+
+main() {
+  local cmd="${1:-}"
+  local target=''
+  check_infrastructure
+
+  case "$cmd" in
+    status | version | diagnose)
+      shift
+      primehub::$cmd $@
+    ;;
+    --debug)
+      shift
+      set -x
+      main $@
+    ;;
+    -h|--help)
+      usage
+    ;;
+    *)
+      primehub::status $@
+    ;;
+  esac
+}
+
+main "$@"
