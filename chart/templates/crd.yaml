@@ -124,7 +124,7 @@ spec:
             nfs:
               type: object
               properties:
-                server: 
+                server:
                   type: string
                 path:
                   type: string
@@ -139,6 +139,22 @@ metadata:
   annotations:
     "helm.sh/resource-policy": keep
 spec:
+  additionalPrinterColumns:
+    - JSONPath: .spec.type
+      description: type of current image
+      name: Type
+      type: string
+    - JSONPath: .spec.groupName
+      description: group of current image
+      name: Group
+      type: string
+    - JSONPath: .status.jobCondition.phase
+      description: phase of current image
+      name: Status
+      type: string
+    - JSONPath: .metadata.creationTimestamp
+      name: Age
+      type: date
   group: primehub.io
   version: v1alpha1
   names:
@@ -166,5 +182,50 @@ spec:
               type: string
             pullSecret:
               type: string
+            type:
+              type: string
             url:
               type: string
+            urlForGpu:
+              type: string
+            imageSpec:
+              properties:
+                baseImage:
+                  type: string
+                cancel:
+                  type: boolean
+                packages:
+                  properties:
+                    apt:
+                      items:
+                        type: string
+                      type: array
+                    conda:
+                      items:
+                        type: string
+                      type: array
+                    pip:
+                      items:
+                        type: string
+                      type: array
+                  type: object
+                pullSecret:
+                  type: string
+                updateTime:
+                  format: date-time
+                  type: string
+              required:
+              - baseImage
+              type: object
+        status:
+          type: object
+          properties:
+            jobCondition:
+              type: object
+              properties:
+                image:
+                  type: string
+                jobName:
+                  type: string
+                phase:
+                  type: string
