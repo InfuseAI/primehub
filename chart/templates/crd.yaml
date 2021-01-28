@@ -180,8 +180,6 @@ spec:
               type: string
             displayName:
               type: string
-            groupName:
-              type: string
             pullSecret:
               type: string
             type:
