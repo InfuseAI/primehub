@@ -117,7 +117,6 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images
   - imagespecjobs
   - imagespecjobs/finalizers
   verbs:
@@ -131,7 +130,6 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images/status
   - imagespecjobs/status
   verbs:
   - get
@@ -140,7 +138,6 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images
   - imagespecs
   - imagespecs/finalizers
   verbs:
@@ -154,8 +151,28 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images/status
   - imagespecs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - primehub.io
+  resources:
+  - images
+  - images/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - images/status
   verbs:
   - get
   - patch
