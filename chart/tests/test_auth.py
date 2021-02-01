@@ -3,8 +3,6 @@ import os
 from unittest import mock
 from tornado import gen, httpclient, testing
 from jupyterhub.handlers import BaseHandler, LoginHandler
-from oauthenticator.generic import GenericLoginHandler
-from oauthenticator.oauth2 import OAuthLoginHandler, OAuthCallbackHandler
 from jupyterhub_profiles import PrimeHubSpawner, OIDCAuthenticator
 
 

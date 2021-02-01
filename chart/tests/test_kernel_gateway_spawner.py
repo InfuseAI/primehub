@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 import os
 from unittest import mock
@@ -74,8 +75,6 @@ class FakeAuthenticator(OIDCAuthenticator):
 
     def get_custom_resources(self, namespace, plural):
         return []
-
-    pass
 
 
 async def _get_auth_state():
@@ -168,7 +167,7 @@ class KernelGatewayTest(AsyncTestCase):
         spawner.user.get_auth_state = _get_auth_state
 
         yield FakeAuthenticator().pre_spawn_start(spawner.user, spawner)
-        pod_spec = spawner.get_pod_manifest().result().to_dict()
+        pod_spec = (yield spawner.get_pod_manifest()).to_dict()
 
         # it should be same with old behavior, one init_container and only run notebook container
         self.assertEqual(1, len(pod_spec['spec']['init_containers']))
@@ -192,7 +191,7 @@ class KernelGatewayTest(AsyncTestCase):
         spawner.user.get_auth_state = _get_auth_state
 
         yield FakeAuthenticator().pre_spawn_start(spawner.user, spawner)
-        pod_spec = spawner.get_pod_manifest().result().to_dict()
+        pod_spec = (yield spawner.get_pod_manifest()).to_dict()
 
         # it should be same with old behavior, one init_container and only run notebook container
         self.assertEqual(1, len(pod_spec['spec']['init_containers']))
@@ -223,7 +222,7 @@ class KernelGatewayTest(AsyncTestCase):
         spawner.user.get_auth_state = _get_auth_state
 
         yield FakeAuthenticator().pre_spawn_start(spawner.user, spawner)
-        pod_spec = spawner.get_pod_manifest().result().to_dict()
+        pod_spec = (yield spawner.get_pod_manifest()).to_dict()
 
         # # it should be same with old behavior, no init_container and only run notebook container
         # self.assertTrue(pod_spec['spec']['init_containers'] is None)
