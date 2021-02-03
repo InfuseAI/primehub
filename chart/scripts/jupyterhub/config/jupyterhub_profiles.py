@@ -1,3 +1,7 @@
+import base64
+import logging
+
+import pycurl
 from kubespawner.clients import shared_client
 from kubespawner import KubeSpawner
 import json
@@ -7,6 +11,9 @@ import os
 import tornado.ioloop
 import time
 import jupyterhub.handlers
+from tornado.httpclient import HTTPRequest, AsyncHTTPClient
+from tornado.httputil import url_concat
+
 from z2jh import get_config
 from tornado import gen, httpclient, web
 from tornado.auth import OAuth2Mixin
@@ -20,7 +27,7 @@ from jinja2 import Environment, FileSystemLoader
 from kubespawner.reflector import NamespacedResourceReflector
 
 
-# MONKEY-PATCH [START]
+# MONKEY-PATCH :: BaseHandler [START]
 # set cookie every time
 # https://github.com/InfuseAI/jupyterhub/commit/65b63e757e6c6197173c50d82404fb6b46a4a488
 def monkey_patched_set_login_cookie(self, user):
@@ -33,7 +40,19 @@ def monkey_patched_set_login_cookie(self, user):
 jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.BaseHandler.set_login_cookie
 jupyterhub.handlers.BaseHandler.set_login_cookie = monkey_patched_set_login_cookie
 print("apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
-# MONKEY-PATCH [END]
+# MONKEY-PATCH :: BaseHandler [END]
+
+# MONKEY-PATCH :: CurlAsyncHTTPClient [START]
+import tornado.curl_httpclient
+def curl_create_http_1_1(self) -> pycurl.Curl:
+    curl = self._origin_curl_create()
+    curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_1_1)
+    return curl
+
+tornado.curl_httpclient.CurlAsyncHTTPClient._origin_curl_create = tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create
+tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create = curl_create_http_1_1
+print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create => %s (use http1.1)" % curl_create_http_1_1)
+# MONKEY-PATCH :: CurlAsyncHTTPClient [END]
 
 
 try:
