@@ -156,7 +156,7 @@
         currentGroup.images[i].index = i;
         var spec = currentGroup.images[i].spec;
         var isGroupImage = spec.groupName && spec.groupName.length > 0;
-        var label = (isGroupImage ? 'Group' : 'System') + ' / ' + typeTextList[spec.type];
+        var label = (currentGroup.images[i].isReady ? '' : '(Not Ready) ') + (isGroupImage ? 'Group' : 'System') + ' / ' + typeTextList[spec.type];
         currentGroup.images[i].typeLabel = label;
       }
 
@@ -213,6 +213,9 @@
       } else {
         $images.find(':checked').trigger('click');
       }
+      $notReadyImages = $('label.image-option[data-is-ready="false"]');
+      $notReadyImages.addClass('disabled');
+      $notReadyImages.find('input[type="radio"]').attr('disabled', 'disabled');
     });
 
     $imageContainer.off('click.images');
