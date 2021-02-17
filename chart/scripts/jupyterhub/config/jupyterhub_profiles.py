@@ -35,6 +35,7 @@ def monkey_patched_set_login_cookie(self, user):
     self.original_set_login_cookie(user)
     # create and set a new cookie token for the hub
     self.set_hub_cookie(user)
+    print("set-hub-cookie")
 
 
 jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.BaseHandler.set_login_cookie
