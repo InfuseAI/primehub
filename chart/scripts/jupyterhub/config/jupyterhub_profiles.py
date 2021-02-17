@@ -62,12 +62,14 @@ def oauth2_get(self):
     extra_params = self.authenticator.extra_authorize_params.copy()
     self.log.info('OAuth redirect: %r', redirect_uri)
     state = self.get_state()
-    print("init-state %s" % state)
     self.set_state_cookie(state)
-    print("init-state %s" % state)
     extra_params['state'] = state
-    print("init-state %s" % state)
 
+
+    import base64
+
+    print("init-state %s" % state)
+    print("=> %s" % base64.b64decode(state))
     self.authorize_redirect(
         redirect_uri=redirect_uri,
         client_id=self.authenticator.client_id,
