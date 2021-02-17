@@ -57,6 +57,10 @@ print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_c
 import oauthenticator.oauth2
 
 
+def oauth2_set_state_cookie(self, state):
+    self._set_cookie(oauthenticator.oauth2.STATE_COOKIE_NAME, state, expires_days=1, httponly=True)
+    print("[set_state_cookie] init-state %s => %s" % (state, oauthenticator.oauth2._deserialize_state(state)))
+
 def oauth2_get(self):
     redirect_uri = self.authenticator.get_callback_url(self)
     extra_params = self.authenticator.extra_authorize_params.copy()
@@ -65,12 +69,7 @@ def oauth2_get(self):
     self.set_state_cookie(state)
     extra_params['state'] = state
 
-
-    import base64
-
-
-    print("init-state %s" % state)
-    print("=> %s" % oauthenticator.oauth2._deserialize_state(state))
+    print("[get] init-state %s => %s" % (state, oauthenticator.oauth2._deserialize_state(state)))
     self.authorize_redirect(
         redirect_uri=redirect_uri,
         client_id=self.authenticator.client_id,
@@ -81,7 +80,9 @@ def oauth2_get(self):
 
 
 oauthenticator.oauth2.OAuthLoginHandler.get = oauth2_get
+oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie = oauth2_set_state_cookie
 print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
+print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie)
 
 
 try:
