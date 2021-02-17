@@ -68,8 +68,9 @@ def oauth2_get(self):
 
     import base64
 
+
     print("init-state %s" % state)
-    print("=> %s" % base64.b64decode(state))
+    print("=> %s" % oauthenticator.oauth2._deserialize_state(state))
     self.authorize_redirect(
         redirect_uri=redirect_uri,
         client_id=self.authenticator.client_id,
