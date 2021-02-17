@@ -54,6 +54,32 @@ tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create = curl_create_http_1_1
 print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create => %s (use http1.1)" % curl_create_http_1_1)
 # MONKEY-PATCH :: CurlAsyncHTTPClient [END]
 
+import oauthenticator.oauth2
+
+
+def oauth2_get(self):
+    redirect_uri = self.authenticator.get_callback_url(self)
+    extra_params = self.authenticator.extra_authorize_params.copy()
+    self.log.info('OAuth redirect: %r', redirect_uri)
+    state = self.get_state()
+    print("init-state %s" % state)
+    self.set_state_cookie(state)
+    print("init-state %s" % state)
+    extra_params['state'] = state
+    print("init-state %s" % state)
+
+    self.authorize_redirect(
+        redirect_uri=redirect_uri,
+        client_id=self.authenticator.client_id,
+        scope=self.authenticator.scope,
+        extra_params=extra_params,
+        response_type='code',
+    )
+
+
+oauthenticator.oauth2.OAuthLoginHandler.get = oauth2_get
+print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
+
 
 try:
     # it is for local development
