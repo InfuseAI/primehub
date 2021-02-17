@@ -187,15 +187,7 @@ workflows:
   version: 2
   release_builds:
     jobs:
-      - unit_test
-      - e2e
-      - e2e_ee
-      - build:
-          filters:
-            tags:
-              only: /v.*/
-            branches:
-              ignore: /.*/
+      - e2e_regression
   daily_workflow:
     triggers:
       - schedule:
