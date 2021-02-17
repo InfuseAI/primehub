@@ -71,7 +71,8 @@ def oauth2_get(self):
     extra_params['state'] = state
 
     print("[get][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
-    print(self.request.headers)
+    print("url:", self.request.full_url())
+    print("headers:\n", self.request.headers)
     self.authorize_redirect(
         redirect_uri=redirect_uri,
         client_id=self.authenticator.client_id,
