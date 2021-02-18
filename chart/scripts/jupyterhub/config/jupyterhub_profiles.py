@@ -81,6 +81,22 @@ def oauth2_get(self):
         response_type='code',
     )
 
+def OAuthCallbackHandler_check_state(self):
+    """Verify OAuth state
+
+    compare value in cookie with redirect url param
+    """
+    cookie_state = self.get_state_cookie()
+    url_state = self.get_state_url()
+    if not cookie_state:
+        raise web.HTTPError(400, "OAuth state missing from cookies")
+    if not url_state:
+        raise web.HTTPError(400, "OAuth state missing from URL")
+    if cookie_state != url_state:
+        self.log.warning("OAuth state mismatch: %s != %s", cookie_state, url_state)
+        self.log.warning("cookie_state: %s", oauthenticator.oauth2._deserialize_state(cookie_state))
+        self.log.warning("url_state: %s", oauthenticator.oauth2._deserialize_state(url_state))
+        raise web.HTTPError(400, "OAuth state mismatch")
 
 oauthenticator.oauth2.OAuthLoginHandler.get = oauth2_get
 # oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie = oauth2_set_state_cookie
@@ -89,6 +105,7 @@ print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie)
 
 
 _origin_get_state_cookie = oauthenticator.oauth2.OAuthCallbackHandler.get_state_cookie
+oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
 
 
 def oo_get_state_cookie(self):
