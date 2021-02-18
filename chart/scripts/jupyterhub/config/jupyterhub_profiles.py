@@ -88,14 +88,16 @@ def OAuthCallbackHandler_check_state(self):
     """
     cookie_state = self.get_state_cookie()
     url_state = self.get_state_url()
+
+    self.log.warning("cookie_state: %s", oauthenticator.oauth2._deserialize_state(cookie_state))
+    self.log.warning("url_state: %s", oauthenticator.oauth2._deserialize_state(url_state))
+
     if not cookie_state:
         raise web.HTTPError(400, "OAuth state missing from cookies")
     if not url_state:
         raise web.HTTPError(400, "OAuth state missing from URL")
     if cookie_state != url_state:
         self.log.warning("OAuth state mismatch: %s != %s", cookie_state, url_state)
-        self.log.warning("cookie_state: %s", oauthenticator.oauth2._deserialize_state(cookie_state))
-        self.log.warning("url_state: %s", oauthenticator.oauth2._deserialize_state(url_state))
         raise web.HTTPError(400, "OAuth state mismatch")
 
 oauthenticator.oauth2.OAuthLoginHandler.get = oauth2_get
