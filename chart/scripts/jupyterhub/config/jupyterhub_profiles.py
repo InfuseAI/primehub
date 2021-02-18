@@ -2,6 +2,7 @@ import base64
 import logging
 
 import pycurl
+from jupyterhub.objects import Server
 from kubespawner.clients import shared_client
 from kubespawner import KubeSpawner
 import json
@@ -19,7 +20,8 @@ from tornado import gen, httpclient, web
 from tornado.auth import OAuth2Mixin
 from oauthenticator.generic import GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
-from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
+from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler, get_accepted_mimetype, parse_qsl, urlparse, \
+    SERVER_POLL_DURATION_SECONDS, ServerPollStatus
 from jupyterhub.utils import url_path_join
 from kubernetes.client.rest import ApiException
 from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
@@ -108,6 +110,156 @@ print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie)
 
 _origin_get_state_cookie = oauthenticator.oauth2.OAuthCallbackHandler.get_state_cookie
 oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
+
+
+import jupyterhub.handlers.pages
+
+
+
+# class SpawnPendingHandler(BaseHandler):
+#     """Handle /hub/spawn-pending/:user/:server
+#
+#     One and only purpose:
+#
+#     - wait for pending spawn
+#     - serve progress bar
+#     - redirect to /user/:name when ready
+#     - show error if spawn failed
+#
+#     Functionality split out of /user/:name handler to
+#     have clearer behavior at the right time.
+#
+#     Requests for this URL will never trigger any actions
+#     such as spawning new servers.
+#     """
+
+@web.authenticated
+async def SpawnPendingHandler_get(self, for_user, server_name=''):
+    self.log.warning("yo")
+    user = current_user = self.current_user
+    if for_user is not None and for_user != current_user.name:
+        if not current_user.admin:
+            raise web.HTTPError(
+                403, "Only admins can spawn on behalf of other users"
+            )
+        user = self.find_user(for_user)
+        if user is None:
+            raise web.HTTPError(404, "No such user: %s" % for_user)
+
+    if server_name and server_name not in user.spawners:
+        raise web.HTTPError(
+            404, "%s has no such server %s" % (user.name, server_name)
+        )
+
+    spawner = user.spawners[server_name]
+
+    if spawner.ready:
+        # spawner is ready and waiting. Redirect to it.
+        next_url = self.get_next_url(default=user.server_url(server_name))
+        self.log.warning("yo %s", next_url)
+        self.redirect(next_url)
+        return
+
+    # if spawning fails for any reason, point users to /hub/home to retry
+    self.extra_error_html = self.spawn_home_error
+
+    auth_state = await user.get_auth_state()
+
+    # First, check for previous failure.
+    if (
+        not spawner.active
+        and spawner._spawn_future
+        and spawner._spawn_future.done()
+        and spawner._spawn_future.exception()
+    ):
+        # Condition: spawner not active and _spawn_future exists and contains an Exception
+        # Implicit spawn on /user/:name is not allowed if the user's last spawn failed.
+        # We should point the user to Home if the most recent spawn failed.
+        exc = spawner._spawn_future.exception()
+        self.log.error("Previous spawn for %s failed: %s", spawner._log_name, exc)
+        spawn_url = url_path_join(
+            self.hub.base_url, "spawn", user.escaped_name, server_name
+        )
+        self.set_status(500)
+        html = self.render_template(
+            "not_running.html",
+            user=user,
+            auth_state=auth_state,
+            server_name=server_name,
+            spawn_url=spawn_url,
+            failed=True,
+            failed_message=getattr(exc, 'jupyterhub_message', ''),
+            exception=exc,
+        )
+        self.finish(html)
+        return
+
+    self.log.warning("yoyo")
+    # Check for pending events. This should usually be the case
+    # when we are on this page.
+    # page could be pending spawn *or* stop
+    if spawner.pending:
+        self.log.info("%s is pending %s", spawner._log_name, spawner.pending)
+        # spawn has started, but not finished
+        url_parts = []
+        if spawner.pending == "stop":
+            page = "stop_pending.html"
+        else:
+            page = "spawn_pending.html"
+        html = self.render_template(
+            page,
+            user=user,
+            spawner=spawner,
+            progress_url=spawner._progress_url,
+            auth_state=auth_state,
+        )
+        self.log.warning("yoyo")
+        self.finish(html)
+        return
+
+    self.log.warning("yoyo")
+    # spawn is supposedly ready, check on the status
+    if spawner.ready:
+        self.log.warning("yoyo")
+        poll_start_time = time.perf_counter()
+        status = await spawner.poll()
+        SERVER_POLL_DURATION_SECONDS.labels(
+            status=ServerPollStatus.from_status(status)
+        ).observe(time.perf_counter() - poll_start_time)
+        self.log.warning("yoyo")
+    else:
+        status = 0
+        self.log.warning("yoyo")
+
+    # server is not running, render "not running" page
+    # further, set status to 404 because this is not
+    # serving the expected page
+    if status is not None:
+        spawn_url = url_path_join(
+            self.hub.base_url, "spawn", user.escaped_name, server_name
+        )
+        html = self.render_template(
+            "not_running.html",
+            user=user,
+            auth_state=auth_state,
+            server_name=server_name,
+            spawn_url=spawn_url,
+        )
+        self.finish(html)
+        return
+
+    # we got here, server appears to be ready and running,
+    # no longer pending.
+    # redirect to the running server.
+
+    next_url = self.get_next_url(default=user.server_url(server_name))
+    self.log.warning("yo %s", next_url)
+    self.redirect(next_url)
+
+
+jupyterhub.handlers.pages.SpawnPendingHandler.get = SpawnPendingHandler_get
+print(jupyterhub.handlers.pages.SpawnPendingHandler.get)
+
 
 
 def oo_get_state_cookie(self):
