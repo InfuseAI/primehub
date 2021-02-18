@@ -58,9 +58,9 @@ print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_c
 import oauthenticator.oauth2, time
 
 
-def oauth2_set_state_cookie(self, state):
-    self._set_cookie(oauthenticator.oauth2.STATE_COOKIE_NAME, state, expires_days=1, httponly=True)
-    print("[set_state_cookie][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
+# def oauth2_set_state_cookie(self, state):
+#     self._set_cookie(oauthenticator.oauth2.STATE_COOKIE_NAME, state, expires_days=1, httponly=True)
+#     print("[set_state_cookie][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
 
 def oauth2_get(self):
     redirect_uri = self.authenticator.get_callback_url(self)
@@ -70,9 +70,9 @@ def oauth2_get(self):
     self.set_state_cookie(state)
     extra_params['state'] = state
 
-    print("[get][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
-    print("url:", self.request.full_url())
-    print("headers:\n", self.request.headers)
+    print("[OAuthLoginHandler][get][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
+    print("[OAuthLoginHandler] url:", self.request.full_url())
+    print("[OAuthLoginHandler] headers:\n", self.request.headers)
     self.authorize_redirect(
         redirect_uri=redirect_uri,
         client_id=self.authenticator.client_id,
@@ -83,9 +83,21 @@ def oauth2_get(self):
 
 
 oauthenticator.oauth2.OAuthLoginHandler.get = oauth2_get
-oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie = oauth2_set_state_cookie
+# oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie = oauth2_set_state_cookie
 print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
 print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.set_state_cookie)
+
+
+_origin_get_state_cookie = oauthenticator.oauth2.OAuthCallbackHandler.get_state_cookie
+
+
+def oo_get_state_cookie(self):
+    state = _origin_get_state_cookie(self)
+    print("[OAuthCallbackHandler][get-state-cookie][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
+    return state
+
+
+oauthenticator.oauth2.OAuthCallbackHandler.get_state_cookie = oo_get_state_cookie
 
 
 try:
