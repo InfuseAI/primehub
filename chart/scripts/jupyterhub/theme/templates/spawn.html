@@ -175,7 +175,7 @@
 </script>
 <script id="image-template" type="x-tmpl-mustache">
     {{#.}}
-    <label for="image-item-{{index}}" data-image-type="{{spec.type}}" class="form-control input-group image-option">
+    <label for="image-item-{{index}}" data-image-type="{{spec.type}}" class="form-control input-group image-option" data-is-ready="{{isReady}}">
         <div class="col-md-1">
             <input type="radio" name="image" id="image-item-{{index}}" data-index="{{index}}" value="{{name}}" />
         </div>

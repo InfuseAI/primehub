@@ -119,7 +119,7 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                             projectQuotaGpu
                             projectQuotaMemory
                             instanceTypes { name displayName description spec global }
-                            images { name displayName description spec global }
+                            images { name displayName description isReady spec global }
                             datasets { name displayName description spec global writable mountRoot homeSymlink launchGroupOnly }
                         }
                 } }'''
