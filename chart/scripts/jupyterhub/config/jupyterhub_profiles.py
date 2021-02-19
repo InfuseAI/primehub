@@ -1,5 +1,6 @@
 import base64
 import logging
+from typing import Optional
 
 import pycurl
 from jupyterhub.objects import Server
@@ -12,6 +13,7 @@ import os
 import tornado.ioloop
 import time
 import jupyterhub.handlers
+from tornado.escape import utf8
 from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 from tornado.httputil import url_concat
 
@@ -60,10 +62,6 @@ print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_c
 import oauthenticator.oauth2, time
 
 
-# def oauth2_set_state_cookie(self, state):
-#     self._set_cookie(oauthenticator.oauth2.STATE_COOKIE_NAME, state, expires_days=1, httponly=True)
-#     print("[set_state_cookie][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
-
 def oauth2_get(self):
     redirect_uri = self.authenticator.get_callback_url(self)
     extra_params = self.authenticator.extra_authorize_params.copy()
@@ -72,7 +70,7 @@ def oauth2_get(self):
     self.set_state_cookie(state)
     extra_params['state'] = state
 
-    print("[OAuthLoginHandler][get][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
+    print("[OAuthLoginHandler][update-cookie-before-redirect][%f] state %s => %s" % (time.time(), state, oauthenticator.oauth2._deserialize_state(state)))
     print("[OAuthLoginHandler] url:", self.request.full_url())
     print("[OAuthLoginHandler] headers:\n", self.request.headers)
     self.authorize_redirect(
@@ -112,154 +110,31 @@ _origin_get_state_cookie = oauthenticator.oauth2.OAuthCallbackHandler.get_state_
 oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
 
 
-import jupyterhub.handlers.pages
+def web_redirect(
+        self, url: str, permanent: bool = False, status: Optional[int] = None
+) -> None:
+    """Sends a redirect to the given (optionally relative) URL.
 
-
-
-# class SpawnPendingHandler(BaseHandler):
-#     """Handle /hub/spawn-pending/:user/:server
-#
-#     One and only purpose:
-#
-#     - wait for pending spawn
-#     - serve progress bar
-#     - redirect to /user/:name when ready
-#     - show error if spawn failed
-#
-#     Functionality split out of /user/:name handler to
-#     have clearer behavior at the right time.
-#
-#     Requests for this URL will never trigger any actions
-#     such as spawning new servers.
-#     """
-
-@web.authenticated
-async def SpawnPendingHandler_get(self, for_user, server_name=''):
-    self.log.warning("yo")
-    user = current_user = self.current_user
-    if for_user is not None and for_user != current_user.name:
-        if not current_user.admin:
-            raise web.HTTPError(
-                403, "Only admins can spawn on behalf of other users"
-            )
-        user = self.find_user(for_user)
-        if user is None:
-            raise web.HTTPError(404, "No such user: %s" % for_user)
-
-    if server_name and server_name not in user.spawners:
-        raise web.HTTPError(
-            404, "%s has no such server %s" % (user.name, server_name)
-        )
-
-    spawner = user.spawners[server_name]
-
-    if spawner.ready:
-        # spawner is ready and waiting. Redirect to it.
-        next_url = self.get_next_url(default=user.server_url(server_name))
-        self.log.warning("yo %s", next_url)
-        self.redirect(next_url)
-        return
-
-    # if spawning fails for any reason, point users to /hub/home to retry
-    self.extra_error_html = self.spawn_home_error
-
-    auth_state = await user.get_auth_state()
-
-    # First, check for previous failure.
-    if (
-        not spawner.active
-        and spawner._spawn_future
-        and spawner._spawn_future.done()
-        and spawner._spawn_future.exception()
-    ):
-        # Condition: spawner not active and _spawn_future exists and contains an Exception
-        # Implicit spawn on /user/:name is not allowed if the user's last spawn failed.
-        # We should point the user to Home if the most recent spawn failed.
-        exc = spawner._spawn_future.exception()
-        self.log.error("Previous spawn for %s failed: %s", spawner._log_name, exc)
-        spawn_url = url_path_join(
-            self.hub.base_url, "spawn", user.escaped_name, server_name
-        )
-        self.set_status(500)
-        html = self.render_template(
-            "not_running.html",
-            user=user,
-            auth_state=auth_state,
-            server_name=server_name,
-            spawn_url=spawn_url,
-            failed=True,
-            failed_message=getattr(exc, 'jupyterhub_message', ''),
-            exception=exc,
-        )
-        self.finish(html)
-        return
-
-    self.log.warning("yoyo")
-    # Check for pending events. This should usually be the case
-    # when we are on this page.
-    # page could be pending spawn *or* stop
-    if spawner.pending:
-        self.log.info("%s is pending %s", spawner._log_name, spawner.pending)
-        # spawn has started, but not finished
-        url_parts = []
-        if spawner.pending == "stop":
-            page = "stop_pending.html"
-        else:
-            page = "spawn_pending.html"
-        html = self.render_template(
-            page,
-            user=user,
-            spawner=spawner,
-            progress_url=spawner._progress_url,
-            auth_state=auth_state,
-        )
-        self.log.warning("yoyo")
-        self.finish(html)
-        return
-
-    self.log.warning("yoyo")
-    # spawn is supposedly ready, check on the status
-    if spawner.ready:
-        self.log.warning("yoyo")
-        poll_start_time = time.perf_counter()
-        status = await spawner.poll()
-        SERVER_POLL_DURATION_SECONDS.labels(
-            status=ServerPollStatus.from_status(status)
-        ).observe(time.perf_counter() - poll_start_time)
-        self.log.warning("yoyo")
+    If the ``status`` argument is specified, that value is used as the
+    HTTP status code; otherwise either 301 (permanent) or 302
+    (temporary) is chosen based on the ``permanent`` argument.
+    The default is 302 (temporary).
+    """
+    if self._headers_written:
+        raise Exception("Cannot redirect after headers have been written")
+    if status is None:
+        status = 301 if permanent else 302
     else:
-        status = 0
-        self.log.warning("yoyo")
-
-    # server is not running, render "not running" page
-    # further, set status to 404 because this is not
-    # serving the expected page
-    if status is not None:
-        spawn_url = url_path_join(
-            self.hub.base_url, "spawn", user.escaped_name, server_name
-        )
-        html = self.render_template(
-            "not_running.html",
-            user=user,
-            auth_state=auth_state,
-            server_name=server_name,
-            spawn_url=spawn_url,
-        )
-        self.finish(html)
-        return
-
-    # we got here, server appears to be ready and running,
-    # no longer pending.
-    # redirect to the running server.
-
-    next_url = self.get_next_url(default=user.server_url(server_name))
-    self.log.warning("yo %s", next_url)
-    self.redirect(next_url)
+        assert isinstance(status, int) and 300 <= status <= 399
+    self.set_status(status)
+    self.set_header("Location", utf8(url))
+    self.finish()
+    print("%s => %s" % (str(self), url))
 
 
-jupyterhub.handlers.pages.SpawnPendingHandler.get = SpawnPendingHandler_get
-print(jupyterhub.handlers.pages.SpawnPendingHandler.get)
+import tornado.web
 
+tornado.web.RequestHandler.redirect = web_redirect
 
 
 def oo_get_state_cookie(self):
