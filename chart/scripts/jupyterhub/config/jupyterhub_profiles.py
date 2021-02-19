@@ -1,5 +1,6 @@
 import base64
 import logging
+from collections import OrderedDict
 
 import pycurl
 from kubespawner.clients import shared_client
@@ -53,6 +54,100 @@ tornado.curl_httpclient.CurlAsyncHTTPClient._origin_curl_create = tornado.curl_h
 tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create = curl_create_http_1_1
 print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create => %s (use http1.1)" % curl_create_http_1_1)
 # MONKEY-PATCH :: CurlAsyncHTTPClient [END]
+
+# MONKEY-PATCH :: OAuth-state-mismatch [START]
+class OAuthStateStore(object):
+    PURGE_INTERVAL = 1
+    _store = OrderedDict()
+    _purge_time = time.time()
+
+    def __init__(self):
+        pass
+
+    def add_state(self, username, state):
+        self._store[(username, state)] = time.time()
+
+    def validate(self, username, state):
+        self.purge()
+        t = self._store.get((username, state))
+        if not t:
+            return False
+        if time.time() - t < 1:
+            return True
+        return False
+
+    def purge(self):
+        if time.time() - self._purge_time < self.PURGE_INTERVAL:
+            return
+        self._purge_time = time.time()
+
+        removed = []
+        t = time.time()
+        for k, v in self._store.items():
+            if t - v > 1:
+                removed.append(k)
+            else:
+                break
+        for k in removed:
+            del self._store[k]
+
+
+import oauthenticator.oauth2
+
+oauth_state_store = OAuthStateStore()
+
+
+def OAuthLoginHandler_get(self):
+    redirect_uri = self.authenticator.get_callback_url(self)
+    extra_params = self.authenticator.extra_authorize_params.copy()
+    self.log.info('OAuth redirect: %r', redirect_uri)
+    state = self.get_state()
+    self.set_state_cookie(state)
+    extra_params['state'] = state
+
+    user = self.get_current_user_cookie()
+    if user and user.name:
+        oauth_state_store.add_state(user.name, state)
+
+    self.authorize_redirect(
+        redirect_uri=redirect_uri,
+        client_id=self.authenticator.client_id,
+        scope=self.authenticator.scope,
+        extra_params=extra_params,
+        response_type='code',
+    )
+
+
+def OAuthCallbackHandler_check_state(self):
+    """Verify OAuth state
+
+    compare value in cookie with redirect url param
+    """
+    cookie_state = self.get_state_cookie()
+    url_state = self.get_state_url()
+
+    if not cookie_state:
+        raise web.HTTPError(400, "OAuth state missing from cookies")
+    if not url_state:
+        raise web.HTTPError(400, "OAuth state missing from URL")
+    if cookie_state != url_state:
+        user = self.get_current_user_cookie()
+        if user and user.name:
+            if oauth_state_store.validate(user.name, cookie_state) and oauth_state_store.validate(user.name, url_state):
+                self.log.warning("Bypass-oauth-mismatch from state cache [user: %s]", user.name)
+                return
+
+        self.log.warning("OAuth state mismatch: %s != %s", cookie_state, url_state)
+        raise web.HTTPError(400, "OAuth state mismatch")
+
+
+oauthenticator.oauth2.OAuthLoginHandler.get = OAuthLoginHandler_get
+oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
+
+print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
+print("patch %s" % oauthenticator.oauth2.OAuthCallbackHandler.check_state)
+# MONKEY-PATCH :: OAuth-state-mismatch [END]
+
 
 
 try:
