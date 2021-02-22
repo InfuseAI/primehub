@@ -6,7 +6,6 @@ primehub-all:
 
   # Controller
   primehub-controller: &primehub-controller infuseai/primehub-controller:latest
-  primehub-controller-ee: &primehub-controller-ee infuseai/primehub-controller-ee:latest
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:latest
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 
@@ -70,7 +69,7 @@ primehub-ee:
   primehub-bootstrap: *primehub-bootstrap
 
   # Controller
-  primehub-controller-ee: *primehub-controller-ee
+  primehub-controller: *primehub-controller
   primehub-monitoring-agent: *primehub-monitoring-agent
   kube-rbac-proxy: *kube-rbac-proxy
 
@@ -132,7 +131,7 @@ primehub-deploy:
   primehub-bootstrap: *primehub-bootstrap
 
   # Controller
-  primehub-controller-ee: *primehub-controller-ee
+  primehub-controller: *primehub-controller
   primehub-monitoring-agent: *primehub-monitoring-agent
   kube-rbac-proxy: *kube-rbac-proxy
 

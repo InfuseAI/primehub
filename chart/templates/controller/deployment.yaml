@@ -39,9 +39,9 @@ spec:
           command:
           - /manager
           {{- if eq .Values.primehub.mode "ce" }}
-          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          image: "{{ .Values.controller.image.repository }}-ce:{{ .Values.controller.image.tag }}"
           {{- else }}
-          image: "{{ .Values.controller.image.repository }}-ee:{{ .Values.controller.image.tag }}"
+          image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
           {{- end }}
           {{- if .Values.controller.image.pullPolicy }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
