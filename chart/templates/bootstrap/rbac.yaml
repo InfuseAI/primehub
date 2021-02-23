@@ -12,8 +12,11 @@ metadata:
     rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
 - apiGroups: [""]
-  resources: ["pods", "namespaces", "configmaps"]
+  resources: ["pods", "configmaps"]
   verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch", "patch"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "create", "patch"]
