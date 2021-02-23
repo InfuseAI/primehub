@@ -3,6 +3,26 @@ Feature: Admin
   Delete some created resources
 
   @daily
+  Scenario: Delete user
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
+    Then I am on the admin dashboard "Groups" page
+    When I click "Users" in admin dashboard
+    Then I am on the admin dashboard "Users" page
+    When I search "test-user" in test-id "text-filter-username"
+    And I delete a row with text "test-user"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "test-user"
+    When I click refresh
+    And I search "test-user" in test-id "text-filter-username"
+    Then list-view table "should not" contain row with "test-user"
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @daily
   Scenario: Delete image
     Given I go to login page
     When I fill in the correct username credentials

@@ -83,6 +83,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'UpdateSchedule': `${prefix}//span[contains(text(), 'Schedule:')]`,
     'Models': `${prefix}//a[text()='Model Deployments']`,
     'CreateDeployment': `${prefix}//span[text()='Create Deployment']`,
+    'SharedFiles': `${prefix}//a[text()='Shared Files']`,
     'Images': `${prefix}//a[text()='Images']`,
     'NewImage': `${prefix}//span[text()='New Images']`
   };
@@ -96,6 +97,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'UpdateSchedule': `-${this.E2E_SUFFIX}/schedule/schedule-`,
     'Models': `-${this.E2E_SUFFIX}/model-deployment`,
     'CreateDeployment': `-${this.E2E_SUFFIX}/model-deployment/create`,
+    'SharedFiles': `-${this.E2E_SUFFIX}/browse`,
     'Images': `-${this.E2E_SUFFIX}/images`,
     'NewImage': `-${this.E2E_SUFFIX}/images/create`
   };
@@ -113,10 +115,12 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 
 defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
+    'Home': `-${this.E2E_SUFFIX}/home`,
+    'UserGuide': 'https://docs.primehub.io',
     'Notebooks': `-${this.E2E_SUFFIX}/hub`,
     'JupyterLab': `/user/${this.USERNAME}/lab`,
-    'NotebooksAdmin': 'console/cms/default/jupyterhub',
-    'JobDetail': `-${this.E2E_SUFFIX}/job/`
+    'JobDetail': `-${this.E2E_SUFFIX}/job/`,
+    'NotebooksAdmin': 'console/cms/default/jupyterhub'
   };
   let pages, targetPage;
   if (tabname in urlMap) tabname = urlMap[tabname];
