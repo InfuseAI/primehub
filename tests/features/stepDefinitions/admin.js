@@ -2,23 +2,11 @@ const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
 defineStep("I click {string} in admin dashboard", async function(string) {
-  // the xpath, //li[text()='${string}'][1], is for secrets
-  const xpath = 
-  `(
-    //span[text()='${string}'][1]|
-    //li[text()='${string}'][1]
-  )`;
-  await this.clickElementByXpath(xpath);
+  await this.clickElementByXpath(`//li[contains(., '${string}')]`);
 });
 
 defineStep("I am on the admin dashboard {string} page", async function(string) {
-  // the xpath, //h2[text()='${string}'], is for secrets
-  const xpath = 
-  `(
-    //h2/span[text()='${string}']|
-    //h2[text()='${string}']
-  )`;
-  await this.page.waitForXPath(xpath);
+  await this.page.waitForXPath(`//h2[contains(., '${string}')]`);
   await this.takeScreenshot(`admin-dashboard-${string}`);
 });
 
