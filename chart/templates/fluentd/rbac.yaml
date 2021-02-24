@@ -1,4 +1,4 @@
-{{- if eq (include "fluentd.enabled" .) "true" -}}
+{{- if or (eq (include "fluentd.enabled" .) "true") (.Values.logging.enabled) -}}
 ---
 apiVersion: v1
 kind: ServiceAccount

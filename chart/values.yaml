@@ -843,6 +843,39 @@ istio:
       type: ClusterIP
       port: 8080
 
+logging:
+  enabled: false
+  image:
+    ## Support fluentd-kubernetes-daemonset
+    ## ref: https://hub.docker.com/r/fluent/fluentd-kubernetes-daemonset/tags
+    ##
+    repository: fluent/fluentd-kubernetes-daemonset
+    tag: v1-debian-syslog
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 512m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 200Mi
+
+  env:
+    ## Example of syslog env
+    # SYSLOG_HOST:      <syslog_server_host>
+    # SYSLOG_PORT:      <syslog_server_port_number>
+    # SYSLOG_PROTOCOL:  udp   # udp or tcp
+    # SYSLOG_TLS:       false # true or false
+    ## Example of forward env
+    # FLUENT_FOWARD_HOST: <forward-host>
+    # FLUENT_FOWARD_PORT: 18080
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
 store:
   enabled: false
   accessKey: "AKIAIOSFODNN7EXAMPLE"
@@ -873,7 +906,7 @@ fluentd:
       memory: 512Mi
     requests:
       cpu: 100m
-      memory: 512Mi
+      memory: 200Mi
 
   nodeSelector: {}
 
