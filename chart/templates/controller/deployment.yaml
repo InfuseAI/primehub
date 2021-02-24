@@ -1,4 +1,3 @@
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,7 +38,11 @@ spec:
           - --enable-leader-election
           command:
           - /manager
+          {{- if eq .Values.primehub.mode "ce" }}
+          image: "{{ .Values.controller.image.repository }}-ce:{{ .Values.controller.image.tag }}"
+          {{- else }}
           image: "{{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}"
+          {{- end }}
           {{- if .Values.controller.image.pullPolicy }}
           imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           {{- end }}
@@ -49,6 +52,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
           - name: JOBSUBMISSION_GRAPHQLENDPOINT
             value: {{ include "primehub.graphql.endpoint" . }}
           - name: JOBSUBMISSION_GRAPHQLSECRET
@@ -56,6 +60,7 @@ spec:
               secretKeyRef:
                 name: {{ include "primehub.name" . }}-graphql-shared-secret
                 key: sharedSecret
+{{- end }}
           resources:
 {{ toYaml .Values.controller.resources | indent 12 }}
           volumeMounts:
@@ -80,4 +85,3 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-{{- end }}

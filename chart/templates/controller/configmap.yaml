@@ -1,17 +1,9 @@
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: primehub-controller-custom-image-scripts
 data:
 {{ (.Files.Glob "scripts/controller/custom_image/*").AsConfig | indent 2 }}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: primehub-controller-job-scripts
-data:
-{{ (.Files.Glob "scripts/controller/job/*").AsConfig | indent 2 }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -23,6 +15,7 @@ data:
 {{ toYaml .Values.ingress | indent 6 }}
     customImage:
 {{ toYaml .Values.customImage | indent 6 }}
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
     jobSubmission:
       grantSudo: {{ .Values.primehub.grantSudo }}
 {{ toYaml .Values.jobSubmission | indent 6 }}
@@ -38,4 +31,13 @@ data:
           repository: {{ .Values.modelDeployment.engineContainer.image.repository }}
           tag: {{ .Values.modelDeployment.engineContainer.image.tag }}
           pullPolicy: {{ .Values.modelDeployment.engineContainer.image.pullPolicy }}
+{{- end }}
+---
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primehub-controller-job-scripts
+data:
+{{ (.Files.Glob "scripts/controller/job/*").AsConfig | indent 2 }}
 {{- end }}

@@ -1,4 +1,3 @@
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -156,6 +155,7 @@ rules:
   - get
   - patch
   - update
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
   resources:
@@ -261,6 +261,7 @@ rules:
   - get
   - patch
   - update
+{{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -319,4 +320,3 @@ subjects:
 - kind: ServiceAccount
   name: {{ include "primehub.fullname" . }}-controller
   namespace: {{ .Release.Namespace }}
-{{- end }}
