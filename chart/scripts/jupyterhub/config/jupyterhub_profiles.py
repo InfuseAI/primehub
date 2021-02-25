@@ -2,6 +2,7 @@ import base64
 import logging
 from collections import OrderedDict
 
+import asyncio
 import pycurl
 from kubespawner.clients import shared_client
 from kubespawner import KubeSpawner
@@ -21,6 +22,7 @@ from tornado.auth import OAuth2Mixin
 from oauthenticator.generic import GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
 from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
+from jupyterhub.handlers.pages import SpawnHandler
 from jupyterhub.utils import url_path_join
 from kubernetes.client.rest import ApiException
 from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
@@ -42,6 +44,45 @@ jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.
 jupyterhub.handlers.BaseHandler.set_login_cookie = monkey_patched_set_login_cookie
 print("apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
 # MONKEY-PATCH :: BaseHandler [END]
+
+# MONKEY-PATCH :: SpawnHandler [START]
+async def monkey_patched_wrap_spawn_single_user(
+    self, user, server_name, spawner, pending_url, options=None
+):
+    # Explicit spawn request: clear _spawn_future
+    # which may have been saved to prevent implicit spawns
+    # after a failure.
+    if spawner._spawn_future and spawner._spawn_future.done():
+        spawner._spawn_future = None
+    # not running, no form. Trigger spawn and redirect back to /user/:name
+    f = asyncio.ensure_future(
+        self.spawn_single_user(user, server_name, options=options)
+    )
+    done, pending = await asyncio.wait([f], timeout=1)
+    # If spawn_single_user throws an exception, raise a 500 error
+    # otherwise it may cause a redirect loop
+    if f.done() and f.exception():
+        exc = f.exception()
+
+        if exc.status == 410 and exc.body:
+            try:
+                message = json.loads(exc.body)['message']
+            except Exception as e:
+                self.log.error("Parse body error: %s" % str(e))
+            if message.startswith("admission webhook"):
+                raise ValueError(message)
+
+        raise web.HTTPError(
+            500,
+            "Error in Authenticator.pre_spawn_start: %s %s"
+            % (type(exc).__name__, str(exc)),
+        )
+    return self.redirect(pending_url)
+
+jupyterhub.handlers.pages.SpawnHandler.original_wrap_spawn_single_user = jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user
+jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user = monkey_patched_wrap_spawn_single_user
+print("apply monkey-patch to jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user => %s" % jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user)
+# MONKEY-PATCH :: SpawnHandler [END]
 
 # MONKEY-PATCH :: CurlAsyncHTTPClient [START]
 import tornado.curl_httpclient
