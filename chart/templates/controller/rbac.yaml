@@ -155,7 +155,6 @@ rules:
   - get
   - patch
   - update
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
   resources:
@@ -177,6 +176,7 @@ rules:
   - get
   - patch
   - update
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
   resources:
