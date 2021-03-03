@@ -2,8 +2,16 @@
 
 ## Upcoming
 ### What's New
+
+- **Group Admin Image Management**: Group admins now can create custom group images.
+
 ### Action Required
 ### Avaliable in CE
+
+#### Group Admin: Image Management
+
+- Allow group admins to build group images with custom APT, conda and pip packages.
+
 ### EE only
 
 ## 3.3.0
