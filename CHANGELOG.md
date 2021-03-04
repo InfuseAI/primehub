@@ -1,7 +1,11 @@
 # Changelog
 
 ## Upcoming
+## 3.4.0
 ### What's New
+
+- **Shared Files: Browse**: Users can visit the `Shared Files` tab in PrimeHub then browse through, view, and download your groups' project files in one place.
+
 ### Action Required
 ### Avaliable in CE
 ### EE only
