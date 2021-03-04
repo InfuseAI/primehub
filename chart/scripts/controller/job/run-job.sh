@@ -109,14 +109,35 @@ if [[ "${GRANT_SUDO}" == "true" ]]; then
   fi
 fi
 
-# Refresh ldconfig cache
+# Refresh ldconfig cache and start monitoring
 ldconfig
-
 monitoring_start
+
+
+## PrimeHub profile
+if [ -d "/project/$GROUP_NAME" ]; then
+  # group volume mounted
+  export PRIMEHUB_GROUP_VOLUME_PATH="/project/$GROUP_NAME"
+  export PRIMEHUB_PHFS_PATH="$HOME/phfs"
+  export PRIMEHUB_USER=$JUPYTERHUB_USER
+  export PRIMEHUB_GROUP=$GROUP_NAME
+  echo "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile will be loaded if exists"
+fi
+
+if [ -d "/project/$GROUP_NAME" ]; then
+  # source group profile
+  if [ -f "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile" ]; then
+    echo "sourcing group profile in run-job"
+    source "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile"
+  else
+    echo "group profile not found"
+  fi
+fi
+
 
 # Run Command
 if command -v sudo > /dev/null && [[ "$GRANT_SUDO" == "true" ]] && [[ -n $USER ]]; then
-  sudo -E -H -u $USER PATH=$PATH bash -c "$COMMAND"
+  sudo -E -H -u $USER PATH=$PATH PYTHONPATH="$PYTHONPATH" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" bash -c "$COMMAND"
 else
   bash -c "$COMMAND"
 fi

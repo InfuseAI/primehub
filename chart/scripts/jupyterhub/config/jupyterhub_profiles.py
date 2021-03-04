@@ -702,6 +702,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             mutate_pod_spec_for_kernel_gateway(spawner)
 
         if spawner.enable_safe_mode:
+            spawner.environment['PRIMEHUB_SAFE_MODE_ENABLED'] = "true"
             self.log.warning('enable safe mode')
             # rescue mode: change home-volume mountPath
             for m in spawner.volume_mounts:
