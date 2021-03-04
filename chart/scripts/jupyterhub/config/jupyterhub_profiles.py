@@ -701,7 +701,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
             self.log.warning('enable kernel gateway')
             mutate_pod_spec_for_kernel_gateway(spawner)
 
-        spawner.environment['PRIMEHUB_SAFE_MODE_ENABLED'] = "false"
         if spawner.enable_safe_mode:
             spawner.environment['PRIMEHUB_SAFE_MODE_ENABLED'] = "true"
             self.log.warning('enable safe mode')
