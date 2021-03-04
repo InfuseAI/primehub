@@ -6,6 +6,8 @@
 ### Avaliable in CE
 ### EE only
 
+- Add per node GPUs allocation in Grafana dashboard (ch16077)
+
 ## 3.3.0
 ### What's New
 
