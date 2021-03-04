@@ -18,12 +18,12 @@ Parameter | Description | Default
 `primehub.keycloak.realm` | The keycloak realm for primehub | `primehub`
 `primehub.keycloak.clientId` | The keycloak client id for primehub | `admin-ui`
 `primehub.keycloak.rolePrefix` | The prefix of roles for the resource-group binding | `""`
-`primehub.sharedVolumeStorageClass` | The storage class for shared volume. If the value is empty string `""`, it means to use `groupvolume` to provision shared volume | `""` 
+`primehub.sharedVolumeStorageClass` | The storage class for shared volume. If the value is empty string `""`, it means to use `groupvolume` to provision shared volume | `""`
 
 ## Ingress
 Parameter | Description | Default
 --- | --- | ---
-`ingress.annotations` | Annotations for ingress| `{}` 
+`ingress.annotations` | Annotations for ingress| `{}`
 `ingress.hosts` | a list of ingress hosts | `[]`
 `ingress.tls` | 	a list of ingress tls items | `[]`
 
@@ -66,7 +66,7 @@ Parameter | Description | Default
 `watcher.replicas` | The number of watcher replicas | `1`
 `watcher.image.credentials.*` | The credential for watcher image | `null`
 `watcher.image.repository` | The watcher image repository | `infuseai/primehub-console-watcher`
-`watcher.image.tag` | The watcher image tag | Please see [values.yaml](values.yaml) 
+`watcher.image.tag` | The watcher image tag | Please see [values.yaml](values.yaml)
 `watcher.image.pullPolicy` | The watcher image pull policy | `IfNotPresent`
 `watcher.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
 `watcher.nodeSelector` | Node labels for pod assignment | `{}`
@@ -81,7 +81,7 @@ Parameter | Description | Default
 `admission.image.pullPolicy` | The admission webhook image pull policy | `IfNotPresent`
 `admission.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
 
-## Bootstrap Job 
+## Bootstrap Job
 Parameter | Description | Default
 --- | --- | ---
 `bootstrap.enabled` | If bootstrap job is enabled. | `true`
@@ -135,12 +135,12 @@ Parameter | Description | Default
 `gitsync.nodeSelector` | Node labels for pod assignment | `{}`
 `gitsync.tolerations` | Node taints to tolerate| `{}`
 `gitsync.affinity` | Pod affinitiy | `[]`
-`gitsync.daemonset.delayInit` | | 
+`gitsync.daemonset.delayInit` | |
 `gitsync.daemonset.image.repository` | The [gitsync](https://github.com/kubernetes/git-sync) image repository | `k8s.gcr.io/git-sync`
 `gitsync.daemonset.image.tag` | The gitsync image tag | Please see [values.yaml](values.yaml)
 `gitsync.daemonset.image.pullPolicy` | The gitsync image tag pull policy | `IfNotPresent`
 
-## Jupterhub 
+## Jupterhub
 Parameter | Description | Default
 --- | --- | ---
 `jupyterhub.*` | The [configuration of zero-to-jupyterhub chart](https://zero-to-jupyterhub.readthedocs.io/en/latest/reference/reference.html)| Please see [values.yaml](values.yaml)
@@ -184,7 +184,6 @@ Parameter | Description | Default
 ## Image Builder
 Parameter | Description | Default
 --- | --- | ---
-`customImage.enabled` | If image builder enabled | `false`
 `customImage.registryEndpoint` | The endpoint of the registry server. `docker login <server>` | *required if enabled*
 `customImage.registryUsername` | The username of the registry server. | *required if enabled*
 `customImage.registryPassword` | The password of the registry server. | *required if enabled*
