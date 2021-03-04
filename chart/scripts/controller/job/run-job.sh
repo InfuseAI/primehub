@@ -129,7 +129,6 @@ if [ -d "/project/$GROUP_NAME" ]; then
   if [ -f "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile" ]; then
     echo "sourcing group profile in run-job"
     source "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile"
-    cat "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile"
   else
     echo "group profile not found"
   fi
@@ -139,7 +138,7 @@ fi
 
 # Run Command
 if command -v sudo > /dev/null && [[ "$GRANT_SUDO" == "true" ]] && [[ -n $USER ]]; then
-  sudo -E -H -u $USER PATH=$PATH bash -c "$COMMAND"
+  sudo -E -H -u $USER PATH=$PATH PYTHONPATH=$PYTHONPATH bash -c "$COMMAND"
 else
   bash -c "$COMMAND"
 fi
