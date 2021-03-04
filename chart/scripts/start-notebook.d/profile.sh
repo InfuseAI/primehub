@@ -9,7 +9,7 @@ if [ -d "$HOME/$GROUP_NAME" ]; then
 fi
 
 # if we're in safe mode, skip everything
-if [ ! -d "$HOME/user" ]; then
+if [ -z "${PRIMEHUB_SAFE_MODE_ENABLED}" ]; then
   if [ -d "$HOME/$GROUP_NAME" ]; then
     # source group profile
     if [ -f "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile" ]; then
@@ -20,8 +20,6 @@ if [ ! -d "$HOME/user" ]; then
     fi
 
     # source user profile
-    echo "user = $NB_USER"
-
     if [ -f "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/$NB_USER.profile" ]; then
       echo "sourcing user profile"
       source "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/$NB_USER.profile"
