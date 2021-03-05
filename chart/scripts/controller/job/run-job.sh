@@ -138,7 +138,7 @@ fi
 
 # Run Command
 if command -v sudo > /dev/null && [[ "$GRANT_SUDO" == "true" ]] && [[ -n $USER ]]; then
-  sudo -E -H -u $USER PATH=$PATH PYTHONPATH=$PYTHONPATH bash -c "$COMMAND"
+  sudo -E -H -u $USER PATH=$PATH PYTHONPATH="$PYTHONPATH" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" bash -c "$COMMAND"
 else
   bash -c "$COMMAND"
 fi
