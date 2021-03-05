@@ -120,8 +120,9 @@ if [ -d "/project/$GROUP_NAME" ]; then
   # group volume mounted
   export PRIMEHUB_GROUP_VOLUME_PATH="/project/$GROUP_NAME"
   export PRIMEHUB_PHFS_PATH="$HOME/phfs"
-  export PRIMEHUB_USER=$NB_USER
+  export PRIMEHUB_USER=$JUPYTERHUB_USER
   export PRIMEHUB_GROUP=$GROUP_NAME
+  echo "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile will be loaded if exists"
 fi
 
 if [ -d "/project/$GROUP_NAME" ]; then
