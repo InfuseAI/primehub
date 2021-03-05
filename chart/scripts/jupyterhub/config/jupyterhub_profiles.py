@@ -1271,4 +1271,3 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
 
     # XXX: to be removed once kubespawner#251 is merged
     c.PrimeHubSpawner.extra_pod_config.update({'restartPolicy': 'OnFailure'})
-    c.PrimeHubSpawner.env_keep.append('LD_LIBRARY_PATH')

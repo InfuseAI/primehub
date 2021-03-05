@@ -8,6 +8,12 @@ echo "original args: $@"
 if command -v tini &>/dev/null && command -v start-notebook.sh; then
     echo "start the standard notebook command"
     export PRIMEHUB_LAUNCH_MODE=standard
+
+    # For standard mode,
+    # Notebook process launched from the script /usr/local/bin/start.sh in the container image
+    # It adds some variables with its sudo command
+    python $(dirname "$0")/patch_start_script_sudo_command.py
+
     start-notebook.sh $@ --NotebookApp.default_url=/lab
     exit 0
 fi
