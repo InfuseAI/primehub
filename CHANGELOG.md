@@ -1,9 +1,11 @@
 # Changelog
 
 ## Upcoming
+## 3.4.0
 ### What's New
 
 - **Group Admin Image Management**: Group admins now can create custom group images.
+- **Shared Files: Browse**: Users can visit the `Shared Files` tab in PrimeHub then browse through, view, and download your groups' project files in one place.
 
 ### Action Required
 ### Avaliable in CE
@@ -13,6 +15,8 @@
 - Allow group admins to build group images with custom APT, conda and pip packages.
 
 ### EE only
+
+- Add per node GPUs allocation in Grafana dashboard (ch16077)
 
 ## 3.3.0
 ### What's New

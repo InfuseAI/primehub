@@ -72,13 +72,13 @@ spec:
             - name: PRIMEHUB_FEATURE_DATASET_UPLOAD
               value: {{ .Values.datasetUpload.enabled | quote }}
             {{- end }}
-            {{- if .Values.customImage.enabled }}
+            {{- if (eq .Values.primehub.mode "ee") }}
             - name: PRIMEHUB_FEATURE_CUSTOM_IMAGE
-              value: {{ .Values.customImage.enabled | quote }}
+              value: "true"
+            {{- end }}
             {{- if .Values.customImage.registryEndpoint }}
             - name: PRIMEHUB_CUSTOM_IMAGE_REGISTRY_ENDPOINT
               value: {{ .Values.customImage.registryEndpoint | quote }}
-            {{- end }}
             {{- end }}
             {{- if eq (include "primehub-deployment.enabled" .) "true" }}
             - name: PRIMEHUB_FEATURE_MODEL_DEPLOYMENT
