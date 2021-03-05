@@ -6,6 +6,10 @@ if [ -d "$HOME/$GROUP_NAME" ]; then
   export PRIMEHUB_PHFS_PATH="$HOME/phfs"
   export PRIMEHUB_USER=$NB_USER
   export PRIMEHUB_GROUP=$GROUP_NAME
+  echo "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/profile will be loaded if exists"
+  echo "$PRIMEHUB_GROUP_VOLUME_PATH/.primehub/$NB_USER.profile will be loaded if exists"
+else
+  echo "group volume not mounted, skip loading profile"
 fi
 
 # if we're in safe mode, skip everything
