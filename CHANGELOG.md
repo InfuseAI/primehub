@@ -10,11 +10,90 @@
 ### Action Required
 ### Avaliable in CE
 
+#### Shared Space: Browse
+
+- Implement the PHFS browser (ch14726)
+- Make the phfs files endpoint support both view and download behavior (ch14725)
+- Implement the phfs browse API (ch14724)
+- Shared file Browse: Final Check (ch15755)
+- shared files menuitem issues (ch16064)
+- PHFS Browser followups (ch15550)
+- [Bug] Deleting file name or folder with chinese name would fail (ch15561)
+
 #### Group Admin: Image Management
 
 - Allow group admins to build group images with custom APT, conda and pip packages.
+- [GraphQL] Support to create image with custom image type (ch14896)
+- [Controller] Implement the image controller (ch14894)
+- Document how to configure image builder (ch14899)
+- Revisit the configuration of image builder (ch16104)
+- Allows to fill in the existing image as base image in the custom build image (ch15810)
+- Build custom group image final check (ch14906)
+- [Bug] As a group admin, i cannot select the pull secret checkbox (ch15984)
+- make package settings are same as image builder (ch16007)
+- Implement the image job log API (ch15467)
+- Add primehub controller to ce in primehub chart (ch15813)
+- [Console] supports to create a custom image. (ch14897)
+- [Console] Handle not ready image in image list and spawner page. (ch14898)
+
+#### Solution of K8S Infrastructure
+
+- [Bug] Cannot create groupVolume and dataset by other storage class rather than "" (ch15208)
+- [logging] Provide external logging solution (ch14925)
+
+#### Architecuture Backlog
+
+- Remove the admission job (ch14442)
+
+#### DX Misc
+
+- e2e test to access every single page (ch15224)
+
+#### Other
+
+- [Bug] PHFS Browser is not working in demo.a (ch15630)
+- image creating failed, make ci broken (ch15638)
+- z2jh 0.10.6 doesn't work on demo.a (ch15540)
+- Upgrade z2jh to support k8s 1.17 (ch11091)
+- [Discovery] primehub model deploy UX (ch15220)
+- Failed to install rook-operator while provisioning a ec2-rke cluster (ch15385)
+- Fix eks autoscaler failed (ch15351)
+- e2e tests to cover 'group admin: image management' (ch14661)
+- Remove unused static page from primehub-console. (ch14443)
+- Update notebook spawning timeouts (ch14718)
+- [Bug] job artifacts can not be accessed from PrimeHub console on demo.a (ch14888)
+- e2e enhancement: reorganize output artifacts (ch14976)
+- [Model Deployment] TensorFlow model hangs when .predict is called (ch14774)
+- CE DEVELOP.md doc & flow (ch14570)
+- [Bug] User and group quota limit doesn't work (ch15892)
+- Implement grafana dashboard and update nvidia-gpu-exporter charts (ch16077)
+- [Chore] Polish dev cluster setup script and document (ch15988)
+- Prevent timeout for model deployment prediction endpoint (ch14805)
+- k8s 1.20 compat check (ch15348)
+- [Bug] primehub-watcher default memory limit is too low (ch15210)
+- [Bug] PrimeHub-controller will throw error when imageSepcJob create pod (ch15657)
+- Review/Update docker-stack after v3.3 released (ch15238)
+- [Request from III] image of pytorch 1.7, python3.7, cuda10.x (ch14292)
+- [Bug] When user starts jupyter, the jupyterlab is started, but the original window shows "400 Bad Request" (ch15673)
+- update doc of tensorflow model server (ch15768)
 
 ### EE only
+
+#### License Constraints: Node & Deploy
+
+- Primehub-console modification for max_node & max_model_deploy (ch14880)
+- Primehub-controller support max_node & max_model_deploy in license (ch14867)
+- Add graphQL model deployment API validation (ch14877)
+- GraphQL License API modification (ch14872)
+
+#### Solution of PrimeHub Operation
+
+- [MISC] Document for customer/SI to collect PrimeHub log by diagnostic tool (ch14943)
+- [Installer] Provide PrimeHub build-in diagnostic tool for collection issue log (ch14931)
+- [Installer] Single node install script can install Prometheus + Primehub dashboard (ch14930)
+- [logging] Review PrimeHub code to remove EFK from PrimeHub (ch14942)
+
+#### Miscellaneous
 
 - Add per node GPUs allocation in Grafana dashboard (ch16077)
 
