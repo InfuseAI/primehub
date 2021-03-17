@@ -36,6 +36,10 @@
 - [Console] supports to create a custom image. (ch14897)
 - [Console] Handle not ready image in image list and spawner page. (ch14898)
 
+#### Reuse package in jobs
+
+- User can source primehub profile in jobs and jupyterhub.
+
 #### Solution of K8S Infrastructure
 
 - [Bug] Cannot create groupVolume and dataset by other storage class rather than "" (ch15208)
