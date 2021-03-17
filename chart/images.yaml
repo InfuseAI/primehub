@@ -48,8 +48,8 @@ primehub-all:
   postgres: &postgres postgres:12
 
   # PrimeHub Store
-  minio: &minio minio/minio:RELEASE.2020-06-14T18-32-17Z
-  mc: &mc minio/mc:RELEASE.2020-05-28T23-43-36Z
+  minio: &minio minio/minio:RELEASE.2021-03-04T00-53-13Z
+  mc: &mc minio/mc:RELEASE.2021-03-12T03-36-59Z
   csi-attacher: &csi-attacher quay.io/k8scsi/csi-attacher:v1.1.1
   csi-cluster-driver-registrar: &csi-cluster-driver-registrar quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
   csi-node-driver-registrar: &csi-node-driver-registrar quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
