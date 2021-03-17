@@ -1,0 +1,22 @@
+#! /bin/sh
+#
+# Usage: run-app <command> <args>
+#
+
+# Configurable variable
+PRIMEHUB_APP_ID=${PRIMEHUB_APP_ID}
+PRIMEHUB_APP_ROOT=${PRIMEHUB_APP_ROOT}
+PRIMEHUB_APP_BASE_URL=${PRIMEHUB_APP_BASE_URL}
+
+command=$1
+shift
+args=$@
+
+# Prepare PrimeHub App Root
+mkdir -p ${PRIMEHUB_APP_ROOT}
+
+# Run Command
+eval exec ${command} ${args}
+rc=$?
+
+exit ${rc}
