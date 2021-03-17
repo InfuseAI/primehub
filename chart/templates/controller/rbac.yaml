@@ -176,6 +176,25 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - primehub.io
+  resources:
+  - phapplications
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - phapplications/status
+  verbs:
+  - get
+  - patch
 {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
