@@ -114,6 +114,18 @@ rules:
   - update
   - watch
 - apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - primehub.io
   resources:
   - imagespecjobs
@@ -195,6 +207,7 @@ rules:
   verbs:
   - get
   - patch
+  - update
 {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
