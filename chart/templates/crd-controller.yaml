@@ -826,6 +826,10 @@ spec:
     description: Status of the deployment
     name: Status
     type: string
+  - JSONPath: .status.message
+    description: Message of the deployment
+    name: Message
+    type: string
   group: primehub.io
   names:
     kind: PhApplication

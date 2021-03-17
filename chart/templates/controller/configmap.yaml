@@ -39,7 +39,6 @@ metadata:
   name: primehub-controller-phapplication-scripts
 data:
 {{ (.Files.Glob "scripts/controller/app/*").AsConfig | indent 2 }}
-{{- end }}
 ---
 {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 apiVersion: v1
