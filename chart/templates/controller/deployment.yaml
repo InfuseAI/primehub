@@ -53,9 +53,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
 {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
-          - name: JOBSUBMISSION_GRAPHQLENDPOINT
+          - name: GRAPHQLENDPOINT
             value: {{ include "primehub.graphql.endpoint" . }}
-          - name: JOBSUBMISSION_GRAPHQLSECRET
+          - name: GRAPHQLSECRET
             valueFrom:
               secretKeyRef:
                 name: {{ include "primehub.name" . }}-graphql-shared-secret
