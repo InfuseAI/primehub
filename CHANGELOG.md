@@ -1,6 +1,13 @@
 # Changelog
 
 ## Upcoming
+
+## 3.4.1
+
+### Bugfix
+
+- Fix minio client
+
 ## 3.4.0
 ### What's New
 
