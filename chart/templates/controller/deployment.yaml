@@ -52,7 +52,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
           - name: GRAPHQLENDPOINT
             value: {{ include "primehub.graphql.endpoint" . }}
           - name: GRAPHQLSECRET
@@ -60,7 +59,6 @@ spec:
               secretKeyRef:
                 name: {{ include "primehub.name" . }}-graphql-shared-secret
                 key: sharedSecret
-{{- end }}
           resources:
 {{ toYaml .Values.controller.resources | indent 12 }}
           volumeMounts:
