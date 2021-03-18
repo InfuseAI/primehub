@@ -14,6 +14,7 @@ rules:
   - phjobs
   - phschedules
   - phdeployments
+  - phapplications
   verbs:
   - get
   - watch
@@ -22,6 +23,14 @@ rules:
   - update
   - delete
   - patch
+- apiGroups:
+  - primehub.io
+  resources:
+  - phapptemplates
+  verbs:
+  - get
+  - watch
+  - list
 - apiGroups: [""]
   resources:
   - secrets
