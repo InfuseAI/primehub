@@ -787,7 +787,7 @@ modelDeployment:
   engineContainer:
     image:
       repository: seldonio/seldon-core-executor
-      tag: 1.1.0
+      tag: 1.4.0
       pullPolicy: IfNotPresent
 
 # Admin Notebook
