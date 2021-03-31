@@ -42,9 +42,12 @@ primehub-controller-update-scripts: check-yq check-jq
 
 primehub-controller-update-crds: check-yq check-jq
 	@echo "Updating crds for controller..."
-	@crd_yaml='templates/crd-controller.yaml'; \
+	# We skip image CRD because we place images,instancetypes,datasets CRDs in templates/crd.yaml
+	@skip_crds='primehub.io_images.yaml' ;\
+	echo "Skipping CRD file: $${skip_crds}" ;\
+	crd_yaml='templates/crd-controller.yaml'; \
 		rm -f $$crd_yaml; \
-		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/config/crd/bases"	| jq -r '.[].download_url' | grep -v -e "^null$$" | xargs -I{} curl -s {} >> $$crd_yaml; \
+		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/config/crd/bases"	| jq -r '.[].download_url' | grep -v -e "^null$$" | grep -vE "$${skip_crds}" | xargs -I{} curl -s {} >> $$crd_yaml; \
 		curl -s "https://api.github.com/repos/infuseai/primehub-controller/contents/ee/config/crd/bases"	| jq -r '.[].download_url' | grep -v -e "^null$$" | xargs -I{} curl -s {} >> $$crd_yaml; \
 		echo "$$crd_yaml updated"
 
