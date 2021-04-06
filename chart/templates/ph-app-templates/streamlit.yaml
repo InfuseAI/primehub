@@ -6,7 +6,7 @@ metadata:
     helm.sh/hook: post-install, post-upgrade
 spec:
   defaultEnvs:
-  - defaultValue: /project/phusers/streamlit/intro.py
+  - defaultValue: /project/path/to/your/streamlit.py
     description: Path to the python scripts
     name: FILE_PATH
     optional: false
@@ -20,7 +20,7 @@ spec:
         spec:
           containers:
           - name: streamlit
-            image: ej04xjp6/streamlit:latest
+            image: infuseai/streamlit:v0.79.0
             command:
             - streamlit
             args:
