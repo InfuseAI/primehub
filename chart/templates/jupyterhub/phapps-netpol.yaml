@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: jupyter-phapp
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: singleuser-ph-applications
+spec:
+  podSelector:
+    matchLabels:
+      app: jupyterhub
+      component: singleuser-server
+      release: {{ .Release.Name }}
+  # singleuser-server --> primehub-app:*
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: primehub-app
+  policyTypes:
+  - Egress
