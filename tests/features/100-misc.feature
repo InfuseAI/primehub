@@ -8,12 +8,14 @@ Feature: MISC
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    # User Guide
-    When I click element with xpath "//div[contains(@style, 'support.png')]"
-    And I switch to "UserGuide" tab
-    Then I "should" see element with xpath "//small[text()='Effortless Infrastructure for Machine Learning']"
-    When I switch to "Home" tab
-    Then I am on the PrimeHub console "Home" page
+    # Landing page
+    Then I "should" see element with xpath "//h2[text()='Getting Started']"
+    # TODO: add tests for landing page component
+    #When I click element with xpath "//div[contains(@style, 'support.png')]"
+    #And I switch to "UserGuide" tab
+    #Then I "should" see element with xpath "//small[text()='Effortless Infrastructure for Machine Learning']"
+    #When I switch to "Home" tab
+    #Then I am on the PrimeHub console "Home" page
     # Shared Files
     When I choose "Shared Files" in sidebar menu
     Then I am on the PrimeHub console "SharedFiles" page
