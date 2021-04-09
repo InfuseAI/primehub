@@ -2,6 +2,14 @@
 
 ## Upcoming
 
+## 3.5.0
+### What's New
+
+- **Group Settings UX Refinement**: Group admins can now access detailed group information and adjust per-group job setting on user portal.
+
+### Action Required
+### Avaliable in CE
+
 ## 3.4.1
 
 ### Bugfix
