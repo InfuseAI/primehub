@@ -19,5 +19,6 @@ network:
     id0:
       match:
         name: en*
-      dhcp4:yes
+      dhcp4: yes
 EOF
+sudo bash -c "echo '@reboot /usr/sbin/netplan apply' | crontab -"
