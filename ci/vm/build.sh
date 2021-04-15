@@ -15,6 +15,6 @@ export CUSTOM_AMI_NAME=PrimeHub-${CIRCLE_TAG}
 export PRIMEHUB_VERSION=${CIRCLE_TAG}
 packer build ee_singlenode.pkr.hcl
 
-AMI_ID=$(aws ec2 describe-images --owners self --filters "Name=name,Values=eesinglenodefinal" | grep ImageId | cut -f4 -d'"')
+AMI_ID=$(aws ec2 describe-images --owners self --filters "Name=name,Values=${CUSTOM_AMI_NAME}" | grep ImageId | cut -f4 -d'"')
 
-aws ec2 export-image --image-id ${AMI_ID} --disk-image-format VMDK --s3-export-location S3Bucket=primehub-ee-trial-vm,S3Prefix=${CIRCLE_TAG}/
+aws ec2 export-image --image-id ${AMI_ID} --disk-image-format VMDK --s3-export-location S3Bucket=primehub-ee-trial-vm,S3Prefix=${PRIMEHUB_VERSION}/
