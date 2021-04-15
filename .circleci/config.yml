@@ -183,6 +183,30 @@ jobs:
           paths:
             - ".venv"
 
+  build_vm:
+    docker:
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/buildpack-deps:bionic-scm
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "d0:90:27:9c:dc:28:b5:3e:d8:18:0c:9a:64:46:6f:d4"
+      - checkout
+
+      - run:
+          name: vm_build
+          command: |
+            ./ci/vm/build.sh
+
 workflows:
   version: 2
   release_builds:
@@ -191,6 +215,15 @@ workflows:
       - e2e
       - e2e_ee
       - build:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/
+      - build_vm:
+          context: build-vm
+          requires:
+            - build
           filters:
             tags:
               only: /v.*/
