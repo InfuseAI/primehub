@@ -187,7 +187,7 @@ jobs:
     machine:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: ubuntu-2004:202101-01
+      image: ubuntu-2004:202101-01
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
