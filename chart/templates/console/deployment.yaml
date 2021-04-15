@@ -167,6 +167,10 @@ spec:
               value: "true"
             {{- end }}
             {{- end }}
+            {{- if .Values.app.enabled }}
+            - name: PRIMEHUB_FEATURE_APP
+              value: "true"
+            {{- end }}
             {{- range $key, $value := .Values.console.extraEnv }}
             - name: {{ $key }}
               value: {{ $value }}

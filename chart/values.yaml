@@ -749,6 +749,9 @@ gitsync:
 telemetry:
   enabled: true
 
+# PrimeHub App
+app:
+  enabled: false
 
 #                   ____________   ______           __
 #                  / ____/ ____/  / ____/__  ____ _/ /___  __________  _____
