@@ -4,6 +4,9 @@
 microk8s.stop
 sudo rm -rf /var/snap/microk8s/common/var/lib/containerd
 
+# microk8s.stop disabled services, we need to enable it back
+sudo systemctl list-unit-files | grep microk8s | awk '{sudo systemctl enable $1;}'
+
 # Remove cloud-init to speed up the boot in virtualbox
 sudo touch /etc/cloud/cloud-init.disabled
 sudo apt remove cloud-init --yes
