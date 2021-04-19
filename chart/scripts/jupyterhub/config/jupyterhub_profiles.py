@@ -257,6 +257,7 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                             instanceTypes { name displayName description spec global }
                             images { name displayName description isReady spec global }
                             datasets { name displayName description spec global writable mountRoot homeSymlink launchGroupOnly }
+                            mlflow { trackingUri uiUrl trackingEnvs { name value } artifactEnvs { name value }}
                         }
                 } }'''
 
@@ -463,6 +464,53 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         return default_capacity
 
+    def get_mlflow_environment_variables(self, launch_group_name, auth_state):
+        for group in auth_state['launch_context']['groups']:
+            if group['name'] == launch_group_name:
+                mlflow = group.get('mlflow', None)
+
+                # Do nothing without mlflow
+                if not mlflow:
+                    return {}
+
+                # example for mlflow configurations
+                """
+                {
+                  "trackingUri": "http://foobar.com",
+                  "uiUrl": "http://uiurl",
+                  "trackingEnvs": [
+                    {
+                      "name": "MLFLOW_TRACKING_USERNAME",
+                      "value": "foo"
+                    },
+                    {
+                      "name": "MLFLOW_TRACKING_PASSWORD",
+                      "value": "bar"
+                    }
+                  ],
+                  "artifactEnvs": [
+                    {
+                      "name": "AWS_ACCESS_KEY_ID",
+                      "value": "foo"
+                    },
+                    {
+                      "name": "AWS_SECRET_ACCESS_KEY",
+                      "value": "bar"
+                    }
+                  ]
+                }
+                """
+
+                mlflow_envs = dict()
+                if mlflow.get('trackingUri', None):
+                    mlflow_envs['MLFLOW_TRACKING_URI'] = mlflow['trackingUri']
+                if mlflow.get('uiUrl', None):
+                    mlflow_envs['MLFLOW_UI_URL'] = mlflow['uiUrl']
+                for env_var in mlflow.get('trackingEnvs', []) + mlflow.get('artifactEnvs', []):
+                    mlflow_envs[env_var['name']] = env_var['value']
+                return mlflow_envs
+        return {}
+
     def get_datasets_in_launch_group(self, launch_group_name, auth_state):
         for group in auth_state['launch_context']['groups']:
             if group['name'] == launch_group_name:
@@ -668,6 +716,11 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         launch_group = spawner.user_options['group']['name']
         groups = auth_state['launch_context']['groups']
+
+        mlflow_envs = self.get_mlflow_environment_variables(launch_group, auth_state)
+        if mlflow_envs:
+            spawner.environment.update(mlflow_envs)
+
 
         if support_old_group_volume_convention:
             self.log.warn('Old group volume convention (Project-${group_name}) is deprecated as of PrimeHub v1.6.0. Use new group volume options instead.')
