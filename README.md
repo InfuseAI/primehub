@@ -41,7 +41,7 @@ Please visit our [installation scenario on Katacoda↗](https://www.katacoda.com
 
 ## Contributions
 
-We welcome contributions. See the [Set up dev environment](DevEnvironment.md) and the [Contributing guildline](CONTRIBUTING.md) to get started.
+We welcome contributions. See the [Set up dev environment](DEVELOP.md) and the [Contributing guildline](CONTRIBUTING.md) to get started.
 
 ## Project Status
 
