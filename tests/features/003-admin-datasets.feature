@@ -17,7 +17,7 @@ Feature: Admin
     Then I should see element with test-id "dataset/name"
     And I should see element with test-id "dataset/displayName"
     When I type "test-dataset" to element with test-id "dataset/name"
-    And I select option "env" in admin dashboard
+    And I select option "Env" in admin dashboard
     And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
     And I search "test-dataset" in test-id "text-filter-name"
