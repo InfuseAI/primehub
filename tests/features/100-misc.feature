@@ -70,7 +70,7 @@ Feature: MISC
     When I click tab of "Tolerations"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/tolerations']//div[text()='Key']"
     # instanceTypes - add - nodeSelector
-    When I click tab of "NodeSelector"
+    When I click tab of "Node Selector"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/nodeSelector']//p[text()='There is no fields.']"    
     # instanceTypes - edit - tolerations
     And I wait for 2.0 seconds
@@ -82,7 +82,7 @@ Feature: MISC
     When I click tab of "Tolerations"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/tolerations']//div[text()='Key']"
     # instanceTypes - edit - nodeSelector
-    When I click tab of "NodeSelector"
+    When I click tab of "Node Selector"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/nodeSelector']//p[text()='There is no fields.']"    
     # imageBuilders - add
     When I click "Image Builder" in admin dashboard

@@ -392,6 +392,34 @@ defineStep("I should see {string} in element {string} under active tab", async f
   throw new Error(`Failed to find '${text}'`);
 });
 
+defineStep("I should see user limits with CPU, Memory, GPU is {string}", async function(userLimit) {
+  const input = userLimit.split(',');
+  const table = await this.page.$x("//h3[text()='User Limits']/following-sibling::table//td");
+  let text;
+  for (i = 0; i < input.length; i++) {
+    text = await (await table[i].getProperty('textContent')).jsonValue();
+    if (text !== input[i]) throw new Error('User limits are incorrect, pls check screenshot');
+  }
+});
+
+defineStep("I should see group resources with CPU {string}, Memory {string}, GPU {string}", async function(cpu, mem, gpu) {
+  const input = {
+    'CPU': cpu.split(','),
+    'Memory': mem.split(','),
+    'GPU': gpu.split(',')
+  };
+  let row, text;
+  for (i = 0; i < Object.keys(input).length; i++) {
+    row = await this.page.$x(
+      `//h3[text()='Group Resource']/following-sibling::table//td[text()='${Object.keys(input)[i]}']/following-sibling::td`);
+    for (j = 0; j < row.length; j++) {
+      text = await (await row[j].getProperty('textContent')).jsonValue();
+      // trim(): the group resources values might contain unexpected space
+      if (text.trim() !== Object.values(input)[i][j]) throw new Error('Group resources are incorrect, pls check screenshot');
+    }
+  }
+});
+
 // Helper functions
 function testIdToSelector(testId) {
   return `[data-testid="${testId}"]`;

@@ -28,7 +28,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
     Then I am on login page
-  
+
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -63,6 +63,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -105,6 +106,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -158,6 +160,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"

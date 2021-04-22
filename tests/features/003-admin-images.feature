@@ -54,7 +54,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should" see images block contains "test-group-image" image with "Group / Universal" type and "test-group-image-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -146,7 +147,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page

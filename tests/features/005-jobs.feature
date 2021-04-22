@@ -68,11 +68,17 @@ Feature: Job Submission
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     And I click button of "Rerun" of item "create-job-test" to wait for "Rerun" dialogue
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='create-job-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
