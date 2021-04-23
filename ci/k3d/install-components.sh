@@ -51,7 +51,7 @@ adminNotebook:
 EOF
 
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  values_ee='--values ../examples/ee-values.yaml'
+  values_ee='--values ee-values.yaml'
 fi
 
 helm upgrade \

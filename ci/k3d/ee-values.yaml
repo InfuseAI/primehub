@@ -23,7 +23,7 @@ jobSubmission:
     enabled: true
 
 usage:
-  enabled: true
+  enabled: false
 
 modelDeployment:
   enabled: true
