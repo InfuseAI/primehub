@@ -94,6 +94,7 @@ Feature: Job Submission
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
@@ -101,6 +102,11 @@ Feature: Job Submission
     And I type "clone-job-test" to "displayName" text field
     And I type "echo 'clone-test'" to "command" text field
     And I click "Submit" button
+    Then I am on the PrimeHub console "Jobs" page
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='clone-job-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
@@ -135,6 +141,9 @@ Feature: Job Submission
     And I wait for attribute "Message" with value "Cancelled by user"
     When I click tab of "Logs"
     Then I should see "cannot get log|(no data)" in element "div" under active tab
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
 

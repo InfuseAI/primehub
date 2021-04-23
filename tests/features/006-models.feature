@@ -128,6 +128,9 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -168,6 +171,9 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I am on the PrimeHub console "Models" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
 

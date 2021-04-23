@@ -223,7 +223,7 @@ defineStep("I click {string} button", async function(string) {
 });
 
 defineStep("I click refresh", async function() {
-  await await this.page.reload();
+  await this.page.reload();
 });
 
 defineStep("I click escape", async function() {
@@ -409,15 +409,28 @@ defineStep("I should see group resources with CPU {string}, Memory {string}, GPU
     'GPU': gpu.split(',')
   };
   let row, text;
-  for (i = 0; i < Object.keys(input).length; i++) {
-    row = await this.page.$x(
-      `//h3[text()='Group Resource']/following-sibling::table//td[text()='${Object.keys(input)[i]}']/following-sibling::td`);
-    for (j = 0; j < row.length; j++) {
-      text = await (await row[j].getProperty('textContent')).jsonValue();
-      // trim(): the group resources values might contain unexpected space
-      if (text.trim() !== Object.values(input)[i][j]) throw new Error('Group resources are incorrect, pls check screenshot');
+  for (retry = 0; retry < 5; retry++) {
+    for (i = 0; i < Object.keys(input).length; i++) {
+      try {
+        row = await this.page.$x(
+          `//h3[text()='Group Resource']/following-sibling::table//td[text()='${Object.keys(input)[i]}']/following-sibling::td`);
+        // used column
+        text = await (await row[0].getProperty('textContent')).jsonValue();
+        if (text.trim() !== Object.values(input)[i][0]) break;
+        // limit column
+        text = await (await row[1].getProperty('textContent')).jsonValue();
+        if (text.trim() !== Object.values(input)[i][1]) break;
+        console.log(i);
+        if (i+1 === Object.keys(input).length) return;
+      }
+      catch (e) {}
     }
+    console.log('The group resource table is not showing well, try to reload the page...');
+    await this.page.waitForTimeout(5000);
+    await this.page.reload();
+    await this.page.waitForTimeout(2000);
   }
+  throw new Error('Group resources are incorrect, pls check screenshot');
 });
 
 // Helper functions
