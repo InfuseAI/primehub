@@ -9,8 +9,8 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     And I "should" see element with xpath "//span[text()='Model Deployment is not enabled for this group. Please contact your administrator to enable it.']"
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -22,8 +22,8 @@ Feature: Model Deployment
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
@@ -35,15 +35,15 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test" to "name" text field
     And I choose radio button with name "test-instance-type"
     And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.1.0"
@@ -64,13 +64,13 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Update" button
     And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click "Confirm and Deploy" button
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
@@ -107,8 +107,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Stop" button
     And I click button of "Yes" on confirmation dialogue
@@ -131,8 +131,8 @@ Feature: Model Deployment
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     When I click tab of "Information"
     And I click "Start" button
@@ -164,12 +164,12 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Delete" button
     And I click button of "Yes" on confirmation dialogue
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
@@ -184,8 +184,8 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "model-uri-test" to "name" text field
@@ -193,7 +193,7 @@ Feature: Model Deployment
     And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage input" text field
     And I type "gs://primehub-models/tensorflow2/mnist/" to "modelURI" text field
     And I click element with xpath "//span[text()='Deploy']"
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/tensorflow2-prepackaged_rest:v0.4.2"
@@ -214,13 +214,13 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     And I click "Update" button
     And I type "gs://seldon-models/keras/mnist" to "modelURI" text field
     And I click "Confirm and Deploy" button
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model URI" with value "gs://seldon-models/keras/mnist"
@@ -256,8 +256,8 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     And I click "Stop" button
     And I click button of "Yes" on confirmation dialogue
@@ -277,8 +277,8 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     When I click tab of "Information"
     And I click "Start" button
@@ -309,12 +309,12 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     And I click "Delete" button
     And I click button of "Yes" on confirmation dialogue
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='model-uri-test']"
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -326,15 +326,15 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test-gpu" to "name" text field
     And I choose radio button with name "test-instance-type-gpu"
     And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
@@ -351,12 +351,12 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "1,2", Memory "1.0 GB,4 GB", GPU "1,2"
-    When I choose "Models" in sidebar menu
-    Then I am on the PrimeHub console "Models" page
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
     And I click "Delete" button
     And I click button of "Yes" on confirmation dialogue
-    Then I am on the PrimeHub console "Models" page
+    Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page

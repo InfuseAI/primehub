@@ -145,7 +145,7 @@ Feature: Hub
     Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
     When I switch to "/console/g/phusers/hub" tab
     Then I am on the PrimeHub console "Notebooks" page
-    #And I stop my server in hub
+    And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 

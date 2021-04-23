@@ -127,7 +127,7 @@ Feature: Admin
     When I type "test-image-gpu-display-name" to element with test-id "image/displayName"
     And I type "test-description-gpu" to element with test-id "image/description"
     And I click element with xpath "//div[@data-testid='image/type']//i"
-    And I click element with xpath "//li[text()='gpu']"
+    And I click element with xpath "//li[text()='GPU']"
     And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
