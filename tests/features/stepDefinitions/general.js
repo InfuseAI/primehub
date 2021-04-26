@@ -421,7 +421,6 @@ defineStep("I should see group resources with CPU {string}, Memory {string}, GPU
         // limit column
         text = await (await row[1].getProperty('textContent')).jsonValue();
         if (text.trim() !== Object.values(input)[i][1]) break;
-        console.log(i);
         if (i+1 === Object.keys(input).length) return;
       }
       catch (e) {}
