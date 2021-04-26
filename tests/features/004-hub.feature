@@ -237,6 +237,7 @@ Feature: Hub
     And I stop my server in hub
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
