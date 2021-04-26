@@ -28,6 +28,7 @@ defineStep("I click on PrimeHub icon", async function() {
 
 defineStep("I choose group with name {string}", async function(name) {
   await this.clickElementBySelector(".ant-select-selection__rendered");
+  await this.page.waitForTimeout(500);
   await this.clickElementByXpath(`//li[text()='${name}-${this.E2E_SUFFIX}']`);
   await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
 });
