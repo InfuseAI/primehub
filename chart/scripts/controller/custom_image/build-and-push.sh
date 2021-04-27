@@ -7,7 +7,7 @@ readonly PUSH_FAILED=3
 readonly PUSH_SECRET_AUTHFILE=/push-secret/.dockerconfigjson
 readonly PULL_SECRET_AUTHFILE=/pull-secret/.dockerconfigjson
 
-readonly SKIP_TLS_VERIFY={SKIP_TLS_VERIFY:-false}
+readonly SKIP_TLS_VERIFY=${SKIP_TLS_VERIFY:-false}
 
 function init() {
   echo "[Step: init]"
