@@ -2,6 +2,12 @@
 
 ## Upcoming
 
+## 3.4.2
+
+### Bugfix
+
+- Patch tls verify in custom image building part.
+
 ## 3.4.1
 
 ### Bugfix
