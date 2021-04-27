@@ -751,7 +751,7 @@ telemetry:
 
 # PrimeHub App
 app:
-  enabled: false
+  enabled: true
 
 #                   ____________   ______           __
 #                  / ____/ ____/  / ____/__  ____ _/ /___  __________  _____
