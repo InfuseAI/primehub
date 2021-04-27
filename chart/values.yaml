@@ -671,7 +671,7 @@ jupyterhub:
     startNotebookConfigMap: start-notebook-d
 
     # timeout from spawning to spawned
-    spawnerStartTimeout: 600
+    spawnerStartTimeout: 1200
     # timeout for the http server in a spawned pod (the creating phase in the progress)
     spawnerHttpTimeout: 30
 
