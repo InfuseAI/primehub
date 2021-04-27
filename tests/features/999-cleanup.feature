@@ -51,7 +51,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -78,7 +79,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -102,7 +104,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should not" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -126,7 +129,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should not" see instance types block contains "test-instance-type-gpu-display-name" instanceType with "test-description-gpu" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 1"
     When I choose "Logout" in top-right menu
     Then I am on login page

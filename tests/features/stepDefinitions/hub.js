@@ -1,21 +1,23 @@
 const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
+defineStep("I get the iframe object", async function() {
+  this.context = this.page.frames()[1];
+});
+
 defineStep("I go to the spawner page", async function() {
   let frame, ret;
   let xpath = "//h4[text()='Select your notebook settings']";
   for (retryCount=0; retryCount < 10; retryCount++) {
     try {
-      frame = this.page.frames()[1];
-      await frame.click("#start");
+      await this.context.click("#start");
     }
     catch (e) {}
-    await this.checkElementExistByXPath('should exist', xpath, context = frame).then(
+    await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = result; }
     );
     if (ret) {
       await this.page.waitForTimeout(2000);
-      this.context = frame;
       await this.takeScreenshot("spawner-page");
       return;
     }

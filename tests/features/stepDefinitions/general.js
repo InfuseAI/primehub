@@ -28,6 +28,7 @@ defineStep("I click on PrimeHub icon", async function() {
 
 defineStep("I choose group with name {string}", async function(name) {
   await this.clickElementBySelector(".ant-select-selection__rendered");
+  await this.page.waitForTimeout(500);
   await this.clickElementByXpath(`//li[text()='${name}-${this.E2E_SUFFIX}']`);
   await this.takeScreenshot(`choose-group-${name}-${this.E2E_SUFFIX}`);
 });
@@ -223,7 +224,7 @@ defineStep("I click {string} button", async function(string) {
 });
 
 defineStep("I click refresh", async function() {
-  await await this.page.reload();
+  await this.page.reload();
 });
 
 defineStep("I click escape", async function() {
@@ -390,6 +391,46 @@ defineStep("I should see {string} in element {string} under active tab", async f
     catch (e) {}
   }
   throw new Error(`Failed to find '${text}'`);
+});
+
+defineStep("I should see user limits with CPU, Memory, GPU is {string}", async function(userLimit) {
+  const input = userLimit.split(',');
+  const table = await this.page.$x("//h3[text()='User Limits']/following-sibling::table//td");
+  let text;
+  for (i = 0; i < input.length; i++) {
+    text = await (await table[i].getProperty('textContent')).jsonValue();
+    if (text !== input[i]) throw new Error('User limits are incorrect, pls check screenshot');
+  }
+});
+
+defineStep("I should see group resources with CPU {string}, Memory {string}, GPU {string}", async function(cpu, mem, gpu) {
+  const input = {
+    'CPU': cpu.split(','),
+    'Memory': mem.split(','),
+    'GPU': gpu.split(',')
+  };
+  let row, text;
+  for (retry = 0; retry < 5; retry++) {
+    for (i = 0; i < Object.keys(input).length; i++) {
+      try {
+        row = await this.page.$x(
+          `//h3[text()='Group Resource']/following-sibling::table//td[text()='${Object.keys(input)[i]}']/following-sibling::td`);
+        // used column
+        text = await (await row[0].getProperty('textContent')).jsonValue();
+        if (text.trim() !== Object.values(input)[i][0]) break;
+        // limit column
+        text = await (await row[1].getProperty('textContent')).jsonValue();
+        if (text.trim() !== Object.values(input)[i][1]) break;
+        if (i+1 === Object.keys(input).length) return;
+      }
+      catch (e) {}
+    }
+    console.log('The group resource table is not showing well, try to reload the page...');
+    await this.page.waitForTimeout(5000);
+    await this.page.reload();
+    await this.page.waitForTimeout(2000);
+  }
+  throw new Error('Group resources are incorrect, pls check screenshot');
 });
 
 // Helper functions

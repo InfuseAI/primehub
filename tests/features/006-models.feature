@@ -28,7 +28,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
     Then I am on login page
-  
+
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -63,6 +63,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -105,6 +106,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -126,6 +128,9 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     When I click tab of "Logs"
     Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -158,6 +163,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -165,6 +171,9 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -341,6 +350,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "1,2", Memory "1.0 GB,4 GB", GPU "1,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
@@ -348,5 +358,8 @@ Feature: Model Deployment
     And I click button of "Yes" on confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page

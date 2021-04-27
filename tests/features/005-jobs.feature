@@ -68,11 +68,17 @@ Feature: Job Submission
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     And I click button of "Rerun" of item "create-job-test" to wait for "Rerun" dialogue
     And I click button of "Yes" on confirmation dialogue
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='create-job-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
@@ -88,6 +94,7 @@ Feature: Job Submission
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
@@ -95,6 +102,11 @@ Feature: Job Submission
     And I type "clone-job-test" to "displayName" text field
     And I type "echo 'clone-test'" to "command" text field
     And I click "Submit" button
+    Then I am on the PrimeHub console "Jobs" page
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='clone-job-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
@@ -129,6 +141,9 @@ Feature: Job Submission
     And I wait for attribute "Message" with value "Cancelled by user"
     When I click tab of "Logs"
     Then I should see "cannot get log|(no data)" in element "div" under active tab
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -149,6 +164,11 @@ Feature: Job Submission
     And I type "gpu driver info" to command text field
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "1,2", Memory "1.0 GB,4 GB", GPU "1,2"
+    When I choose "Jobs" in sidebar menu
+    Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='gpu-job-test']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
@@ -156,5 +176,8 @@ Feature: Job Submission
     Then I "should" see element with xpath "//div[@class='']//h3[text()='GPU Device Usage']"
     When I click tab of "Logs"
     Then I should see "NVIDIA-SMI 418.67       Driver Version: 418.67       CUDA Version: 10.1" in element "div" under active tab
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page

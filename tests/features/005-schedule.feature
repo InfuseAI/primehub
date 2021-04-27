@@ -40,7 +40,9 @@ Feature: Job Schedule
     When I type "update-schedule-test" to "displayName" text field
     And I type "echo 'update-test'" to "command" text field
     And I click element with xpath "//div[text()='Inactive']"
+    And I wait for 1.0 seconds
     And I click element with xpath "//li[text()='Custom']"
+    And I wait for 1.0 seconds
     And I type "* * * * *" to element with xpath "//input[@placeholder='* * * * *']"
     And I click "Confirm" button
     Then I am on the PrimeHub console "Schedule" page

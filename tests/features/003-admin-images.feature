@@ -54,7 +54,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should" see images block contains "test-group-image" image with "Group / Universal" type and "test-group-image-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -126,7 +127,7 @@ Feature: Admin
     When I type "test-image-gpu-display-name" to element with test-id "image/displayName"
     And I type "test-description-gpu" to element with test-id "image/description"
     And I click element with xpath "//div[@data-testid='image/type']//i"
-    And I click element with xpath "//li[text()='gpu']"
+    And I click element with xpath "//li[text()='GPU']"
     And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
@@ -146,7 +147,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     Then I "should" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page

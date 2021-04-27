@@ -57,7 +57,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     And I click element with xpath "//a[@href='#dataset-list']" in hub
     Then I "should" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub
     When I choose "Logout" in top-right menu
@@ -84,7 +85,8 @@ Feature: Admin
     And I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     And I click element with xpath "//a[@href='#dataset-list']" in hub
     Then I "should not" see element with xpath "//div[@aria-expanded='true']//li[contains(text(), 'test-dataset-display-name')]" in hub
     When I choose "Logout" in top-right menu
