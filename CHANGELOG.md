@@ -9,7 +9,88 @@
 - **Group Settings UX Refinement**: Group admins can now access detailed group information and adjust per-group job setting on user portal.
 
 ### Action Required
+
+- **PrimeHub Apps(Alpha)**: [Optional] Setup `PRIMEHUB_FEATURE_APP` flag to enable PrimeHub App feature.
+
 ### Avaliable in CE
+
+#### Group Dashboard - currently available data
+
+- implement UI of new landing page (ch16087)
+
+#### Reuse installed package in jobs or notebook sessions
+
+- Provide environment document in primehub site (ch15692)
+- Update the customize job runtime document (ch15693)
+- Source primehub profile files in job (ch15689)
+- Source primehub profile files in jupterhub (ch15685)
+
+### EE Only
+
+#### Pluggability (PrimeHub App)
+
+- Support rewrite option for code-server (ch16532)
+- Add CRDs and MLFlow app templates to primehub chart (ch15922)
+- [Console] Implement proxy to primehub app (ch15910)
+- [Controller] Implement the phapplication controller - abnormal cases (ch15951)
+- PrimeHub APP UI (without log) (ch15913)
+- [Console] Implement proxy to a dummy service (ch15826)
+- [GraphQL] PrimehHub App GraphQL Implementation (ch15912)
+- [Bug] Front-end env tooltip doesn't show up (ch16858)
+- Final check for alpha feature (ch15949)
+- [Bug] Cannot create Primehub App if the group volume is not enabled (ch16847)
+- Discovery: Pluggability ecosystem/showcase (ch16212)
+- Make the PRIMEHUB_APP_ROOT with attribute 777 for all app container image (ch16669)
+- [Bug] PRIMEHUB_APP_ROOT is not set correctly (ch16737)
+- [Bug] PHFS and dataset is not mounted correctly (ch16655)
+- [Bug] The update app scope is not working (ch16654)
+- NetPol for jupyter pods: egress allows to primehub app pods (ch15908)
+- [Controller] Implement the phapplication controller - happy path (ch15919)
+- Define the PrimeHub App CRD and MLFlow example (ch15915)
+
+#### Group settings UX refinement
+
+- implement UI of group settings page: info and members tab (ch16089)
+- group settings: final check (ch16092)
+- Tweak group settings page in user/admin portal (ch16410)
+
+
+#### Replace S2I with Dockerfile in the model deployment
+
+- update primehub-site to replace S2I with Dockerfile (ch15840)
+- model deployment can't show the logs while requesting the correct data (ch16252)
+- update model-deployment-examples repo to replace S2I with Dockerfile (ch15858)
+- update primehub-seldon-servers repo to replace S2I with Dockerfile (ch15857)
+
+#### Next-generation Multi-node Solution
+
+- Allows to grafana oidc-auth from helm-based installation (ch16054)
+- Update primehub site and ensure users can install primehub ee (ch16009)
+- Test and document integrate helm install prometheus-operator (ch15997)
+
+#### Solution of PrimeHub Operation
+
+- [Installer] Provide instructions to use install script to install PrimeHub to a primehub-ready kubernetes (ch14932)
+
+#### Miscellaneous
+
+- [Patch] CVE-2021-21362 MinIO (ch16297)
+- binder-based IDE with repo2docker (ch16067)
+- Fix primehub chart image CRD (ch16301)
+- [Bug] PhApplication doesn't mount global dataset (ch16623)
+- [Bug] user can't see artifacts in online demo environments (ch15307)
+- [Bug] phapplication run-app script does not quote properly (ch16494)
+- Remove legacy billing annotation from jupyter-profiles (ch16612)
+- Add graphql primehub store related integration test (ch13418)
+- [CSE] Virtualbox image for PrimeHub trial with Packer (ch16113)
+- KC_PASSWORD and PH_PASSWORD should have format checking or hint for digital input only (ch16807)
+- [Bug] TensorFlow 2.4 image doesn't work because of wrong cuda version (ch16290)
+- Refinement of "Run an Example" in deployment detail page (ch15515)
+- [Bug] PrimeHub graphql crash when access the job artifacts tab when the job doesn't enable artifacts (ch16379)
+- [Bug] The log request is disconnected if the log has no message more than 1 min (ch11588)
+- [Bug] docker-stack doesn't build tensorflow v2.4.1 GPU image (ch16229)
+- Remove "beta" from model deployment (ch16065)
+- [Bug] Cert-manager OOM (ch15827)
 
 ## 3.4.2
 
