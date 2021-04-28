@@ -32,6 +32,6 @@ fi
 log metadata "$(echo $info | jq -c .Upload.MetaData)"
 log "tus_id $tus_id, filename $filename, dirpath $dirpath, bucket $BUCKET_NAME"
 
-result=$($MC mv "${DATA_DIR}/${tus_id}" "minio/${BUCKET_NAME}/${dirpath}${filename}")
+result=$($MC mv --disable-multipart "${DATA_DIR}/${tus_id}" "minio/${BUCKET_NAME}/${dirpath}${filename}")
 log mv result: $result
 rm "${DATA_DIR}/${tus_id}.info"
