@@ -20,7 +20,9 @@ spec:
             - /bin/run.sh
             args:
             - -r
-            - sudo sed -i "s|/vnc.html|$PRIMEHUB_APP_BASE_URL/vnc.html|g" /opt/noVNC/redirect.html & sudo sed -i "s|resize=remote|resize=remote\&path=\.$PRIMEHUB_APP_BASE_URL/proxy/6080/websockify|g" /opt/noVNC/redirect.html & tail -f /var/log/alternatives.log
+            - bash
+            - -c
+            - sudo sed -i "s|/vnc.html|$PRIMEHUB_APP_BASE_URL/vnc.html|g" /opt/noVNC/redirect.html && sudo sed -i "s|resize=remote|resize=remote\&path=\.$PRIMEHUB_APP_BASE_URL/proxy/6080/websockify|g" /opt/noVNC/redirect.html && tail -f /var/log/alternatives.log
             ports:
             - containerPort: 6080
               name: http
