@@ -10,7 +10,7 @@
 
 ### Action Required
 
-- **PrimeHub Apps(Alpha)**: [Optional] Setup `PRIMEHUB_FEATURE_APP` flag to enable PrimeHub App feature.
+- **PrimeHub Apps(Alpha)**: [Optional] Setup `PRIMEHUB_FEATURE_APP` flag or `app.enabled: true` in the value file to enable PrimeHub App feature.
 
 ### Avaliable in CE
 
