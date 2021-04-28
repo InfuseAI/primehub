@@ -204,6 +204,7 @@ jobs:
 
       - run:
           name: vm_build
+          no_output_timeout: 30m
           command: |
             ./ci/vm/build.sh
 
