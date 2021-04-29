@@ -124,7 +124,6 @@ jobs:
           environment:
             PRIMEHUB_MODE: ee
             E2E_REGRESSION: "true"
-            SPAWNER_START_TIMEOUT: 600
           command: |
             ./ci/ci-test.sh
       - store_artifacts:

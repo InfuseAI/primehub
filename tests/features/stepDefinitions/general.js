@@ -1,6 +1,7 @@
 const { defineStep, After, Before } = require("cucumber");
 const { expect } = require("chai");
 const fs = require("fs");
+const rimraf = require("rimraf");
 
 Before(async function(scenario) {
   console.log(`\nScenario: ${scenario.pickle.name}`);
@@ -15,7 +16,7 @@ After(async function(scenario) {
     await this.takeScreenshot(`After-${this.scenarioName}`);
   }
   else
-    await fs.rmdirSync(`e2e/screenshots/${this.scenarioName}`, {recursive: true});
+    await rimraf.sync(`e2e/screenshots/${this.scenarioName}`);
   return await this.stop();
 });
 
