@@ -213,10 +213,6 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
-      - e2e_regression
-      - e2e_normal_user
-      - e2e_installed_ph_daily:
-          context: e2e-demo-a
       - build:
           filters:
             tags:
