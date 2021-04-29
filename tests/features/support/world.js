@@ -22,14 +22,13 @@ class World {
     this.PRIMEHUB_SCHEME = process.env.PRIMEHUB_SCHEME;
     this.PRIMEHUB_DOMAIN = process.env.PRIMEHUB_DOMAIN;
     this.USERNAME = process.env.PH_USERNAME;
-    //this.USER_EMAIL = process.env.PH_USER_EMAIL;
     this.PASSWORD = process.env.PH_PASSWORD;
     this.DEBUG = process.env.DEBUG;
     this.E2E_SUFFIX = process.env.E2E_SUFFIX;
-    this.SPAWNER_START_TIMEOUT = process.env.SPAWNER_START_TIMEOUT;
+    // Default SPAWNER_START_TIMEOUT: 1200 (https://github.com/InfuseAI/primehub/pull/304)
+    this.SPAWNER_START_TIMEOUT = process.env.SPAWNER_START_TIMEOUT ? process.env.SPAWNER_START_TIMEOUT : 1200;
 
-    // To run tests in different setup,
-    // kind -> port# is need; gcp -> port# isn't need
+    // To run tests in different setup, only KIND needs port#
     if (process.env.KC_PORT !== 'None') this.KC_PORT = `:${process.env.KC_PORT}`;
     else this.KC_PORT = '';
     this.PRIMEHUB_PORT = this.KC_PORT;

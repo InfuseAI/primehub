@@ -124,7 +124,6 @@ jobs:
           environment:
             PRIMEHUB_MODE: ee
             E2E_REGRESSION: "true"
-            SPAWNER_START_TIMEOUT: 600
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
@@ -214,6 +213,10 @@ workflows:
       - unit_test
       - e2e
       - e2e_ee
+      - e2e_regression
+      - e2e_normal_user
+      - e2e_installed_ph_daily:
+          context: e2e-demo-a
       - build:
           filters:
             tags:
