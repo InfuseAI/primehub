@@ -32,6 +32,8 @@ data:
           tag: {{ .Values.modelDeployment.engineContainer.image.tag }}
           pullPolicy: {{ .Values.modelDeployment.engineContainer.image.pullPolicy }}
 {{- end }}
+    application:
+      primehubUrl: {{ include "primehub.url" . }}
 ---
 apiVersion: v1
 kind: ConfigMap
