@@ -11,6 +11,7 @@ metadata:
   name: {{ include "primehub.fullname" . }}-controller-config
 data:
   config.yaml: |-
+    primehubUrl: {{ include "primehub.url" . }}
     ingress:
 {{ toYaml .Values.ingress | indent 6 }}
     customImage:
@@ -25,7 +26,6 @@ data:
 {{ toYaml .Values.monitoringAgent | indent 6 }}
     modelDeployment:
       enabled: {{ include "primehub-deployment.enabled" . | quote }}
-      primehubUrl: {{ include "primehub.url" . }}
       engineContainer:
         image:
           repository: {{ .Values.modelDeployment.engineContainer.image.repository }}
