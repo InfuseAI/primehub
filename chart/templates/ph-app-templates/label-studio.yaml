@@ -1,0 +1,60 @@
+apiVersion: primehub.io/v1alpha1
+kind: PhAppTemplate
+metadata:
+  name: label-studio
+  namespace: hub
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+spec:
+  name: Label Studio
+  description: Label Studio is an open source data labeling tool for labeling and exploring multiple types of data. You can perform many different types of labeling for many different data formats.
+  version: latest
+  docLink: https://labelstud.io/guide/
+  icon: data:image/png;base64,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
+  defaultEnvs:
+  - name: DEFAULT_USERNAME
+    description: "The default username to login"
+    defaultValue: "$(PRIMEHUB_GROUP)@infuseai.io"
+    optional: false
+  - name: DEFAULT_PASSWORD
+    description: "The default password to login"
+    defaultValue: "$(PRIMEHUB_GROUP)_password!"
+    optional: false
+  - name: LABEL_STUDIO_BASE_DATA_DIR
+    description: "Directory to use to store all application-related data."
+    defaultValue: "$(PRIMEHUB_APP_ROOT)/label-studio-data"
+    optional: false
+  - name: LOCAL_FILES_SERVING_ENABLED
+    description: "Serving data from the local file system."
+    defaultValue: "true"
+    optional: false
+  - name: DISABLE_SIGNUP_WITHOUT_LINK
+    description: "Deactivate the signup page and use only the invitation link."
+    defaultValue: "true"
+    optional: false
+  template:
+    spec:
+      podTemplate:
+        spec:
+          containers:
+          - name: label-studio
+            image: heartexlabs/label-studio:latest
+            command:
+            - bash
+            - -c
+            args:
+            - |
+              label-studio start primehub --init --host $(PRIMEHUB_URL)$(PRIMEHUB_APP_BASE_URL) --username $(DEFAULT_USERNAME) --password $(DEFAULT_PASSWORD)
+            ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+      svcTemplate:
+        spec:
+          ports:
+          - name: http
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+      httpPort: 8080
+      rewrite: true
