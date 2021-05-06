@@ -6,41 +6,41 @@ spec:
   displayName: "base-notebook"
   description: "base notebook"
   type: "both"
-  url: infuseai/docker-stacks:base-notebook-a7f9696a
-  urlForGpu: infuseai/docker-stacks:base-notebook-a7f9696a-gpu
+  url: infuseai/docker-stacks:base-notebook-dbdcead1
+  urlForGpu: infuseai/docker-stacks:base-notebook-dbdcead1-gpu
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: pytorch-1.5.0
+  name: pytorch-1.7.0
 spec:
-  displayName: "PyTorch 1.5.0 (Python 3.7)"
-  description: "PyTorch 1.5.0 (Python 3.7)"
+  displayName: "PyTorch 1.7.0 (Python 3.7)"
+  description: "PyTorch 1.7.0 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:pytorch-notebook-b3c52f35
-  urlForGpu: infuseai/docker-stacks:pytorch-notebook-b3c52f35-gpu
+  url: infuseai/docker-stacks:pytorch-notebook-v1-7-0-dbdcead1
+  urlForGpu: infuseai/docker-stacks::pytorch-notebook-v1-7-0-dbdcead1-gpu-cuda-11
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: tf-1.14
+  name: tf-1.15.4
 spec:
-  displayName: "TensorFlow 1.14 (Python 3.7)"
-  description: "TensorFlow 1.14 (Python 3.7)"
+  displayName: "TensorFlow 1.15.4 (Python 3.7)"
+  description: "TensorFlow 1.15.4 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-b3c52f35
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-b3c52f35-gpu
+  url: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-dbdcead1
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-dbdcead1-gpu
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: tf-2.2
+  name: tf-2.4.1
 spec:
-  displayName: "TensorFlow 2.2 (Python 3.7)"
-  description: "TensorFlow 2.2 (Python 3.7)"
+  displayName: "TensorFlow 2.4.1 (Python 3.7)"
+  description: "TensorFlow 2.4.1 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-v2-2-1-a7f9696a
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v2-2-1-a7f9696a-gpu-cuda-10
+  url: infuseai/docker-stacks:tensorflow-notebook-v2-4-1-dbdcead1
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v2-4-1-dbdcead1-gpu-cuda-11
 ---
 apiVersion: primehub.io/v1alpha1
 kind: InstanceType
