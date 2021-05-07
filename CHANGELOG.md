@@ -2,6 +2,11 @@
 
 ## Upcoming
 
+## 3.5.1
+### What's New
+
+- Patch PrimeHub Deploy assets config
+
 ## 3.5.0
 ### What's New
 
