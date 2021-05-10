@@ -22,11 +22,6 @@ def get_output_path():
     return output_path
 
 
-def temp_dir():
-    import tempfile
-    return tempfile.mkdtemp()
-
-
 def wait_for_exit():
     time_to_wait = os.environ.get("WAIT_FOR_EXIT")
     if time_to_wait:
@@ -46,8 +41,7 @@ def main(model_uri):
     print("save to path: {}".format(output_path))
 
     mlflow.set_tracking_uri(tracking_uri)
-    temp = _download_artifact_from_uri(artifact_uri=model_uri, output_path=temp_dir())
-    os.rename(temp, output_path)
+    _download_artifact_from_uri(artifact_uri=model_uri, output_path=output_path)
 
     wait_for_exit()
 
