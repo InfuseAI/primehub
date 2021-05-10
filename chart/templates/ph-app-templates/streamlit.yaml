@@ -1,3 +1,4 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
 apiVersion: primehub.io/v1alpha1
 kind: PhAppTemplate
 metadata:
@@ -47,3 +48,4 @@ spec:
             targetPort: 8501
       httpPort: 8501
   version: v0.79.0
+{{- end }}
