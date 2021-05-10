@@ -41,14 +41,9 @@ spec:
           imagePullPolicy: {{ .Values.console.image.pullPolicy }}
           {{- end }}
           volumeMounts:
-            - name: portal-config
-              mountPath: /etc/portal-config.yaml
-              subPath: portal-config.yaml
             - name: home-config
               mountPath: /etc/home-config.yaml
               subPath: home-config.yaml
-            - name: portal-default-covers
-              mountPath: /usr/src/app/packages/client/dist/default-covers/
           env:
             - name: PH_VERSION
               value: {{ .Chart.AppVersion | quote }}
@@ -240,15 +235,9 @@ spec:
               - SYS_PTRACE
         {{- end }}
       volumes:
-        - name: portal-config
-          configMap:
-            name: portal-config
         - name: home-config
           configMap:
             name: home-config
-        - name: portal-default-covers
-          configMap:
-            name: portal-default-covers
         {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
         - name: license
           secret:
