@@ -12,6 +12,8 @@ metadata:
 data:
   config.yaml: |-
     primehubUrl: {{ include "primehub.url" . }}
+    phfsEnabled: {{ include "primehub.phfs.enabled" . }}
+    phfsPVC: {{ include "primehub.store.pvcName" . }}
     ingress:
 {{ toYaml .Values.ingress | indent 6 }}
     customImage:
@@ -20,8 +22,6 @@ data:
     jobSubmission:
       grantSudo: {{ .Values.primehub.grantSudo }}
 {{ toYaml .Values.jobSubmission | indent 6 }}
-      phfsEnabled: {{ include "primehub.phfs.enabled" . }}
-      phfsPVC: {{ include "primehub.store.pvcName" . }}
     monitoringAgent:
 {{ toYaml .Values.monitoringAgent | indent 6 }}
     modelDeployment:
