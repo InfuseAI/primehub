@@ -27,10 +27,11 @@ data:
     modelDeployment:
       enabled: {{ include "primehub-deployment.enabled" . | quote }}
       engineContainer:
-        image:
-          repository: {{ .Values.modelDeployment.engineContainer.image.repository }}
-          tag: {{ .Values.modelDeployment.engineContainer.image.tag }}
-          pullPolicy: {{ .Values.modelDeployment.engineContainer.image.pullPolicy }}
+{{ toYaml .Values.modelDeployment.engineContainer | indent 8 }}
+      modelStorageInitializer:
+{{ toYaml .Values.modelDeployment.modelStorageInitializer | indent 8 }}
+      mlflowModelStorageInitializer:
+{{ toYaml .Values.modelDeployment.mlflowModelStorageInitializer | indent 8 }}
 {{- end }}
 ---
 apiVersion: v1

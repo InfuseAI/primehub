@@ -39,6 +39,8 @@ primehub-all:
 
   # Model deployment
   seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.1.0
+  model-storage-initializer: &model-storage-initializer gcr.io/kfserving/storage-initializer:v0.4.0
+  mlflow-model-storage-initializer: &mlflow-model-storage-initializer infuseai/mlflow-model-downloader:v0.1.0
 
   # SSH Bastion Server
   ssh-proxy: &ssh-proxy mltooling/ssh-proxy:0.1.11
@@ -102,6 +104,8 @@ primehub-ee:
 
   # Model deployment
   seldon-core-executor: *seldon-core-executor
+  model-storage-initializer: *model-storage-initializer
+  mlflow-model-storage-initializer: *mlflow-model-storage-initializer
 
   # SSH Bastion Server
   ssh-proxy: *ssh-proxy
@@ -152,6 +156,8 @@ primehub-deploy:
 
   # Model deployment
   seldon-core-executor: *seldon-core-executor
+  model-storage-initializer: *model-storage-initializer
+  mlflow-model-storage-initializer: *mlflow-model-storage-initializer
 
   # Usage
   primehub-usage: *primehub-usage
