@@ -1,0 +1,37 @@
+{{if env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+alertmanager:
+  alertmanagerSpec:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/prometheus/alertmanager
+
+kube-state-metrics:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/coreos/kube-state-metrics
+
+prometheus-node-exporter:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/prometheus/node-exporter
+
+
+prometheus:
+  prometheusSpec:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/prometheus/prometheus
+
+prometheusOperator:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/coreos/prometheus-operator
+  configmapReloadImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/coreos/configmap-reload
+  prometheusConfigReloaderImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/coreos/prometheus-config-reloader
+  hyperkubeImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}rancher/hyperkube
+    tag: v1.12.7-rancher1
+
+grafana:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}grafana/grafana
+  sidecar:
+    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}kiwigrid/k8s-sidecar:0.0.10
+{{end}}

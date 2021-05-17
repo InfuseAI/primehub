@@ -1,0 +1,28 @@
+{{ $RELEASE_NAME := (env "RELEASE_NAME" | default "primehub-grafana-dashboard-basic" ) }}
+{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "monitoring" ) }}
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../charts/primehub-grafana-dashboard-basic" }}
+{{- end }}
+{{ $CHART_VERSION := (env "CHART_VERSION" | default "" ) }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: infuseai
+    url: https://charts.infuseai.io
+{{- end }}
+
+releases:
+  - name: "{{ $RELEASE_NAME }}"
+    namespace: "{{ $RELEASE_NAMESPACE }}"
+    {{- if $CHART_PATH }}
+    chart: "{{ $CHART_PATH }}"
+    {{- else }}
+    chart: infuseai/primehub-grafana-dashboard-basic
+    version: "{{ $CHART_VERSION }}"
+    {{- end }}
+    values:
+      - {{ $CHART_NAME }}.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/{{ $CHART_NAME }}.yaml
+      {{- end}}

@@ -1,0 +1,29 @@
+{{ $RELEASE_NAME := (env "RELEASE_NAME" | default "prometheus-operator" ) }}
+{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "monitoring" ) }}
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../charts/prometheus-operator" }}
+{{- end }}
+{{ $CHART_VERSION := (env "CHART_VERSION" | default "8.9.3" ) }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+{{- end }}
+
+releases:
+  - name: "{{ $RELEASE_NAME }}"
+    namespace: "{{ $RELEASE_NAMESPACE }}"
+    {{- if $CHART_PATH }}
+    chart: "{{ $CHART_PATH }}"
+    {{- else }}
+    chart: "prometheus-community/prometheus-operator"
+    version: "{{ $CHART_VERSION }}"
+    {{- end }}
+    values:
+      - prometheus.yaml.gotmpl
+      - images.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/prometheus.yaml
+      {{- end}}

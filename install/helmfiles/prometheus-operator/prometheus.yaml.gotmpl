@@ -1,0 +1,278 @@
+# Please reference the go template format
+# https://golang.org/pkg/text/template/
+
+{{/* keycloak */}}
+{{$KC_SCHEME := (requiredEnv "KC_SCHEME")}}
+{{$KC_DOMAIN := (requiredEnv "KC_DOMAIN")}}
+{{$KC_PORT := (env "KC_PORT")}}
+{{$KC_REALM := (env "KC_REALM" | default "primehub")}}
+{{$KC_SVC_URL := (env "KC_SVC_URL")}}
+
+{{/* User Portal */}}
+{{$GRAFANA_SCHEME := (requiredEnv "PRIMEHUB_SCHEME")}}
+{{$GRAFANA_DOMAIN := (requiredEnv "PRIMEHUB_DOMAIN")}}
+{{$GRAFANA_PORT := (env "PRIMEHUB_PORT")}}
+{{$GRAFANA_PATH := "/grafana"}}
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      limits:
+        memory: 1000Mi
+        cpu: 500m
+      requests:
+        memory: 250Mi
+        cpu: 100m
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    replicas: 2
+    podAntiAffinity: hard
+  config:
+    global:
+      {{- if and (env "ALERT_SLACK_API_URL") (env "ALERT_SLACK_CHANNEL") }}
+      slack_api_url: '{{ env "ALERT_SLACK_API_URL" }}'
+      {{- end }}
+      {{- if and (env "ALERT_SMTP_SERVER") (env "ALERT_SMTP_TO") }}
+      smtp_smarthost: '{{ requiredEnv "ALERT_SMTP_SERVER" }}'
+      smtp_from: '{{ requiredEnv "ALERT_SMTP_FROM" }}'
+      smtp_auth_username: '{{ requiredEnv "ALERT_SMTP_AUTH_USERNAME" }}'
+      smtp_auth_password: '{{ requiredEnv "ALERT_SMTP_AUTH_PASSWORD" }}'
+      {{- if env "ALERT_SMTP_TLS" }}
+      smtp_require_tls: {{ env "ALERT_SMTP_TLS" }}
+      {{- else }}
+      smtp_require_tls: true
+      {{- end }}
+      {{- end }}
+    templates:
+    - '/etc/alertmanager/template/*.tmpl'
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 1h
+      receiver: default-receiver
+      routes:
+      - match:
+          alertname: DeadMansSwitch
+        receiver: 'null'
+      # https://github.com/kubernetes-monitoring/kubernetes-mixin/issues/108
+      - match:
+          alertname: CPUThrottlingHigh
+        receiver: 'null'
+      #- match:
+      #    alertname: KubeSchedulerDown
+      #  receiver: 'null'
+      #- match:
+      #    alertname: KubeControllerManagerDown
+      #  receiver: 'null'
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      # Apply inhibition if the alertname is the same.
+      equal: ['alertname', 'cluster', 'service']
+    receivers:
+    - name: 'default-receiver'
+      {{- if and (env "ALERT_SLACK_API_URL") (env "ALERT_SLACK_CHANNEL") }}
+      {{- $SLACK_CONFIGS := readFile "slack.yaml" | fromYaml }}
+      {{- if env "ALERT_SLACK_USERNAME" }}
+      {{- $SLACK_CONFIGS := $SLACK_CONFIGS | setValueAtPath "username" (env "ALERT_SLACK_USERNAME") }}
+      {{- end }}
+      slack_configs:
+      - channel: '{{ env "ALERT_SLACK_CHANNEL" }}'
+        {{- range $key, $value := $SLACK_CONFIGS }}
+        {{- if eq $key "send_resolved" }}
+        {{ $key }}: {{ $value }}
+        {{- else }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if and (env "ALERT_SMTP_SERVER") (env "ALERT_SMTP_TO") }}
+      email_configs:
+      - send_resolved: true
+        to: '{{ requiredEnv "ALERT_SMTP_TO" }}'
+      {{- end }}
+    - name: 'null'
+
+additionalPrometheusRules:
+- name: primehub
+  groups:
+  - name: primehub.rules
+    rules:
+    - alert: JupyterPodPendingOrUnknown
+      expr: sum by (namespace, pod, phase) (kube_pod_status_phase{pod=~"^jupyter-.*", namespace="hub", phase=~"Pending|Unknown"}) > 0
+      for: 30s
+      labels:
+        severity: critical
+    - alert: JupyterPageSlow
+      expr: (rate(request_duration_seconds_sum{code="302",handler="jupyterhub.handlers.pages.RootHandler"}[1m]) / rate(request_duration_seconds_count{code="302",handler="jupyterhub.handlers.pages.RootHandler"}[1m])) > 3
+      for: 10s
+      labels:
+        severity: warning
+      annotations:
+        message: JupyterHub root page average response time is slow (> 3 seconds in 10s)
+    - alert: JupyterPageSlow
+      expr: (rate(request_duration_seconds_sum{code="302",handler="jupyterhub.handlers.pages.RootHandler"}[1m]) / rate(request_duration_seconds_count{code="302",handler="jupyterhub.handlers.pages.RootHandler"}[1m])) > 0.1
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        message: JupyterHub root page average response time is slow (> 0.1 seconds in 1h)
+    - alert: JupyterPageSlow
+      expr: (rate(request_duration_seconds_sum{code="200",handler="jupyterhub.handlers.pages.SpawnHandler"}[1m]) / rate(request_duration_seconds_count{code="200",handler="jupyterhub.handlers.pages.SpawnHandler"}[1m])) > 3
+      for: 10s
+      labels:
+        severity: warning
+      annotations:
+        message: JupyterHub spawn page average response time is slow (> 3 seconds in 10s)
+    - alert: JupyterPageSlow
+      expr: (rate(request_duration_seconds_sum{code="200",handler="jupyterhub.handlers.pages.SpawnHandler"}[1m]) / rate(request_duration_seconds_count{code="200",handler="jupyterhub.handlers.pages.SpawnHandler"}[1m])) > 0.1
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        message: JupyterHub spawn page average response time is slow (> 0.1 seconds in 1h)
+
+kubelet:
+  serviceMonitor:
+    https: true
+
+coreDns:
+  enabled: true
+  service:
+    selector:
+      k8s-app: kube-dns
+
+kubeDns:
+  enabled: false
+
+kube-state-metrics:
+  resources:
+    limits:
+      memory: 100Mi
+      cpu: 50m
+    requests:
+      memory: 10Mi
+      cpu: 50m
+
+prometheus-node-exporter:
+  resources:
+    limits:
+      memory: 100Mi
+      cpu: 50m
+    requests:
+      memory: 10Mi
+      cpu: 50m
+
+prometheus:
+  prometheusSpec:
+    resources:
+      limits:
+        memory: 4Gi
+        cpu: 1000m
+      requests:
+        memory: 250Mi
+        cpu: 50m
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+    replicas: 2
+    podAntiAffinity: hard
+
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 50m
+      memory: 100Mi
+    requests:
+      cpu: 50m
+      memory: 50Mi
+
+grafana:
+  image:
+    tag: 6.3.0
+  enabled: false
+  {{- if (ne (env "PRIMEHUB_FEATURE_PROMETHEUS_OPERATOR_8") "true") }}
+  deploymentStrategy: Recreate
+  {{- end }}
+
+  {{/* We will use the default dashboard after chart version=8 */}}
+  {{- if (ne (env "PRIMEHUB_FEATURE_PROMETHEUS_OPERATOR_8") "true") }}
+  defaultDashboardsEnabled: false
+  {{- end }}
+
+  resources:
+    limits:
+      memory: 1000Mi
+      cpu: 200m
+    requests:
+      memory: 250Mi
+      cpu: 50m
+  persistence:
+    enabled: true
+    accessModes: ["ReadWriteOnce"]
+    size: 10Gi
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    hosts:
+      - {{$GRAFANA_DOMAIN}}
+    path: {{$GRAFANA_PATH}}
+    {{ if eq $GRAFANA_SCHEME "https" }}
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - {{$GRAFANA_DOMAIN}}
+    {{end}}
+  grafana.ini:
+    server:
+      domain: {{$GRAFANA_DOMAIN}}
+  {{- if $GRAFANA_PORT }}
+      root_url: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}:{{$GRAFANA_PORT}}{{$GRAFANA_PATH}}"
+  {{- else }}
+      root_url: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}{{$GRAFANA_PATH}}"
+  {{- end }}
+      serve_from_sub_path: "true"
+    auth:
+  {{- if $GRAFANA_PORT }}
+      signout_redirect_url: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}:{{$GRAFANA_PORT}}/console/oidc/logout"
+  {{- else }}
+      signout_redirect_url: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}/console/oidc/logout"
+  {{- end }}
+{{- if env "GRAFANA_ADMIN" }}
+  adminUser: "{{ requiredEnv "GRAFANA_ADMIN" }}"
+  adminPassword: "{{ requiredEnv "GRAFANA_PASSWORD" }}"
+{{- end }}
+  env:
+{{- if $GRAFANA_PORT }}
+    GF_SERVER_ROOT_URL: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}:{{$GRAFANA_PORT}}{{$GRAFANA_PATH}}"
+{{- else }}
+    GF_SERVER_ROOT_URL: "{{$GRAFANA_SCHEME}}://{{$GRAFANA_DOMAIN}}{{$GRAFANA_PATH}}"
+{{- end }}
+    GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "grafana-proxy"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ requiredEnv "GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET" }}"
+
+{{$KC_PORT_SUFFIX := (ne $KC_PORT "") | ternary (printf ":%s" $KC_PORT) "" }}
+    GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL: "{{$KC_SCHEME}}://{{$KC_DOMAIN}}{{$KC_PORT_SUFFIX}}/auth/realms/{{$KC_REALM}}/protocol/openid-connect/auth"
+{{- if $KC_SVC_URL }}
+    GF_AUTH_GENERIC_OAUTH_API_URL: "{{$KC_SVC_URL}}/realms/{{$KC_REALM}}/protocol/openid-connect/userinfo"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{$KC_SVC_URL}}/realms/{{$KC_REALM}}/protocol/openid-connect/token"
+{{- else }}
+    GF_AUTH_GENERIC_OAUTH_API_URL: "{{$KC_SCHEME}}://{{$KC_DOMAIN}}{{$KC_PORT_SUFFIX}}/auth/realms/{{$KC_REALM}}/protocol/openid-connect/userinfo"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "{{$KC_SCHEME}}://{{$KC_DOMAIN}}{{$KC_PORT_SUFFIX}}/auth/realms/{{$KC_REALM}}/protocol/openid-connect/token"
+{{- end }}

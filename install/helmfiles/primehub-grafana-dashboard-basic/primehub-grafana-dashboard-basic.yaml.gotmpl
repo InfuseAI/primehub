@@ -1,0 +1,4 @@
+{{- if (or (eq (env "PRIMEHUB_MODE") "ee") (eq (env "PRIMEHUB_MODE") "deploy")) }}
+modelDeployment:
+  enabled: true
+{{- end }}

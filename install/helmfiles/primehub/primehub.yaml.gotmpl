@@ -1,0 +1,210 @@
+# Please reference the go template format
+# https://golang.org/pkg/text/template/
+
+{{ $PRIMEHUB_MODE := (env "PRIMEHUB_MODE" | default "ee") }}
+{{ $PRIMEHUB_SCHEME := (requiredEnv "PRIMEHUB_SCHEME") }}
+{{ $PRIMEHUB_DOMAIN := (requiredEnv "PRIMEHUB_DOMAIN")}}
+{{ $PRIMEHUB_PORT := (env "PRIMEHUB_PORT")}}
+{{- if $PRIMEHUB_PORT}}
+  {{ $PRIMEHUB_PORT = (printf ":%s" $PRIMEHUB_PORT)}}
+{{- end}}
+{{ $PRIMEHUB_URL := (printf "%s://%s%s" $PRIMEHUB_SCHEME $PRIMEHUB_DOMAIN $PRIMEHUB_PORT) }}
+
+{{ $PRIMEHUB_STORAGE_CLASS:= (requiredEnv "PRIMEHUB_STORAGE_CLASS")}}
+{{ $GROUP_VOLUME_STORAGE_CLASS := (env "GROUP_VOLUME_STORAGE_CLASS" | default "")}}
+
+{{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY:= (env "PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY" | default "false")}}
+{{ $PRIMEHUB_FEATURE_CUSTOM_IMAGE := (env "PRIMEHUB_FEATURE_CUSTOM_IMAGE" | default "false")}}
+{{ $PRIMEHUB_BOOTSTRAP_ENABLED := (env "PRIMEHUB_BOOTSTRAP_ENABLED" | default "true")}}
+{{ $PRIMEHUB_FEATURE_USAGE := (env "PRIMEHUB_FEATURE_USAGE" | default "true")}}
+
+{{ $PRIMEHUB_FEATURE_STORE:= (env "PRIMEHUB_FEATURE_STORE" | default "false")}}
+{{ $PRIMEHUB_STORE_ACCESS_KEY:= (env "PRIMEHUB_STORE_ACCESS_KEY")}}
+{{ $PRIMEHUB_STORE_SECRET_KEY:= (env "PRIMEHUB_STORE_SECRET_KEY")}}
+{{ $MINIO_S3GATEWAY_ACCESS_KEY:= (env "MINIO_S3GATEWAY_ACCESS_KEY")}}
+{{ $MINIO_S3GATEWAY_SECRET_KEY:= (env "MINIO_S3GATEWAY_SECRET_KEY")}}
+{{ $MINIO_GCSGATEWAY_PROJECT_ID:= (env "MINIO_GCSGATEWAY_PROJECT_ID")}}
+{{ $MINIO_GCSGATEWAY_GCS_KEY_JSON:= (env "MINIO_GCSGATEWAY_GCS_KEY_JSON")}}
+
+{{/* for legacy installation */}}
+{{ $KEYCLOAK_DEPLOY := (requiredEnv "KEYCLOAK_DEPLOY" | default "true") }}
+{{ $METACONTROLLER_DEPLOY := (env "METACONTROLLER_DEPLOY" | default "true" ) }}
+
+primehub:
+  mode: {{ $PRIMEHUB_MODE }}
+  scheme: {{ $PRIMEHUB_SCHEME }}
+  domain: {{ $PRIMEHUB_DOMAIN }}
+  {{- if (env "PRIMEHUB_PORT") }}
+  port: {{ env "PRIMEHUB_PORT" }}
+  {{- end }}
+
+  sharedVolumeStorageClass: {{ $GROUP_VOLUME_STORAGE_CLASS }}
+
+  {{/* If we install keycloak separately */}}
+  {{- if ne $KEYCLOAK_DEPLOY "true" }}
+  keycloak:
+    scheme: {{ requiredEnv "KC_SCHEME" }}
+    domain: {{ requiredEnv "KC_DOMAIN" }}
+    {{- if (env "KC_PORT") }}
+    port: {{ env "KC_PORT" }}
+    {{- end }}
+    realm: {{ env "KC_REALM" | default "primehub" }}
+    username: {{ env "KC_USER" | quote }}
+    password: {{ env "KC_PASSWORD" | quote }}
+    {{- if (env "KC_SVC_URL") }}
+    svcUrl: {{ env "KC_SVC_URL" | quote }}
+    {{- end }}
+  {{- end }}
+
+keycloak:
+  {{- if env "KC_USER" }}
+  username: {{ env "KC_USER" | quote }}
+  {{- end }}
+  {{- if eq $KEYCLOAK_DEPLOY "true" }}
+  password: {{ requiredEnv "KC_PASSWORD" | quote }}
+  {{- else }}
+  deploy: false
+  {{- end }}
+
+{{/* If we install metacontroller separately */}}
+{{- if ne $METACONTROLLER_DEPLOY "true" }}
+metacontroller:
+  deploy: false
+{{- end }}
+
+admission:
+  enabled: true
+  {{- if and (env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX") (env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX") }}
+  podImageReplacing:
+    imagePrefix: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+  {{- end }}
+
+bootstrap:
+  enabled: {{ $PRIMEHUB_BOOTSTRAP_ENABLED }}
+  password: {{ env "PH_PASSWORD" | quote }}
+
+jupyterhub:
+  {{- if eq $PRIMEHUB_MODE "deploy" }}
+  enabled: false
+  {{- end }}
+  hub:
+    annotations:
+      checksum/primehub-config-map: {{ exec "bash" (list "-c" "ls ../../modules/charts/primehub/scripts/jupyterhub/config/*.py ../../modules/charts/primehub/templates/jupyterhub/configmap.yaml | xargs cat") | sha256sum }}
+    extraContainers:
+    - name: statsd-to-prometheus
+      {{- if env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+      image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}prom/statsd-exporter:v0.9.0
+      {{- else }}
+      image: prom/statsd-exporter:v0.9.0
+      {{- end }}
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: 9102
+      - containerPort: 9125
+        protocol: UDP
+      resources:
+        limits:
+          cpu: 50m
+          memory: 256Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi
+    db:
+      pvc:
+        storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
+  primehub:
+    kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
+
+  proxy:
+    secretToken: {{ requiredEnv "HUB_PROXY_SECRET_TOKEN" }}
+
+  auth:
+    state:
+      cryptoKey: {{ requiredEnv "HUB_AUTH_STATE_CRYPTO_KEY" }}
+
+  singleuser:
+    storage:
+      dynamic:
+        storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
+    extraNodeAffinity:
+      preferred:
+      - weight: 100
+        preference:
+          matchExpressions:
+          - key: scheduled-maintenance
+            operator: DoesNotExist
+{{- if eq $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY "true" }}
+    image:
+      name: jupyter/base-notebook
+      tag: notebook-6.0.0
+      pullPolicy: IfNotPresent
+{{- end }}
+    extraPodConfig:
+      enableServiceLinks: false
+
+ingress:
+  enabled: true
+  annotations:
+    ingress.kubernetes.io/affinity: cookie
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  hosts:
+  - {{ $PRIMEHUB_DOMAIN }}
+  {{ if eq $PRIMEHUB_SCHEME "https" }}
+  tls:
+  - hosts:
+    - {{ $PRIMEHUB_DOMAIN }}
+    secretName: hub-tls
+  {{ end }}
+
+graphql:
+  sharedGraphqlSecret: {{ requiredEnv "ADMIN_UI_GRAPHQL_SECRET_KEY" }}
+
+groupvolume:
+  storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
+
+customImage:
+  enabled: true
+  registryEndpoint: {{ env "PRIMEHUB_CUSTOM_IMAGE_REGISTRY_ENDPOINT" | quote }}
+  registryUsername: {{ env "PRIMEHUB_CUSTOM_IMAGE_REGISTRY_USERNAME" | quote }}
+  registryPassword: {{ env "PRIMEHUB_CUSTOM_IMAGE_REGISTRY_PASSWORD" | quote }}
+  pushRepoPrefix: {{ env "PRIMEHUB_CUSTOM_IMAGE_REPO_PREFIX" | quote }}
+
+{{- if eq $PRIMEHUB_FEATURE_STORE "true" }}
+store:
+  enabled: true
+{{- if $PRIMEHUB_STORE_ACCESS_KEY }}
+  accessKey: {{ $PRIMEHUB_STORE_ACCESS_KEY | quote}}
+{{- end }}
+{{- if $PRIMEHUB_STORE_SECRET_KEY }}
+  secretKey: {{ $PRIMEHUB_STORE_SECRET_KEY | quote}}
+{{- end }}
+
+{{- if and $MINIO_S3GATEWAY_ACCESS_KEY $MINIO_S3GATEWAY_SECRET_KEY }}
+minio:
+  s3gateway:
+    enabled: true
+    accessKey: {{$MINIO_S3GATEWAY_ACCESS_KEY | quote}}
+    secretKey: {{$MINIO_S3GATEWAY_SECRET_KEY | quote}}
+{{- else if and $MINIO_GCSGATEWAY_PROJECT_ID $MINIO_GCSGATEWAY_GCS_KEY_JSON }}
+minio:
+  gcsgateway:
+    enabled: true
+    projectId: {{$MINIO_GCSGATEWAY_PROJECT_ID | quote}}
+    gcsKeyJson: {{$MINIO_GCSGATEWAY_GCS_KEY_JSON | quote}}
+{{- end }}
+{{- end }}
+
+sshBastionServer:
+  enabled: false
+
+usage:
+  dbStorageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
+{{- if eq $PRIMEHUB_FEATURE_USAGE "false" }}
+  enabled: false
+{{- end }}
+
+{{- if (env "GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET") }}
+grafana:
+  enabled: true
+{{- end }}

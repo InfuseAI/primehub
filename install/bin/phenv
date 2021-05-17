@@ -1,0 +1,138 @@
+#!/bin/bash
+set -e
+
+usage() {
+  echo "Set environment and execute command for current kubernetes context"
+  echo "usage: phenv [options]|<commands>"
+  echo "Examples:"
+  echo "  # Show config path for curent kubernetes context"
+  echo "  phenv --path"
+  echo ""
+  echo "  # Show effective kubernetes context"
+  echo "  phenv --effective-path"
+  echo ""
+  echo "  # Show this help"
+  echo "  phenv -h"
+  echo ""
+  echo "  # Set environment and execute command"
+  echo "  phenv helmfile -f helm/helmfile.d/05primehub.yaml diff"
+  echo ""
+  echo "  # Print envionment"
+  echo "  phenv"
+  echo ""
+  echo "  # Edit envionment"
+  echo "  phenv edit"
+  echo ""
+  echo "  # Edit helm_override"
+  echo "  phenv override primehub.yaml"
+}
+
+warn() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+error() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+#######################################################
+# Feature Expansion
+#
+# EXPANSION_LIST is a list of composite features. When a composite feature XXX is set to 'true',
+# the features defined in XXX_LIST will be set to 'true' as well
+#
+# PRIMEHUB_ENABLE_ALPHA is a composite feature which will turn on all alpha features.
+#
+# The expanded feature is only set if the feature has not been set. That is, if .env has more specific
+# value, it will not be overriden.
+EXPANSION_LIST=(
+  PRIMEHUB_ENABLE_ALPHA
+  PRIMEHUB_ENABLE_BETA
+)
+
+PRIMEHUB_ENABLE_ALPHA_LIST=(
+  PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY
+  PRIMEHUB_FEATURE_MODEL_DEPLOYMENT
+)
+
+PRIMEHUB_ENABLE_BETA_LIST=(
+  PRIMEHUB_FEATURE_DATASET_UPLOAD
+  PRIMEHUB_FEATURE_JOB_SUBMISSION
+)
+
+expand_features() {
+  # Beta features are always enabled.
+  local PRIMEHUB_ENABLE_BETA=true
+
+  for expand_item in ${EXPANSION_LIST[@]}; do
+    if [[ ${!expand_item:-} == "true" ]]; then
+      local key="${expand_item}_LIST[@]"
+      for item in ${!key}; do
+        # set the feature to 'true' if it is not defined.
+        if [[ -z ${!item:+x} ]]; then
+          eval "export ${item}=true"
+        fi
+      done
+    fi
+  done
+}
+
+CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
+
+if [[ $# -gt 0 ]]; then
+  if [[ $1 == '-h' || $1 == '--help' ]]; then
+    usage
+    exit
+  fi
+
+  if [[ $1 == '--path' ]]; then
+    echo $CONFIG_PATH
+    exit
+  fi
+
+  if [[ $1 == 'edit' ]]; then
+    eval "$EDITOR $CONFIG_PATH/.env"
+    exit
+  fi
+
+  if [[ $1 == 'override' ]]; then
+    OVERRIED_FILE_PATH=$CONFIG_PATH/helm_override/$2
+    if [[ -f ${OVERRIED_FILE_PATH} ]]; then
+      eval "$EDITOR $OVERRIED_FILE_PATH"
+      exit
+    else
+      error "Wrong override file path: $OVERRIED_FILE_PATH"
+      exit 1
+    fi
+  fi
+fi
+
+
+if [[ -f ${CONFIG_PATH}/.env ]]; then
+  CONFIG_EFFECTIVE_PATH=$CONFIG_PATH
+elif [[ -f ${PWD}/etc/.env ]]; then
+  CONFIG_EFFECTIVE_PATH=${PWD}/etc
+else
+  error "Effective config path not found. Should be '$CONFIG_PATH'"
+  exit 1
+fi
+
+if [[ $1 == '--effective-path' ]]; then
+  echo $CONFIG_EFFECTIVE_PATH
+  exit
+fi
+
+if [[ $CONFIG_PATH == $CONFIG_EFFECTIVE_PATH ]]; then
+  echo "Effective config path: '$CONFIG_PATH'"
+else
+  warn "Effective config path: './etc'. fallback from '$CONFIG_PATH'"
+fi
+
+set -a ;source $CONFIG_EFFECTIVE_PATH/.env; set +a
+expand_features
+export PRIMEHUB_VALUES_PATH=$CONFIG_EFFECTIVE_PATH/helm_override
+export PRIMEHUB_KUBE_VERSION=$(kubectl version -ojson | jq -r .serverVersion.gitVersion)
+export PRIMEHUB_NAMESPACE=${PRIMEHUB_NAMESPACE:-hub}
+
+env "$@"
+
