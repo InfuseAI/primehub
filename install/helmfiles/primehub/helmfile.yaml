@@ -1,5 +1,3 @@
-{{ $RELEASE_NAME := (env "RELEASE_NAME" | default "primehub" ) }}
-{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "hub" ) }}
 {{ $CHART_PATH := (env "CHART_PATH") }}
 {{- if env "PRIMEHUB_AIRGAPPED" }}
 {{ $CHART_PATH = "../charts/primehub" }}
@@ -13,8 +11,8 @@ repositories:
 {{- end }}
 
 releases:
-  - name: {{ $RELEASE_NAME }}
-    namespace: {{ $RELEASE_NAMESPACE }}
+  - name: primehub
+    namespace: hub
     {{- if $CHART_PATH }}
     chart: {{ $CHART_PATH }}
     {{- else }}
@@ -22,8 +20,8 @@ releases:
     version: {{ $CHART_VERSION }}
     {{- end }}
     values:
-      - ../primehub/primehub.yaml.gotmpl
-      - ../primehub/images.yaml.gotmpl
+      - primehub.yaml.gotmpl
+      - images.yaml.gotmpl
       {{- if (env "PRIMEHUB_VALUES_PATH") }}
-      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub.yaml
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub2.yaml
       {{- end }}

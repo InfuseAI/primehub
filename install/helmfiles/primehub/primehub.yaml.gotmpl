@@ -8,7 +8,6 @@
 {{- if $PRIMEHUB_PORT}}
   {{ $PRIMEHUB_PORT = (printf ":%s" $PRIMEHUB_PORT)}}
 {{- end}}
-{{ $PRIMEHUB_URL := (printf "%s://%s%s" $PRIMEHUB_SCHEME $PRIMEHUB_DOMAIN $PRIMEHUB_PORT) }}
 
 {{ $PRIMEHUB_STORAGE_CLASS:= (requiredEnv "PRIMEHUB_STORAGE_CLASS")}}
 {{ $GROUP_VOLUME_STORAGE_CLASS := (env "GROUP_VOLUME_STORAGE_CLASS" | default "")}}
@@ -27,7 +26,7 @@
 {{ $MINIO_GCSGATEWAY_GCS_KEY_JSON:= (env "MINIO_GCSGATEWAY_GCS_KEY_JSON")}}
 
 {{/* for legacy installation */}}
-{{ $KEYCLOAK_DEPLOY := (requiredEnv "KEYCLOAK_DEPLOY" | default "true") }}
+{{ $KEYCLOAK_DEPLOY := (env "KEYCLOAK_DEPLOY" | default "true") }}
 {{ $METACONTROLLER_DEPLOY := (env "METACONTROLLER_DEPLOY" | default "true" ) }}
 
 primehub:
@@ -90,25 +89,6 @@ jupyterhub:
   hub:
     annotations:
       checksum/primehub-config-map: {{ exec "bash" (list "-c" "ls ../../modules/charts/primehub/scripts/jupyterhub/config/*.py ../../modules/charts/primehub/templates/jupyterhub/configmap.yaml | xargs cat") | sha256sum }}
-    extraContainers:
-    - name: statsd-to-prometheus
-      {{- if env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
-      image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}prom/statsd-exporter:v0.9.0
-      {{- else }}
-      image: prom/statsd-exporter:v0.9.0
-      {{- end }}
-      imagePullPolicy: IfNotPresent
-      ports:
-      - containerPort: 9102
-      - containerPort: 9125
-        protocol: UDP
-      resources:
-        limits:
-          cpu: 50m
-          memory: 256Mi
-        requests:
-          cpu: 50m
-          memory: 256Mi
     db:
       pvc:
         storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}

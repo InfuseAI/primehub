@@ -1,0 +1,26 @@
+{{ $PRIMEHUB_SCHEME := (env "PRIMEHUB_SCHEME" | default "http") }}
+{{ $PRIMEHUB_DOMAIN := (requiredEnv "PRIMEHUB_DOMAIN")}}
+
+primehub:
+  mode: ce
+  scheme: {{ $PRIMEHUB_SCHEME }}
+  domain: {{ $PRIMEHUB_DOMAIN }}
+
+bootstrap:
+  password: {{ env "PH_PASSWORD" | quote }}
+
+ingress:
+  enabled: true
+  {{ if eq $PRIMEHUB_SCHEME "http" }}
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  {{ end }}
+  hosts:
+  - {{ $PRIMEHUB_DOMAIN }}
+  {{ if eq $PRIMEHUB_SCHEME "https" }}
+  tls:
+  - hosts:
+    - {{ $PRIMEHUB_DOMAIN }}
+    secretName: hub-tls
+  {{ end }}
