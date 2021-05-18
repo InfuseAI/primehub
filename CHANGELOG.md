@@ -2,6 +2,10 @@
 
 ## Upcoming
 
+### Bugfix
+
+- Add missing pagination to Notebooks Admin
+
 ## 3.5.1
 ### What's New
 
