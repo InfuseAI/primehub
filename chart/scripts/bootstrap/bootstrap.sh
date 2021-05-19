@@ -186,7 +186,7 @@ function create_default_resources() {
     kc_group_add_realm_role $KC_REALM everyone "it:${instance}" || true
   done
 
-  images='base-notebook pytorch-1.5.0 tf-1.14 tf-2.2'
+  images='base-notebook pytorch-1 tf-1 tf-2'
   for image in $images; do
     kc_role_create ROLE_IMG $KC_REALM "img:${image}"
     print_info "Bind images: img:${image} -> everyone"
@@ -194,7 +194,7 @@ function create_default_resources() {
   done
 
   # add crds
-  print_info "Add CRDs: img:base-notebook img:pytorch-1.5.0 img:tf-1.14 img:tf-2.2 it:cpu-1 it:cpu-2 it:gpu-1 it:gpu-2"
+  print_info "Add CRDs: img:base-notebook img:pytorch-1 img:tf-1 img:tf-2 it:cpu-1 it:cpu-2 it:gpu-1 it:gpu-2"
   kubectl apply -n $PRIMEHUB_NAMESPACE -f $DIR/crds.yaml  || true
 
 }

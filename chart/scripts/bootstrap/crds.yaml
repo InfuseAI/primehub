@@ -12,7 +12,7 @@ spec:
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: pytorch-1.7.0
+  name: pytorch-1
 spec:
   displayName: "PyTorch 1.7.0 (Python 3.7)"
   description: "PyTorch 1.7.0 (Python 3.7)"
@@ -23,7 +23,7 @@ spec:
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: tf-1.15.4
+  name: tf-1
 spec:
   displayName: "TensorFlow 1.15.4 (Python 3.7)"
   description: "TensorFlow 1.15.4 (Python 3.7)"
@@ -34,7 +34,7 @@ spec:
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
-  name: tf-2.4.1
+  name: tf-2
 spec:
   displayName: "TensorFlow 2.4.1 (Python 3.7)"
   description: "TensorFlow 2.4.1 (Python 3.7)"
