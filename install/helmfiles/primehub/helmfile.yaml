@@ -1,3 +1,4 @@
+{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "hub") }}
 {{ $CHART_PATH := (env "CHART_PATH") }}
 {{- if env "PRIMEHUB_AIRGAPPED" }}
 {{ $CHART_PATH = "../../../chart" }}
@@ -12,7 +13,7 @@ repositories:
 
 releases:
   - name: primehub
-    namespace: hub
+    namespace: {{ $RELEASE_NAMESPACE }}
     {{- if $CHART_PATH }}
     chart: {{ $CHART_PATH }}
     {{- else }}
@@ -25,3 +26,6 @@ releases:
       {{- if (env "PRIMEHUB_VALUES_PATH") }}
       - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub.yaml
       {{- end }}
+
+helmDefaults:
+  timeout: {{ env "HELM_TIMEOUT" }}
