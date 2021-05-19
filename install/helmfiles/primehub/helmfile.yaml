@@ -1,6 +1,6 @@
 {{ $CHART_PATH := (env "CHART_PATH") }}
 {{- if env "PRIMEHUB_AIRGAPPED" }}
-{{ $CHART_PATH = "../charts/primehub" }}
+{{ $CHART_PATH = "../../../chart" }}
 {{- end }}
 {{ $CHART_VERSION := (env "CHART_VERSION" | default "" ) }}
 
@@ -23,5 +23,5 @@ releases:
       - primehub.yaml.gotmpl
       - images.yaml.gotmpl
       {{- if (env "PRIMEHUB_VALUES_PATH") }}
-      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub2.yaml
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub.yaml
       {{- end }}

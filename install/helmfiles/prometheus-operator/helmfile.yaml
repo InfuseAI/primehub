@@ -1,6 +1,6 @@
 {{ $CHART_PATH := (env "CHART_PATH") }}
 {{- if env "PRIMEHUB_AIRGAPPED" }}
-{{ $CHART_PATH = "../charts/prometheus-operator" }}
+{{ $CHART_PATH = "../../charts/prometheus-operator" }}
 {{- end }}
 
 {{- if not $CHART_PATH }}
