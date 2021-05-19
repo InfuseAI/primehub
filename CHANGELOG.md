@@ -1,6 +1,9 @@
 # Changelog
 
 ## Upcoming
+### What's New
+
+- **Model Management(Beta)**: Users can manage and version their models. And the versioned models can be deployed in the model deployment.
 
 ### Bugfix
 
