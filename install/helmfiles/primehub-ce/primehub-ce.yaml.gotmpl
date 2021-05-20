@@ -6,11 +6,17 @@ primehub:
   scheme: {{ $PRIMEHUB_SCHEME }}
   domain: {{ $PRIMEHUB_DOMAIN }}
 
+{{- if env "PH_PASSWORD" }}
 bootstrap:
   password: {{ env "PH_PASSWORD" | quote }}
+{{- end}}
+
+{{- if env "KC_PASSWORD" }}
+keycloak:
+  password: {{ env "KC_PASSWORD" | quote }}
+{{- end}}
 
 ingress:
-  enabled: true
   {{ if eq $PRIMEHUB_SCHEME "http" }}
   annotations:
     kubernetes.io/ingress.allow-http: "true"
