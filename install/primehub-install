@@ -69,7 +69,7 @@ prepare_env_varible() {
 load_env_variables() {
   if [ -f $(primehub_config_path)/.env ]; then
     set -a; source $(primehub_config_path)/.env; set +a
-    PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
+    export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
   fi
 }
 
@@ -870,7 +870,6 @@ diff::primehub() {
   if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
     export CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}")
   else
-
     export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
   helmfile -f ./helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
@@ -883,15 +882,34 @@ error_log_primehub() {
   error "[Error] Generate PrimeHub error log at ${log_name}."
 }
 
+progress_primehub() {
+  sleep 10
+  if kubectl -n ${PRIMEHUB_NAMESPACE} get sts/keycloak > /dev/null 2>&1 ; then
+    info "[Progress] wait for keycloak ready"
+    kubectl -n ${PRIMEHUB_NAMESPACE} rollout status sts/keycloak
+  fi
+  info "[Progress] wait for bootstrap job ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} wait --for=condition=complete job/primehub-bootstrap --timeout=1000s
+  info "[Progress] wait for graphql ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} rollout status deploy/primehub-graphql
+  info "[Progress] wait for console ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} rollout status deploy/primehub-console
+  info "[Progress] wait for helm install completed"
+}
+
+
 install::primehub() {
   local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
-  local PRIMEHUB_EE_CONFIG=$(primehub_config_path)/ee-values.yaml
   info "[Check] primehub.yaml"
 
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
     info "[Generate] primehub.yaml"
-    touch $PRIMEHUB_CONFIG
+    if [[ $PRIMEHUB_MODE == 'ce' ]]; then
+      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
+    else
+      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
+    fi
   else
     info "[Found] ${PRIMEHUB_CONFIG}"
   fi
@@ -904,13 +922,18 @@ install::primehub() {
   else
     export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
-  helmfile -f ./helmfiles/primehub apply || (error_log_primehub; exit 1)
-  kubectl label node component=singleuser-server --all || true
 
-  info "[Verify] PrimeHub ready"
-  kubectl -n hub rollout status deploy/primehub-console
+  trap 'kill $BGPID; exit' INT
+  progress_primehub &
+  BGPID=$!
+
+  helmfile -f ./helmfiles/primehub charts || (error_log_primehub; exit 1)
+
+  info "[Progress] Label nodes with component=singleuser-server"
+  kubectl label node component=singleuser-server --overwrite || true
 
   if [[ "$PRIMEHUB_SCHEME" == 'http' ]]; then
+    info "[Progress] Disable Keycloak SSL required"
     disable_keycloak_ssl_required
   fi
 

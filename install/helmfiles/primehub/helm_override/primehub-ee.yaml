@@ -1,0 +1,25 @@
+#primehub:
+#  sharedVolumeStorageClass: "nfs-client"
+
+#customImage:
+#  registryEndpoint: "myregistry.local"
+#  registryUsername: admin
+#  registryPassword: <admin-password>
+#  pushRepoPrefix: "myregistry.local/<project>""
+
+store:
+  enabled: true
+  phfs:
+    enabled: true
+  logPersistence:
+    enabled: false
+
+jobSubmission:
+  artifact:
+    enabled: true
+
+usage:
+  enabled: true
+
+#sshBastionServer:
+#  enabled: true

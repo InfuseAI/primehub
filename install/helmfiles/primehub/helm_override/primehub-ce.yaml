@@ -1,0 +1,8 @@
+#primehub:
+#  sharedVolumeStorageClass: "nfs-client"
+
+#customImage:
+#  registryEndpoint: "myregistry.local"
+#  registryUsername: admin
+#  registryPassword: <admin-password>
+#  pushRepoPrefix: "myregistry.local/<project>""
