@@ -96,11 +96,11 @@ jupyterhub:
     kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
 
   proxy:
-    secretToken: {{ requiredEnv "HUB_PROXY_SECRET_TOKEN" }}
+    secretToken: {{ env "HUB_PROXY_SECRET_TOKEN" }}
 
   auth:
     state:
-      cryptoKey: {{ requiredEnv "HUB_AUTH_STATE_CRYPTO_KEY" }}
+      cryptoKey: {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
 
   singleuser:
     storage:
@@ -138,7 +138,7 @@ ingress:
   {{ end }}
 
 graphql:
-  sharedGraphqlSecret: {{ requiredEnv "ADMIN_UI_GRAPHQL_SECRET_KEY" }}
+  sharedGraphqlSecret: {{ env "ADMIN_UI_GRAPHQL_SECRET_KEY" }}
 
 groupvolume:
   storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}

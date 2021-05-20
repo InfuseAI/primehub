@@ -202,16 +202,6 @@ prometheusOperator:
 grafana:
   image:
     tag: 6.3.0
-  enabled: false
-  {{- if (ne (env "PRIMEHUB_FEATURE_PROMETHEUS_OPERATOR_8") "true") }}
-  deploymentStrategy: Recreate
-  {{- end }}
-
-  {{/* We will use the default dashboard after chart version=8 */}}
-  {{- if (ne (env "PRIMEHUB_FEATURE_PROMETHEUS_OPERATOR_8") "true") }}
-  defaultDashboardsEnabled: false
-  {{- end }}
-
   resources:
     limits:
       memory: 1000Mi

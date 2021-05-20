@@ -18,7 +18,7 @@ releases:
     chart: infuseai/primehub-grafana-dashboard-basic
     {{- end }}
     values:
-      - {{ $CHART_NAME }}.yaml.gotmpl
+      - primehub-grafana-dashboard-basic.yaml.gotmpl
       {{- if (env "PRIMEHUB_VALUES_PATH") }}
-      - {{ env "PRIMEHUB_VALUES_PATH" }}/{{ $CHART_NAME }}.yaml
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub-grafana-dashboard-basic.yaml
       {{- end}}

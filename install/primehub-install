@@ -18,7 +18,7 @@ CONTAINER_REGISTRY=''
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
 SUPPORT_K8S_VERSION="1.15 1.16 1.17 1.18 1.19 1.20"
 K8S_VERSION=1.17
-PRIMEHUB_VERSION=v3.4.1
+PRIMEHUB_VERSION=
 PRIMEHUB_NAMESPACE=hub
 PRIMEHUB_SCHEME='http'
 PRIMEHUB_PATH=
@@ -66,6 +66,13 @@ prepare_env_varible() {
   fi
 }
 
+load_env_variables() {
+  if [ -f $(primehub_config_path)/.env ]; then
+    set -a; source $(primehub_config_path)/.env; set +a
+    PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
+  fi
+}
+
 usage (){
     local SELF=`basename $0`
     cat <<EOF
@@ -90,7 +97,7 @@ USAGE:
 
 Options:
   --namepace          <primehub-namespace>       : Namespace of PrimeHub install    (Default: hub)
-  --primehub-version  <primehub-version>         : PrimeHub version                 (Default: $PRIMEHUB_VERSION)
+  --primehub-version  <primehub-version>         : PrimeHub version
   --k8s-version       <k8s-version>              : Kubernetes version               (Default: $K8S_VERSION, Supported: $SUPPORT_K8S_VERSION)
   --path              <primehub-path>            : Path of PrimeHub chart folder    (Default: ${PRIMEHUB_PATH})
   --license-path      <primehub-license-path>    : Path of PrimeHub license
@@ -503,6 +510,7 @@ init_env() {
 
   local keys=(
     PRIMEHUB_NAMESPACE
+    PRIMEHUB_MODE
 
     PRIMEHUB_DOMAIN
     PRIMEHUB_SCHEME
@@ -602,7 +610,7 @@ prepare_primehub_env() {
     mkdir -p "${CONFIG_PATH}"
     init_env
   else
-    set -a; source $(primehub_config_path)/.env; set +a
+    load_env_variables
   fi
 
   verify_primehub_domain ${PRIMEHUB_DOMAIN}
@@ -693,7 +701,6 @@ install::cert_manager() {
 }
 
 generate::keycloak_grafana_client() {
-  set -a; source $(primehub_config_path)/.env; set +a
   local ns='hub'
   local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/jboss/keycloak/bin/kcadm.sh"
   local client_name=grafana-proxy
@@ -751,205 +758,41 @@ generate::keycloak_grafana_client() {
   echo "  ${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}"
 }
 
-generate::prometheus_config() {
-  local tls=''
-  local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
-  set -a; source $(primehub_config_path)/.env; set +a
-  mkdir -p $(primehub_config_path)/helm_override
-  local endpoint=$(kubectl get node -o wide | grep -v NAME | head -n1 | awk '{print $6}')
-  local ingressHost=${PRIMEHUB_DOMAIN}
-
-  # If no host is specified, so the rule applies to all inbound HTTP traffic through the IP address specified.
-  if [[ ${PRIMEHUB_DOMAIN} =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-    ingressHost='null'
-  fi
-
-  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
-    tls=$(cat <<EOF
-    tls:
-    - hosts:
-      - ${PRIMEHUB_DOMAIN}
-      secretName: grafana-tls
-EOF
-)
-  fi
-
-  info "[Generate] prometheus.yaml"
-
-  cat <<EOF > ${PROMETHEUS_CONFIG}
-kubeControllerManager:
-  enabled: false
-  endpoints:
-    - ${endpoint}
-kubeEtcd:
-  enabled: false
-  endpoints:
-    - ${endpoint}
-kubeScheduler:
-  enabled: false
-  endpoints:
-    - ${endpoint}
-kubeProxy:
-  enabled: false
-  endpoints:
-    - ${endpoint}
-alertmanager:
-  enabled: false
-prometheus:
-  prometheusSpec:
-    resources:
-      limits:
-        memory: 4Gi
-        cpu: 1000m
-      requests:
-        memory: 250Mi
-        cpu: 50m
-    storageSpec:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: ${PRIMEHUB_STORAGE_CLASS}
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi
-    replicas: 1
-    podAntiAffinity: hard
-prometheusOperator:
-  resources:
-    limits:
-      cpu: 50m
-      memory: 100Mi
-    requests:
-      cpu: 50m
-      memory: 50Mi
-grafana:
-  resources:
-    limits:
-      memory: 1000Mi
-      cpu: 200m
-    requests:
-      memory: 250Mi
-      cpu: 50m
-  persistence:
-    enabled: true
-    storageClassName: ${PRIMEHUB_STORAGE_CLASS}
-    accessModes: ["ReadWriteOnce"]
-    size: 10Gi
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      kubernetes.io/tls-acme: "true"
-    hosts:
-      - ${ingressHost}
-    path: "/grafana"
-${tls}
-  grafana.ini:
-    server:
-      domain: "${PRIMEHUB_DOMAIN}"
-      root_url: "${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana"
-      serve_from_sub_path: "true"
-    auth:
-      signout_redirect_url: "${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/console/oidc/logout"
-  env:
-    GF_SERVER_ROOT_URL:                   "${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana"
-    GF_AUTH_GENERIC_OAUTH_ENABLED:        "true"
-    GF_AUTH_GENERIC_OAUTH_CLIENT_ID:      "grafana-proxy"
-    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:  "${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}"
-    GF_AUTH_GENERIC_OAUTH_SCOPES:         "openid profile email"
-    GF_AUTH_GENERIC_OAUTH_AUTH_URL:       "${KC_SCHEME}://${KC_DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/auth"
-    GF_AUTH_GENERIC_OAUTH_API_URL:        "${KC_SCHEME}://${KC_DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/userinfo"
-    GF_AUTH_GENERIC_OAUTH_TOKEN_URL:      "${KC_SCHEME}://${KC_DOMAIN}/auth/realms/${KC_REALM}/protocol/openid-connect/token"
-EOF
-
-}
-
-generate::primehub_grafana_dashboard_basic_config() {
-  local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
-  set -a; source $(primehub_config_path)/.env; set +a
-  mkdir -p $(primehub_config_path)/helm_override
-
-  info "[Generate] primehub-grafana-dashboard-basic.yaml"
-
-  cat <<EOF > ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
-hub:
-  namespace: ${PRIMEHUB_NAMESPACE}
-prometheusOperatorDashboards:
-  enabled: false
-jupyterhub:
-  enabled: true
-modelDeployment:
-  enabled: true
-EOF
-
-}
-
 install::prometheus() {
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
   # Prometheus Chart
   if [ ! -f "${PROMETHEUS_CONFIG}" ]; then
-    generate::prometheus_config
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] prometheus.yaml"
+    touch ${PROMETHEUS_CONFIG}
   else
     info "[Found] ${PROMETHEUS_CONFIG}"
   fi
 
   info "[Install] Prometheus"
-  helm repo add stable https://charts.helm.sh/stable
-  helm repo add infuseai https://charts.infuseai.io
-  helm repo update
-
-  helm upgrade \
-    prometheus-operator ${PROMETHEUS_CHART} \
-    --version ${PROMETHEUS_CHART_VERSION} \
-    --install \
-    --reset-values \
-    --create-namespace \
-    --namespace monitoring \
-    --values ${PROMETHEUS_CONFIG}
+  helmfile -f ./helmfiles/prometheus-operator charts
 
   # PrimeHub Grafana Dashboard Chart
   if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
-    generate::primehub_grafana_dashboard_basic_config
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] primehub-grafana-dashboard-basic.yaml"
+    touch ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
   else
     info "[Found] ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}"
   fi
 
   info "[Install] PrimeHub Grafana Dashboard Basic"
-  helm upgrade \
-    primehub-grafana-dashboard-basic ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART} \
-    --version ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION} \
-    --install \
-    --reset-values \
-    --create-namespace \
-    --namespace monitoring \
-    --values ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
+  helmfile -f ./helmfiles/primehub-grafana-dashboard-basic charts
 }
 
 diff::prometheus() {
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
-  info "[Check] prometheus.yaml"
-  set -a; source $(primehub_config_path)/.env; set +a
-
-  info "[Diff] Prometheus"
-  helm diff upgrade \
-    prometheus-operator ${PROMETHEUS_CHART} \
-    --version ${PROMETHEUS_CHART_VERSION} \
-    --context 2 \
-    --reset-values \
-    --namespace monitoring  \
-    --values ${PROMETHEUS_CONFIG}
-
-  helm diff upgrade \
-    primehub-grafana-dashboard-basic ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART} \
-    --version ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION} \
-    --context 2 \
-    --reset-values \
-    --namespace monitoring \
-    --values ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
+  helmfile -f ./helmfiles/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ./helmfiles/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 destroy::prometheus() {
@@ -1022,23 +865,15 @@ diff::singlenode() {
 }
 
 diff::primehub() {
-  export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
   info "[Check] primehub.yaml"
-  set -a; source $(primehub_config_path)/.env; set +a
-
+  export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
   if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
-    CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}") RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE} helmfile -f ./helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
+    export CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}")
   else
-    local chart_version=$(echo "${PRIMEHUB_VERSION}" | sed 's/^v//g')
-    RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE} CHART_VERSION=${chart_version} helmfile -f ./helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
-  fi
-}
 
-generate::primehub_config() {
-  local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
-  local PRIMEHUB_EE_CONFIG=$(primehub_config_path)/ee-values.yaml
-  mkdir -p $(primehub_config_path)/helm_override
-  touch $PRIMEHUB_CONFIG
+    export CHART_VERSION=${PRIMEHUB_VERSION}
+  fi
+  helmfile -f ./helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 error_log_primehub() {
@@ -1052,23 +887,24 @@ install::primehub() {
   local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
   local PRIMEHUB_EE_CONFIG=$(primehub_config_path)/ee-values.yaml
   info "[Check] primehub.yaml"
-  set -a; source $(primehub_config_path)/.env; set +a
 
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
-    generate::primehub_config
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] primehub.yaml"
+    touch $PRIMEHUB_CONFIG
   else
     info "[Found] ${PRIMEHUB_CONFIG}"
   fi
 
   info "[Install] PrimeHub"
-  export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
+  export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
+  export HELM_TIMEOUT=${HELM_TIMEOUT}
   if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
-    CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}") RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE} HELM_TIMEOUT=${HELM_TIMEOUT} helmfile -f ./helmfiles/primehub apply || (error_log_primehub; exit 1)
+    export CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}")
   else
-    local chart_version=$(echo "${PRIMEHUB_VERSION}" | sed 's/^v//g')
-    RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE} CHART_VERSION=${chart_version} HELM_TIMEOUT=${HELM_TIMEOUT} helmfile -f ./helmfiles/primehub apply
+    export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
-
+  helmfile -f ./helmfiles/primehub apply || (error_log_primehub; exit 1)
   kubectl label node component=singleuser-server --all || true
 
   info "[Verify] PrimeHub ready"
@@ -1178,8 +1014,6 @@ destroy::primehub() {
 
   verify_action "Primehub" "PrimeHub"
 
-  set -a; source $(primehub_config_path)/.env; set +a
-
   info "[Backup] config"
   backup_config
 
@@ -1211,7 +1045,6 @@ destroy::primehub() {
 
 show_license() {
   check_primehub
-  set -a; source $(primehub_config_path)/.env; set +a
 
   info "[PrimeHub License]"
   kubectl get license -n ${PRIMEHUB_NAMESPACE} -o yaml | grep status: -A5
@@ -1219,7 +1052,6 @@ show_license() {
 
 apply_license() {
   check_primehub
-  set -a; source $(primehub_config_path)/.env; set +a
   local license_path=${LICENSE_PATH:-$(search_primehub_license)}
 
   if [[ ${license_path} == "" ]]; then
@@ -1237,8 +1069,6 @@ apply_license() {
 }
 
 show_versions() {
-  info "[Default] PrimeHub Version:"
-  echo "* ${PRIMEHUB_VERSION}"
   info "[Available] PrimeHub Versions:"
   curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep -v "\-rc"
   if [[ ${SHOW_RC_VERSION} == true ]]; then
@@ -1289,6 +1119,9 @@ main() {
   local cmd=''
   local target=''
   local support_targets='singlenode keycloak primehub prometheus'
+
+  load_env_variables
+
   while (( "$#" )); do
     case "${1:-}" in
       create|destroy|status|config|diff|upgrade)
@@ -1341,7 +1174,7 @@ main() {
         PRIMEHUB_FEATURE_SSH_BASTION_SERVER=true
       ;;
       --primehub-ce)
-        PRIMEHUB_MODE='ce'
+        export PRIMEHUB_MODE='ce'
       ;;
       --insecure-registry)
         shift
@@ -1353,7 +1186,7 @@ main() {
       ;;
       --helm-timeout)
         shift
-        HELM_TIMEOUT=${1:-}
+        export HELM_TIMEOUT=${1:-}
         local re='^[0-9]+$'
         if ! [[ ${HELM_TIMEOUT} =~ ${re} ]] ; then
           error "Unsupport timeout input: ${HELM_TIMEOUT}"; usage; exit 1
@@ -1407,7 +1240,9 @@ main() {
 
   case "$cmd" in
     create)
-      check_primehub_required_bin
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
       create::${target}
     ;;
     destroy)
@@ -1420,11 +1255,15 @@ main() {
       config::${target}
     ;;
     diff)
-      check_primehub_required_bin
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
       diff::${target}
     ;;
     upgrade)
-      check_primehub_required_bin
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
       install::${target}
     ;;
     license)
