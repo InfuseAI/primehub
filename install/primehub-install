@@ -69,8 +69,8 @@ prepare_env_varible() {
 load_env_variables() {
   if [ -f $(primehub_config_path)/.env ]; then
     set -a; source $(primehub_config_path)/.env; set +a
-    export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
   fi
+  export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
 }
 
 usage (){
@@ -884,6 +884,9 @@ error_log_primehub() {
 
 progress_primehub() {
   sleep 10
+  until kubectl -n ${PRIMEHUB_NAMESPACE} get job/primehub-bootstrap > /dev/null 2&>1; do
+    sleep 2;
+  done
   if kubectl -n ${PRIMEHUB_NAMESPACE} get sts/keycloak > /dev/null 2>&1 ; then
     info "[Progress] wait for keycloak ready"
     kubectl -n ${PRIMEHUB_NAMESPACE} rollout status sts/keycloak
@@ -1054,6 +1057,7 @@ destroy::primehub() {
 
   info "[Delete] PrimeHub bootstrap job"
   kubectl delete job primehub-bootstrap -n $ns || ture
+  kubectl delete job primehub-minio-make-bucket-job -n $ns || ture
 
   info "[Delete] Keycloak postgresql pvc"
   kubectl delete -n $ns pvc data-keycloak-postgres-0 || true
