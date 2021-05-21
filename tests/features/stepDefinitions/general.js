@@ -150,7 +150,7 @@ defineStep("I go to login page", async function() {
 });
 
 defineStep("I am on login page", async function() {
-  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
+  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}'] | //title[text()='登入到 ${this.KC_REALM}']`);
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
 });
