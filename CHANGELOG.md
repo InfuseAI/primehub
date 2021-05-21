@@ -1,11 +1,13 @@
 # Changelog
 
 ## Upcoming
-
-## 3.6.0
 ### What's New
 
 - **Model Management(Beta)**: Users can manage and version their models. And the versioned models can be deployed in the model deployment.
+
+### Bugfix
+
+- Add missing pagination to Notebooks Admin
 
 ## 3.5.1
 ### What's New
