@@ -9,6 +9,12 @@
 
 - Add missing pagination to Notebooks Admin
 
+## 3.5.2
+### What's New
+
+- Bugfix: Fix the shared file uploader broken in primehub-ce
+- Bugfix: Fix GPU resources setting
+
 ## 3.5.1
 ### What's New
 
