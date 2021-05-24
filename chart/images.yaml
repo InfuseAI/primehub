@@ -41,6 +41,9 @@ primehub-all:
   seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.1.0
   model-storage-initializer: &model-storage-initializer gcr.io/kfserving/storage-initializer:v0.4.0
   mlflow-model-storage-initializer: &mlflow-model-storage-initializer infuseai/mlflow-model-downloader:v0.1.0
+  prepackaged-tensorflow: &prepackaged-tensorflow infuseai/tensorflow2-prepackaged:v0.2.0
+  prepackaged-pytorch: &prepackaged-pytorch infuseai/pytorch-prepackaged:v0.2.0
+  prepackaged-sklearn: &prepackaged-sklearn infuseai/sklearn-prepackaged:v0.1.0
 
   # SSH Bastion Server
   ssh-proxy: &ssh-proxy mltooling/ssh-proxy:0.1.11
@@ -106,6 +109,9 @@ primehub-ee:
   seldon-core-executor: *seldon-core-executor
   model-storage-initializer: *model-storage-initializer
   mlflow-model-storage-initializer: *mlflow-model-storage-initializer
+  prepackaged-tensorflow: *prepackaged-tensorflow
+  prepackaged-pytorch: *prepackaged-pytorch
+  prepackaged-sklearn: *prepackaged-sklearn
 
   # SSH Bastion Server
   ssh-proxy: *ssh-proxy
@@ -158,6 +164,9 @@ primehub-deploy:
   seldon-core-executor: *seldon-core-executor
   model-storage-initializer: *model-storage-initializer
   mlflow-model-storage-initializer: *mlflow-model-storage-initializer
+  prepackaged-tensorflow: *prepackaged-tensorflow
+  prepackaged-pytorch: *prepackaged-pytorch
+  prepackaged-sklearn: *prepackaged-sklearn
 
   # Usage
   primehub-usage: *primehub-usage
