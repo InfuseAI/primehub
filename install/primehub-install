@@ -597,8 +597,8 @@ prepare_primehub_env() {
 
     export PRIMEHUB_SCHEME
     export PRIMEHUB_DOMAIN
-    export KC_DOMAIN=${PRIMEHUB_DOMAIN}
-    export KC_SCHEME=${PRIMEHUB_SCHEME}
+    export KC_DOMAIN=${KC_DOMAIN:-$PRIMEHUB_DOMAIN}
+    export KC_SCHEME=${KC_SCHEME:-$PRIMEHUB_SCHEME}
     export KC_USER="keycloak"
     export KC_REALM="primehub"
     export PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
@@ -772,7 +772,7 @@ install::prometheus() {
   fi
 
   info "[Install] Prometheus"
-  helmfile -f ./helmfiles/prometheus-operator charts
+  helmfile -f ${DIR}/helmfiles/prometheus-operator sync
 
   # PrimeHub Grafana Dashboard Chart
   if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
@@ -784,15 +784,15 @@ install::prometheus() {
   fi
 
   info "[Install] PrimeHub Grafana Dashboard Basic"
-  helmfile -f ./helmfiles/primehub-grafana-dashboard-basic charts
+  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic sync
 }
 
 diff::prometheus() {
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
-  helmfile -f ./helmfiles/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
-  helmfile -f ./helmfiles/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${DIR}/helmfiles/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 destroy::prometheus() {
@@ -872,7 +872,7 @@ diff::primehub() {
   else
     export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
-  helmfile -f ./helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${DIR}/helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 error_log_primehub() {
@@ -930,7 +930,7 @@ install::primehub() {
   progress_primehub &
   BGPID=$!
 
-  helmfile -f ./helmfiles/primehub charts || (error_log_primehub; exit 1)
+  helmfile -f ${DIR}/helmfiles/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
   kubectl label node component=singleuser-server --overwrite || true

@@ -23,7 +23,11 @@ ingress:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
   {{ end }}
   hosts:
+  {{ if (regexFind "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $PRIMEHUB_DOMAIN) }}
+  - null
+  {{ else }}
   - {{ $PRIMEHUB_DOMAIN }}
+  {{ end }}
   {{ if eq $PRIMEHUB_SCHEME "https" }}
   tls:
   - hosts:

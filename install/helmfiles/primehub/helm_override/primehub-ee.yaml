@@ -12,7 +12,7 @@ store:
   phfs:
     enabled: true
   logPersistence:
-    enabled: false
+    enabled: true
 
 jobSubmission:
   artifact:
