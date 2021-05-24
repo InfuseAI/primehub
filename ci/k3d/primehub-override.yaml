@@ -1,4 +1,6 @@
 ---
+telemetry:
+  enabled: false
 jupyterhub:
   hub:
     resources:
@@ -51,4 +53,4 @@ minio:
     limits:
       memory: 512Mi
     requests:
-      memory: 512Mi 
+      memory: 512Mi
