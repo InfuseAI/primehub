@@ -786,7 +786,7 @@ monitoringAgent:
 
 # Model Deployment
 modelDeployment:
-  enabled: false
+  enabled: true
   engineContainer:
     image:
       repository: seldonio/seldon-core-executor

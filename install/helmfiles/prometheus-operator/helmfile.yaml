@@ -1,0 +1,26 @@
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../../charts/prometheus-operator" }}
+{{- end }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+{{- end }}
+
+releases:
+  - name: prometheus-operator
+    namespace: monitoring
+    {{- if $CHART_PATH }}
+    chart: "{{ $CHART_PATH }}"
+    {{- else }}
+    chart: "prometheus-community/prometheus-operator"
+    version: "8.9.3"
+    {{- end }}
+    values:
+      - prometheus.yaml.gotmpl
+      - images.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/prometheus.yaml
+      {{- end}}

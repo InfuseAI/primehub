@@ -1,0 +1,24 @@
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../../charts/primehub-grafana-dashboard-basic" }}
+{{- end }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: infuseai
+    url: https://charts.infuseai.io
+{{- end }}
+
+releases:
+  - name: primehub-grafana-dashboard-basic
+    namespace: monitoring
+    {{- if $CHART_PATH }}
+    chart: "{{ $CHART_PATH }}"
+    {{- else }}
+    chart: infuseai/primehub-grafana-dashboard-basic
+    {{- end }}
+    values:
+      - primehub-grafana-dashboard-basic.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub-grafana-dashboard-basic.yaml
+      {{- end}}

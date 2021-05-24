@@ -1,0 +1,31 @@
+{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "hub") }}
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../../../chart" }}
+{{- end }}
+{{ $CHART_VERSION := (env "CHART_VERSION" | default "" ) }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: infuseai
+    url: https://charts.infuseai.io
+{{- end }}
+
+releases:
+  - name: primehub
+    namespace: {{ $RELEASE_NAMESPACE }}
+    {{- if $CHART_PATH }}
+    chart: {{ $CHART_PATH }}
+    {{- else }}
+    chart: infuseai/primehub
+    version: {{ $CHART_VERSION }}
+    {{- end }}
+    values:
+      - primehub.yaml.gotmpl
+      - images.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub.yaml
+      {{- end }}
+
+helmDefaults:
+  timeout: {{ env "HELM_TIMEOUT" }}

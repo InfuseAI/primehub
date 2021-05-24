@@ -1,0 +1,142 @@
+{{if env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+admission:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-admission
+bootstrap:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-bootstrap
+datasetUpload:
+  interface:
+    webFrontEndImage:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/dataset-upload-web-front-end
+  metacontrollerHooks:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
+tusd:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}tusproject/tusd
+jupyterhub:
+  hub:
+    image:
+      name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/jupyterhub-k8s
+  proxy:
+    chp:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/configurable-http-proxy
+    nginx:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+  prePuller:
+    hook:
+      enabled: false
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-image-awaiter
+    pause:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}gcr.io/google_containers/pause
+    podCuller:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-pod-culler
+console:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console
+  reloaderImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+graphql:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console-graphql
+  reloaderImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+watcher:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console-watcher
+adminNotebook:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-admin-notebook
+keycloakGateway:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}keycloak/keycloak-gatekeeper
+modelDeployment:
+  engineContainer:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}seldonio/seldon-core-executor
+groupvolume:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
+  nfs:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/volume-nfs
+gitsync:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
+
+controller:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-controller-ee
+
+  proxy:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}gcr.io/kubebuilder/kube-rbac-proxy
+
+monitoringAgent:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-monitoring-agent
+
+fluentd:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}fluent/fluentd-kubernetes-daemonset
+
+minio:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}minio/minio
+  mcImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}minio/mc
+
+rclone:
+  nodeDriverRegistrar:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-node-driver-registrar
+  rclone:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/csi-rclone
+  csiAttacher:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-attacher
+  csiClusterDriverRegistrar:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-cluster-driver-registrar
+
+sshBastionServer:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}mltooling/ssh-proxy
+  metacontroller:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
+
+usage:
+  initImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-usage
+  dbImage:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}postgres
+
+keycloak:
+  init:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jboss/keycloak
+  theme:
+    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:e1e29f10
+  postgresql:
+    image:
+      registry: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" | trimSuffix "/" }}
+    volumePermissions:
+      image:
+        registry: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" | trimSuffix "/" }}
+
+metacontroller:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/metacontroller
+{{end}}

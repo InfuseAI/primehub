@@ -1,0 +1,14 @@
+repositories:
+  - name: infuseai
+    url: https://charts.infuseai.io
+
+releases:
+  - name: primehub
+    namespace: hub
+    chart: infuseai/primehub
+    version:
+    values:
+      - primehub-ce.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/primehub.yaml
+      {{- end }}

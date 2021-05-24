@@ -1,0 +1,1316 @@
+#! /bin/bash
+set -eo pipefail
+IFS=$'\n\t '
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+export PATH=${PATH}:~/bin
+K9S_VERSION=v0.21.9
+KUBECTL_VERSION=v1.17.11
+HELM_VERSION=v3.3.4
+HELMDIFF_VERSION=v3.1.2
+HELMFILE_VERSION=v0.125.0
+JQ_VERSION=1.6
+YQ_VERSION=2.1.2
+
+INSECURE_REGISTRY=''
+CONTAINER_REGISTRY=''
+
+PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
+SUPPORT_K8S_VERSION="1.15 1.16 1.17 1.18 1.19 1.20"
+K8S_VERSION=1.17
+PRIMEHUB_VERSION=
+PRIMEHUB_NAMESPACE=hub
+PRIMEHUB_SCHEME='http'
+PRIMEHUB_PATH=
+PRIMEHUB_CHART_PATH=
+PRIMEHUB_MODE='ee'
+PRIMEHUB_FEATURE_SSH_BASTION_SERVER=false
+LICENSE_PATH=
+
+PROMETHEUS_CHART="stable/prometheus-operator"
+PROMETHEUS_CHART_VERSION="8.9.0"
+PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART="infuseai/primehub-grafana-dashboard-basic"
+PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.0.0"
+
+LOGS_PATH=$(pwd)
+LOGS_TAIL=10000
+
+HELM_TIMEOUT=1000
+DOMAIN_CHECK=true
+SHOW_RC_VERSION=false
+
+info() {
+  echo -e "\033[0;32m$1\033[0m"
+}
+
+warn() {
+  echo -e "\033[0;93m$1\033[0m"
+}
+
+error() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+primehub_config_path() {
+  local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
+  echo "${CONFIG_PATH}"
+}
+
+prepare_env_varible() {
+  local name=$1
+  local val=$(eval 'echo $'$name 2> /dev/null);
+  if [[ ${val} ]]; then
+    echo "$name = ${val}"
+  else
+    printf "Please enter ${name}: "; read ${name}; if [ "$(eval 'echo $'$name 2> /dev/null)" == "" ]; then echo "${name} not set"; return 1; fi
+  fi
+}
+
+load_env_variables() {
+  if [ -f $(primehub_config_path)/.env ]; then
+    set -a; source $(primehub_config_path)/.env; set +a
+  fi
+  export PRIMEHUB_VALUES_PATH=$(primehub_config_path)/helm_override
+}
+
+usage (){
+    local SELF=`basename $0`
+    cat <<EOF
+USAGE:
+  $SELF create  singlenode  [options]            : Create single-node k8s environment
+  $SELF status  singlenode                       : Show the statuse of single-node k8s environment
+  $SELF destroy singlenode                       : Destroy single-node k8s environment
+  $SELF create  primehub  [options]              : Install PrimeHub based on single-node k8s environment
+  $SELF create  prometheus                       : Install Prometheus & Grafana based on single-node k8s environment
+  $SELF status  primehub                         : Show the statuse of PrimeHub
+  $SELF diff    primehub                         : Show the helm diff of PrimeHub
+  $SELF diff    prometheus                       : Show the helm diff of Prometheus
+  $SELF upgrade primehub                         : Upgrade PrimeHub
+  $SELF upgrade prometheus                       : Upgrade Prometheus
+  $SELF destroy primehub                         : Uninstall PrimeHub
+  $SELF destroy prometheus                       : Uninstall Prometheus
+  $SELF license                                  : Show the license of PrimeHub
+  $SELF version [--beta]                         : Show the default and available PrimeHub versions
+  $SELF apply-license [--license-path path]      : Apply the license of PrimeHub
+  $SELF diagnose [--tail n] [--logs-path path]   : Run diagnostic to collect logs
+  $SELF -h,--help                                : show this message
+
+Options:
+  --namepace          <primehub-namespace>       : Namespace of PrimeHub install    (Default: hub)
+  --primehub-version  <primehub-version>         : PrimeHub version
+  --k8s-version       <k8s-version>              : Kubernetes version               (Default: $K8S_VERSION, Supported: $SUPPORT_K8S_VERSION)
+  --path              <primehub-path>            : Path of PrimeHub chart folder    (Default: ${PRIMEHUB_PATH})
+  --license-path      <primehub-license-path>    : Path of PrimeHub license
+  --enable-https                                 : Enable HTTPS                     (Default:off)
+  --enable-ssh-bastion-server                    : Enable SSH Bastion Server feature on port 2222 (Default:off)
+  --insecure-registry <container-registry>       : Enable insecure container registry
+  --custom-image      <container-registry>       : Enable image builder feature with giving container-registry
+  --primehub-ce                                  : Install PrimeHub Community Edition
+  --logs-path         <path>                     : Path to store diagnose logs      (Default: ${LOGS_PATH})
+  --tail              <#line>                    : Number of line to collect log    (Default: ${LOGS_TAIL})
+  --helm-timeout      <timeout-duration>         : Timeout of helm install          (Default: 1000)
+  --skip-domain-check                            : Skip the domain name check
+EOF
+}
+
+search_primehub_package() {
+  local version=${1}
+  echo $(find . -name "*primehub-${version}.tar*" | head -n1)
+}
+
+search_primehub_folder() {
+  local version=${1}
+  echo $(find . -name "*primehub-${version}" | head -n1)
+}
+
+search_primehub_license() {
+  find . -name "*license_crd.yml" | head -n1
+}
+
+verify_primehub_chart_path() {
+  local path=${1}
+  if [[ "${path}" != "" && -f "${path}/Chart.yaml" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+verify_primehub_path() {
+  local path=${1}
+  if [[ "${path}" != "" && -f "${path}/CHANGELOG.md" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+is_microk8s_cluster() {
+  if kubectl get node --show-labels | grep microk8s.io/cluster=true > /dev/null; then
+    return 0
+  fi
+  return -1
+}
+
+search_helm_release() {
+  local release=$1
+  if [[ "$(helm ls -A -f "^${release}$" | grep -v NAME)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+check_microk8s_snap() {
+  if ! command -v snap > /dev/null; then
+    return -1
+  fi
+  if [[ "$(snap list | grep microk8s)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+check_microk8s_group() {
+  if [[ "$(groups | grep microk8s)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+check_microk8s() {
+  function check_microk8s_addon () {
+    local addon=${1}
+    if ! microk8s.status | grep "${addon}: enabled" > /dev/null ; then
+      error "[Pre-check Failed] microk8s addons: ${addon} is not enabled"
+      exit 1
+    fi
+  }
+
+  if ! check_microk8s_snap; then
+    error "[Pre-check Failed] Not install microk8s"
+    exit 1
+  fi
+
+  if ! check_primehub_required_bin; then
+    error "[Pre-check Failed] Not install PrimeHub requested app"
+    exit 1
+  fi
+
+  if ! microk8s.status | grep 'microk8s is running' > /dev/null ; then
+    error "[Pre-check Failed] microk8s is not running"
+  fi
+
+  check_microk8s_addon "rbac"
+  check_microk8s_addon "dns"
+  check_microk8s_addon "storage"
+}
+
+check_k8s_cluster() {
+  if kubectl version --request-timeout=3 > /dev/null; then
+    return 0
+  fi
+  return -1
+}
+
+check_primehub_required_bin() {
+  if [[ "$(command -v jq)" != "" && "$(command -v yq)" != "" && "$(command -v helm)" != "" && "$(command -v kubectl)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+install:kubectl() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] kubectl ${KUBECTL_VERSION}"
+  curl -O -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${platform}/amd64/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
+  popd > /dev/null
+}
+
+install::yq() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] yq ${YQ_VERSION}"
+  curl -o yq -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${platform}_amd64" && chmod +x ~/bin/yq
+  popd > /dev/null
+}
+
+install::jq() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] jq ${JQ_VERSION}"
+  case "${platform}" in
+    'linux')
+      curl -o jq -L "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64" && chmod +x ~/bin/jq
+    ;;
+    'darwin')
+      curl -o jq -L "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-osx-amd64" && chmod +x ~/bin/jq
+    ;;
+  esac
+  popd > /dev/null
+}
+
+install::helm() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] helm ${HELM_VERSION}"
+  mkdir -p ~/bin/helm-${HELM_VERSION}
+  curl -O -L "https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz"
+  tar zxf helm-${HELM_VERSION}-${platform}-amd64.tar.gz -C ~/bin/helm-${HELM_VERSION}
+  mv ~/bin/helm-${HELM_VERSION}/${platform}-amd64/helm ~/bin/helm
+  rm -rf ~/bin/helm-${HELM_VERSION}
+  rm ~/bin/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
+  popd > /dev/null
+}
+
+install::helmdiff() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] helm-diff ${HELMDIFF_VERSION}"
+  case "${platform}" in
+    'linux')
+      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux.tgz"
+    ;;
+    'darwin')
+      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos.tgz"
+    ;;
+  esac
+  mkdir -p $helm_plugin_path
+  tar -C $helm_plugin_path -xf ~/bin/helm-diff-*.tgz
+  rm -f ~/bin/helm-diff-*.tgz
+  popd > /dev/null
+}
+
+install::helmfile() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  info "[Download] helmfile ${HELMFILE_VERSION}"
+  curl -o helmfile -L "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64" && chmod +x ~/bin/helmfile
+  popd > /dev/null
+}
+
+install::k9s() {
+  local platform=$(uname)
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_x86_64.tar.gz"
+  mkdir -p ~/bin/k9s-${K9S_VERSION}
+  tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
+  mv ~/bin/k9s-${K9S_VERSION}/k9s ~/bin/k9s
+  rm -rf ~/bin/k9s-${K9S_VERSION}
+  rm -f ~/bin/k9s_${platform}_x86_64.tar.gz
+  popd > /dev/null
+}
+
+install::primehub_required_bin() {
+  local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  mkdir -p ~/bin
+  if [[ "${PRIMEHUB_PATH}" == "" ]]; then
+    info "[Install] primehub required bin"
+    install:kubectl
+    install::yq
+    install::jq
+    install::helm
+    install::helmdiff
+    install::helmfile
+    install::k9s
+  else
+    info "[Install] primehub/bin"
+    cp -r ${PRIMEHUB_PATH}/bin/* ~/bin
+    mkdir -p $helm_plugin_path
+    tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
+  fi
+
+  # Check nfs-common
+  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
+    info "[Install] nfs-common"
+    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  fi
+}
+
+create::singlenode() {
+  restart_microk8s() {
+    info "[Restart] microk8s ..."
+    microk8s.stop
+    microk8s.start || true
+  }
+  local shouldRestart=false
+  if ! check_microk8s_snap; then
+    warn "[Pre-check Failed] Not install microk8s"
+    info "[Install] microk8s"
+    sudo snap install microk8s --classic --channel=${K8S_VERSION}/stable
+
+    if ! check_microk8s_group; then
+      info "[Add] current user $USER to group microk8s"
+      sudo usermod -a -G microk8s $USER
+
+      warn "[Require Action] Please relogin this session and run create singlenode again"
+      exit 1
+    fi
+  fi
+
+  if ! check_primehub_required_bin; then
+    warn "[Pre-check Failed] Not install PrimeHub requested app"
+    install::primehub_required_bin
+  fi
+
+  info "[check] microk8s status"
+  local status=$(microk8s.status --format short --wait-ready)
+
+  if echo ${status} | grep "storage: disabled" > /dev/null; then
+    info "[Enable] microk8s addon: storage"
+    microk8s.enable storage
+  fi
+
+  if echo ${status} | grep "dns: disabled" > /dev/null; then
+    info "[Enable] microk8s addon: dns"
+    microk8s.enable dns
+  fi
+
+  if echo ${status} | grep "rbac: disabled" > /dev/null; then
+    info "[Enable] microk8s addon: rbac"
+    microk8s.enable rbac
+  fi
+
+  microk8s.status --wait-ready
+  info "[check] enable 'privileged' in kube-apiserver"
+  privileged=$(cat /var/snap/microk8s/current/args/kube-apiserver | grep '\-\-allow-privileged' || true)
+  if [[ "${privileged}" == "" ]]; then
+    warn "[Pre-check Failed] Not enable 'privileged' in kube-apiserver"
+    info "[Enable] 'privileged' in kube-apiserver"
+    echo "--allow-privileged" >> /var/snap/microk8s/current/args/kube-apiserver
+    shouldRestart=true
+  fi
+
+  info "[check] enable 'authentication-token-webhook' in kubelet"
+  auth_token_webhook=$(cat /var/snap/microk8s/current/args/kubelet | grep '\-\-authentication-token-webhook' || true)
+  if [[ "${auth_token_webhook}" == "" ]]; then
+    warn "[Pre-check Failed] Not enable 'authentication-token-webhook' in kubelet"
+    info "[Enable] 'authentication-token-webhook' in kubelet"
+    echo "--authentication-token-webhook=true" >> /var/snap/microk8s/current/args/kubelet
+    shouldRestart=true
+  fi
+
+  docker_registry=$(cat /var/snap/microk8s/current/args/containerd-template.toml | grep '${INSECURE_REGISTRY}' || true)
+  if [[ "${INSECURE_REGISTRY}" != "" && docker_registry != "" ]]; then
+    info "[Enable] Insecrue registry ${INSECURE_REGISTRY}"
+    local mirror=$(cat << EOF
+        \[plugins.cri.registry.mirrors."${INSECURE_REGISTRY}"\]\n          endpoint = \[\"http:\/\/${INSECURE_REGISTRY}\"\]
+EOF
+)
+    sed -i "s/\[plugins.cri.registry.mirrors\]/\[plugins.cri.registry.mirrors\]\n${mirror}/" /var/snap/microk8s/current/args/containerd-template.toml
+    shouldRestart=true
+  fi
+
+  if [ "${shouldRestart}" == "true" ]; then
+    restart_microk8s
+  fi
+
+  info "[Check] kube config"
+  mkdir -p ~/.kube
+  microk8s.kubectl config view --raw > ~/.kube/config
+  chmod 600 ~/.kube/config
+  kubectl get node
+
+  info "[check] k8s cluster"
+  kubectl cluster-info
+  info "[check] k8s node"
+  kubectl get node
+
+  info "[Info] Helm version"
+  helm version
+
+  info "[Check] Storage Class"
+  kubectl get storageclass
+
+  info "[Check] Nginx Ingress"
+  install::ingress_nginx
+
+  info "[Completed] Create Single Node K8S"
+}
+
+status::singlenode() {
+  check_microk8s
+
+  info "[K8S] Node Status"
+  kubectl get node -o wide
+  info "[StorageClass] Storage Class"
+  kubectl get storageclass
+  info "[Helm] Helm list"
+  helm ls -A
+
+}
+
+destroy::singlenode() {
+  local CONFIG_PATH="$(primehub_config_path)"
+
+  if ! check_microk8s_snap; then
+    error "[Pre-check Failed] Not install microk8s"
+    exit 1
+  fi
+  info "[Destroy] Single Node Kubernetes Cluster"
+
+  verify_action "Single Node Kubernetes Cluster" "yes-i-really-mean-it"
+
+  info "[Backup] config"
+  backup_config
+
+  info "[Destory] Kubernetes Cluster "
+  sudo snap remove microk8s
+
+  info "[Remove] config"
+  rm -rf ${CONFIG_PATH}
+  info "[Done]"
+}
+
+usage_PRIMEHUB_DOMAIN() {
+  error "Please provide a domain name which can access to your cluster. (Ex. primehub.example-domain.com)"
+  warn "For more detail information, please access https://docs.primehub.io/docs/next/getting_started/install_primehub to get help."
+}
+
+preflight_check() {
+  info "[Preflight Check]"
+  check_infrastructure
+  local url=${PRIMEHUB_DOMAIN:-localhost}
+
+  if [[ ${DOMAIN_CHECK} == true ]]; then
+    echo "DATA" | nc ${url} 80 > /dev/null || (error '[Pre-check Failed] Ingress is not running'; exit 1)
+  else
+    warn "[Skip] Domain Name Check: ${primehub_url}"
+  fi
+
+  kubectl get sc > /dev/null || (error '[Pre-check Failed] Storage Class is not configurated'; exit 1)
+
+  info "[Preflight Check] Pass"
+}
+
+init_env() {
+  local CONFIG_PATH="$(primehub_config_path)"
+  local envpath="$CONFIG_PATH/.env"
+
+  if [[ -f $envpath ]]; then
+    warn "[Skip] ${CONFIG_PATH}/.env is found"
+    return
+  fi
+  info "[Create] ${CONFIG_PATH}/.env"
+
+  # generate random
+  ADMIN_UI_GRAPHQL_SECRET_KEY=${ADMIN_UI_GRAPHQL_SECRET_KEY:-$(openssl rand -hex 32)}
+  HUB_AUTH_STATE_CRYPTO_KEY=${HUB_AUTH_STATE_CRYPTO_KEY:-$(openssl rand -hex 32)}
+  HUB_PROXY_SECRET_TOKEN=${HUB_PROXY_SECRET_TOKEN:-$(openssl rand -hex 32)}
+  PH_PASSWORD=${PH_PASSWORD:-$(openssl rand -hex 12)}
+
+  PRIMEHUB_NAMESPACE=${PRIMEHUB_NAMESPACE:-hub}
+
+  local keys=(
+    PRIMEHUB_NAMESPACE
+    PRIMEHUB_MODE
+
+    PRIMEHUB_DOMAIN
+    PRIMEHUB_SCHEME
+    PRIMEHUB_STORAGE_CLASS
+    PH_DOMAIN
+    PH_SCHEME
+
+    KC_DOMAIN
+    KC_SCHEME
+    KC_USER
+    KC_PASSWORD
+    KC_REALM
+
+    ADMIN_UI_GRAPHQL_SECRET_KEY
+
+    HUB_AUTH_STATE_CRYPTO_KEY
+    HUB_PROXY_SECRET_TOKEN
+
+    PH_PASSWORD
+
+    PRIMEHUB_AIRGAPPED
+
+    PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_ENDPOINT
+    PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_USERNAME
+    PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_PASSWORD
+    PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REPO_PREFIX
+  )
+
+  touch ${envpath}
+  echo "" > ${envpath}
+  for key in "${keys[@]}"; do
+    if [[ -z ${!key+x} ]]; then
+      continue
+    fi
+    echo "$key=${!key}" >> ${envpath}
+  done
+
+  chmod 600 ${envpath}
+}
+
+verify_primehub_domain() {
+  local domain_name=$1
+  local scheme=${PRIMEHUB_SCHEME}
+  local primehub_url="${scheme}://${domain_name}/healthz"
+
+  if [[ ${DOMAIN_CHECK} != true ]]; then
+    warn "[Skip] Domain Name Check: ${primehub_url}"
+    return 0
+  fi
+
+  info "[Verify] Domain Name: ${primehub_url}"
+  if ! curl -s --fail -k ${primehub_url}; then
+    error "[Error] Can not access URL: ${primehub_url}"
+    exit 1
+  fi
+  echo ""
+}
+
+prepare_primehub_env() {
+  local CONFIG_PATH="$(primehub_config_path)"
+  local HELM_OVERRIDE_PATH="$CONFIG_PATH/helm_override"
+
+  if [ ! -f ${CONFIG_PATH}/.env ]; then
+    info "[Prepare] PrimeHub require values"
+    prepare_env_varible PRIMEHUB_DOMAIN || (usage_PRIMEHUB_DOMAIN; exit 1)
+    prepare_env_varible KC_PASSWORD || (info "Will auto generate KC_PASSWORD for you."; true)
+    prepare_env_varible PH_PASSWORD || (info "Will auto generate PH_PASSWORD for you."; true)
+
+    if [[ "$PH_PASSWORD" == "" ]]; then
+      PH_PASSWORD=$(openssl rand -hex 16)
+    fi
+    if [[ "$KC_PASSWORD" == "" ]]; then
+      KC_PASSWORD=$(openssl rand -hex 16)
+    fi
+
+    if [[ "${CONTAINER_REGISTRY}" != "" ]]; then
+      export PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_ENDPOINT="http://${CONTAINER_REGISTRY}"
+      prepare_env_varible PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_USERNAME || true
+      prepare_env_varible PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_PASSWORD || true
+      export PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_USERNAME
+      export PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_PASSWORD
+      export PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REPO_PREFIX=${CONTAINER_REGISTRY}
+    fi
+
+    export PRIMEHUB_SCHEME
+    export PRIMEHUB_DOMAIN
+    export KC_DOMAIN=${KC_DOMAIN:-$PRIMEHUB_DOMAIN}
+    export KC_SCHEME=${KC_SCHEME:-$PRIMEHUB_SCHEME}
+    export KC_USER="keycloak"
+    export KC_REALM="primehub"
+    export PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
+    export PRIMEHUB_NAMESPACE
+    export PH_PASSWORD
+    export KC_PASSWORD
+
+    info "[Init] primehub config"
+    mkdir -p "${CONFIG_PATH}"
+    init_env
+  else
+    load_env_variables
+  fi
+
+  verify_primehub_domain ${PRIMEHUB_DOMAIN}
+}
+
+apply_issuer() {
+  local CONFIG_PATH="$(primehub_config_path)"
+  local ISSUER_CONFIG="${CONFIG_PATH}/issuer.yml"
+
+  cat << EOF > ${ISSUER_CONFIG}
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: phadmin@${PRIMEHUB_DOMAIN}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Secret resource used to store the account's private key.
+      name: letsencrypt
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+EOF
+
+  local n=0
+  until [ "${n}" -ge 3 ]
+  do
+    if kubectl apply -f ${ISSUER_CONFIG}; then
+      break
+    fi
+    warn "[Retry] wait 10 seconds"
+    n=$((n+1))
+    sleep 10
+  done
+
+  if [ "${n}" -ge 3 ]; then
+    error "[Fail] apply cluster issuer"
+    exit 1
+  fi
+}
+
+install::ingress_nginx() {
+  if ! search_helm_release nginx-ingress; then
+    info "[Install] Nginx Ingress"
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm install nginx-ingress ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx \
+    --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
+    --set controller.admissionWebhooks.enabled=false \
+    --set controller.resources.limits.cpu=250m \
+    --set controller.resources.limits.memory=200Mi \
+    --set controller.resources.requests.cpu=100m \
+    --set controller.resources.requests.memory=100Mi \
+    --set defaultBackend.resources.limits.cpu=250m \
+    --set defaultBackend.resources.limits.memory=100Mi \
+    --set defaultBackend.resources.requests.cpu=100m \
+    --set defaultBackend.resources.requests.memory=64Mi
+  else
+    warn "[Skip] Nginx Ingress installed"
+  fi
+  kubectl -n ingress-nginx rollout status deploy/nginx-ingress-ingress-nginx-controller
+  kubectl get svc -n ingress-nginx
+}
+
+install::cert_manager() {
+  if ! search_helm_release cert-manager; then
+    info "[Install] Cert Manager"
+    helm repo add jetstack https://charts.jetstack.io
+    helm repo update
+    helm install \
+      cert-manager jetstack/cert-manager \
+      --create-namespace \
+      --namespace cert-manager \
+      --version v0.15.0 \
+      --set installCRDs=true \
+      --set ingressShim.defaultIssuerName=letsencrypt-prod \
+      --set ingressShim.defaultIssuerKind=ClusterIssuer
+    kubectl -n cert-manager rollout status Deployment/cert-manager-webhook
+  fi
+
+  if ! kubectl get clusterissuer | grep letsencrypt-prod; then
+    info "[Apply] Cluster Issuer: letsencrypt-prod"
+    apply_issuer
+  fi
+}
+
+generate::keycloak_grafana_client() {
+  local ns='hub'
+  local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/jboss/keycloak/bin/kcadm.sh"
+  local client_name=grafana-proxy
+  local redirect_uri="${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana/*"
+
+  info "[Check] Keycloak client '${client_name}'"
+  # Login Keycloak
+  $KCADM config credentials \
+  --server http://localhost:8080/auth \
+  --realm master \
+  --user ${KC_USER} \
+  --password=${KC_PASSWORD}
+
+
+  kc_client_id() {
+    local realm=$1
+    local client=$2
+
+    local result=$(
+      $KCADM get -r $realm clients -q clientId=$client
+    )
+
+    local result_count=`echo $result | jq length`
+    if (( $result_count > 0 )); then
+      echo $result | jq -r '.[0].id'
+    fi
+  }
+
+  local client_id=$(kc_client_id ${KC_REALM} ${client_name})
+  if [[ -z $client_id ]]; then
+    info "[Create] Keycloak client ${client_name}"
+    client_id=$($KCADM create clients \
+      -r ${KC_REALM} \
+      -s clientId=$client_name \
+      -s "redirectUris+=$redirect_uri" \
+      -s "publicClient=false" \
+      -s "protocol=openid-connect" \
+      --id | tr -d '\r')
+  fi
+  client_secret=$(($KCADM get "clients/${client_id}/client-secret" -r ${KC_REALM}) | jq -r .value)
+  export GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET=$client_secret
+
+  local extension=''
+  if [[ "$(uname)" == "Darwin" ]]; then
+    extension="''"
+  fi
+
+  if cat $(primehub_config_path)/.env | grep '^GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET=.*$' > /dev/null; then
+    info "[Patch] ENV GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET"
+    sed -i ${extension} "s/^GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET=.*$/GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET=${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}/g" $(primehub_config_path)/.env
+  else
+    info "[Add] ENV GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET"
+    echo "GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET=${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}" >> $(primehub_config_path)/.env
+  fi
+  echo "  ${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}"
+}
+
+install::prometheus() {
+  local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
+  local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
+
+  # Prometheus Chart
+  if [ ! -f "${PROMETHEUS_CONFIG}" ]; then
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] prometheus.yaml"
+    touch ${PROMETHEUS_CONFIG}
+  else
+    info "[Found] ${PROMETHEUS_CONFIG}"
+  fi
+
+  info "[Install] Prometheus"
+  helmfile -f ${DIR}/helmfiles/prometheus-operator sync
+
+  # PrimeHub Grafana Dashboard Chart
+  if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] primehub-grafana-dashboard-basic.yaml"
+    touch ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
+  else
+    info "[Found] ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}"
+  fi
+
+  info "[Install] PrimeHub Grafana Dashboard Basic"
+  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic sync
+}
+
+diff::prometheus() {
+  local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
+  local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
+
+  helmfile -f ${DIR}/helmfiles/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
+}
+
+destroy::prometheus() {
+  check_infrastructure
+
+  if ! search_helm_release prometheus-operator; then
+    warn "[Skip] No Prometheus installed by helm"
+    exit 1
+  fi
+
+  verify_action "Prometheus" "Prometheus"
+
+  info "[Delete] prometheus helm"
+  ns=$(helm ls -A -f prometheus-operator -o json | jq -r '.[0].namespace')
+  helm uninstall -n $ns prometheus-operator
+
+  info "[Delete] prometheus database pvc"
+  kubectl get pvc -n $ns | grep -v NAME | cut -d' ' -f 1 | xargs kubectl delete pvc -n $ns || true
+
+  info "[Delete] prometheus CRD"
+  kubectl get crd | grep monitoring.coreos.com | cut -d ' ' -f 1 | xargs kubectl delete crd || true
+
+  info "[Delete] prometheus value files"
+  rm -f $(primehub_config_path)/helm_override/prometheus.yaml || true
+  rm -f $(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml || true
+
+  info "[Completed] Destroy Prometheus"
+}
+
+create::prometheus() {
+  preflight_check
+
+  prepare_primehub_env
+
+  if search_helm_release prometheus-operator && search_helm_release primehub-grafana-dashboard-basic; then
+    warn "[Skip] Prometheus installed"
+    return 0
+  fi
+
+  info "[Check PrimeHub]"
+  if ! search_helm_release primehub; then
+    error "[Pre-check] Not install PrimeHub"
+    return 1
+  fi
+
+  generate::keycloak_grafana_client
+
+  install::prometheus
+}
+
+disable_keycloak_ssl_required() {
+  local namespace=${PRIMEHUB_NAMESPACE}
+  info "[Config] Keycloak to support external access by HTTP"
+  kubectl -n ${namespace} exec -it keycloak-0 -- \
+  /opt/jboss/keycloak/bin/kcadm.sh config credentials \
+  --server http://localhost:8080/auth \
+  --realm master \
+  --user ${KC_USER} \
+  --password=${KC_PASSWORD}
+  kubectl -n ${namespace} exec -it keycloak-0 -- \
+  /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s "sslRequired=none"
+}
+
+config::singlenode() {
+  error "[Not Support Action] config singlenode"
+}
+
+diff::singlenode() {
+  error "[Not Support Action] diff singlenode"
+}
+
+diff::primehub() {
+  info "[Check] primehub.yaml"
+  export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
+  if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
+    export CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}")
+  else
+    export CHART_VERSION=${PRIMEHUB_VERSION}
+  fi
+  helmfile -f ${DIR}/helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
+}
+
+error_log_primehub() {
+  local log_name='primehub.log'
+  echo "=== Bootstrap ===" > ${log_name}
+  kubectl logs -n ${PRIMEHUB_NAMESPACE} -l component=bootstrap --tail=-1 >> ${log_name}
+  error "[Error] Generate PrimeHub error log at ${log_name}."
+}
+
+progress_primehub() {
+  sleep 10
+  until kubectl -n ${PRIMEHUB_NAMESPACE} get job/primehub-bootstrap > /dev/null 2&>1; do
+    sleep 2;
+  done
+  if kubectl -n ${PRIMEHUB_NAMESPACE} get sts/keycloak > /dev/null 2>&1 ; then
+    info "[Progress] wait for keycloak ready"
+    kubectl -n ${PRIMEHUB_NAMESPACE} rollout status sts/keycloak
+  fi
+  info "[Progress] wait for bootstrap job ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} wait --for=condition=complete job/primehub-bootstrap --timeout=1000s
+  info "[Progress] wait for graphql ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} rollout status deploy/primehub-graphql
+  info "[Progress] wait for console ready"
+  kubectl -n ${PRIMEHUB_NAMESPACE} rollout status deploy/primehub-console
+  info "[Progress] wait for helm install completed"
+}
+
+
+install::primehub() {
+  local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
+  info "[Check] primehub.yaml"
+
+  if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] primehub.yaml"
+    if [[ $PRIMEHUB_MODE == 'ce' ]]; then
+      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
+    else
+      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
+    fi
+  else
+    info "[Found] ${PRIMEHUB_CONFIG}"
+  fi
+
+  info "[Install] PrimeHub"
+  export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
+  export HELM_TIMEOUT=${HELM_TIMEOUT}
+  if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
+    export CHART_PATH=$(realpath "${PRIMEHUB_CHART_PATH}")
+  else
+    export CHART_VERSION=${PRIMEHUB_VERSION}
+  fi
+
+  trap 'kill $BGPID; exit' INT
+  progress_primehub &
+  BGPID=$!
+
+  helmfile -f ${DIR}/helmfiles/primehub sync || (error_log_primehub; exit 1)
+
+  info "[Progress] Label nodes with component=singleuser-server"
+  kubectl label node component=singleuser-server --overwrite || true
+
+  if [[ "$PRIMEHUB_SCHEME" == 'http' ]]; then
+    info "[Progress] Disable Keycloak SSL required"
+    disable_keycloak_ssl_required
+  fi
+
+  info "[Completed] Install PrimeHub"
+  PRIMEHUB_URL=${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}
+  KC_URL=${KC_SCHEME}://${KC_DOMAIN}/auth
+
+  echo ""
+  echo "  PrimeHub:   $PRIMEHUB_URL  ( phadmin / ${PH_PASSWORD} )"
+  echo "  Id Server:  $KC_URL/admin/ ( ${KC_USER} / ${KC_PASSWORD} )"
+  echo ""
+}
+
+create::primehub() {
+  preflight_check
+
+  prepare_primehub_env
+
+  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
+    info "[Check] Cert Manager"
+    install::cert_manager
+  fi
+
+  info "[Install] PrimeHub"
+  install::primehub
+
+  info "[Completed]"
+}
+
+check_infrastructure() {
+  if ! check_primehub_required_bin; then
+    error "[Pre-check Failed] Not install PrimeHub requested app"
+    exit 1
+  fi
+
+  if ! check_k8s_cluster; then
+    error "[Pre-check Failed] No kubernetes cluster running"
+    exit 1
+  fi
+}
+
+check_primehub() {
+  check_infrastructure
+
+  if ! search_helm_release primehub; then
+    error "[Pre-check] Not install PrimeHub"
+    exit 1
+  fi
+}
+
+status::primehub() {
+  check_primehub
+
+  info "[Helm] Primehub"
+  helm list -A -f primehub
+
+  info "[Pods] hub namespaces"
+  kubectl get pods -n hub
+}
+
+verify_action() {
+  local action_target=${1}
+  local verify_key=${2}
+
+  warn "Please make sure want you are doing!!!"
+  echo -n "To continue destroy the ${action_target}, please re-enter '${verify_key}' again > "
+  read verify
+  if [[ "${verify_key}" != "${verify}" ]]; then
+    >&2 error "[Abort] failed to destroy ${action_target}"
+    exit 1
+  fi
+
+  return 0
+}
+
+backup_config() {
+  local config_path="$(primehub_config_path)"
+  local backup_path=backup-config-$(date +'%Y%m%d%H%M')
+  info "[Backup] ${config_path} -> $(realpath ${backup_path})"
+  mkdir -p ${backup_path}
+  cp -r ${config_path}/* ${backup_path} || true
+  if [ -f "${config_path}/.env" ]; then
+    cp ${config_path}/.env ${backup_path}/env || true
+  fi
+
+  info "[Backup] Primehub CRD -> $(realpath ${backup_path})/crd"
+  mkdir -p ${backup_path}/crd
+  for crd in $(kubectl get crd | grep primehub | cut -d' ' -f 1); do
+    kubectl get ${crd} -n ${PRIMEHUB_NAMESPACE} -o yaml > ${backup_path}/crd/${crd}.yaml || true
+  done
+
+  info "[Backup] Primehub Secret -> $(realpath ${backup_path})/secret"
+  mkdir -p ${backup_path}/secret
+  kubectl get secret -n ${PRIMEHUB_NAMESPACE} -o yaml primehub-client-admin-notebook > ${backup_path}/secret/primehub-client-admin-notebook.yaml 2> /dev/null || true
+  kubectl get secret -n ${PRIMEHUB_NAMESPACE} -o yaml primehub-client-admin-ui > ${backup_path}/secret/primehub-client-admin-ui.yaml 2> /dev/null || true
+  kubectl get secret -n ${PRIMEHUB_NAMESPACE} -o yaml primehub-client-jupyterhub > ${backup_path}/secret/primehub-client-jupyterhub.yaml 2> /dev/null || true
+}
+
+destroy::primehub() {
+  check_infrastructure
+
+  verify_action "Primehub" "PrimeHub"
+
+  info "[Backup] config"
+  backup_config
+
+  info "[Delete] primehub helm"
+  ns=$(helm ls -A -f primehub -o json | jq -r '.[0].namespace')
+  helm uninstall -n $ns primehub
+
+  info "[Delete] Primehub CRD"
+  kubectl get crd | grep primehub | cut -d ' ' -f 1 | xargs kubectl delete crd
+
+  info "[Delete] PrimeHub Secret"
+  kubectl delete secret -n $ns primehub-client-admin-notebook
+  kubectl delete secret -n $ns primehub-client-admin-ui
+  kubectl delete secret -n $ns primehub-client-jupyterhub
+
+  info "[Delete] PrimeHub bootstrap job"
+  kubectl delete job primehub-bootstrap -n $ns || ture
+  kubectl delete job primehub-minio-make-bucket-job -n $ns || ture
+
+  info "[Delete] Keycloak postgresql pvc"
+  kubectl delete -n $ns pvc data-keycloak-postgres-0 || true
+  kubectl delete -n $ns pvc primehub-usage-data-primehub-usage-db-0 || true
+
+  info "[Delete] PrimeHub Env"
+  rm $(primehub_config_path)/.env || true
+  rm $(primehub_config_path)/helm_override/primehub.yaml || true
+
+  info "[Completed] Destroy PrimeHub"
+}
+
+show_license() {
+  check_primehub
+
+  info "[PrimeHub License]"
+  kubectl get license -n ${PRIMEHUB_NAMESPACE} -o yaml | grep status: -A5
+}
+
+apply_license() {
+  check_primehub
+  local license_path=${LICENSE_PATH:-$(search_primehub_license)}
+
+  if [[ ${license_path} == "" ]]; then
+    warn "[Skip] license_crd.yml not found"
+    exit 1
+  fi
+
+  info "[Verify] ${license_path}"
+  kubectl apply -n {PRIMEHUB_NAMESPACE} -f ${license_path} --dry-run || (error "[Fail] license not avalible")
+
+  info "[Apply] ${license_path}"
+  kubectl apply -n ${PRIMEHUB_NAMESPACE} -f ${license_path}
+
+  info "[Copmpleted] Create PrimeHub"
+}
+
+show_versions() {
+  info "[Available] PrimeHub Versions:"
+  curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep -v "\-rc"
+  if [[ ${SHOW_RC_VERSION} == true ]]; then
+    warn "[Available] PrimeHub Beta Versions:"
+    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep "\-rc"
+  fi
+}
+
+diagnose_k8s_cluster() {
+  local i=0
+  local logs_name=primehub-log-$(date +'%Y%m%d%H%M')
+  local logs_path=$(realpath ${LOGS_PATH}/$logs_name)
+
+  mkdir -p ${logs_path}
+  info "[Collect] K8s Node Info"
+  mkdir -p ${logs_path}/describe
+  helm ls -A > ${logs_path}/k8s_helms
+  kubectl get nodes -o wide > ${logs_path}/k8s_nodes
+  kubectl describe node > ${logs_path}/describe/node
+  echo "100% [Collect] K8s node information"
+
+  info "[Collect] K8s Pods Info"
+  DATA=$(kubectl get pods -o json --all-namespaces | jq '.items[] | "\(.metadata.namespace) \(.metadata.name) \(.spec.containers[].name)"' -r)
+  COUNT=$(echo $DATA | awk '{print NF}')
+  IFS=$'\n\t'
+  kubectl get pods -A -o wide > ${logs_path}/k8s_pods
+  for pod_info in $DATA; do
+      namespace=$(echo $pod_info | cut -d' ' -f1)
+      name=$(echo $pod_info | cut -d' ' -f2)
+      container=$(echo $pod_info | cut -d' ' -f3)
+
+      PCT=$(( 100*(++i)/COUNT*3 ))
+
+      printf "%3d%% [Collect] %s/%s:%s\n" $PCT ${namespace} ${name} ${container}
+      mkdir -p ${logs_path}/logs/$namespace/$name/
+      kubectl logs -n ${namespace} $name -c ${container} --tail ${LOGS_TAIL} > ${logs_path}/logs/${namespace}/${name}/${container}.log &
+
+      mkdir -p ${logs_path}/describe/${namespace}/
+      kubectl describe pod -n ${namespace} ${name} > ${logs_path}/describe/${namespace}/${name}
+  done
+  info "[Compressing] ${logs_path}.tgz"
+  tar czf ${logs_name}.tgz -C ${LOGS_PATH} ${logs_name}
+  echo "  Log archive: $(realpath ${logs_path}.tgz)"
+  info "[Done]"
+}
+
+main() {
+  local cmd=''
+  local target=''
+  local support_targets='singlenode keycloak primehub prometheus'
+
+  load_env_variables
+
+  while (( "$#" )); do
+    case "${1:-}" in
+      create|destroy|status|config|diff|upgrade)
+        if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
+        cmd=${1}; shift
+        for t in ${support_targets}; do
+          if [[ "${t}" == "${1}" ]]; then
+            target=${1}
+            break
+          fi
+        done
+        if [[ "${target}" == "" ]]; then
+          usage
+          exit 1
+        fi
+      ;;
+      apply-license|license|diagnose|version)
+        if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
+        cmd=${1};
+      ;;
+      --primehub-version)
+        shift
+        PRIMEHUB_VERSION=${1:-}
+      ;;
+      --k8s-version)
+        shift
+        for k8s_version in ${SUPPORT_K8S_VERSION}; do
+          if [[ "${k8s_version}" == "${1:-}" ]]; then
+            K8S_VERSION=${1:-}
+          fi
+        done
+        if [[ "${K8S_VERSION}" == '' ]]; then error 'Unspport k8s version: ${1:-}'; usage; exit 1; fi
+      ;;
+      --namespace|-n)
+        shift
+        PRIMEHUB_NAMESPACE=${1:-}
+      ;;
+      --path)
+        shift
+        PRIMEHUB_CHART_PATH=${1:-}
+      ;;
+      --license-path)
+        shift
+        LICENSE_PATH=$(realpath ${1:-})
+      ;;
+      --enable-https)
+        PRIMEHUB_SCHEME='https'
+      ;;
+      --enable-ssh-bastion-server)
+        PRIMEHUB_FEATURE_SSH_BASTION_SERVER=true
+      ;;
+      --primehub-ce)
+        export PRIMEHUB_MODE='ce'
+      ;;
+      --insecure-registry)
+        shift
+        INSECURE_REGISTRY=${1:-}
+      ;;
+      --custom-image)
+        shift
+        CONTAINER_REGISTRY=${1:-}
+      ;;
+      --helm-timeout)
+        shift
+        export HELM_TIMEOUT=${1:-}
+        local re='^[0-9]+$'
+        if ! [[ ${HELM_TIMEOUT} =~ ${re} ]] ; then
+          error "Unsupport timeout input: ${HELM_TIMEOUT}"; usage; exit 1
+        fi
+      ;;
+      --skip-domain-check)
+        DOMAIN_CHECK=false
+      ;;
+      --beta)
+        SHOW_RC_VERSION=true
+      ;;
+      --logs-path|--log-path)
+        shift
+        LOGS_PATH=${1:-}
+        if ! mkdir -p ${LOGS_PATH} 2> /dev/null; then
+          error "Unable access logs path: $LOGS_PATH"; usage; exit 1
+        fi
+      ;;
+      --tail)
+        local re='^[0-9]+$'
+        shift
+        LOGS_TAIL=${1:-}
+        if ! [[ $LOGS_TAIL =~ $re ]]; then
+          error "Unsupport --tail input: $LOGS_TAIL"; usage; exit 1
+        fi
+      ;;
+      -h|--help)
+        usage
+        exit 0
+      ;;
+      --debug)
+        set -x
+      ;;
+      *)
+        error "Unsupport commnad: $1"
+        usage
+        exit 1
+      ;;
+    esac
+    shift || (usage; exit 1)
+  done
+
+  case "$cmd" in
+    create | diff | upgrade)
+      if ! check_primehub_required_bin; then
+        warn "[Pre-check Failed] Not install PrimeHub requested app"
+        install::primehub_required_bin
+      fi
+      ;;
+  esac
+
+  case "$cmd" in
+    create)
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
+      create::${target}
+    ;;
+    destroy)
+      destroy::${target}
+    ;;
+    status)
+      status::${target}
+    ;;
+    config)
+      config::${target}
+    ;;
+    diff)
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
+      diff::${target}
+    ;;
+    upgrade)
+      if ! check_primehub_required_bin; then
+        install::primehub_required_bin
+      fi
+      install::${target}
+    ;;
+    license)
+      show_license
+    ;;
+    version)
+      show_versions
+    ;;
+    apply-license)
+      apply_license
+    ;;
+    diagnose)
+      preflight_check
+      check_primehub_required_bin
+      diagnose_k8s_cluster
+    ;;
+    *)
+      usage
+    ;;
+  esac
+}
+
+main "$@"
