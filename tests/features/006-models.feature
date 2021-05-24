@@ -339,7 +339,7 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
     When I click tab of "Logs"
-    Then I should see "kernel reported version is: 418.67.0" in element "div" under active tab
+    Then I should see "kernel reported version is: 450.51.6" in element "div" under active tab
     When I choose "Logout" in top-right menu
     Then I am on login page
 
