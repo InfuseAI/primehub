@@ -80,7 +80,7 @@ alertmanager:
     receivers:
     - name: 'default-receiver'
       {{- if and (env "ALERT_SLACK_API_URL") (env "ALERT_SLACK_CHANNEL") }}
-      {{- $SLACK_CONFIGS := readFile "slack.yaml" | fromYaml }}
+      {{- $SLACK_CONFIGS := readFile "slack/slack.yaml" | fromYaml }}
       {{- if env "ALERT_SLACK_USERNAME" }}
       {{- $SLACK_CONFIGS := $SLACK_CONFIGS | setValueAtPath "username" (env "ALERT_SLACK_USERNAME") }}
       {{- end }}
