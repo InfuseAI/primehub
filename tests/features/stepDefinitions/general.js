@@ -92,7 +92,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
   const urlMap = {
     'Home': '/home', // temporarily used
     'Notebooks': '/hub', // temporarily used
-    'Jobs': `-${this.E2E_SUFFIX}/job?page=1`,
+    'Jobs': `-${this.E2E_SUFFIX}/job`,
     'NewJob': `-${this.E2E_SUFFIX}/job/create`,
     'Schedule': `-${this.E2E_SUFFIX}/schedule`,
     'NewSchedule': `-${this.E2E_SUFFIX}/schedule/create`,

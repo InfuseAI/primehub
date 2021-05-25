@@ -102,6 +102,7 @@ Feature: Job Submission
     And I type "clone-job-test" to "displayName" text field
     And I type "echo 'clone-test'" to "command" text field
     And I click "Submit" button
+    And I wait for 2.0 seconds
     Then I am on the PrimeHub console "Jobs" page
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
