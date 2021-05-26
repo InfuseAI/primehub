@@ -59,7 +59,7 @@ primehub_config_path() {
 }
 
 primehub_repo_path() {
-  if [ -d helmfiles ]; then
+  if [ -d ${DIR}/helmfiles ]; then
     echo "$(realpath $DIR/../)"
   else
     local REPO_PATH=~/.primehub/src/primehub
@@ -1105,8 +1105,8 @@ destroy::primehub() {
   kubectl delete secret -n $ns primehub-client-jupyterhub
 
   info "[Delete] PrimeHub bootstrap job"
-  kubectl delete job primehub-bootstrap -n $ns || ture
-  kubectl delete job primehub-minio-make-bucket-job -n $ns || ture
+  kubectl delete job primehub-bootstrap -n $ns || true
+  kubectl delete job primehub-minio-make-bucket-job -n $ns || true
 
   info "[Delete] Keycloak postgresql pvc"
   kubectl delete -n $ns pvc data-keycloak-postgres-0 || true

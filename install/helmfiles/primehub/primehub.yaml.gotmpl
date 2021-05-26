@@ -61,6 +61,9 @@ keycloak:
   {{- end }}
   {{- if eq $KEYCLOAK_DEPLOY "true" }}
   password: {{ requiredEnv "KC_PASSWORD" | quote }}
+  postgresql:
+    persistence:
+      storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
   {{- else }}
   deploy: false
   {{- end }}
