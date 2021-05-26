@@ -10,7 +10,8 @@ Feature: Notebooks Admin
     Then I am on the PrimeHub console "Home" page
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
-    When I go to the spawner page
+    When I get the iframe object
+    And I go to the spawner page
     And I wait for 2.0 seconds
     And I choose instance type with name "test-instance-type"
     And I choose image with name "test-image"
@@ -31,6 +32,7 @@ Feature: Notebooks Admin
     Then I am on the PrimeHub console "Home" page
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
+    When I get the iframe object
     And I go to the spawner page
     When I choose "Logout" in top-right menu
     Then I am on login page
