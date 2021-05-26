@@ -192,3 +192,9 @@ usage:
 grafana:
   enabled: true
 {{- end }}
+
+{{/* Patch kubletPath when run with microk8s */}}
+{{- if (regexMatch "^microk8s-hostpath$" $PRIMEHUB_STORAGE_CLASS) }}
+rclone:
+  kubeletPath: /var/snap/microk8s/common/var/lib/kubelet
+{{- end }}
