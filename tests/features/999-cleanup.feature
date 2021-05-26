@@ -57,7 +57,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @weekly
+  @daily
   Scenario: Delete GPU image
     Given I go to login page
     When I fill in the correct username credentials
@@ -110,7 +110,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @weekly
+  @daily
   Scenario: Delete GPU instance type
     Given I go to login page
     When I fill in the correct username credentials

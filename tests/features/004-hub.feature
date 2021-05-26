@@ -194,7 +194,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @weekly
+  @daily
   Scenario: User can start/stop the JupyterLab server with GPU
     Given I go to login page
     When I fill in the correct username credentials
