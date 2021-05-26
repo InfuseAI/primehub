@@ -102,6 +102,7 @@ Feature: Job Submission
     And I type "clone-job-test" to "displayName" text field
     And I type "echo 'clone-test'" to "command" text field
     And I click "Submit" button
+    And I wait for 2.0 seconds
     Then I am on the PrimeHub console "Jobs" page
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
@@ -147,7 +148,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @weekly
+  @daily
   Scenario: User can create job with GPU
     Given I go to login page
     When I fill in the correct username credentials
@@ -175,7 +176,7 @@ Feature: Job Submission
     When I click tab of "Monitoring"
     Then I "should" see element with xpath "//div[@class='']//h3[text()='GPU Device Usage']"
     When I click tab of "Logs"
-    Then I should see "NVIDIA-SMI 418.67       Driver Version: 418.67       CUDA Version: 10.1" in element "div" under active tab
+    Then I should see "NVIDIA-SMI 450.51.06    Driver Version: 450.51.06    CUDA Version: 11.0" in element "div" under active tab
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
