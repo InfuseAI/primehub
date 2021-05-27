@@ -792,12 +792,9 @@ generate::keycloak_grafana_client() {
 }
 
 install::prometheus() {
-  local PRIMEHUB_REPO_PATH=$(primehub_repo_path)
-  local HELMFIEL_PATH=${PRIMEHUB_REPO_PATH}/install/helmfiles
+  local HELMFIEL_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
-
-  check_primehub_repo
 
   # Prometheus Chart
   if [ ! -f "${PROMETHEUS_CONFIG}" ]; then
@@ -825,12 +822,9 @@ install::prometheus() {
 }
 
 diff::prometheus() {
-  local PRIMEHUB_REPO_PATH=$(primehub_repo_path)
-  local HELMFIEL_PATH=${PRIMEHUB_REPO_PATH}/install/helmfiles
+  local HELMFIEL_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
-
-  check_primehub_repo
 
   helmfile -f ${HELMFIEL_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
   helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
@@ -906,9 +900,7 @@ diff::singlenode() {
 }
 
 diff::primehub() {
-  local PRIMEHUB_REPO_PATH=$(primehub_repo_path)
-  local HELMFIEL_PATH=${PRIMEHUB_REPO_PATH}/install/helmfiles
-  check_primehub_repo
+  local HELMFIEL_PATH=${DIR}/helmfiles
 
   info "[Check] primehub.yaml"
   export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
@@ -948,11 +940,8 @@ progress_primehub() {
 
 install::primehub() {
   local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
-  local PRIMEHUB_REPO_PATH=$(primehub_repo_path)
-  local HELMFIEL_PATH=${PRIMEHUB_REPO_PATH}/install/helmfiles
+  local HELMFIEL_PATH=${DIR}/helmfiles
   info "[Check] primehub.yaml"
-
-  check_primehub_repo
 
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
