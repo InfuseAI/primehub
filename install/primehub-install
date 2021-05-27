@@ -15,8 +15,6 @@ YQ_VERSION=2.1.2
 INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
 
-PRIMEHUB_REPO="https://github.com/InfuseAI/primehub.git"
-PRIMEHUB_TARBALL="https://github.com/InfuseAI/primehub/archive/refs/heads/master.tar.gz"
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
 SUPPORT_K8S_VERSION="1.15 1.16 1.17 1.18 1.19 1.20"
 K8S_VERSION=1.17
@@ -56,15 +54,6 @@ error() {
 primehub_config_path() {
   local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
   echo "${CONFIG_PATH}"
-}
-
-primehub_repo_path() {
-  if [ -d ${DIR}/helmfiles ]; then
-    echo "$(realpath $DIR/../)"
-  else
-    local REPO_PATH=~/.primehub/src/primehub
-    echo "${REPO_PATH}"
-  fi
 }
 
 prepare_env_varible() {
@@ -226,28 +215,6 @@ check_primehub_required_bin() {
     return 0
   fi
   return -1
-}
-
-check_primehub_repo() {
-  local PRIMEHUB_REPO_PATH=$(primehub_repo_path)
-  if [ ! -d $PRIMEHUB_REPO_PATH ]; then
-    warn "[Not Found] PrimeHub repo"
-    download::primehub_repo
-  fi
-}
-
-download::primehub_repo() {
-  mkdir -p ~/.primehub/src/primehub
-  if command -v git > /dev/null; then
-    info "[Clone] PrimeHub repo ..."
-    git clone $PRIMEHUB_REPO ~/.primehub/src/primehub
-  else
-    info "[Download] PrimeHub repo ..."
-    curl -L $PRIMEHUB_TARBALL -o ~/.primehub/src/master.tar.gz
-    tar zxf ~/.primehub/src/master.tar.gz -C ~/.primehub/src
-    mv ~/.primehub/src/primehub-master/* ~/.primehub/src/primehub
-    rm -rf ~/.primehub/src/master.tar.gz ~/.primehub/src/primehub-master
-  fi
 }
 
 install:kubectl() {
