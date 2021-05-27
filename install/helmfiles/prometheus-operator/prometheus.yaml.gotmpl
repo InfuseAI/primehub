@@ -14,7 +14,10 @@
 {{$GRAFANA_PORT := (env "PRIMEHUB_PORT")}}
 {{$GRAFANA_PATH := "/grafana"}}
 
+{{$PRIMEHUB_STORAGE_CLASS:= (requiredEnv "PRIMEHUB_STORAGE_CLASS")}}
+
 alertmanager:
+  enabled: false
   alertmanagerSpec:
     resources:
       limits:
@@ -26,11 +29,12 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
+          storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: 10Gi
-    replicas: 2
+    replicas: 1
     podAntiAffinity: hard
   config:
     global:
@@ -141,6 +145,7 @@ additionalPrometheusRules:
         message: JupyterHub spawn page average response time is slow (> 0.1 seconds in 1h)
 
 kubelet:
+  enabled: true
   serviceMonitor:
     https: true
 
@@ -151,6 +156,18 @@ coreDns:
       k8s-app: kube-dns
 
 kubeDns:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
   enabled: false
 
 kube-state-metrics:
@@ -184,10 +201,11 @@ prometheus:
       volumeClaimTemplate:
         spec:
           accessModes: ["ReadWriteOnce"]
+          storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
           resources:
             requests:
               storage: 10Gi
-    replicas: 2
+    replicas: 1
     podAntiAffinity: hard
 
 prometheusOperator:
@@ -200,8 +218,7 @@ prometheusOperator:
       memory: 50Mi
 
 grafana:
-  image:
-    tag: 6.3.0
+  enabled: true
   resources:
     limits:
       memory: 1000Mi
@@ -213,6 +230,7 @@ grafana:
     enabled: true
     accessModes: ["ReadWriteOnce"]
     size: 10Gi
+    storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
   ingress:
     enabled: true
     annotations:

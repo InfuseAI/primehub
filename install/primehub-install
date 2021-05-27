@@ -759,6 +759,7 @@ generate::keycloak_grafana_client() {
 }
 
 install::prometheus() {
+  local HELMFIEL_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
@@ -772,7 +773,7 @@ install::prometheus() {
   fi
 
   info "[Install] Prometheus"
-  helmfile -f ${DIR}/helmfiles/prometheus-operator sync
+  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync
 
   # PrimeHub Grafana Dashboard Chart
   if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
@@ -784,15 +785,16 @@ install::prometheus() {
   fi
 
   info "[Install] PrimeHub Grafana Dashboard Basic"
-  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic sync
+  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic sync
 }
 
 diff::prometheus() {
+  local HELMFIEL_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
-  helmfile -f ${DIR}/helmfiles/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
-  helmfile -f ${DIR}/helmfiles/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFIEL_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 destroy::prometheus() {
@@ -865,6 +867,8 @@ diff::singlenode() {
 }
 
 diff::primehub() {
+  local HELMFIEL_PATH=${DIR}/helmfiles
+
   info "[Check] primehub.yaml"
   export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
   if [[ "${PRIMEHUB_CHART_PATH}" != "" ]]; then
@@ -872,7 +876,7 @@ diff::primehub() {
   else
     export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
-  helmfile -f ${DIR}/helmfiles/primehub diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 error_log_primehub() {
@@ -884,7 +888,7 @@ error_log_primehub() {
 
 progress_primehub() {
   sleep 10
-  until kubectl -n ${PRIMEHUB_NAMESPACE} get job/primehub-bootstrap > /dev/null 2&>1; do
+  until kubectl -n ${PRIMEHUB_NAMESPACE} get job primehub-bootstrap > /dev/null 2> /dev/null; do
     sleep 2;
   done
   if kubectl -n ${PRIMEHUB_NAMESPACE} get sts/keycloak > /dev/null 2>&1 ; then
@@ -903,15 +907,16 @@ progress_primehub() {
 
 install::primehub() {
   local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
+  local HELMFIEL_PATH=${DIR}/helmfiles
   info "[Check] primehub.yaml"
 
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
     info "[Generate] primehub.yaml"
     if [[ $PRIMEHUB_MODE == 'ce' ]]; then
-      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
+      cp ${HELMFIEL_PATH}/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
     else
-      cp ${DIR}/helmfiles/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
+      cp ${HELMFIEL_PATH}/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
     fi
   else
     info "[Found] ${PRIMEHUB_CONFIG}"
@@ -930,7 +935,7 @@ install::primehub() {
   progress_primehub &
   BGPID=$!
 
-  helmfile -f ${DIR}/helmfiles/primehub sync || (error_log_primehub; exit 1)
+  helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
   kubectl label node component=singleuser-server --overwrite || true
@@ -1056,8 +1061,8 @@ destroy::primehub() {
   kubectl delete secret -n $ns primehub-client-jupyterhub
 
   info "[Delete] PrimeHub bootstrap job"
-  kubectl delete job primehub-bootstrap -n $ns || ture
-  kubectl delete job primehub-minio-make-bucket-job -n $ns || ture
+  kubectl delete job primehub-bootstrap -n $ns || true
+  kubectl delete job primehub-minio-make-bucket-job -n $ns || true
 
   info "[Delete] Keycloak postgresql pvc"
   kubectl delete -n $ns pvc data-keycloak-postgres-0 || true

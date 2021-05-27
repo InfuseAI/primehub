@@ -61,6 +61,9 @@ keycloak:
   {{- end }}
   {{- if eq $KEYCLOAK_DEPLOY "true" }}
   password: {{ requiredEnv "KC_PASSWORD" | quote }}
+  postgresql:
+    persistence:
+      storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
   {{- else }}
   deploy: false
   {{- end }}
@@ -191,4 +194,10 @@ usage:
 {{- if (env "GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET") }}
 grafana:
   enabled: true
+{{- end }}
+
+{{/* Patch kubletPath when run with microk8s */}}
+{{- if (regexMatch "^microk8s-hostpath$" $PRIMEHUB_STORAGE_CLASS) }}
+rclone:
+  kubeletPath: /var/snap/microk8s/common/var/lib/kubelet
 {{- end }}
