@@ -758,10 +758,44 @@ generate::keycloak_grafana_client() {
   echo "  ${GRAFANA_KEYCLOAK_PROXY_CLIENT_SECRET}"
 }
 
+install::primehub_grafana_dashboard() {
+  local HELMFIEL_PATH=${DIR}/helmfiles
+  local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
+
+  # PrimeHub Grafana Dashboard Chart
+  if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] primehub-grafana-dashboard-basic.yaml"
+    touch ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
+  else
+    info "[Found] ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}"
+  fi
+
+  info "[Install] PrimeHub Grafana Dashboard Basic"
+  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic sync
+
+}
+
+install::nvidia_gpu_exporter() {
+  local HELMFIEL_PATH=${DIR}/helmfiles
+  local NVIDIA_GPU_EXPORTER_CONFIG=$(primehub_config_path)/helm_override/nvidia-gpu-exporter.yaml
+
+  # Nvidia GPU Exporter Chart
+  if [ ! -f "${NVIDIA_GPU_EXPORTER_CONFIG}" ]; then
+    mkdir -p $(primehub_config_path)/helm_override
+    info "[Generate] nvidia-gpu-exporter.yaml"
+    touch ${NVIDIA_GPU_EXPORTER_CONFIG}
+  else
+    info "[Found] ${NVIDIA_GPU_EXPORTER_CONFIG}"
+  fi
+
+  info "[Install] Nvidia GPU Exporter"
+  helmfile -f ${HELMFIEL_PATH}/nvidia-gpu-exporter sync
+}
+
 install::prometheus() {
   local HELMFIEL_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
-  local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
   # Prometheus Chart
   if [ ! -f "${PROMETHEUS_CONFIG}" ]; then
@@ -775,17 +809,9 @@ install::prometheus() {
   info "[Install] Prometheus"
   helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync
 
-  # PrimeHub Grafana Dashboard Chart
-  if [ ! -f "${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}" ]; then
-    mkdir -p $(primehub_config_path)/helm_override
-    info "[Generate] primehub-grafana-dashboard-basic.yaml"
-    touch ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}
-  else
-    info "[Found] ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG}"
-  fi
+  install::primehub_grafana_dashboard
 
-  info "[Install] PrimeHub Grafana Dashboard Basic"
-  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic sync
+  install::nvidia_gpu_exporter
 }
 
 diff::prometheus() {
@@ -795,6 +821,7 @@ diff::prometheus() {
 
   helmfile -f ${HELMFIEL_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
   helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFIEL_PATH}/nvidia-gpu-exporter diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 destroy::prometheus() {

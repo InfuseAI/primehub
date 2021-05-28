@@ -1,0 +1,24 @@
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../../charts/primehub-grafana-dashboard-basic" }}
+{{- end }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: infuseai
+    url: https://charts.infuseai.io
+{{- end }}
+
+releases:
+  - name: nvidia-gpu-exporter
+    namespace: monitoring
+    {{- if $CHART_PATH }}
+    chart: "{{ $CHART_PATH }}"
+    {{- else }}
+    chart: infuseai/nvidia-gpu-exporter
+    {{- end }}
+    values:
+      - nvidia-gpu-exporter.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ (env "PRIMEHUB_VALUES_PATH") }}/nvidia-gpu-exporter.yaml
+      {{- end}}

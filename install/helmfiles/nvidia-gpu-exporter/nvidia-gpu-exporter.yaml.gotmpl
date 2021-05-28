@@ -1,0 +1,7 @@
+{{ $PRIMEHUB_STORAGE_CLASS:= (env "PRIMEHUB_STORAGE_CLASS" | default "")}}
+
+{{/* Patch kubletPath when run with microk8s */}}
+{{- if (regexMatch "^microk8s-hostpath$" $PRIMEHUB_STORAGE_CLASS) }}
+path:
+  kubelet: /var/snap/microk8s/common/var/lib/kubelet
+{{- end }}
