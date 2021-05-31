@@ -938,7 +938,7 @@ install::primehub() {
   helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
-  kubectl label node component=singleuser-server --overwrite || true
+  kubectl label node --all component=singleuser-server --overwrite || true
 
   if [[ "$PRIMEHUB_SCHEME" == 'http' ]]; then
     info "[Progress] Disable Keycloak SSL required"
