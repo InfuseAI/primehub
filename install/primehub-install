@@ -515,6 +515,7 @@ init_env() {
     PRIMEHUB_DOMAIN
     PRIMEHUB_SCHEME
     PRIMEHUB_STORAGE_CLASS
+    GROUP_VOLUME_STORAGE_CLASS
     PH_DOMAIN
     PH_SCHEME
 
@@ -605,6 +606,11 @@ prepare_primehub_env() {
     export PRIMEHUB_NAMESPACE
     export PH_PASSWORD
     export KC_PASSWORD
+
+    # microk8s-hostpath storage class support both RWO and RWX
+    if [[ "${PRIMEHUB_STORAGE_CLASS}" == 'microk8s-hostpath' ]]; then
+      export GROUP_VOLUME_STORAGE_CLASS=${PRIMEHUB_STORAGE_CLASS}
+    fi
 
     info "[Init] primehub config"
     mkdir -p "${CONFIG_PATH}"
@@ -705,6 +711,11 @@ generate::keycloak_grafana_client() {
   local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/jboss/keycloak/bin/kcadm.sh"
   local client_name=grafana-proxy
   local redirect_uri="${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana/*"
+
+  if ! kubectl get pod -n ${ns} keycloak-0 > /dev/null 2> /dev/null; then
+    warn "[Skip] No keycloak found in the cluster"
+    return
+  fi
 
   info "[Check] Keycloak client '${client_name}'"
   # Login Keycloak
@@ -840,6 +851,7 @@ create::prometheus() {
     return 1
   fi
 
+  info "[Generate] keycloak grafana client"
   generate::keycloak_grafana_client
 
   install::prometheus
