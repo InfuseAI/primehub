@@ -868,6 +868,7 @@ diff::singlenode() {
 
 diff::primehub() {
   local HELMFIEL_PATH=${DIR}/helmfiles
+  echo "primehub-config-path: $(primehub_config_path)"
 
   info "[Check] primehub.yaml"
   export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
