@@ -914,6 +914,10 @@ install::primehub() {
   local HELMFIEL_PATH=${DIR}/helmfiles
   info "[Check] primehub.yaml"
 
+  # TODO where is the best place to add infuseai repo ?
+  helm repo add infuseai https://charts.infuseai.io
+  helm repo update
+
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
     info "[Generate] primehub.yaml"
