@@ -52,8 +52,12 @@ error() {
 }
 
 primehub_config_path() {
-  local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
-  echo "${CONFIG_PATH}"
+  if [ -z ${PRIMEHUB_CONFIG_PATH+x} ]; then
+    local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
+    echo "${CONFIG_PATH}"
+  else
+    echo "${PRIMEHUB_CONFIG_PATH}"
+  fi
 }
 
 prepare_env_varible() {
@@ -156,6 +160,13 @@ search_helm_release() {
     return 0
   fi
   return -1
+}
+
+infuseai_repo_update() {
+  if [[ "$(helm repo list | grep infuseai)" == "" ]]; then
+    helm repo add infuseai https://charts.infuseai.io
+    helm repo update
+  fi
 }
 
 check_microk8s_snap() {
@@ -763,6 +774,8 @@ install::prometheus() {
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
+  infuseai_repo_update
+
   # Prometheus Chart
   if [ ! -f "${PROMETHEUS_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
@@ -793,6 +806,7 @@ diff::prometheus() {
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
+  infuseai_repo_update
   helmfile -f ${HELMFIEL_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
   helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
 }
@@ -868,6 +882,9 @@ diff::singlenode() {
 
 diff::primehub() {
   local HELMFIEL_PATH=${DIR}/helmfiles
+  echo "primehub-config-path: $(primehub_config_path)"
+
+  infuseai_repo_update
 
   info "[Check] primehub.yaml"
   export RELEASE_NAMESPACE=${PRIMEHUB_NAMESPACE}
@@ -910,6 +927,7 @@ install::primehub() {
   local HELMFIEL_PATH=${DIR}/helmfiles
   info "[Check] primehub.yaml"
 
+  infuseai_repo_update
   if [ ! -f "${PRIMEHUB_CONFIG}" ]; then
     mkdir -p $(primehub_config_path)/helm_override
     info "[Generate] primehub.yaml"
