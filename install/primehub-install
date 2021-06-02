@@ -53,7 +53,11 @@ error() {
 
 primehub_config_path() {
   local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
-  echo "${CONFIG_PATH}"
+  if [ -d "etc" ]; then
+    warn "found the \"etc\" path, use it as the primehub-config-path. (default: $CONFIG_PATH)"
+    CONFIG_PATH="$(pwd)/etc"
+  fi
+  echo "primehub-config-path: ${CONFIG_PATH}"
 }
 
 prepare_env_varible() {
