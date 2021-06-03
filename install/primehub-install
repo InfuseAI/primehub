@@ -52,8 +52,12 @@ error() {
 }
 
 primehub_config_path() {
-  local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
-  echo "${CONFIG_PATH}"
+  if [ -z ${PRIMEHUB_CONFIG_PATH+x} ]; then
+    local CONFIG_PATH=~/.primehub/config/$(kubectl config current-context)
+    echo "${CONFIG_PATH}"
+  else
+    echo "${PRIMEHUB_CONFIG_PATH}"
+  fi
 }
 
 prepare_env_varible() {
