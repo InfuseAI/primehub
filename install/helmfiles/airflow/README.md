@@ -49,3 +49,7 @@ statefulset.apps/airflow-worker         1/1     114s
 1. set default resources to all components
 1. override `storageClass`
 1. override admin user and/or generate random password
+
+## Users
+
+configure [airflow.yaml.gotmpl](airflow.yaml.gotmpl) to set the admin user
