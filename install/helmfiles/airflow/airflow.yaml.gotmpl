@@ -1,0 +1,33 @@
+{{ $PRIMEHUB_SCHEME := (env "PRIMEHUB_SCHEME" | default "http") }}
+{{ $PRIMEHUB_DOMAIN := (requiredEnv "PRIMEHUB_DOMAIN")}}
+
+airflow:
+  users:
+    - username: primehub-airflow
+      password: ArJrwehU2TTbaT6DQwFndZ3zukeqxKpgTTra
+      role: Admin
+      email: primehub-admin@example.com
+      firstName: admin
+      lastName: admin
+  config:
+    AIRFLOW__WEBSERVER__BASE_URL: {{ $PRIMEHUB_SCHEME }}://{{ $PRIMEHUB_DOMAIN }}/airflow
+    AIRFLOW__CELERY__FLOWER_URL_PREFIX: /airflow/flower
+
+ingress:
+  enabled: true
+  web:
+    path: "/airflow"
+    host: {{ $PRIMEHUB_DOMAIN }}
+    {{ if eq $PRIMEHUB_SCHEME "https" }}
+    tls:
+      enabled: true
+      secretName: "airflow-tls"
+    {{ end }}
+  flower:
+    path: "/airflow/flower"
+    host: {{ $PRIMEHUB_DOMAIN }}
+    {{ if eq $PRIMEHUB_SCHEME "https" }}
+    tls:
+      enabled: true
+      secretName: "airflow-tls"
+    {{ end }}

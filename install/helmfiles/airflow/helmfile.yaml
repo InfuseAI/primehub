@@ -1,0 +1,31 @@
+{{ $RELEASE_NAMESPACE := (env "RELEASE_NAMESPACE" | default "airflow") }}
+{{ $CHART_PATH := (env "CHART_PATH") }}
+{{- if env "PRIMEHUB_AIRGAPPED" }}
+{{ $CHART_PATH = "../../../chart" }}
+{{- end }}
+{{ $CHART_VERSION := (env "CHART_VERSION" | default "" ) }}
+
+{{- if not $CHART_PATH }}
+repositories:
+  - name: airflow-stable
+    url: https://airflow-helm.github.io/charts
+{{- end }}
+
+releases:
+  - name: airflow
+    namespace: {{ $RELEASE_NAMESPACE }}
+    {{- if $CHART_PATH }}
+    chart: {{ $CHART_PATH }}
+    {{- else }}
+    chart: airflow-stable/airflow
+    version: {{ $CHART_VERSION }}
+    {{- end }}
+    values:
+      - airflow.yaml.gotmpl
+      - images.yaml.gotmpl
+      {{- if (env "PRIMEHUB_VALUES_PATH") }}
+      - {{ env "PRIMEHUB_VALUES_PATH" }}/airflow.yaml
+      {{- end }}
+
+helmDefaults:
+  timeout: {{ env "HELM_TIMEOUT" }}
