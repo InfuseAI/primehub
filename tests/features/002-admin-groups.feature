@@ -3,29 +3,38 @@ Feature: Admin
   In order to manage groups
   I want to change settings
 
-  Scenario: Create group and connect to existing user
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+  Background:
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     And I should see element with test-id "group"
+
+  Scenario: Create group and connect to existing user
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"
     And I should see element with test-id "group/displayName"
-    When I type "e2e-test-group" to element with test-id "group/name"
-    And I type "e2e-test-group-display-name" to element with test-id "group/displayName"
-    And I type "1" to element with xpath "//div[@data-testid='group/quotaCpu']//input[@class='ant-input-number-input']"
-    And I type "1" to element with xpath "//div[@data-testid='group/quotaGpu']//input[@class='ant-input-number-input']"
-    And I click element with xpath "//div[@data-testid='group/quotaMemory']//input[@class='ant-checkbox-input']"
-    And I type "2" to element with xpath "//div[@data-testid='group/quotaMemory']//input[@class='ant-input-number-input']"
-    And I click element with xpath "//div[@data-testid='group/projectQuotaCpu']//input[@class='ant-checkbox-input']"
-    And I type "2" to element with xpath "//div[@data-testid='group/projectQuotaCpu']//input[@class='ant-input-number-input']"
-    And I click element with xpath "//div[@data-testid='group/projectQuotaGpu']//input[@class='ant-checkbox-input']"
-    And I type "2" to element with xpath "//div[@data-testid='group/projectQuotaGpu']//input[@class='ant-input-number-input']"
-    And I click element with xpath "//div[@data-testid='group/projectQuotaMemory']//input[@class='ant-checkbox-input']"
-    And I type "4" to element with xpath "//div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input']"
+    When I type valid test-id on the page
+    | fields            | values                      |
+    | group/name        | e2e-test-group              |
+    | group/displayName | e2e-test-group-display-name |
+
+    And I click element with xpath on the page
+    | fields                                                                             |
+    | //div[@data-testid='group/quotaMemory']//input[@class='ant-checkbox-input']        |
+    | //div[@data-testid='group/projectQuotaCpu']//input[@class='ant-checkbox-input']    |
+    | //div[@data-testid='group/projectQuotaGpu']//input[@class='ant-checkbox-input']    |
+    | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-checkbox-input'] |
+
+    And I type valid info to element with xpath on the page
+    | fields                                                                                 | values |
+    | //div[@data-testid='group/quotaCpu']//input[@class='ant-input-number-input']           | 1      |
+    | //div[@data-testid='group/quotaGpu']//input[@class='ant-input-number-input']           | 1      |
+    | //div[@data-testid='group/quotaMemory']//input[@class='ant-input-number-input']        | 2      |
+    | //div[@data-testid='group/projectQuotaCpu']//input[@class='ant-input-number-input']    | 2      |
+    | //div[@data-testid='group/projectQuotaGpu']//input[@class='ant-input-number-input']    | 2      |
+    | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input'] | 4      |
+
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search my username in name filter
@@ -46,12 +55,6 @@ Feature: Admin
 
   @normal-user
   Scenario: Enable model deployment and assign group admin
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
