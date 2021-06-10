@@ -2,13 +2,13 @@
 Feature: Job Schedule
   Basic tests
 
-  Scenario: User can create schedule
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+  Background:
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Schedule" in sidebar menu
+
+  Scenario: User can create schedule
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click "New Schedule" button
     Then I am on the PrimeHub console "NewSchedule" page
@@ -28,12 +28,8 @@ Feature: Job Schedule
     Then I am on login page
 
   Scenario: User can update schedule
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Schedule" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click element with xpath "//td[text()='create-schedule-test']//..//button[2]" and wait for navigation
     Then I am on the PrimeHub console "UpdateSchedule" page    
@@ -57,12 +53,8 @@ Feature: Job Schedule
     Then I am on login page
 
   Scenario: User can delete schedule
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Schedule" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
     When I click element with xpath "//td[text()='update-schedule-test']//..//button[3]" and wait for xpath "//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'Delete')]" appearing
     And I click button of "Yes" on confirmation dialogue

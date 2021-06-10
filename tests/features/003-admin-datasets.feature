@@ -3,7 +3,7 @@ Feature: Admin
   In order to manage datasets
   I want to change settings
   
-  Scenario: Create dataset
+  Background:
     Given I go to login page
     When I fill in the correct username credentials
     And I click login
@@ -12,8 +12,10 @@ Feature: Admin
     Then I am on the admin dashboard "Groups" page
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
-    And I should see element with test-id "dataset"
-    When I click element with test-id "add-button"
+
+  Scenario: Create dataset
+    When I should see element with test-id "dataset"
+    And I click element with test-id "add-button"
     Then I should see element with test-id "dataset/name"
     And I should see element with test-id "dataset/displayName"
     When I type "test-dataset" to element with test-id "dataset/name"
@@ -26,14 +28,6 @@ Feature: Admin
     Then I am on login page
 
   Scenario: Update dataset and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Datasets" in admin dashboard
-    Then I am on the admin dashboard "Datasets" page
     When I search "test-dataset" in test-id "text-filter-name"
     And I click edit-button in row contains text "test-dataset"
     Then I should see input in test-id "dataset/name" with value "test-dataset"
@@ -42,8 +36,11 @@ Feature: Admin
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
     And I wait for 4.0 seconds
     And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
@@ -65,14 +62,6 @@ Feature: Admin
     Then I am on login page
 
   Scenario: Delete dataset
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Datasets" in admin dashboard
-    Then I am on the admin dashboard "Datasets" page
     When I search "test-dataset" in test-id "text-filter-name"
     And I delete a row with text "test-dataset"
     And I wait for 2.0 seconds

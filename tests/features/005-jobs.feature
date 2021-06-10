@@ -2,13 +2,13 @@
 Feature: Job Submission
   Basic tests
 
-  Scenario: User can create job and save artifact
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+  Background: 
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Jobs" in sidebar menu
+
+  Scenario: User can create job and save artifact
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
@@ -33,12 +33,8 @@ Feature: Job Submission
 
   @normal-user
   Scenario: User can create job with group image and save artifact
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Jobs" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
@@ -63,11 +59,7 @@ Feature: Job Submission
 
   @daily
   Scenario: User can rerun job
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
+    When I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
@@ -89,11 +81,7 @@ Feature: Job Submission
 
   @daily
   Scenario: User can clone job
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
+    When I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
@@ -119,12 +107,8 @@ Feature: Job Submission
 
   @daily
   Scenario: User can cancel job
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Jobs" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
@@ -150,12 +134,8 @@ Feature: Job Submission
 
   @daily
   Scenario: User can create job with GPU
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Jobs" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page

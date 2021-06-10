@@ -4,9 +4,7 @@ Feature: Notebooks Admin
 
   @admin-user
   Scenario: User can access/stop the JupyterLab server in notebooks admin page
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page

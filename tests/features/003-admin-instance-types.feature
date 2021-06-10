@@ -2,14 +2,14 @@
 Feature: Admin
   In order to manage instance types
   I want to change settings
-  
-  Scenario: Create instance type and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+
+  Background:
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
+ 
+  Scenario: Create instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     And I should see element with test-id "instanceType"
@@ -23,8 +23,11 @@ Feature: Admin
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
@@ -35,12 +38,6 @@ Feature: Admin
 
   @daily
   Scenario: Create GPU instance type
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     And I should see element with test-id "instanceType"
@@ -57,12 +54,6 @@ Feature: Admin
 
   @daily
   Scenario: Update GPU instance type and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     When I search "test-instance-type-gpu" in test-id "text-filter-name"
@@ -75,8 +66,11 @@ Feature: Admin
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
