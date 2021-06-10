@@ -3,11 +3,11 @@ Feature: Admin
   In order to manage images
   I want to change settings
 
-  Scenario: Create image and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+  Background:
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
+
+  Scenario: Create image and connect to existing group
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
@@ -23,8 +23,11 @@ Feature: Admin
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
@@ -35,12 +38,8 @@ Feature: Admin
 
   @normal-user
   Scenario: Create group image
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Images" in sidebar menu
+    When I choose group with name "e2e-test-group-display-name"
+    And I choose "Images" in sidebar menu
     Then I am on the PrimeHub console "Images" page
     When I click "New Image" button
     Then I am on the PrimeHub console "NewImage" page
@@ -62,10 +61,6 @@ Feature: Admin
 
   @daily
   Scenario: Create error image and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
@@ -78,8 +73,11 @@ Feature: Admin
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
@@ -90,10 +88,6 @@ Feature: Admin
 
   @daily
   Scenario: Create GPU image
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
@@ -112,10 +106,6 @@ Feature: Admin
 
   @daily
   Scenario: Update GPU image and connect to existing group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
@@ -126,14 +116,20 @@ Feature: Admin
     And I should see input in test-id "image/displayName" with value "test-image-gpu"
     When I type "test-image-gpu-display-name" to element with test-id "image/displayName"
     And I type "test-description-gpu" to element with test-id "image/description"
-    And I click element with xpath "//div[@data-testid='image/type']//i"
-    And I click element with xpath "//li[text()='GPU']"
+    And I click element with xpath on the page
+    | fields                              |
+    | //div[@data-testid='image/type']//i |
+    | //li[text()='GPU']                  |
+
     And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
+    And I click element with xpath on the page
+    | fields                                           |
+    | td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                       |
+
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds

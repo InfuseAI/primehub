@@ -3,9 +3,10 @@ Feature: Login
   In order to manage system
   As a user
   I want to login
+  Background:
+    Given I go to login page
 
   Scenario: User can't login via incorrect username and password
-    Given I go to login page
     When I fill in the wrong credentials
     And I click login
     # wait for a short while to avoid "Node with given id does not belong to the document" error
@@ -13,7 +14,6 @@ Feature: Login
     Then I am on login page
 
   Scenario: User can login/logout the home page
-    Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
@@ -21,7 +21,6 @@ Feature: Login
     Then I am on login page
 
   Scenario: User can login/logout the admin page
-    Given I go to login page
     When I fill in the correct username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page

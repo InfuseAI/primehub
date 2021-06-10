@@ -2,14 +2,14 @@
 Feature: Admin
   Delete some created resources
 
-  @daily
-  Scenario: Delete user
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
+  Background:
+    Given I am logged in
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
+
+  @daily
+  Scenario: Delete user
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     When I search "test-user" in test-id "text-filter-username"
@@ -24,12 +24,6 @@ Feature: Admin
 
   @daily
   Scenario: Delete image
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
     When I search "test-image" in test-id "text-filter-name"
@@ -59,12 +53,6 @@ Feature: Admin
 
   @daily
   Scenario: Delete GPU image
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
     When I search "test-image-gpu" in test-id "text-filter-name"
@@ -87,12 +75,6 @@ Feature: Admin
 
   @daily
   Scenario: Delete instance type
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     When I search "test-instance-type" in test-id "text-filter-name"
@@ -112,12 +94,6 @@ Feature: Admin
 
   @daily
   Scenario: Delete GPU instance type
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     When I search "test-instance-type-gpu" in test-id "text-filter-name"
@@ -137,12 +113,6 @@ Feature: Admin
 
   @daily
   Scenario: Delete group
-    Given I go to login page
-    When I fill in the correct username credentials
-    And I click login
-    Then I am on the PrimeHub console "Home" page
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"

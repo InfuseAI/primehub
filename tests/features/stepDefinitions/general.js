@@ -155,8 +155,25 @@ defineStep("I am on login page", async function() {
   expect(url).to.contain(this.KC_SERVER_URL);
 });
 
+defineStep("I am logged in", async function() {
+  await this.page.goto(this.HOME_URL);
+  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
+  const url = this.page.url();
+  expect(url).to.contain(this.KC_SERVER_URL);
+  await this.input("username", this.USERNAME);
+  await this.input("password", this.PASSWORD);
+  const xpath = "//input[@id='kc-login']";
+  await this.clickElementByXpath(xpath);
+});
+
 defineStep("I click element with xpath {string}", async function(string) {
   await this.clickElementByXpath(string);
+});
+
+defineStep("I click element with xpath on the page", async function(datatable) {
+  for (const row of datatable.rows()) {
+    await this.clickElementByXpath(row);
+  }
 });
 
 defineStep("I click element with xpath {string} and wait for navigation", async function(xpath) {
@@ -259,6 +276,17 @@ defineStep("I type {string} to element with xpath {string}", async function(stri
   await this.page.keyboard.press('KeyA');
   await this.page.keyboard.up('Control');
   await element.type(string);
+});
+
+defineStep("I type valid info to element with xpath on the page", async function(datatable) {
+  for (const row of datatable.rows()) {
+    const [element] = await this.page.$x(row[0]);
+    await element.focus();
+    await this.page.keyboard.down('Control');
+    await this.page.keyboard.press('KeyA');
+    await this.page.keyboard.up('Control');
+    await element.type(row[1]);
+  }
 });
 
 /* i18n */
