@@ -1,4 +1,28 @@
-version: 2
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.4.2
+
+commands:
+  notify_slack:
+    description: Notify a Slack channel with a custom message when test failed on master
+    steps:
+      - slack/notify:
+          channel: C02547T270R
+          event: fail
+          branch_pattern: master
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Failed: $CIRCLE_USERNAME's build of \n<$CIRCLE_BUILD_URL|$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME>\n(<https://app.circleci.com/pipelines/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME?branch=$CIRCLE_BRANCH|$CIRCLE_BRANCH>) \n- <$CIRCLE_BUILD_URL|$CIRCLE_JOB> failed"
+                  }
+                }
+              ]
+            }
 
 jobs:
   unit_test:
@@ -34,6 +58,8 @@ jobs:
       - store_artifacts:
           path: /tmp/artifacts
 
+      - notify_slack
+
   e2e:
     machine:
       #image: infuseai/primehub-ci:0.6.3-e2e
@@ -51,6 +77,8 @@ jobs:
 
       - store_artifacts:
           path: ~/project/e2e
+
+      - notify_slack
 
   e2e_ee:
     machine:
@@ -71,6 +99,8 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+      - notify_slack
+
   e2e_installed_ph_daily:
     machine:
       image: ubuntu-1604:202004-01
@@ -90,24 +120,7 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
-  e2e_installed_ph_weekly:
-    machine:
-      image: ubuntu-1604:202004-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            INSTALLED_PH: "true"
-            E2E_SCHEDULED: "weekly"
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
+      - notify_slack
 
   e2e_regression:
     machine:
@@ -129,6 +142,8 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+      - notify_slack
+
   e2e_normal_user:
     machine:
       image: ubuntu-1604:202004-01
@@ -147,6 +162,8 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
+
+      - notify_slack
 
   build:
     docker:
