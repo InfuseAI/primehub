@@ -126,9 +126,9 @@ Feature: Admin
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     And I click element with xpath on the page
-    | fields                                           |
-    | td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                       |
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
 
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
