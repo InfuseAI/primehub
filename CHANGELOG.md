@@ -22,8 +22,7 @@
 - PhApplication tutorial documentation (label-studio) (ch17324)
 - Add label-studio phapptemplate (ch17323)
 - PrimeHub usage should have phapplication usage data (ch15954)
-- [Bugfix] phapp Env is not set correctly with env dataset (ch16973)
-- [Bugfix] Primehub app does not mount phfs in primehub ce (ch17471)
+
 
 #### Consolidate install-helper and install script
 
@@ -78,6 +77,13 @@
 - binder-based IDE with repo2docker: add doc of Spyder and ROS (ch17230)
 - Remove user portal config and images to free up space (ch17480)
 - Click on "Deploy Model" shortcut in "Home" under "Open" doesn't open Deployments page (ch17425)
+
+
+
+
+### Bugfix
+
+- [Bugfix[ Add missing pagination to Notebooks Admin
 - [Bugfix] When user uploaded a large file in Shared Files, it doesn't appear. (ch17097)
 - [Bugfix] Image builder fail to skip tls verify (ch17236)
 - [Bugfix] The group resource dashboard is not correct in certain scenarios (ch16849)
@@ -89,12 +95,8 @@
 - [Bugfix] GraphQL error shown when switching Global flag On of images(pytorch-1.7.0, tf-1.15.4, tf-2.4.1) (ch17622)
 - [Bugfix] Shared file upload ui is broken in primehub-ce (ch17469)
 - [Bugfix] Cannot delete a image builder item (ch17372)
-
-
-
-### Bugfix
-
-- Add missing pagination to Notebooks Admin
+- [Bugfix] phapp Env is not set correctly with env dataset (ch16973)
+- [Bugfix] Primehub app does not mount phfs in primehub ce (ch17471)
 
 ## 3.5.2
 ### What's New
