@@ -83,6 +83,12 @@ defineStep("I should see element with test-id {string}", async function(testId) 
   await this.page.waitForSelector(testIdToSelector(testId));
 });
 
+defineStep("I should see element with test-id on the page", async function(datatable) {
+  for (const row of datatable.rows()) {
+    await this.page.waitForSelector(testIdToSelector(row[0]));
+  }
+});
+
 defineStep("list-view table {string} contain row with {string}", async function(exist, string) {
   // use xpath to find the <tr> containing 'text'
   const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]`;
