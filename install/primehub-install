@@ -39,6 +39,13 @@ HELM_TIMEOUT=1000
 DOMAIN_CHECK=true
 SHOW_RC_VERSION=false
 
+MINIMAL_CPU_REQUEST=3700 # 4 CPU
+MINIMAL_MEM_REQUEST=8388608 # 8Gi Mem
+
+beep() {
+  echo -en "\007"
+}
+
 info() {
   echo -e "\033[0;32m$1\033[0m"
 }
@@ -96,6 +103,7 @@ USAGE:
   $SELF license                                  : Show the license of PrimeHub
   $SELF version [--beta]                         : Show the default and available PrimeHub versions
   $SELF apply-license [--license-path path]      : Apply the license of PrimeHub
+  $SELF usage                                    : Show the resource usage of the k8s environment
   $SELF diagnose [--tail n] [--logs-path path]   : Run diagnostic to collect logs
   $SELF -h,--help                                : show this message
 
@@ -1015,6 +1023,8 @@ install::primehub() {
 create::primehub() {
   preflight_check
 
+  verify_minimal_resources
+
   prepare_primehub_env
 
   if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
@@ -1166,6 +1176,115 @@ show_versions() {
   fi
 }
 
+verify_minimal_resources() {
+  info "[Verify] Mininal k8s resources"
+  local readonly nodes=$(kubectl get node --no-headers | grep Ready | awk '{print $1}')
+  local node_count=0
+  local total_cpu=0
+  local total_gpu=0
+  local total_memory=0
+  local sleep_time=0
+
+  for node in $nodes; do
+    local cpu
+    local memory
+    local gpu=0
+    IFS=$'\n'
+
+    # Skip cordon node
+    if kubectl get node ${node} --no-headers | grep 'SchedulingDisabled' > /dev/null; then
+      warn "Node ${node} is cordon"
+      continue
+    fi
+
+    for resource in $(kubectl describe node $node | grep -E "^Allocatable" -A7); do
+      if echo $resource | grep cpu > /dev/null; then
+        cpu=$(echo $resource | grep cpu | sed 's/[^0-9]*//g')
+      elif echo $resource | grep memory > /dev/null; then
+        memory=$(echo $resource | grep memory | sed 's/[^0-9]*//g')
+      elif echo $resource | grep 'nvidia.com/gpu '> /dev/null; then
+        gpu=$(echo $resource | grep 'nvidia.com/gpu'; | sed 's/[^0-9]*//g')
+      fi
+    done
+    node_count=$((node_count + 1))
+    total_cpu=$((total_cpu + cpu))
+    total_gpu=$((total_gpu + gpu))
+    total_memory=$((total_memory + memory))
+  done
+  IFS=$'\n\t '
+  echo "Total Resources: ( k8s node x $node_count )"
+  echo "  CPU: ${total_cpu}m, Memory: $(($total_memory / 1024 / 1024))Gi, GPU: $total_gpu"
+
+  # Show warning message when resource not enough
+  if (( ${total_cpu} < ${MINIMAL_CPU_REQUEST} )); then
+    beep; warn "[Warning] Not enough CPU for installing PrimeHub"
+    echo "  Minimal CPU: ${MINIMAL_CPU_REQUEST}"
+    echo "  Current CPU: ${total_cpu}"
+    sleep_time=10
+  elif (( ${total_memory} < ${MINIMAL_MEM_REQUEST} )); then
+    beep; warn "[Warning] Not enough Memory for installing PrimeHub"
+    echo "  Minimal Memory: ${MINIMAL_MEM_REQUEST}"
+    echo "  Current Memory: ${total_memory}"
+    sleep_time=10
+  fi
+
+  # Sleep 10 seconds to remind user resource not enough
+  if (( ${sleep_time} > 0 )); then
+    sleep ${sleep_time}
+  fi
+}
+
+show_resources_usage() {
+  local node_count=0
+  local total_percent_cpu=0
+  local total_percent_mem=0
+  local readonly nodes=$(kubectl get node --no-headers | grep Ready | awk '{print $1}')
+
+  IFS=$'\n'
+  info "[Kubernetes] Resources Usage"
+  for node in $nodes; do
+    local percent_cpu=0
+    local percent_mem=0
+    local cordon_status=''
+
+    if kubectl get node ${node} --no-headers | grep 'SchedulingDisabled' > /dev/null; then
+      cordon_status='[SchedulingDisabled]'
+    fi
+
+    for resource in $(kubectl describe node ${node} | grep -E "^\s*Resource\s*Requests" -A7); do
+      if echo ${resource} | grep cpu > /dev/null; then
+        percent_cpu=$(echo ${resource} | grep cpu | tail -n1 | awk -F "[()%]" '{print $2}')
+      elif echo ${resource} | grep memory > /dev/null; then
+        percent_mem=$(echo ${resource} | grep memory | tail -n1 | awk -F "[()%]" '{print $2}')
+      fi
+    done
+    local msg="${node}: ${percent_cpu}% CPU, ${percent_mem}% memory ${cordon_status}"
+
+    if [ "${cordon_status}" != "" ]; then
+      error "${msg}"
+    elif (( "${percent_cpu}" >= "90" || "${percent_mem}" >= "90" )); then
+      error "${msg}"
+    elif (( "${percent_cpu}" >= "80" || "${percent_mem}" >= "80" )); then
+      warn "${msg}"
+    else
+      echo "${msg}"
+    fi
+
+    node_count=$((node_count + 1))
+    total_percent_cpu=$((total_percent_cpu + percent_cpu))
+    total_percent_mem=$((total_percent_mem + percent_mem))
+  done
+  IFS=$'\n\t '
+
+  if (( $node_count > 0 )); then
+    local readonly avg_percent_cpu=$((total_percent_cpu / node_count))
+    local readonly avg_percent_mem=$((total_percent_mem / node_count))
+    echo -e "\nAverage usage: ${avg_percent_cpu}% CPU, ${avg_percent_mem}% memory."
+  else
+    warn "  No available node found"
+  fi
+}
+
 diagnose_k8s_cluster() {
   local i=0
   local logs_name=primehub-log-$(date +'%Y%m%d%H%M')
@@ -1227,7 +1346,7 @@ main() {
           exit 1
         fi
       ;;
-      apply-license|license|diagnose|version)
+      apply-license|license|diagnose|version|usage)
         if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
         cmd=${1};
       ;;
@@ -1363,6 +1482,10 @@ main() {
     ;;
     apply-license)
       apply_license
+    ;;
+    usage)
+      show_resources_usage
+      verify_minimal_resources
     ;;
     diagnose)
       preflight_check
