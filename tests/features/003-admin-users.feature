@@ -9,6 +9,7 @@ Feature: Admin
 
   @admin-user @daily
   Scenario: Create user
+    Given I am logged in
     When I am on the PrimeHub console "Home" page
     And I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -16,9 +17,12 @@ Feature: Admin
     Then I am on the admin dashboard "Users" page
     And I should see element with test-id "user"
     When I click element with test-id "add-button"
-    Then I should see element with test-id "user/username"
-    And I should see element with test-id "user/email"
-    And I should see element with test-id "user/sendEmail"
+    Then I should see element with test-id on the page
+    | fields         |
+    | user/username  |
+    | user/email     |
+    | user/sendEmail |
+
     When I type "test-user" to element with test-id "user/username"
     And I click element with xpath "//button/span[text()='Confirm']"
     And I wait for 2.0 seconds
@@ -34,7 +38,10 @@ Feature: Admin
 
   @admin-user @daily
   Scenario: User can see expected results when no group is available
-    #Then I am on the PrimeHub console "Home" page
+    Given I go to login page
+    When I fill in the username "test-user" and password "password"
+    And I click login
+    Then I am on the PrimeHub console "Home" page
     When I "should" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Home']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Notebooks']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Jobs']"
@@ -48,6 +55,7 @@ Feature: Admin
 
   @admin-user @daily
   Scenario: Update user info and connect to existing group
+    Given I am logged in
     When I am on the PrimeHub console "Home" page
     And I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -62,7 +70,7 @@ Feature: Admin
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
     And I click element with xpath on the page
-    | fields 	                                         |
+    | fields	                                           |
     | //td[contains(text(), 'e2e-test-group')]/..//input |
     | //button/span[text()='OK']                         |
 
@@ -85,6 +93,7 @@ Feature: Admin
 
   @normal-user
   Scenario: Remove myself from group admin and switch my role to normal user
+    Given I am logged in
     When I am on the PrimeHub console "Home" page
     And I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
