@@ -3,11 +3,100 @@
 ## Upcoming
 ### What's New
 
+## 3.6.0
+### What's New
+
 - **Model Management(Beta)**: Users can manage and version their models. And the versioned models can be deployed in the model deployment.
+- **In-App Product Guide**: Add action tooltip in portal pages.
+
+### Available in CE
+
+#### Pluggability (PrimeHub App)
+
+- [Enhancement] The PrimeHub App list should not sort by app-id (ch16854)
+- PhApplication design document (ch15956)
+- PhApplication tutorial documentation (by mlflow) (ch15955)
+- PhApplication tutorial documentation (label-studio): use the labeled results to re-train a model (ch17329)
+- Document about how to customize a PrimeHub App (ch17390)
+- Do NOT install ph-app-templates in primehub-deploy (ch17457)
+- PhApplication tutorial documentation (label-studio) (ch17324)
+- Add label-studio phapptemplate (ch17323)
+- PrimeHub usage should have phapplication usage data (ch15954)
+
+
+#### Consolidate install-helper and install script
+
+- Update multi-node installation path (ch17451)
+- Update single-node installation path (ch17428)
+- Verify if all the dev-cluster-bootstrap work (ch17427)
+- Consolidate install-helper and install script (Implementation) (ch17426)
+
+### Next-generation Multi-node Solution
+
+- PrimeHub Installation and Configuration (ch16011)
+- Multi-node Solution for airgap (ch15998)
+
+### EE Only
+
+#### Model Management
+
+- GraphQL for models and model versions (ch16761)
+- Inject envs in jupyter and jobs (ch16762)
+- Add model management related configuration (ch16758)
+- Change the routing and menuitem for model deployment (ch16766)
+- MLflow: register model: update custom pre-packaged server (ch17517)
+- Model management tutorial (ch16780)
+- The parsed source run info should be sorted as MLflow (alphabetical order) (ch17539)
+- Model Management: add in-app product guide (ch16779)
+- Support mlflow model in pytorch pre-packaged server (ch16769)
+- Model management configuration document (ch16781)
+- Model Managment FInal check (ch16772)
+- Model description always shows "Invalid date" (ch17525)
+- Support mlflow model in tensorflow pre-packaged server (ch16768)
+- Implement the mlflow model downloader in model deployment (ch16771)
+- On-demand Run info of model versions (ch17338)
+- Add mlflow in docker-stacks (ch16767)
+- Deploy model in model management UI (ch16765)
+- Model Management UI (ch16764)
+
+#### Miscellaneous
+
+- shared files - the pagination is gone while switching view option (ch16752)
+- Phapplication deployment will create two replicaset (ch17267)
+- JupyterHub - Disable Timeout When Pulling Image (ch16839)
+- UI/UX enhancement: Label/capital case/minor changes (ch16829)
+- Tutorial: User can compare ML model outcome in multiple experiments/runs (ch17020)
+- the “expand” right-arrow icon of Event log is disappeared (ch17465)
+- Refine front-end code infrastructure (ch17694)
+- Disable telemetry in CI (ch17642)
+- add e2e tests of resource validation (ch15924)
+- Only save and output valid data from the mlflow-artifact-envs attribute (ch17473)
+- Fix primehub-admission security update (ch15042)
+- Users can’t scale GPU instances in demo clusters (ch17540)
+- phJob cannot use GPU (ch17567)
+- binder-based IDE with repo2docker: add doc of Spyder and ROS (ch17230)
+- Remove user portal config and images to free up space (ch17480)
+- Click on "Deploy Model" shortcut in "Home" under "Open" doesn't open Deployments page (ch17425)
+
+
+
 
 ### Bugfix
 
-- Add missing pagination to Notebooks Admin
+- [Bugfix[ Add missing pagination to Notebooks Admin
+- [Bugfix] When user uploaded a large file in Shared Files, it doesn't appear. (ch17097)
+- [Bugfix] Image builder fail to skip tls verify (ch17236)
+- [Bugfix] The group resource dashboard is not correct in certain scenarios (ch16849)
+- [Bugfix] Should not allows to inject non-relevant commands in build image package (ch16075)
+- [Bugfix] Group setting typo (ch17889)
+- [Bugfix] Pytorch 1.7 with CUDA 11 image doesn't work because of wrong Pytorch version (ch17391)
+- [Bugfix] Locale changed after logging out, reproduced with automation on Demo A (ch17723)
+- [Bugfix] JupyterHub Admin page has no pagination (ch17510)
+- [Bugfix] GraphQL error shown when switching Global flag On of images(pytorch-1.7.0, tf-1.15.4, tf-2.4.1) (ch17622)
+- [Bugfix] Shared file upload ui is broken in primehub-ce (ch17469)
+- [Bugfix] Cannot delete a image builder item (ch17372)
+- [Bugfix] phapp Env is not set correctly with env dataset (ch16973)
+- [Bugfix] Primehub app does not mount phfs in primehub ce (ch17471)
 
 ## 3.5.2
 ### What's New
