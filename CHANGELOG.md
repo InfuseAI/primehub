@@ -9,6 +9,11 @@
 
 - Add missing pagination to Notebooks Admin
 
+## 3.5.3
+### What's New
+
+- Bugfix: Patch for missing grafana link in admin portal on deploy version.
+
 ## 3.5.2
 ### What's New
 
