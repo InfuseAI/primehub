@@ -288,7 +288,7 @@ console:
     tag: 1.31
   image:
     repository: infuseai/primehub-console
-    tag: v3.5-93c328b0
+    tag: v3.5-ef1d9641
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com

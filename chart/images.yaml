@@ -10,8 +10,8 @@ primehub-all:
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:v3.5-93c328b0
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v3.5-93c328b0
+  primehub-console: &primehub-console infuseai/primehub-console:v3.5-ef1d9641
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v3.5-ef1d9641
   primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v3.5-93c328b0
   primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v3.5-93c328b0
 
