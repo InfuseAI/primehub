@@ -3,10 +3,6 @@ Feature: Admin
   In order to manage users
   I want to change settings
 
-  Background:
-    Given I am logged in
-    Then I am on the PrimeHub console "Home" page
-
   @admin-user @daily
   Scenario: Create user
     Given I am logged in
