@@ -683,6 +683,7 @@ EOF
 
 install::ingress_nginx() {
   if ! search_helm_release nginx-ingress; then
+    verify_minimal_resources
     info "[Install] Nginx Ingress"
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm install nginx-ingress ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx \
