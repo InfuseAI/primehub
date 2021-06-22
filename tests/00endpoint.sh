@@ -7,7 +7,7 @@ chk_url() {
 
 endpoints=(
   http://${PRIMEHUB_DOMAIN}:${PRIMEHUB_PORT}/console/g
-  http://${PRIMEHUB_DOMAIN}:${PRIMEHUB_PORT}/console/cms
+  http://${PRIMEHUB_DOMAIN}:${PRIMEHUB_PORT}/console/admin
   http://${PRIMEHUB_DOMAIN}:${PRIMEHUB_PORT}/hub/home
   # add /hub/home is because
   # 'nginx.ingress.kubernetes.io/app-root' cannot redirect with port even
