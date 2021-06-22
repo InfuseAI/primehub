@@ -37,7 +37,7 @@ Feature: Admin
     Given I go to login page
     When I fill in the username "test-user" and password "password"
     And I click login
-    When I "should" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Home']"
+    Then I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Home']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Notebooks']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Jobs']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Schedule']"
