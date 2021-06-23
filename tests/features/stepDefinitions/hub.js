@@ -305,7 +305,7 @@ defineStep("I check the group warning message against group {string}", async fun
 
 defineStep("I click the {string} card in the launcher", async function(name) {
   await this.clickElementByXpath(`//p[text()='${name}']`);
-  await this.page.waitForTimeout(3000);
+  await this.page.waitForTimeout(5000);
   await this.takeScreenshot(`click-${name}`);
 });
 
