@@ -717,6 +717,9 @@ customImage:
   pushSecretName: primehub-controller-custom-image-push-secret
 
   buildJob:
+    image:
+      repository: quay.io/buildah/stable
+      tag: v1.19.8
     resources:
       limits:
         cpu: 2000m
