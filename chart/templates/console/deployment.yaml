@@ -40,17 +40,9 @@ spec:
           {{- if .Values.console.image.pullPolicy }}
           imagePullPolicy: {{ .Values.console.image.pullPolicy }}
           {{- end }}
-          volumeMounts:
-            - name: home-config
-              mountPath: /etc/home-config.yaml
-              subPath: home-config.yaml
           env:
             - name: PH_VERSION
               value: {{ .Chart.AppVersion | quote }}
-            - name: PORTAL_CONFIG_PATH
-              value: '/etc/portal-config.yaml'
-            - name: HOME_CONFIG_PATH
-              value: '/etc/home-config.yaml'
             {{- if .Values.primehub.keycloak.everyoneGroupId }}
             - name: KC_EVERYONE_GROUP_ID
               value: {{ .Values.primehub.keycloak.everyoneGroupId }}
@@ -234,15 +226,12 @@ spec:
               add:
               - SYS_PTRACE
         {{- end }}
+      {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
       volumes:
-        - name: home-config
-          configMap:
-            name: home-config
-        {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
         - name: license
           secret:
             secretName: authoritative-secret
-        {{- end }}
+      {{- end }}
       {{- with .Values.console.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

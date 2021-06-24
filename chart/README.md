@@ -31,7 +31,6 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `console.locale` | The language of console | `en`
-`console.portalConfig` | The configuration of portal | Please see [values.yaml](values.yaml)
 `console.readOnlyOnInstanceTypeAndImage` | Whether we only allow read operations and group-assignment on instanceType/image form | `false`
 `console.replicas` | The number of primehub console replicas| `1`
 `console.image.repository` | The primehub console image repository | `infuseai/primehub-console`
