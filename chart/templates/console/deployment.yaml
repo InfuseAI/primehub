@@ -20,7 +20,6 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
       annotations:
         sidecar.istio.io/inject: "false"
-        checksum/config: {{ include (print $.Template.BasePath "/console/configmap.yaml") . | sha256sum }}
     spec:
       serviceAccountName: {{ include "primehub.name" . }}-console
       {{- if .Values.console.image.credentials }}
