@@ -298,40 +298,6 @@ console:
   url: https://example.com/
   graphqlEndpoint: /graphql
   #locale: en
-  homeConfig: null
-  portalConfig: null
-    # services:
-    #   Service portal setup example:
-    #   - name: Example
-    #     uri: "https://example.com"
-    #     image: "/console/default-covers/default.png"
-    #     adminOnly: true | false
-    #   - name: Gitlab
-    #    uri: "https://gitlab.com/infuseai"
-    #    image: "/console/default-covers/gitlab.png"
-    #   - name: JupyterHub
-    #     uri: "/hub"
-    #     image: "/console/default-covers/jupyter.png"
-    #   - name: User Guide
-    #     uri: "https://infuseai.zendesk.com/hc/en-us"
-    #     image: "/console/default-covers/support.png"
-    #   - name: JupyterHub Admin
-    #     uri: "/hub/admin"
-    #     adminOnly: true
-    #     image: "/console/default-covers/jh-admin.png"
-    #   - name: Admin Dashboard
-    #     uri: "/console/cms"
-    #     image: "/console/default-covers/admin-ui.png"
-    #     adminOnly: true
-    #   - name: Maintenance Notebook
-    #     uri: "/maintenance"
-    #     image: "/console/default-covers/notebook.png"
-    #     adminOnly: true
-    #   - name: Grafana
-    #     uri: "/grafana/login/generic_oauth"
-    #     image: "/grafana/public/img/grafana_icon.svg"
-    #     adminOnly: true
-    # welcomeMessage: >
 
   service:
     type: ClusterIP

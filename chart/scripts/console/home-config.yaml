@@ -1,6 +1,0 @@
-services:
-  - name: User Guide
-    uri: "https://docs.primehub.io/"
-    image: "/console/default-covers/support.png"
-    target: "_blank"
-welcomeMessage: >
