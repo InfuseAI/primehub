@@ -182,6 +182,13 @@
       instance_type_index = currentGroup.instanceTypes.findIndex((instanceTypes)=>instanceTypes.name==SpawnOptions.default_instance_type)
       image_index = currentGroup.images.findIndex((image)=>image.name==SpawnOptions.default_image)
 
+      if ($('#instance_type-item-' + instance_type_index).attr('disabled') == 'disabled') {
+        instance_type_index = -1;
+      }
+      if ($('#image-item-' + image_index).attr('disabled') == 'disabled') {
+        image_index = -1;
+      }
+
       if (instance_type_index != -1) {
         $('input:radio[name="instance_type"][disabled!="disabled"]:eq(' + instance_type_index +')').trigger('click');
       } else if (SpawnOptions.default_instance_type) {
@@ -192,7 +199,7 @@
         $('input:radio[name="image"][disabled!="disabled"]:eq(' + image_index +')').trigger('click');
       } else if (SpawnOptions.default_image) {
         $('#image-warn').show();
-        $('#image-warn-text').text(SpawnOptions.default_image + ' is not available. A default instance type is selected for you.');
+        $('#image-warn-text').text(SpawnOptions.default_image + ' is not available. A default image is selected for you.');
       }
 
       if (SpawnOptions.autolaunch == 1) {
