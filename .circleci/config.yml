@@ -28,6 +28,10 @@ commands:
                 }
               ]
             }
+  create_ticket:
+    description: Create a clubhouse ticket when test failed on master
+    steps:
+            - run: curl -X POST -H "Content-Type:application/json" -H "Clubhouse-Token:$CLUBHOUSE_API_TOKEN" -d '{ "name":"Automation failed - $CIRCLE_JOB", "description":"Automation failed - <$CIRCLE_BUILD_URL|$CIRCLE_JOB>", "estimate":1, "project_id":17953, "story_type":"chore" }' -L "https://api.clubhouse.io/api/v3/stories"
 
 jobs:
   unit_test:
@@ -148,6 +152,7 @@ jobs:
           path: ~/project/e2e
 
       - notify_slack
+      - create_ticket 
 
   e2e_normal_user:
     machine:
@@ -169,6 +174,7 @@ jobs:
           path: ~/project/e2e
 
       - notify_slack
+      - create_ticket 
 
   build:
     docker:
