@@ -230,7 +230,7 @@ class TestGroupsFromCtx(unittest.TestCase):
         raised = False
         msg = ''
         try:
-            mock_spawner().render_html('groups.html', {'groups': groups, 'ssh_config': {'enabled': False}})
+            mock_spawner().render_html('groups.html', {'groups': groups, 'ssh_config': {'enabled': False}, 'default_image': '', 'default_instance_type': '', 'autolaunch': ''})
         except Exception as e:
             raised = True
             msg = e

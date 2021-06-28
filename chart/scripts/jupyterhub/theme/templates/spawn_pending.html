@@ -176,7 +176,9 @@
         if (window.self === window.top) {
           window.location.reload();
         } else {
-          window.open(window.location,'_blank');
+          {% if not spawner.launch_path %}
+            window.open(window.location,'primehub-notebook').focus();
+          {% endif %}
           window.location = '/hub/home';
         }
       }, 1600);

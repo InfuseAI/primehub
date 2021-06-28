@@ -857,6 +857,10 @@ class PrimeHubSpawner(KubeSpawner):
     ssh_config = dict(enabled=False)
     _launch_group = None
     _active_group = None
+    _launch_path = None
+    _default_image = None
+    _default_instance_type = None
+    _autolaunch = None
 
     @property
     def primehub_pod_reflector(self):
@@ -975,12 +979,52 @@ class PrimeHubSpawner(KubeSpawner):
     def set_active_group(self, active_group):
         self._active_group = active_group
 
+    @property
+    def launch_path(self):
+        return self._launch_path
+
+    def set_launch_path(self, launch_path):
+        self._launch_path = launch_path
+
+    @property
+    def default_image(self):
+        return self._default_image
+
+    def set_default_image(self, default_image):
+        self._default_image = default_image
+
+    @property
+    def default_instance_type(self):
+        return self._default_instance_type
+
+    def set_default_instance_type(self, default_instance_type):
+        self._default_instance_type = default_instance_type
+
+    @property
+    def autolaunch(self):
+        return self._autolaunch
+
+    def set_autolaunch(self, autolaunch):
+        self._autolaunch = autolaunch
+
     def get_state(self):
         """get the current state"""
         state = super().get_state()
         if self.launch_group:
             state['launch_group'] = self.launch_group
         self.log.info("get_state: %s" % self._launch_group)
+        if self.launch_path:
+            state['launch_path'] = self.launch_path
+        self.log.info("launch_path: %s" % self.launch_path)
+        if self.default_image:
+            state['default_image'] = self.default_image
+        self.log.info("default_image: %s" % self.default_image)
+        if self.default_instance_type:
+            state['default_instance_type'] = self.default_instance_type
+        self.log.info("default_instance_type: %s" % self.default_instance_type)
+        if self.autolaunch:
+            state['autolaunch'] = self.autolaunch
+        self.log.info("default_instance_type: %s" % self.autolaunch)
         return state
 
     def load_state(self, state):
@@ -989,6 +1033,14 @@ class PrimeHubSpawner(KubeSpawner):
         if 'launch_group' in state:
             self._launch_group = state['launch_group']
         self.log.info("load_state: %s" % self._launch_group)
+        if self.launch_path:
+            state['launch_path'] = self.launch_path
+        if self.default_image:
+            state['default_image'] = self.default_image
+        if self.default_instance_type:
+            state['default_instance_type'] = self.default_instance_type
+        if self.autolaunch:
+            state['autolaunch'] = self.autolaunch
 
     def clear_state(self):
         """clear any state (called after shutdown)"""
@@ -1024,6 +1076,9 @@ class PrimeHubSpawner(KubeSpawner):
 
         return self.render_html('groups.html',
                                 groups=groups,
+                                default_image=self.user.spawner.default_image,
+                                default_instance_type = self.user.spawner.default_instance_type,
+                                autolaunch = self.user.spawner.autolaunch,
                                 active_group=self.active_group,
                                 enable_kernel_gateway=enable_feature_kernel_gateway,
                                 enable_ssh_server=enable_feature_ssh_server,
@@ -1220,10 +1275,21 @@ class PrimeHubHomeHandler(BaseHandler):
             url = url_path_join(self.hub.base_url, 'spawn', user.escaped_name)
 
         group = self.get_query_argument("group", default=None)
+        launch_path = self.get_query_argument("path", default=None)
+        default_image = self.get_query_argument("image", default=None)
+        default_instance_type = self.get_query_argument("instancetype", default=None)
+        autolaunch = self.get_query_argument("autolaunch", default=None)
         if user.spawner:
             user.spawner.set_active_group(group)
+            user.spawner.set_launch_path(launch_path)
+            user.spawner.set_default_image(default_image)
+            user.spawner.set_default_instance_type(default_instance_type)
+            user.spawner.set_autolaunch(autolaunch)
             # If it is spawning, show the spawn pending page.
             if user.spawner.pending == 'spawn':
+                self.redirect(url)
+                return
+            if not user.active and launch_path:
                 self.redirect(url)
                 return
 

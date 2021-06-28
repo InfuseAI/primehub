@@ -178,6 +178,37 @@
         window.clearInterval(window.updateContextIntervalId); // Stop request group usage info.
         $('#spawn_form').submit();
       });
+
+      // select instance type from query string
+      instance_type_index = currentGroup.instanceTypes.findIndex((instanceTypes)=>instanceTypes.name==SpawnOptions.default_instance_type)
+      if ($('#instance_type-item-' + instance_type_index).attr('disabled') == 'disabled') {
+        instance_type_index = -1;
+      }
+      if (instance_type_index != -1) {
+        $('input:radio[name="instance_type"][value="' + SpawnOptions.default_instance_type +'"]').trigger('click');
+      } else if (SpawnOptions.default_instance_type) {
+        $('#instance-type-warn').show();
+        $('#instance-type-warn-text').text('Instance type "' + SpawnOptions.default_instance_type + '" is not available. A default instance type is selected for you.');
+      }
+
+      // select image from query string, must be after selecting intance type because of CPU/GPU will change the availability
+      image_index = currentGroup.images.findIndex((image)=>image.name==SpawnOptions.default_image)
+      if ($('#image-item-' + image_index).attr('disabled') == 'disabled') {
+        image_index = -1;
+      }
+      if (image_index != -1) {
+        $('input:radio[name="image"][value="' + SpawnOptions.default_image +'"]').trigger('click');
+      } else if (SpawnOptions.default_image) {
+        $('#image-warn').show();
+        $('#image-warn-text').text('Image "' + SpawnOptions.default_image + '" is not available. A default image is selected for you.');
+      }
+
+      // pop-up for autolaunch
+      if (instance_type_index != -1 && image_index != -1 && SpawnOptions.autolaunch == 1) {
+        $('#dialog-instance-type').text(['Instance Type: ', currentGroup.instanceTypes[instance_type_index].displayName, ' (', currentGroup.instanceTypes[instance_type_index].resourceLimits, ')'].join(''));
+        $('#dialog-image').text('Image: ' + currentGroup.images[image_index].displayName);
+        $('#comfirm_dialog').modal();
+      }
     };
 
     var getCurrentGroup = function(name) {
@@ -234,6 +265,10 @@
     var reloadPage = function() {
       location.href = '/hub/spawn';
     };
+
+    $("#diaglog_start").click(function() {
+      $('#spawn_form input[type=submit]').trigger("click");
+    })
 
     var activeGroup = getActiveGroup();
     if (!activeGroup) {
