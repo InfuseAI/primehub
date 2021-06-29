@@ -91,7 +91,7 @@ jupyterhub:
   {{- end }}
   hub:
     annotations:
-      checksum/primehub-config-map: {{ exec "bash" (list "-c" "ls ../../modules/charts/primehub/scripts/jupyterhub/config/*.py ../../modules/charts/primehub/templates/jupyterhub/configmap.yaml | xargs cat") | sha256sum }}
+      checksum/primehub-config-map: {{ exec "bash" (list "-c" "ls ../../../chart/scripts/jupyterhub/config/*.py ../../../chart/templates/jupyterhub/configmap.yaml | xargs cat") | sha256sum }}
     db:
       pvc:
         storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
