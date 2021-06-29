@@ -37,6 +37,10 @@ jupyterhub:
     podCuller:
       image:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-pod-culler
+  primehub:
+    primehub-examples:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-examples
+
 console:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console

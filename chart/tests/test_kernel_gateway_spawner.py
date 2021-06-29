@@ -170,8 +170,9 @@ class KernelGatewayTest(AsyncTestCase):
         pod_spec = (yield spawner.get_pod_manifest()).to_dict()
 
         # it should be same with old behavior, one init_container and only run notebook container
-        self.assertEqual(1, len(pod_spec['spec']['init_containers']))
+        self.assertEqual(2, len(pod_spec['spec']['init_containers']))
         self.assertEqual("admission-is-not-found", pod_spec['spec']['init_containers'][0]['name'])
+        self.assertEqual("primehub-examples", pod_spec['spec']['init_containers'][1]['name'])
         self.assertEqual(1, len(pod_spec['spec'].get('containers', [])))
 
     @tornado.testing.gen_test
@@ -194,8 +195,9 @@ class KernelGatewayTest(AsyncTestCase):
         pod_spec = (yield spawner.get_pod_manifest()).to_dict()
 
         # it should be same with old behavior, one init_container and only run notebook container
-        self.assertEqual(1, len(pod_spec['spec']['init_containers']))
+        self.assertEqual(2, len(pod_spec['spec']['init_containers']))
         self.assertEqual("admission-is-not-found", pod_spec['spec']['init_containers'][0]['name'])
+        self.assertEqual("primehub-examples", pod_spec['spec']['init_containers'][1]['name'])
         self.assertEqual(1, len(pod_spec['spec'].get('containers', [])))
 
     @tornado.testing.gen_test

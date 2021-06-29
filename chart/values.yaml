@@ -575,6 +575,14 @@ jupyterhub:
         tag: '0.10.6'
         pullPolicy: ''
         pullSecrets: []
+    initContainers: []
+    storage:
+      extraVolumes:
+      - name: primehub-examples
+        emptyDir: {}
+      extraVolumeMounts:
+      - name: primehub-examples
+        mountPath: /primehub-examples
 
   # prePuller relates to the hook|continuous-image-puller DaemonsSets
   prePuller:
@@ -640,6 +648,12 @@ jupyterhub:
     spawnerStartTimeout: 1200
     # timeout for the http server in a spawned pod (the creating phase in the progress)
     spawnerHttpTimeout: 30
+
+    # primehub-examples image
+    primehub-examples:
+      repository: infuseai/primehub-examples
+      pullPolicy: IfNotPresent
+      tag: v0.1.0
 
 # Primehub controller
 controller:

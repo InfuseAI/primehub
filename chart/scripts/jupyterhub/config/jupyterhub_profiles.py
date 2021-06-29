@@ -765,6 +765,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
         # Newly created home volume needs this to work.
         self.chown_extra.append('/home/jovyan')
 
+        if not spawner.init_containers:
+            spawner.init_containers = []
+
+        self.setup_admission_not_found_init_container(spawner)
+        self.setup_primehub_examples_init_container(spawner)
+
         spawner.environment.update({
             'CHOWN_EXTRA': ','.join(self.chown_extra)
         })
@@ -780,8 +786,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(spawner.user_options.get('group', {}).get('name', ''))
 
         self.attach_usage_annoations(spawner)
-
-        spawner.init_containers = []
         self.mount_primehub_scripts(spawner)
 
         origin_args = spawner.get_args()
@@ -803,6 +807,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
                     m['mountPath'] = '/home/jovyan/user'
             self.support_repo2docker(spawner)
 
+        spawner.set_launch_group(launch_group)
+
+    def setup_admission_not_found_init_container(self, spawner):
         # In order to check it passed the admission, set a bad initcontainer and admission will remove this initcontainer.
         spawner.init_containers.append({
             "name": "admission-is-not-found",
@@ -811,8 +818,47 @@ class OIDCAuthenticator(GenericOAuthenticator):
             "command": ["false"],
         })
 
-        spawner.set_launch_group(launch_group)
+    def setup_primehub_examples_init_container(self, spawner):
+        cfg = get_primehub_config('primehub-examples', {})
+        repository = "infuseai/primehub-examples"
+        tag = 'latest'
+        policy = 'IfNotPresent'
 
+        if cfg:
+            if 'repository' in cfg:
+                repository = cfg['repository']
+
+            if 'tag' in cfg:
+                tag = cfg['tag']
+
+            if 'pullPolicy' in cfg:
+                policy = cfg['pullPolicy']
+
+            if tag == 'latest':
+                policy = 'Always'
+
+        spawner.init_containers.append({
+            "command": [
+                "sh",
+                "-c",
+                "cp -R /data/. /primehub-examples"
+            ],
+            "image": "{}:{}".format(repository, tag),
+            "imagePullPolicy": policy,
+            "name": "primehub-examples",
+            "resources": {},
+            "securityContext": {
+                "runAsGroup": 100,
+                "runAsUser": 1000
+            },
+            "volumeMounts": [
+                {
+                    "mountPath": "/primehub-examples",
+                    "name": "primehub-examples"
+                }
+            ]
+        })
+        self.symlinks.append('ln -sf /primehub-examples /home/jovyan/')
 
     def attach_usage_annoations(self, spawner):
         usage_annotation = dict(component='notebook',

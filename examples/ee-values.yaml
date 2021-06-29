@@ -30,3 +30,9 @@ modelDeployment:
 
 adminNotebook:
   enabled: false
+
+jupyterhub:
+  primehub:
+    primehub-examples:
+      repository: infuseai/primehub-examples
+      tag: v0.1.0
