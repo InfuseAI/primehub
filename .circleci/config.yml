@@ -31,7 +31,8 @@ commands:
   create_ticket:
     description: Create a clubhouse ticket when test failed on master
     steps:
-            - run: curl -X POST -H "Content-Type:application/json" -H "Clubhouse-Token:$CLUBHOUSE_API_TOKEN" -d '{ "name":"Automation failed - $CIRCLE_JOB", "description":"Automation failed - <$CIRCLE_BUILD_URL|$CIRCLE_JOB>", "estimate":1, "project_id":17953, "story_type":"chore" }' -L "https://api.clubhouse.io/api/v3/stories"
+            - run: curl -X POST -H "Content-Type:application/json" -H "Clubhouse-Token:${CLUBHOUSE_API_TOKEN}" -d '{ "name":"Automation failed - ${CIRCLE_JOB}", "description":"Automation failed - <${CIRCLE_BUILD_URL}|${CIRCLE_JOB}>", "estimate":1, "project_id":17953, "story_type":"chore" }' -L "https://api.clubhouse.io/api/v3/stories"
+              when: on_fail
 
 jobs:
   unit_test:
