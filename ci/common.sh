@@ -19,16 +19,24 @@ function error() {
 
 function install::helm() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
-  info "[Install] helm"
-  wget -O helm.tgz https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
-  tar zxvf helm.tgz; sudo mv linux-amd64/* /usr/bin/; rm -f helm.tgz
+  if ! command -v helm; then
+    info "[Install] helm"
+    wget -O helm.tgz https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
+    tar zxvf helm.tgz; sudo mv linux-amd64/* /usr/bin/; rm -f helm.tgz
+  else
+    warn "[Installed] helm"
+  fi
 }
 
 function install::helmfile() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
-  info "[Install] helmfile"
-  wget -O helmfile "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64"
-  chmod +x helmfile; sudo mv helmfile /usr/bin/
+  if ! command -v helmfile; then
+    info "[Install] helmfile"
+    wget -O helmfile "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64"
+    chmod +x helmfile; sudo mv helmfile /usr/bin/
+  else
+    warn "[Installed] helmfile"
+  fi
 }
 
 function install::chartpress() {

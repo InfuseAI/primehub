@@ -2,8 +2,8 @@
 
 set -e
 
-PROJECT_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
-CHART_ROOT=$(dirname "${BASH_SOURCE[0]}")/../chart
+PROJECT_ROOT=$(realpath $(dirname "${BASH_SOURCE[0]}")/..)
+CHART_ROOT=$(realpath $(dirname "${BASH_SOURCE[0]}")/../chart)
 
 source $PROJECT_ROOT/ci/common.sh
 
