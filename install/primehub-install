@@ -840,7 +840,7 @@ install::prometheus() {
   fi
 
   info "[Install] Prometheus"
-  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync
+  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync --skip-deps
 
   install::primehub_grafana_dashboard
 
