@@ -2,7 +2,7 @@ HELM_VERSION=v3.3.4
 HELMFILE_VERSION=v0.125.0
 
 PROMETHEUS_CHART_VERSION="8.9.3"
-PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.0.0"
+PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.2.0"
 NVIDIA_GPU_EXPORTER_VERSION="0.4.0"
 
 function info() {
@@ -100,14 +100,28 @@ function helm::package() {
 }
 
 function helm::patch_app_version() {
+  local extension=''
+  if [[ "$(uname)" == "Darwin" ]]; then
+    extension=".bak"
+  fi
   info "[Patch] app version: $(git describe --tags)"
-  sed -i "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/Chart.yaml
+  sed -i${extension} "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/Chart.yaml
+}
+
+function helm::patch_chart_verion() {
+  local extension=''
+  local version=$(git describe --tags | sed 's/^v//')
+  if [[ "$(uname)" == "Darwin" ]]; then
+    extension=".bak"
+  fi
+  info "[Patch] chart version: ${version}"
+  sed -i${extension} "s/^version: 1\.0\.0/version: ${version}/g" ${CHART_ROOT}/Chart.yaml
 }
 
 function actions::build_release_package() {
   info "[GitHub Action] Build PrimeHub Chart Release Package"
-  pushd $PROJECT_ROOT/../
   local version=$(git describe --tags)
+  pushd $PROJECT_ROOT/../
   tar czf primehub-$version.tar.gz primehub
   mv primehub-$version.tar.gz $PROJECT_ROOT
   popd

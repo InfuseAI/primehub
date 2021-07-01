@@ -12,4 +12,6 @@ install::submodule
 helm::fetch_prometheus_operator_chart
 helm::fetch_primehub_grafana_dashboard_basic_chart
 helm::fetch_nvidia_gpu_exporter
+helm::patch_app_version
+helm::patch_chart_verion
 actions::build_release_package
