@@ -25,6 +25,7 @@ PRIMEHUB_PATH=
 PRIMEHUB_CHART_PATH=
 PRIMEHUB_MODE='ee'
 PRIMEHUB_FEATURE_SSH_BASTION_SERVER=false
+PRIMEHUB_AIRGAPPED=
 LICENSE_PATH=
 
 PROMETHEUS_CHART="stable/prometheus-operator"
@@ -1376,6 +1377,10 @@ main() {
       --path)
         shift
         PRIMEHUB_CHART_PATH=${1:-}
+      ;;
+      --airgap)
+        shift
+        PRIMEHUB_AIRGAPPED=true
       ;;
       --license-path)
         shift
