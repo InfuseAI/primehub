@@ -580,9 +580,14 @@ jupyterhub:
       extraVolumes:
       - name: primehub-examples
         emptyDir: {}
+      - name: share-memory-device
+        emptyDir:
+          medium: Memory
       extraVolumeMounts:
       - name: primehub-examples
         mountPath: /primehub-examples
+      - name: share-memory-device
+        mountPath: /dev/shm
 
   # prePuller relates to the hook|continuous-image-puller DaemonsSets
   prePuller:
