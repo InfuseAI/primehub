@@ -76,7 +76,7 @@ gitsync:
 
 controller:
   image:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-controller-ee
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-controller
 
   proxy:
     image:
@@ -143,4 +143,7 @@ keycloak:
 metacontroller:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/metacontroller
+  webhook:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
 {{end}}

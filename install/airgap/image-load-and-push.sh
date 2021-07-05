@@ -128,6 +128,10 @@ for image in `cat $IMAGES_LIST`; do
   if [[ "$(echo $image | cut -d':' -f1)" != *"/"* ]]; then
     project='library'
     push_image="library/${image}"
+
+    echo "push ${image} without library prefix"
+    docker tag ${image} ${REGISTRY}/${image}
+    docker push ${REGISTRY}/${image}
   fi
 
   if [[ ${REGISTRY_TYPE} == 'harbor' ]]; then
@@ -135,7 +139,7 @@ for image in `cat $IMAGES_LIST`; do
     create_project ${project}
   fi
 
-  echo "push ${image}"
+  echo "push ${push_image}"
   docker tag ${image} ${REGISTRY}/${push_image}
   docker push ${REGISTRY}/${push_image}
 done

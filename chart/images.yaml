@@ -31,8 +31,8 @@ primehub-all:
 
   # Jupyterhub
   pause: &pause gcr.io/google_containers/pause:3.0
-  jupyterhub-k8s: &jupyterhub-k8s infuseai/jupyterhub-k8s:jh-5c94e4f4
-  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.1.0
+  jupyterhub-k8s: &jupyterhub-k8s infuseai/jupyterhub-k8s:0.10.6
+  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.2.2
   k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
   statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
 
