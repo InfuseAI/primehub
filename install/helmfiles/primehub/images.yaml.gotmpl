@@ -18,7 +18,7 @@ tusd:
 jupyterhub:
   hub:
     image:
-      name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/jupyterhub-k8s
+      name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-hub
   proxy:
     chp:
       image:
