@@ -841,7 +841,11 @@ install::prometheus() {
   fi
 
   info "[Install] Prometheus"
-  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync --skip-deps
+  local options=''
+  if [ "$PRIMEHUB_AIRGAPPED" == "true" ]; then
+    options='--skip-deps'
+  fi
+  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync ${options}
 
   install::primehub_grafana_dashboard
 
