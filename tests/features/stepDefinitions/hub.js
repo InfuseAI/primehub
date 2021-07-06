@@ -319,6 +319,14 @@ defineStep("I input {string} command in the terminal", async function(command) {
   await this.takeScreenshot("input-command-terminal");
 });
 
+defineStep("I close all tabs in JupyterLab", async function() {
+  const xpath = ["//div[text()='File']", "//div[@class='lm-Menu-itemLabel p-Menu-itemLabel' and text()='Close All Tabs']"];
+  for (itemCount=0; itemCount < xpath.length; itemCount++) {
+    await this.clickElementByXpath(xpath[itemCount]);
+    await this.takeScreenshot("I-close-all-tabs-in-JupyterLab");
+  }
+});
+
 defineStep("I open {string} file in the file browser", async function(name) {
   let ele;
   for (retryCount=0; retryCount < 3; retryCount++) {

@@ -23,5 +23,22 @@ defineStep("I go to the apps detail page with name {string}", async function(app
 
 defineStep("I have {string} installed", async function(app) {
   await this.page.waitForXPath("//div[(@class='ant-tag ant-tag-green') and (text()='Ready')]");
-  await this.page.waitForXPath("//div[(@class='ant-tag') and contains(text(), 'mlflow')]");
+  await this.page.waitForXPath(`//div[(@class='ant-tag') and contains(text(), ${app})]`);
+});
+
+defineStep("I keep value of {string} from app detail page in memory", async function(name) {
+  let [ele] = await this.page.$x(`//div[text()='${name}']/following-sibling::div`);
+  let text = await (await ele.getProperty('textContent')).jsonValue();
+  this.copyText = text;
+  console.log(`${name}: ${this.copyText}`);
+});
+
+defineStep("I keep MLflow info from detail page in memory", async function() {
+  const info = ["App URL", "Service Endpoints"]
+  for (itemCount=0; itemCount < info.length; itemCount++) {
+    let [ele] = await this.page.$x(`//div[text()='${info[itemCount]}']/following-sibling::div`);
+    let text = await (await ele.getProperty('textContent')).jsonValue();
+    this.copyArray.push(text);
+    console.log(`${info[itemCount]}: ${this.copyArray[itemCount]}`);
+  }
 });
