@@ -122,7 +122,7 @@ function actions::build_release_package() {
   info "[GitHub Action] Build PrimeHub Chart Release Package"
   local version=$(git describe --tags)
   pushd $PROJECT_ROOT/../
-  tar czf primehub-$version.tar.gz primehub
+  tar --exclude='.git' -czf primehub-$version.tar.gz primehub
   mv primehub-$version.tar.gz $PROJECT_ROOT
   popd
 }
