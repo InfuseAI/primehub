@@ -237,7 +237,7 @@ check_primehub_required_bin() {
   return -1
 }
 
-install:kubectl() {
+install::kubectl() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
@@ -333,7 +333,7 @@ install::primehub_required_bin() {
   mkdir -p ~/bin
   if [[ "${PRIMEHUB_PATH}" == "" ]]; then
     info "[Install] primehub required bin"
-    install:kubectl
+    install::kubectl
     install::yq
     install::jq
     install::helm
@@ -1383,7 +1383,6 @@ main() {
         PRIMEHUB_CHART_PATH=${1:-}
       ;;
       --airgap)
-        shift
         PRIMEHUB_AIRGAPPED=true
       ;;
       --license-path)
