@@ -12,6 +12,7 @@ import uuid
 import os
 import tornado.ioloop
 import time
+from datetime import datetime
 import jupyterhub.handlers
 from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 from tornado.httputil import url_concat
@@ -210,6 +211,7 @@ role_prefix = get_primehub_config('keycloak.rolePrefix', "")
 base_url = get_primehub_config('baseUrl', "/")
 enable_feature_kernel_gateway = get_primehub_config('kernelGateway', "")
 enable_feature_ssh_server = get_primehub_config('sshServer.enabled', False)
+enable_telemetry = get_primehub_config('telemetry.enabled', False)
 jupyterhub_template_path = '/etc/jupyterhub/templates'
 start_notebook_config = get_primehub_config('startNotebookConfigMap')
 template_loader = Environment(
@@ -260,6 +262,9 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                             mlflow { trackingUri uiUrl trackingEnvs { name value } artifactEnvs { name value }}
                         }
                 } }'''
+GRAPHQL_SEND_TELEMETRY_MUTATION = '''mutation ($data: NotebookNotifyEventInput!) {
+                    notifyNotebookEvent (data: $data)
+                }'''
 
 
 @gen.coroutine
@@ -267,7 +272,7 @@ def fetch_context(user_id):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_LAUNCH_CONTEXT_QUERY,
-        'variables': {'id': user_id}}
+            'variables': {'id': user_id}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
     response = yield client.fetch(graphql_endpoint,
                                   method='POST',
@@ -282,6 +287,28 @@ def fetch_context(user_id):
     if 'data' in result:
         return result['data']
     return {}
+
+@gen.coroutine
+def send_telemetry(traits):
+    if not enable_telemetry:
+        return
+
+    headers = {'Content-Type': 'application/json',
+               'Authorization': 'Bearer %s' % graphql_secret}
+    data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
+            'variables': {'data': traits}}
+    client = httpclient.AsyncHTTPClient(max_clients=64)
+    response = yield client.fetch(graphql_endpoint,
+                                  method='POST',
+                                  headers=headers,
+                                  body=json.dumps(data))
+    result = json.loads(response.body.decode())
+
+    # Code: `API_UNAVAILABLE` if kube-apiserver is down.
+    if 'errors' in result:
+        raise Exception(BACKEND_API_UNAVAILABLE)
+
+    return
 
 class PrimehubOidcMixin(OAuth2Mixin):
     _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
@@ -440,6 +467,22 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     @gen.coroutine
     def post_spawn_stop(self, user, spawner):
+        started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+        gpu_enabled = spawner.extra_resource_limits.get('nvidia.com/gpu', 0) > 0
+        status = 'Success'
+        if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
+            status = 'Failed'
+        duration = int(time.time() - spawner.started_at)
+
+        traits = {
+            'notebookStartedAt': started_at,
+            'notebookGpu': gpu_enabled,
+            'notebookStatus': status,
+            'notebookDuration': duration
+        }
+        send_telemetry(traits)
+        self.log.debug('send telemetry {}'.format(traits))
+
         self.log.debug("post spawn stop for %s", user)
         user.spawners.pop('')
 
@@ -808,6 +851,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             self.support_repo2docker(spawner)
 
         spawner.set_launch_group(launch_group)
+        spawner.started_at = time.time()
 
     def setup_admission_not_found_init_container(self, spawner):
         # In order to check it passed the admission, set a bad initcontainer and admission will remove this initcontainer.

@@ -56,6 +56,8 @@ data:
       enabled: {{ .Values.sshBastionServer.enabled }}
       servicePort: {{ .Values.sshBastionServer.service.port }}
     host: {{ index .Values.ingress.hosts 0 }}
+    telemetry:
+      enabled: {{ .Values.telemetry.enabled }}
     {{- .Values.jupyterhub.primehub | toYaml | nindent 4 }}
 
 ---
