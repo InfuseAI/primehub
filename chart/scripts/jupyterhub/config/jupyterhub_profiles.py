@@ -211,6 +211,7 @@ role_prefix = get_primehub_config('keycloak.rolePrefix', "")
 base_url = get_primehub_config('baseUrl', "/")
 enable_feature_kernel_gateway = get_primehub_config('kernelGateway', "")
 enable_feature_ssh_server = get_primehub_config('sshServer.enabled', False)
+enable_telemetry = get_primehub_config('telemetry.enabled', False)
 jupyterhub_template_path = '/etc/jupyterhub/templates'
 start_notebook_config = get_primehub_config('startNotebookConfigMap')
 template_loader = Environment(
@@ -261,6 +262,9 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                             mlflow { trackingUri uiUrl trackingEnvs { name value } artifactEnvs { name value }}
                         }
                 } }'''
+GRAPHQL_SEND_TELEMETRY_MUTATION = '''mutation ($data: NotebookNotifyEventInput!) {
+                    notifyNotebookEvent (data: $data)
+                }'''
 
 
 @gen.coroutine
@@ -283,6 +287,28 @@ def fetch_context(user_id):
     if 'data' in result:
         return result['data']
     return {}
+
+@gen.coroutine
+def send_telemetry(traits):
+    if not enable_telemetry:
+        return
+
+    headers = {'Content-Type': 'application/json',
+               'Authorization': 'Bearer %s' % graphql_secret}
+    data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
+        'variables': {'data': traits}}
+    client = httpclient.AsyncHTTPClient(max_clients=64)
+    response = yield client.fetch(graphql_endpoint,
+                                  method='POST',
+                                  headers=headers,
+                                  body=json.dumps(data))
+    result = json.loads(response.body.decode())
+
+    # Code: `API_UNAVAILABLE` if kube-apiserver is down.
+    if 'errors' in result:
+        raise Exception(BACKEND_API_UNAVAILABLE)
+
+    return
 
 class PrimehubOidcMixin(OAuth2Mixin):
     _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
@@ -447,6 +473,15 @@ class OIDCAuthenticator(GenericOAuthenticator):
         if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
             status = 'Failed'
         duration = int(time.time() - spawner.started_at)
+
+        traits = {
+            'notebookStartedAt': started_at,
+            'notebookGpu': gpu_enabled,
+            'notebookStatus': status,
+            'notebookDuration': duration
+        }
+        send_telemetry(traits)
+        self.log.debug('send telemetry {}'.format(traits))
 
         self.log.debug("post spawn stop for %s", user)
         user.spawners.pop('')
