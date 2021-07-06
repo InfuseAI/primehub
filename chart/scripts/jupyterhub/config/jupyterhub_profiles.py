@@ -12,6 +12,7 @@ import uuid
 import os
 import tornado.ioloop
 import time
+from datetime import datetime
 import jupyterhub.handlers
 from tornado.httpclient import HTTPRequest, AsyncHTTPClient
 from tornado.httputil import url_concat
@@ -440,6 +441,13 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     @gen.coroutine
     def post_spawn_stop(self, user, spawner):
+        started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+        gpu_enabled = spawner.extra_resource_limits.get('nvidia.com/gpu', 0) > 0
+        status = 'Success'
+        if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
+            status = 'Failed'
+        duration = int(time.time() - spawner.started_at)
+
         self.log.debug("post spawn stop for %s", user)
         user.spawners.pop('')
 
@@ -808,6 +816,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             self.support_repo2docker(spawner)
 
         spawner.set_launch_group(launch_group)
+        spawner.started_at = time.time()
 
     def setup_admission_not_found_init_container(self, spawner):
         # In order to check it passed the admission, set a bad initcontainer and admission will remove this initcontainer.
