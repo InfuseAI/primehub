@@ -272,7 +272,7 @@ def fetch_context(user_id):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_LAUNCH_CONTEXT_QUERY,
-        'variables': {'id': user_id}}
+            'variables': {'id': user_id}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
     response = yield client.fetch(graphql_endpoint,
                                   method='POST',
@@ -296,7 +296,7 @@ def send_telemetry(traits):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
-        'variables': {'data': traits}}
+            'variables': {'data': traits}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
     response = yield client.fetch(graphql_endpoint,
                                   method='POST',
