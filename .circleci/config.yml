@@ -84,7 +84,7 @@ jobs:
       - run:
           name: Check airgap image list
           command: |
-            python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml
+            python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml ./chart/templates/ph-app-templates
       - notify_slack
 
   e2e:
