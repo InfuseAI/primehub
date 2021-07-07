@@ -86,8 +86,12 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'Deployments': `${prefix}//a[text()='Deployments']`,
     'CreateDeployment': `${prefix}//span[text()='Create Deployment']`,
     'SharedFiles': `${prefix}//a[text()='Shared Files']`,
+    'Apps': `${prefix}//a[text()='Apps']`,
+    'Store': `${prefix}//span[text()='Store']`,
+    'NewApps': `${prefix}//span[text()='Add App to PrimeHub']`,
     'Images': `${prefix}//a[text()='Images']`,
-    'NewImage': `${prefix}//span[text()='New Images']`
+    'NewImage': `${prefix}//span[text()='New Images']`,
+    'Settings': `${prefix}//a[text()='Settings']`
   };
   const urlMap = {
     'Home': '/home', // temporarily used
@@ -100,8 +104,12 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'Deployments': `-${this.E2E_SUFFIX}/deployments`,
     'CreateDeployment': `-${this.E2E_SUFFIX}/deployments/create`,
     'SharedFiles': `-${this.E2E_SUFFIX}/browse`,
+    'Apps': `-${this.E2E_SUFFIX}/apps`,
+    'Store': `-${this.E2E_SUFFIX}/apps/store`,
+    'NewApps': `-${this.E2E_SUFFIX}/apps/create`,
     'Images': `-${this.E2E_SUFFIX}/images`,
-    'NewImage': `-${this.E2E_SUFFIX}/images/create`
+    'NewImage': `-${this.E2E_SUFFIX}/images/create`,
+    'Settings': `-${this.E2E_SUFFIX}/settings`
   };
   await this.page.waitForXPath(xpathMap[menuitem]);
 
@@ -241,6 +249,11 @@ defineStep("I click {string} button", async function(string) {
   await this.clickByText(string);
 });
 
+defineStep("I click button to install {string}", async function(apps) {
+  const xpath = `//a[contains(@href, '/apps/create/${apps}')]`;
+  await this.clickElementByXpath(xpath);
+});
+
 defineStep("I click refresh", async function() {
   await this.page.reload();
 });
@@ -260,7 +273,7 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
   }
 });
 
-defineStep("I wait for {float} seconds", async function(float) {
+defineStep("I wait for {float} second(s)", async function(float) {
   await this.page.waitForTimeout(float * 1000);
 });
 

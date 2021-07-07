@@ -61,17 +61,19 @@ defineStep("I choose image", async function() {
 });
 
 defineStep("I choose instance type with name {string}", async function(name) {
-  const selector = `#it-container input[value='${name}-${this.E2E_SUFFIX}']`;
+  const selector = this.E2E_SUFFIX ? `#it-container input[value='${name}-${this.E2E_SUFFIX}']` : `#it-container input[value='${name}']`;
   await this.clickElementBySelector(selector, context = this.context);
   await this.page.waitForTimeout(500);
-  await this.takeScreenshot(`choose-instance-type-${name}-${this.E2E_SUFFIX}`);
+  const screenshot = this.E2E_SUFFIX ? `choose-instance-type-${name}-${this.E2E_SUFFIX}` : `choose-instance-type-${name}`;
+  await this.takeScreenshot(screenshot);
 });
 
 defineStep("I choose image with name {string}", async function(name) {
-  const selector = `#image-container input[value='${name}-${this.E2E_SUFFIX}']`;
+  const selector = this.E2E_SUFFIX ? `#image-container input[value='${name}-${this.E2E_SUFFIX}']` : `#image-container input[value='${name}']`;
   await this.clickElementBySelector(selector, context = this.context);
   await this.page.waitForTimeout(500);
-  await this.takeScreenshot(`choose-image-${name}-${this.E2E_SUFFIX}`);
+  const screenshot = this.E2E_SUFFIX ? `choose-image-${name}-${this.E2E_SUFFIX}` : `choose-image-${name}`;
+  await this.takeScreenshot(screenshot);
 });
 
 defineStep("I choose latest TensorFlow image", async function() {
@@ -315,6 +317,14 @@ defineStep("I input {string} command in the terminal", async function(command) {
   await this.page.keyboard.press('Enter');
   await this.page.waitForTimeout(500);
   await this.takeScreenshot("input-command-terminal");
+});
+
+defineStep("I close all tabs in JupyterLab", async function() {
+  const xpath = ["//div[text()='File']", "//div[@class='lm-Menu-itemLabel p-Menu-itemLabel' and text()='Close All Tabs']"];
+  for (itemCount=0; itemCount < xpath.length; itemCount++) {
+    await this.clickElementByXpath(xpath[itemCount]);
+    await this.takeScreenshot("I-close-all-tabs-in-JupyterLab");
+  }
 });
 
 defineStep("I open {string} file in the file browser", async function(name) {
