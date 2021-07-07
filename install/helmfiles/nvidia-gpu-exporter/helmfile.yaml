@@ -1,6 +1,6 @@
 {{ $CHART_PATH := (env "CHART_PATH") }}
 {{- if env "PRIMEHUB_AIRGAPPED" }}
-{{ $CHART_PATH = "../../charts/primehub-grafana-dashboard-basic" }}
+{{ $CHART_PATH = "../../charts/nvidia-gpu-exporter" }}
 {{- end }}
 
 {{- if not $CHART_PATH }}

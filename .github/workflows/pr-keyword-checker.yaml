@@ -10,3 +10,4 @@ jobs:
       with:
         github-token: ${{github.token}}
         bodyDoesNotContain: 'app.clubhouse.io'
+

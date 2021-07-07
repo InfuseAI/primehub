@@ -1,4 +1,9 @@
 HELM_VERSION=v3.3.4
+HELMFILE_VERSION=v0.125.0
+
+PROMETHEUS_CHART_VERSION="8.9.3"
+PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.2.0"
+NVIDIA_GPU_EXPORTER_VERSION="0.4.0"
 
 function info() {
   echo -e "\033[0;32m$1\033[0m"
@@ -13,9 +18,25 @@ function error() {
 }
 
 function install::helm() {
-  info "[Install] helm"
-  wget -O helm.tgz https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz
-  tar zxvf helm.tgz; sudo mv linux-amd64/* /usr/bin/; rm -f helm.tgz
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  if ! command -v helm; then
+    info "[Install] helm"
+    wget -O helm.tgz https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
+    tar zxvf helm.tgz; sudo mv linux-amd64/* /usr/bin/; rm -f helm.tgz
+  else
+    warn "[Installed] helm"
+  fi
+}
+
+function install::helmfile() {
+  local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  if ! command -v helmfile; then
+    info "[Install] helmfile"
+    wget -O helmfile "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64"
+    chmod +x helmfile; sudo mv helmfile /usr/bin/
+  else
+    warn "[Installed] helmfile"
+  fi
 }
 
 function install::chartpress() {
@@ -41,6 +62,30 @@ function helm::update_dependency() {
   popd
 }
 
+function helm::fetch_prometheus_operator_chart() {
+  info "[Helm] Fetch Prometheus Operator"
+  pushd $PROJECT_ROOT
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm fetch --untar --untardir install/charts prometheus-community/prometheus-operator --version ${PROMETHEUS_CHART_VERSION} || true
+  popd
+}
+
+function helm::fetch_primehub_grafana_dashboard_basic_chart() {
+  info "[Helm] Fetch PrimeHub Grafana Dashboard Basic"
+  pushd $PROJECT_ROOT
+  helm repo add infuseai https://charts.infuseai.io
+  helm fetch --untar --untardir install/charts infuseai/primehub-grafana-dashboard-basic --version ${PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION} || true
+  popd
+}
+
+function helm::fetch_nvidia_gpu_exporter() {
+  info "[Helm] Fetch Nvidia GPU Exporter"
+  pushd $PROJECT_ROOT
+  helm repo add infuseai https://charts.infuseai.io
+  helm fetch --untar --untardir install/charts infuseai/nvidia-gpu-exporter --version ${NVIDIA_GPU_EXPORTER_VERSION} || true
+  popd
+}
+
 function helm::package() {
   local version=${1:-}
   info "[Helm] Build package ${CHART_NAME} version: ${version}"
@@ -55,8 +100,31 @@ function helm::package() {
 }
 
 function helm::patch_app_version() {
+  local extension=''
+  if [[ "$(uname)" == "Darwin" ]]; then
+    extension=".bak"
+  fi
   info "[Patch] app version: $(git describe --tags)"
-  sed -i "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/Chart.yaml
+  sed -i${extension} "s/LOCAL/$(git describe --tags)/g" ${CHART_ROOT}/Chart.yaml
+}
+
+function helm::patch_chart_verion() {
+  local extension=''
+  local version=$(git describe --tags | sed 's/^v//')
+  if [[ "$(uname)" == "Darwin" ]]; then
+    extension=".bak"
+  fi
+  info "[Patch] chart version: ${version}"
+  sed -i${extension} "s/^version: 1\.0\.0/version: ${version}/g" ${CHART_ROOT}/Chart.yaml
+}
+
+function actions::build_release_package() {
+  info "[GitHub Action] Build PrimeHub Chart Release Package"
+  local version=$(git describe --tags)
+  pushd $PROJECT_ROOT/../
+  tar --exclude='.git' -czf primehub-$version.tar.gz primehub
+  mv primehub-$version.tar.gz $PROJECT_ROOT
+  popd
 }
 
 function ci::setup_ci_environment_and_publish() {

@@ -25,6 +25,7 @@ PRIMEHUB_PATH=
 PRIMEHUB_CHART_PATH=
 PRIMEHUB_MODE='ee'
 PRIMEHUB_FEATURE_SSH_BASTION_SERVER=false
+PRIMEHUB_AIRGAPPED=
 LICENSE_PATH=
 
 PROMETHEUS_CHART="stable/prometheus-operator"
@@ -236,7 +237,7 @@ check_primehub_required_bin() {
   return -1
 }
 
-install:kubectl() {
+install::kubectl() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
@@ -332,7 +333,7 @@ install::primehub_required_bin() {
   mkdir -p ~/bin
   if [[ "${PRIMEHUB_PATH}" == "" ]]; then
     info "[Install] primehub required bin"
-    install:kubectl
+    install::kubectl
     install::yq
     install::jq
     install::helm
@@ -840,7 +841,11 @@ install::prometheus() {
   fi
 
   info "[Install] Prometheus"
-  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync
+  local options=''
+  if [ "$PRIMEHUB_AIRGAPPED" == "true" ]; then
+    options='--skip-deps'
+  fi
+  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync ${options}
 
   install::primehub_grafana_dashboard
 
@@ -1376,6 +1381,9 @@ main() {
       --path)
         shift
         PRIMEHUB_CHART_PATH=${1:-}
+      ;;
+      --airgap)
+        PRIMEHUB_AIRGAPPED=true
       ;;
       --license-path)
         shift
