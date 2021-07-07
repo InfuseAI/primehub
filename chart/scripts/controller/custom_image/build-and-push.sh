@@ -24,7 +24,11 @@ function build() {
   if [ -f $PULL_SECRET_AUTHFILE ]; then
     AUTHFILE_FLAGS+=(--authfile "$PULL_SECRET_AUTHFILE")
   fi
-  buildah --storage-driver overlay "${AUTHFILE_FLAGS[@]}" pull $BASE_IMAGE
+  if [ "$SKIP_TLS_VERIFY" == "true" ]; then
+    buildah --storage-driver overlay "${AUTHFILE_FLAGS[@]}" pull --tls-verify=false $BASE_IMAGE
+  else
+    buildah --storage-driver overlay "${AUTHFILE_FLAGS[@]}" pull $BASE_IMAGE
+  fi
   echo
   echo "Obtaining USER from $BASE_IMAGE"
   user=$(buildah --storage-driver overlay inspect --format '{{.OCIv1.Config.User}}' $BASE_IMAGE)
