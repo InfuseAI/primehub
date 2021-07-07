@@ -71,7 +71,20 @@ jobs:
 
       - store_artifacts:
           path: /tmp/artifacts
+      - notify_slack
 
+  verify_image_list:
+    docker:
+      - image: circleci/python:3.8
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: Check airgap image list
+          command: |
+            python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml
       - notify_slack
 
   e2e:
@@ -245,6 +258,7 @@ workflows:
   release_builds:
     jobs:
       - unit_test
+      - verify_image_list
       - e2e
       - e2e_ee
       - build:

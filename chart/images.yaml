@@ -40,7 +40,7 @@ primehub-all:
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
 
   # Model deployment
-  seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.1.0
+  seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.4.0
   model-storage-initializer: &model-storage-initializer gcr.io/kfserving/storage-initializer:v0.4.0
   mlflow-model-storage-initializer: &mlflow-model-storage-initializer infuseai/mlflow-model-downloader:v0.1.0
   prepackaged-tensorflow: &prepackaged-tensorflow infuseai/tensorflow2-prepackaged:v0.2.0
