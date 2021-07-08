@@ -152,10 +152,7 @@
 
     // update message
     var html_message;
-    if (evt.html_message !== undefined) {
-      progressMessage.html(evt.html_message);
-      html_message = evt.html_message;
-    } else if (msg !== undefined) {
+    if (msg !== undefined) {
       progressMessage.text(msg);
       html_message = progressMessage.html();
     }
