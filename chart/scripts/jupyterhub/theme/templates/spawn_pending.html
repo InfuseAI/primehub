@@ -98,10 +98,10 @@
   const ERROR = 'error';
   const regServerReq = /Server requested/g;
   const regAttached = /Attach succeeded/g;
-  const regPulling = /pulling image/g;
-  const regPulled = /Successfully pulled image/g;
-  const regImageExist = /Container image \"[\S]+\" already present on machine/gi;
-  const regCreatedContainer = /Created container/g;
+  const regPulling = new RegExp('Pulling image \"{{ spawner.image }}\"');
+  const regPulled = new RegExp('Successfully pulled image \"{{ spawner.image }}\"');
+  const regImageExist = new RegExp('Container image \"{{ spawner.image }}\" already present on machine');
+  const regCreatedContainer = /Created container notebook/g;
   const regFailedPull = /Failed to pull image/gi;
   // Stage check point elements.
   const stagePrepare = $('#li-preparing');
