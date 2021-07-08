@@ -148,6 +148,7 @@ jobs:
           path: ~/project/e2e
 
       - notify_slack
+      - create_ticket 
 
   e2e_regression:
     machine:
