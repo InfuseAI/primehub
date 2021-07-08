@@ -4,7 +4,7 @@ set -e
 cleanup() {
   if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
     echo "delete created phschedule"
-    kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-2d${E2E_SUFFIX}
+    kubectl -n hub delete phschedule -l primehub.io/group=escaped-e2e-2dtest-2dgroup-2d${E2E_SUFFIX} || true
   fi
 
   if [ -f "tests/report/cucumber_report.json" ]; then
