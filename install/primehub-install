@@ -626,6 +626,7 @@ prepare_primehub_env() {
     export PRIMEHUB_NAMESPACE
     export PH_PASSWORD
     export KC_PASSWORD
+    export PRIMEHUB_AIRGAPPED=${PRIMEHUB_AIRGAPPED}
 
     # microk8s-hostpath storage class support both RWO and RWX
     if [[ "${PRIMEHUB_STORAGE_CLASS}" == 'microk8s-hostpath' ]]; then
