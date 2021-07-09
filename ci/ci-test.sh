@@ -151,6 +151,10 @@ if [[ "$INSTALLED_PH" != "true" ]]; then
 
   # test
   for filename in tests/*.sh; do echo $filename; $filename; done
+else 
+  # get authenticated and able to connect to demo, get info from circleci: org settings: contexts: e2e-demo-a
+  gcloud auth activate-service-account gitlab-ci@primehub-demo.iam.gserviceaccount.com --key-file=<(echo $GCP_SA_JSON_PRIMEHUB_DEMO)
+  gcloud container clusters get-credentials $CI_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID 
 fi
 
 # e2e test
