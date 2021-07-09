@@ -9,7 +9,7 @@ Feature: MISC
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     # Landing page
-    Then I "should" see element with xpath "//h2[text()='Getting Started']"
+    Then I "should" see element with xpath "//h2[text()='User Guide']"
     # TODO: add tests for landing page component
     #When I click element with xpath "//div[contains(@style, 'support.png')]"
     #And I switch to "UserGuide" tab
