@@ -204,7 +204,7 @@ primehub-model-images:
 
 primehub-phapp-template-images:
   code-server: codercom/code-server:3.9.2
-  label-studio: heartexlabs/label-studio:latest
+  label-studio: heartexlabs/label-studio:1.1.0
   matlab: nvcr.io/partners/matlab:r2020b
   mlflow: larribas/mlflow:1.9.1
   streamlit: infuseai/streamlit:v0.79.0
