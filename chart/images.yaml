@@ -68,6 +68,8 @@ primehub-all:
   # Tusd Uploader
   tusd: &tusd tusproject/tusd:v1.4.0
 
+  # Nvidia GPU Node Exporter
+  nvidia_gpu_prometheus_exporter: &nvidia_gpu_prometheus_exporter infuseai/nvidia_gpu_prometheus_exporter:0.4
 
 primehub-ee:
   # Core
@@ -137,6 +139,10 @@ primehub-ee:
   # Tusd Uploader
   tusd: *tusd
 
+  # GPU Node Exporter
+  nvidia_gpu_prometheus_exporter: *nvidia_gpu_prometheus_exporter
+
+
 primehub-deploy:
   # Core
   busybox: *busybox
@@ -174,6 +180,9 @@ primehub-deploy:
   # Usage
   primehub-usage: *primehub-usage
   postgres: *postgres
+
+  # GPU Node Exporter
+  nvidia_gpu_prometheus_exporter: *nvidia_gpu_prometheus_exporter
 
 primehub-admin-notebook:
   primehub-admin-notebook: infuseai/primehub-admin-notebook:dd029e8112
