@@ -42,15 +42,25 @@ print_usage() {
 
 list_groups() {
   local -a groups=()
+  local yq_version=$(yq -V| awk '{print $3}')
+
   for file in ${IMAGE_SEARCH[@]}; do
     if [[ ! -f $file ]]; then
       echo "$file not found"
       exit -1
     fi
 
-    for group in $(yq r "${file}" -j | jq -r '. | keys[]'); do
-      groups+=("$group")
-    done
+    if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
+      # For yq@4
+      for group in $(yq e "${file}" -j | jq -r '. | keys[]'); do
+        groups+=("$group")
+      done
+    else
+      # For yq@2 or yq@3
+      for group in $(yq r "${file}" -j | jq -r '. | keys[]'); do
+        groups+=("$group")
+      done
+    fi
   done
   echo "${groups[@]}" | xargs -n1 | sort -u
 }
