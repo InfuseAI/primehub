@@ -57,7 +57,7 @@ curl -sLo jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 
   sudo mv jq /usr/local/bin
 
 # Install yq
-curl -sLo yq https://github.com/mikefarah/yq/releases/download/2.1.2/yq_linux_amd64 && \
+curl -sLo yq https://github.com/mikefarah/yq/releases/download/v4.9.8/yq_linux_amd64 && \
   chmod +x yq && \
   sudo mv yq /usr/local/bin
 
