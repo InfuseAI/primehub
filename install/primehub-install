@@ -6,11 +6,11 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 export PATH=${PATH}:~/bin
 K9S_VERSION=v0.21.9
 KUBECTL_VERSION=v1.17.11
-HELM_VERSION=v3.3.4
-HELMDIFF_VERSION=v3.1.2
-HELMFILE_VERSION=v0.125.0
+HELM_VERSION=v3.6.2
+HELMDIFF_VERSION=v3.1.3
+HELMFILE_VERSION=v0.139.9
 JQ_VERSION=1.6
-YQ_VERSION=2.1.2
+YQ_VERSION=v4.9.8
 
 INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
@@ -105,6 +105,7 @@ USAGE:
   $SELF version [--beta]                         : Show the default and available PrimeHub versions
   $SELF apply-license [--license-path path]      : Apply the license of PrimeHub
   $SELF usage                                    : Show the resource usage of the k8s environment
+  $SELF required-bin                             : Install the required binaries manually
   $SELF diagnose [--tail n] [--logs-path path]   : Run diagnostic to collect logs
   $SELF -h,--help                                : show this message
 
@@ -327,6 +328,13 @@ install::k9s() {
   popd > /dev/null
 }
 
+install:nfs-common() {
+  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
+    info "[Install] nfs-common"
+    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  fi
+}
+
 install::primehub_required_bin() {
   local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
@@ -347,10 +355,9 @@ install::primehub_required_bin() {
     tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
   fi
 
-  # Check nfs-common
-  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
-    info "[Install] nfs-common"
-    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  # Check nfs-commo
+  if command -v lsb_release > /dev/null; then
+    install:nfs-common
   fi
 }
 
@@ -1175,12 +1182,26 @@ apply_license() {
 }
 
 show_versions() {
+  local yq_version=$(yq -V| awk '{print $3}')
+
   info "[Available] PrimeHub Versions:"
-  curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep -v "\-rc"
-  if [[ ${SHOW_RC_VERSION} == true ]]; then
-    warn "[Available] PrimeHub Beta Versions:"
-    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep "\-rc"
+  if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
+    # For YQ 4
+    curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep -v "\-rc"
+    if [[ ${SHOW_RC_VERSION} == true ]]; then
+      warn "[Available] PrimeHub Beta Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep "\-rc"
+    fi
+  else
+    # For YQ 2 or 3
+    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep -v "\-rc"
+    if [[ ${SHOW_RC_VERSION} == true ]]; then
+      warn "[Available] PrimeHub Beta Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep "\-rc"
+    fi
   fi
+
+
 }
 
 verify_minimal_resources() {
@@ -1358,7 +1379,7 @@ main() {
           exit 1
         fi
       ;;
-      apply-license|license|diagnose|version|usage)
+      apply-license|license|diagnose|version|usage|required-bin)
         if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
         cmd=${1};
       ;;
@@ -1501,6 +1522,9 @@ main() {
     usage)
       show_resources_usage
       verify_minimal_resources
+    ;;
+    required-bin)
+      install::primehub_required_bin
     ;;
     diagnose)
       preflight_check
