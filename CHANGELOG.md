@@ -3,6 +3,12 @@
 ## Upcoming
 ### What's New
 
+### Breaking Changes
+
+Upgrade helm version from 3.3.4 to 3.6.2
+Upgrade helm-diff version to 3.1.3
+Upgrade helmfile version to 0.139.9
+
 ## 3.6.0
 ### What's New
 
