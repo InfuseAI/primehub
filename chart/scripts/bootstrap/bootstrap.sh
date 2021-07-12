@@ -174,6 +174,7 @@ function create_default_resources() {
   # Group mapping
   print_info "Add group: $PH_USER -> $PH_GROUP"
   kc_user_group_add $KC_REALM $PH_USER $PH_GROUP
+  kc_user_become_group_admin $KC_REALM $PH_USER $PH_GROUP
 
   # Add client role: 'realm-management:realm-admin' to user
   print_info "Add client role: realm-management:realm-admin -> $PH_USER"
@@ -195,7 +196,7 @@ function create_default_resources() {
 
   # add crds
   print_info "Add CRDs: img:base-notebook img:pytorch-1 img:tf-1 img:tf-2 it:cpu-1 it:cpu-2 it:gpu-1 it:gpu-2"
-  kubectl apply -n $PRIMEHUB_NAMESPACE -f $DIR/crds.yaml  || true
+  kubectl apply -n $PRIMEHUB_NAMESPACE -f $DIR/crds.yaml || true
 
 }
 

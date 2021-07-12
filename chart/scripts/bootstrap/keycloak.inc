@@ -132,6 +132,15 @@ function kc_user_group_add() {
   $KCADM add-members -r $realm --uusername $user --gname $group
 }
 
+function kc_user_become_group_admin() {
+  local realm=$1
+  local user=$2
+  local group=$3
+  local default_group_id=$(kc_group_id $realm $group)
+  echo $KCADM update groups/$default_group_id -r $realm -s 'attributes.admins=["'$user'"]'
+  $KCADM update groups/$default_group_id -r $realm -s 'attributes.admins=["'$user'"]'
+}
+
 function kc_user_add_client_role() {
   local realm=$1
   local user=$2
