@@ -173,28 +173,6 @@ jobs:
       - notify_slack
       - create_ticket 
 
-  e2e_normal_user:
-    machine:
-      image: ubuntu-1604:202004-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ee
-            E2E_NORMAL_USER: "true"
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-
-      - notify_slack
-      - create_ticket 
-
   build:
     docker:
       # specify the version you desire here
@@ -286,7 +264,6 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_normal_user
       - e2e_regression
       - e2e_installed_ph_daily:
           context: e2e-demo-a

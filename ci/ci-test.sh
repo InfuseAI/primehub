@@ -172,10 +172,7 @@ if [[ "${E2E_SCHEDULED}" == "daily" ]]; then
   tags="(@released or @daily) and not (@normal-user or @regression or @wip)"
 fi
 if [[ "$E2E_REGRESSION" == "true" ]]; then
-  tags="@regression"
-fi
-if [[ "$E2E_NORMAL_USER" == "true" ]]; then
-  tags="(@released or @normal-user) and not (@daily or @admin-user or @regression or @wip)"
+  tags="(@released or @normal-user) and not (@daily or @admin-user or @wip)"
 fi
 
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
