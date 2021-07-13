@@ -28,6 +28,7 @@ defineStep("I have {string} installed", async function(app) {
 
 defineStep("I keep MLflow info from detail page in memory", async function() {
   const info = ["App URL", "Service Endpoints"]
+  this.copyArray = [];
   for (itemCount=0; itemCount < info.length; itemCount++) {
     let [ele] = await this.page.$x(`//div[text()='${info[itemCount]}']/following-sibling::div`);
     let text = await (await ele.getProperty('textContent')).jsonValue();
