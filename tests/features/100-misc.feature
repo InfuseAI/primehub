@@ -123,9 +123,9 @@ Feature: MISC
     # System Settings
     When I click "System Settings" in admin dashboard
     Then I am on the admin dashboard "System Settings" page
-    And I "should" see element with xpath "//div[@class='ant-card-head-title']//span[text()='PrimeHub License']"
-    And I "should" see element with xpath "//div[@class='ant-card-head-title']//span[text()='System Settings']"
-    And I "should" see element with xpath "//div[@class='ant-card-head-title']//span[text()='Email Settings']"
+    And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'PrimeHub License')]"
+    And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'System Settings')]"
+    And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'Email Settings')]"    
     # User Profile
     When I choose "User Profile" in top-right menu
     Then I "should" see element with xpath "//label[text()='Username']"
