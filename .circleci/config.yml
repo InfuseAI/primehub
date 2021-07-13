@@ -35,7 +35,7 @@ commands:
           command: |
             curl -X POST -H "Content-Type:application/json" \
             -H "Clubhouse-Token:${CLUBHOUSE_API_TOKEN}" \
-            -d "{ \"name\":\"Automation failed - ${CIRCLE_JOB} - ${CIRCLE_SHA1}\", \"description\":\"Automation failed - ${CIRCLE_SHA1} - [${CIRCLE_JOB}](${CIRCLE_BUILD_URL})\", \"estimate\":1, \"project_id\":17953, \"story_type\":\"chore\" }" \
+            -d "{ \"name\":\"Automation failed - $(date '+%B-%d-%Y') - ${CIRCLE_JOB} - ${CIRCLE_SHA1}\", \"description\":\"Automation failed - ${CIRCLE_SHA1} - [${CIRCLE_JOB}](${CIRCLE_BUILD_URL})\", \"estimate\":1, \"project_id\":17953, \"story_type\":\"chore\" }" \
             -L "https://api.clubhouse.io/api/v3/stories"
           when: on_fail
 jobs:
