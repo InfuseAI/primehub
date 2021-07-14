@@ -174,7 +174,10 @@
           window.location.reload();
         } else {
           {% if not spawner.launch_path %}
-            window.open(window.location,'primehub-notebook').focus();
+            var newWindow = window.open(window.location,'primehub-notebook');
+            if (newWindow) {
+              newWindow.focus();
+            }
           {% endif %}
           window.location = '/hub/home';
         }
