@@ -7,7 +7,7 @@ Feature: Apps
   Background:
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
-    When I choose group with name "test-group"
+    When I choose group with name "e2e-test-group-display-name"
 
   @wip
   Scenario: Install MLflow
@@ -70,3 +70,66 @@ Feature: Apps
     And I click "Uninstall" button
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-mlf']"
+
+  Scenario: Install Code Server
+    When I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    When I click "Applications" button
+    Then I am on the PrimeHub console "Store" page
+    When I click button to install "code-server"
+    And I type "test-code-server" to "displayName" text field
+    And I click "Create" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "test-code-server"
+    Then I wait for attribute "Message" with value "Deployment is ready"
+
+  Scenario: Launch Code Server
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "code-server" installed
+    When I go to the apps detail page with name "test-code-server"
+    #And I click "Open Web UI" button
+    And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
+    And I switch to "console/apps/code-server" tab
+    Then I "should" see element with xpath "//h1[contains(text(), 'code-server')]"
+
+  Scenario: Remove Code Server
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "code-server" installed
+    When I go to the apps detail page with name "test-code-server"
+    And I click "Uninstall" button
+    And I click "Yes" button
+    Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-code-server']"
+
+  Scenario: Install Label Studio
+    When I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    When I click "Applications" button
+    Then I am on the PrimeHub console "Store" page
+    When I click button to install "label-studio"
+    And I type "test-label-studio" to "displayName" text field
+    And I click "Create" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "test-label-studio"
+    Then I wait for attribute "Message" with value "Deployment is ready"
+
+  Scenario: Launch Label Studio
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "label-studio" installed
+    When I go to the apps detail page with name "test-label-studio"
+    And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
+    And I switch to "console/apps/label-studio" tab
+    And I wait for 10.0 second
+    And I click refresh
+    Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]"
+
+  Scenario: Remove Label Studio
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "label-studio" installed
+    When I go to the apps detail page with name "test-label-studio"
+    And I click "Uninstall" button
+    And I click "Yes" button
+    Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-label-studio']"
