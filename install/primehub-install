@@ -107,6 +107,7 @@ USAGE:
   $SELF usage                                    : Show the resource usage of the k8s environment
   $SELF required-bin                             : Install the required binaries manually
   $SELF diagnose [--tail n] [--logs-path path]   : Run diagnostic to collect logs
+  $SELF env [options] | <commands>               : Set environment and execute command for current kubernetes context
   $SELF -h,--help                                : show this message
 
 Options:
@@ -1356,6 +1357,70 @@ diagnose_k8s_cluster() {
   info "[Done]"
 }
 
+phenv() {
+  local CONFIG_PATH="$(primehub_config_path)"
+  phenv_usage() {
+    local SELF=`basename $0`
+    cat <<EOF
+Usage:
+  $SELF env [options] | <commands>
+
+Commands:
+  <empty>           : Print envionment                      Ex: $SELF env
+  edit              : Edit envionment                       Ex: $SELF env edit
+  override          : Edit helm_override                    Ex: $SELF env override primehub.yaml
+  <commands>        : Set environment and execute commands  Ex: $SELF env helmfile -f path/to/helmfile diff
+
+Options:
+  --path            : Show config path for curent kubernetes context
+EOF
+  }
+
+  if [[ $# -gt 0 ]]; then
+    # Show Usage
+    if [[ $1 == '-h' || $1 == '--help' ]]; then
+      phenv_usage
+      exit
+    fi
+
+    # Show current config path
+    if [[ $1 == '--path' ]]; then
+      echo $CONFIG_PATH
+      exit
+    fi
+
+    local EDITOR=${EDITOR:-vim}
+    if [[ $1 == 'edit' ]]; then
+      eval "$EDITOR $CONFIG_PATH/.env"
+      exit
+    fi
+
+    if [[ $1 == 'override' ]]; then
+      OVERRIED_FILE_PATH=$CONFIG_PATH/helm_override/$2
+      if [[ -f ${OVERRIED_FILE_PATH} ]]; then
+        eval "$EDITOR $OVERRIED_FILE_PATH"
+        exit
+      else
+        # error "Wrong override file path: $OVERRIED_FILE_PATH"
+        warn "Please provide the override file to edit:"
+        eval "ls $OVERRIED_FILE_PATH"
+        exit
+      fi
+    fi
+  fi
+
+  if [[ ! -f ${CONFIG_PATH}/.env ]]; then
+    error "Config file not found. Should be '$CONFIG_PATH/.env'"
+    exit 1
+  fi
+
+  load_env_variables
+  export PRIMEHUB_KUBE_VERSION=$(kubectl version -ojson | jq -r .serverVersion.gitVersion)
+  export PRIMEHUB_NAMESPACE
+
+  env "$@"
+}
+
 main() {
   local cmd=''
   local target=''
@@ -1365,6 +1430,10 @@ main() {
 
   while (( "$#" )); do
     case "${1:-}" in
+      env)
+        cmd=${1}; shift
+        break
+      ;;
       create|destroy|status|config|diff|upgrade)
         if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
         cmd=${1}; shift
@@ -1530,6 +1599,9 @@ main() {
       preflight_check
       check_primehub_required_bin
       diagnose_k8s_cluster
+    ;;
+    env)
+      phenv "$@"
     ;;
     *)
       usage
