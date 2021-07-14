@@ -1601,7 +1601,7 @@ main() {
       diagnose_k8s_cluster
     ;;
     env)
-      phenv $@
+      phenv "$@"
     ;;
     *)
       usage
