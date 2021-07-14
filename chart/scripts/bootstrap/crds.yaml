@@ -94,6 +94,9 @@ spec:
     operator: "Equal"
     value: "user"
     effect: "NoSchedule"
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
 ---
 apiVersion: primehub.io/v1alpha1
 kind: InstanceType
@@ -112,3 +115,6 @@ spec:
     operator: "Equal"
     value: "user"
     effect: "NoSchedule"
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
