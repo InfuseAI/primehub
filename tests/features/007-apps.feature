@@ -121,9 +121,7 @@ Feature: Apps
     When I go to the apps detail page with name "test-label-studio"
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/label-studio" tab
-    And I wait for 10.0 second
-    And I click refresh
-    Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]"
+    Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]" after page reloaded
 
   Scenario: Remove Label Studio
     Given I choose "Apps" in sidebar menu

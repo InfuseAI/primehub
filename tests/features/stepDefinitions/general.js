@@ -273,6 +273,22 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
   }
 });
 
+defineStep("I {string} see element with xpath {string} after page reloaded", async function(exist, xpath) {
+  let ret;
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = result; }
+    );
+    if (exist.includes('not') === ret) {
+      await this.takeScreenshot("before-reload");
+      await this.page.waitForTimeout(3000);
+      await this.page.reload();
+    }
+    else return;
+  }
+  throw new Error(`failed to see ${xpath} after page reloaded`);
+});
+
 defineStep("I wait for {float} second(s)", async function(float) {
   await this.page.waitForTimeout(float * 1000);
 });
