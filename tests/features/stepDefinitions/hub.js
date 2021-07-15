@@ -79,7 +79,7 @@ defineStep("I choose image with name {string}", async function(name) {
 defineStep("I choose latest TensorFlow image", async function() {
   let ele;
   for (retryCount=0; retryCount < 3; retryCount++) {
-    ele = await this.context.$x("//input[contains(@value, 'tf-') and not(@disabled)]");
+    ele = await this.context.$x("//input[contains(@value, 'tf-2') and not(@disabled)]");
     if (ele.length > 0) {
       await ele[ele.length-1].click();
       await this.page.waitForTimeout(500);

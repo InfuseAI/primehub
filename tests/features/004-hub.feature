@@ -146,17 +146,17 @@ Feature: Hub
     When I click element with test-id "add-button"
     Then I should see element with test-id "image/name"
     And I should see element with test-id "image/displayName"
-    When I type "test-image" to element with test-id "image/name"
+    When I type "test-tf-image" to element with test-id "image/name"
     And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I click element with xpath "//td[contains(text(), 'phusers')]/..//input"
+    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
     And I click element with xpath "//button/span[text()='OK']"
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
-    And I search "test-image" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "test-image"
+    And I search "test-tf-image" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "test-tf-image"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     When I choose "Notebooks" in sidebar menu
@@ -164,14 +164,14 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I choose instance type
-    And I choose image with name "test-image"
+    And I choose image with name "test-tf-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click element with selector "#start" in hub
     And I wait for 4.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
-    When I switch to "/console/g/phusers/hub" tab
+    When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu
@@ -208,6 +208,7 @@ Feature: Hub
     And I open "tmp.txt" file in the file browser
     Then I "should" see element with xpath "//div[@class='CodeMirror-code']//span[contains(text(), 'Driver Version: 450.51.06')]"
     And I "should" see element with xpath "//div[@class='CodeMirror-code']//span[contains(text(), 'CUDA Version: 11.0')]"
+    And I close all tabs in JupyterLab
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
     And I check the group warning message against group "e2e-test-group"
