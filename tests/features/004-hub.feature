@@ -113,8 +113,9 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @daily
   Scenario: User can start the TensorBoard
+    When I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
@@ -129,13 +130,13 @@ Feature: Hub
     Then I can see the JupyterLab page
     When I click the "Tensorboard" card in the launcher
     Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
-    When I switch to "/console/g/phusers/hub" tab
+    When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @admin-user
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
