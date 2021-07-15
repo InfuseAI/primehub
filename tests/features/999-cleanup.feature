@@ -33,6 +33,13 @@ Feature: Admin
     When I click refresh
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image"
+    When I search "test-tf-image" in test-id "text-filter-name"
+    And I delete a row with text "test-tf-image"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "test-tf-image"
+    When I click refresh
+    And I search "test-tf-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "test-tf-image"
     When I search "error-image" in test-id "text-filter-name"
     And I delete a row with text "error-image"
     And I wait for 2.0 seconds

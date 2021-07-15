@@ -60,6 +60,7 @@ Feature: Apps
     And I click element with xpath "//button[@class='jp-Dialog-button jp-mod-accept jp-mod-warn jp-mod-styled']"
     And I wait for 60.0 seconds
     Then I "should" see element with xpath "//pre[contains(text(), 'tf.Tensor')]"
+    And I close all tabs in JupyterLab
 
   @wip
   Scenario: Remove MLflow
