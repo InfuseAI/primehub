@@ -131,3 +131,64 @@ Feature: Apps
     And I click "Uninstall" button
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-label-studio']"
+
+  Scenario: Install Matlab
+    When I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    When I click "Applications" button
+    Then I am on the PrimeHub console "Store" page
+    When I click button to install "matlab"
+    And I type "test-matlab" to "displayName" text field
+    And I click "Create" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "test-matlab"
+    Then I wait for attribute "Message" with value "Deployment is ready"
+
+  Scenario: Launch Matlab
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "matlab" installed
+    When I go to the apps detail page with name "test-matlab"
+    And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
+    And I switch to "console/apps/matlab" tab
+    #Then 
+
+  Scenario: Remove Matlab
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "matlab" installed
+    When I go to the apps detail page with name "test-matlab"
+    And I click "Uninstall" button
+    And I click "Yes" button
+    Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-matlab']"
+
+  Scenario: Install Streamlit 
+    When I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    When I click "Applications" button
+    Then I am on the PrimeHub console "Store" page
+    When I click button to install "streamlit"
+    And I type "test-streamlit" to "displayName" text field
+    And I type "https://raw.githubusercontent.com/streamlit/streamlit-example/master/streamlit_app.py" to element with xpath "//input[contains(@value, 'FILE_PATH')]/following-sibling::input"
+    And I click "Create" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "test-streamlit"
+    Then I wait for attribute "Message" with value "Deployment is ready"
+
+  Scenario: Launch Streamlit
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "streamlit" installed
+    When I go to the apps detail page with name "test-streamlit"
+    And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
+    And I switch to "console/apps/streamlit" tab
+    Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
+
+  Scenario: Remove Streamlit
+    Given I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I have "streamlit" installed
+    When I go to the apps detail page with name "test-streamlit"
+    And I click "Uninstall" button
+    And I click "Yes" button
+    Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-streamlit']"
