@@ -136,7 +136,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user
+  @daily @admin-user
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
