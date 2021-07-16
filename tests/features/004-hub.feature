@@ -32,7 +32,7 @@ Feature: Hub
     And I choose instance type with name "test-instance-type"
     And I choose image with name "error-image"
     And I click element with selector "input[value='Start Notebook']" in hub
-    Then I can see the spawning page and wait for log "[Warning] Error: ErrImagePull"
+    Then I can see the spawning page and wait for log "[Warning] Error: ImagePullBackOff"
     And I click tab of "Logs"
     Then I should see "waiting to start: image can't be pulled" in element "div" under active tab
     When I click tab of "Notebooks"
