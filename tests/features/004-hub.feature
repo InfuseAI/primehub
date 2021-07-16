@@ -32,9 +32,9 @@ Feature: Hub
     And I choose instance type with name "test-instance-type"
     And I choose image with name "error-image"
     And I click element with selector "input[value='Start Notebook']" in hub
-    And I wait for 2.0 seconds
-    And I click tab of "Logs"
     Then I can see the spawning page and wait for log "[Warning] Error: ImagePullBackOff"
+    And I click tab of "Logs"
+    Then I should see "waiting to start: image can't be pulled" in element "div" under active tab
     When I click tab of "Notebooks"
     And I click element with xpath "//a[text()='Cancel']" in hub
     Then I go to the spawner page
