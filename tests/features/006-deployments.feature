@@ -168,7 +168,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "create-deployment-test" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
     When I click on PrimeHub icon
@@ -313,7 +314,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "model-uri-test" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='model-uri-test']"
     When I choose "Logout" in top-right menu
@@ -355,7 +357,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "create-deployment-test-gpu" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
     When I click on PrimeHub icon

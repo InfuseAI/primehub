@@ -364,6 +364,13 @@ defineStep("I click button of {string} on confirmation dialogue", async function
   await this.clickElementByXpath(xpath);
 });
 
+defineStep("I click button of {string} on deletion confirmation dialogue", async function(action) {
+  //div[@class='ant-modal-content']//button[contains(.,'Delete')]
+  await this.page.waitForTimeout(1000);
+  const xpath = `//div[@class='ant-modal-content']//button[contains(.,'${action}')]`;
+  await this.clickElementByXpath(xpath);
+});
+
 defineStep("I click switch of {string}", async function(testId) {
   //div[@data-testid='user/enabled']//button
   const xpath = `//div[@data-testid='${testId}']//button`;
