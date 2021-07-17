@@ -113,7 +113,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @wip
   Scenario: User can start the TensorBoard
     When I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
@@ -136,7 +136,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @admin-user
+  @daily @admin-user @wip
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
