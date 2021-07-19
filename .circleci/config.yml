@@ -105,8 +105,6 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
-      - notify_slack
-
   e2e_ee:
     machine:
       image: ubuntu-1604:202004-01
@@ -115,18 +113,16 @@ jobs:
       - run:
           name: Setup
           command: |
-            ./ci/setup_env.sh
+            time ./ci/setup_env.sh
       - run:
           name: End-to-end tests
           environment:
             PRIMEHUB_MODE: ee
           command: |
-            ./ci/ci-test.sh
+            time ./ci/ci-test.sh
 
       - store_artifacts:
           path: ~/project/e2e
-
-      - notify_slack
 
   e2e_installed_ph_daily:
     machine:
