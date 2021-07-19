@@ -74,7 +74,7 @@ Feature: Admin
     And I wait for 4.0 seconds
     And I click element with xpath "//a/span[text()='Confirm']"
     And I wait for 2.0 seconds
-    And I search "test-instance-type-gpu" in test-id "text-filter-name"
+    And I search "test-instance-type-gpu-display-name" in test-id "text-filter-displayName"
     Then list-view table "should" contain row with "test-instance-type-gpu"
     When I click edit-button in row contains text "test-instance-type-gpu"
     Then I should see input in test-id "instanceType/name" with value "test-instance-type-gpu"
