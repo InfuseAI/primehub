@@ -21,32 +21,9 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
-  Scenario: User can cancel spawning while chose error image
-    When I choose group with name "e2e-test-group-display-name"
-    And I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I get the iframe object
-    And I go to the spawner page
-    And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type"
-    And I choose image with name "error-image"
-    And I click element with selector "input[value='Start Notebook']" in hub
-    Then I can see the spawning page and wait for log "[Warning] Error: ImagePullBackOff"
-    And I click tab of "Logs"
-    Then I should see "waiting to start: image can't be pulled" in element "div" under active tab
-    When I click tab of "Notebooks"
-    And I click element with xpath "//a[text()='Cancel']" in hub
-    Then I go to the spawner page
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   Scenario: User can start/stop the JupyterLab server
     When I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I keep group resources
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
@@ -64,7 +41,7 @@ Feature: Hub
     Then I should see "--ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab" in element "div" under active tab
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
@@ -180,7 +157,7 @@ Feature: Hub
   @daily
   Scenario: User can start/stop the JupyterLab server with GPU
     When I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I keep group resources
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
@@ -192,7 +169,8 @@ Feature: Hub
     Then I can see the spawning page and wait for notebook started
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "1,2", Memory "1.0 GB,4 GB", GPU "1,2"
+    And I should see group resources with diff of CPU, memory & GPU: 1.0, 1.0, 1.0
+    When I keep group resources
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
@@ -217,6 +195,31 @@ Feature: Hub
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
     When I choose "Logout" in top-right menu
     Then I am on login page
+
+  @daily
+  Scenario: User can cancel spawning while chose error image
+    When I choose group with name "e2e-test-group-display-name"
+    And I keep group resources
+    And I choose "Notebooks" in sidebar menu
+    Then I am on the PrimeHub console "Notebooks" page
+    When I get the iframe object
+    And I go to the spawner page
+    And I wait for 2.0 seconds
+    And I choose instance type with name "test-instance-type"
+    And I choose image with name "error-image"
+    And I click element with selector "input[value='Start Notebook']" in hub
+    Then I can see the spawning page and wait for log "[Warning] Error: ImagePullBackOff"
+    And I click tab of "Logs"
+    Then I should see "waiting to start: image can't be pulled" in element "div" under active tab
+    When I click tab of "Notebooks"
+    And I click element with xpath "//a[text()='Cancel']" in hub
+    Then I go to the spawner page
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+

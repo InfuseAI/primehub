@@ -482,6 +482,55 @@ defineStep("I should see group resources with CPU {string}, Memory {string}, GPU
   throw new Error('Group resources are incorrect, pls check screenshot');
 });
 
+defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory & GPU: (.*), (.*), (.*))?$/, async function(cpuDiff, memDiff, gpuDiff) {
+  const data = ['CPU', 'Memory', 'GPU']
+  let lastUsed = [], lastQuota = [], diff = [];
+  let row, text;
+  await this.page.waitForTimeout(1000);
+  if (cpuDiff && memDiff && gpuDiff)
+  {
+    diff = [cpuDiff, memDiff, gpuDiff]
+    lastUsed = this.used;
+    lastQuota = this.quota;
+  }
+  this.used = [], this.quota = [];
+
+  for (retry = 0; retry < 3; retry++) {
+    for (i = 0; i < data.length; i++) {
+      try {
+        row = await this.page.$x(
+          `//h3[text()='Group Resource']/following-sibling::table//td[text()='${data[i]}']/following-sibling::td`);
+        // used column
+        text = await (await row[0].getProperty('textContent')).jsonValue();
+        this.used.push(text);
+        // limit column
+        text = await (await row[1].getProperty('textContent')).jsonValue();
+        this.quota.push(text);
+      }
+      catch (e) {}
+    }
+    if (this.used.length === data.length && this.quota.length === data.length) break;
+    console.log('The group resource table is not showing well, try to reload the page...');
+    await this.page.waitForTimeout(3000);
+    await this.page.reload();
+    await this.page.waitForTimeout(2000);
+  }
+  console.log(lastUsed);
+  console.log(lastQuota);
+  console.log(this.used);
+  console.log(this.quota);
+  console.log(diff);
+
+  if (cpuDiff && memDiff && gpuDiff) {
+    for (i = 0; i < data.length; i++) {
+      if (parseFloat(lastUsed[i]) + parseFloat(diff[i]) !== parseFloat(this.used[i])) {
+        await this.takeScreenshot(`Group-resources-not-corret`);
+        throw new Error('Group resources usage not correct, pls check screenshot');
+      }
+    }
+  }
+});
+
 defineStep("I should see text of element with xpath {string} is matched the regular expression {string}", async function(xpath, exp) {
   let text;
   const re = new RegExp(exp);
