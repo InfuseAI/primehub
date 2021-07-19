@@ -486,7 +486,7 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
   const data = ['CPU', 'Memory', 'GPU']
   let lastUsed = [], lastQuota = [], diff = [];
   let row, text;
-  await this.page.waitForTimeout(5000);
+  await this.page.waitForTimeout(1000);
   if (cpuDiff && memDiff && gpuDiff)
   {
     diff = [cpuDiff, memDiff, gpuDiff]
