@@ -96,11 +96,11 @@ jobs:
       - run:
           name: Setup
           command: |
-            ./ci/setup_env.sh
+            time ./ci/setup_env.sh
       - run:
           name: End-to-end tests
           command: |
-            ./ci/ci-test.sh
+            time ./ci/ci-test.sh
 
       - store_artifacts:
           path: ~/project/e2e
