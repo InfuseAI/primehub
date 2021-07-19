@@ -28,7 +28,7 @@ k3d version
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
-k3d create cluster ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
+k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
 mkdir -p ~/.kube
 cp $(k3d get kubeconfig ${CLUSTER_NAME}) ~/.kube/config || true
 
