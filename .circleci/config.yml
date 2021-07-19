@@ -90,36 +90,36 @@ jobs:
   e2e:
     machine:
       #image: infuseai/primehub-ci:0.6.3-e2e
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
           name: Setup
           command: |
-            time ./ci/setup_env.sh
+            ./ci/setup_env.sh
       - run:
           name: End-to-end tests
           command: |
-            time ./ci/ci-test.sh
+            ./ci/ci-test.sh
 
       - store_artifacts:
           path: ~/project/e2e
 
   e2e_ee:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
       - run:
           name: Setup
           command: |
-            time ./ci/setup_env.sh
+            ./ci/setup_env.sh
       - run:
           name: End-to-end tests
           environment:
             PRIMEHUB_MODE: ee
           command: |
-            time ./ci/ci-test.sh
+            ./ci/ci-test.sh
 
       - store_artifacts:
           path: ~/project/e2e
