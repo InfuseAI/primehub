@@ -220,9 +220,14 @@ defineStep("I fill in {string} with {string}", async function(string, string2) {
   await this.input(string, string2);
 });
 
-defineStep("I fill in the wrong credentials", async function() {
-  await this.input("username", this.USERNAME);
-  await this.input("password", "wrong password");
+defineStep("I fill in the wrong credentials and click login", async function(datatable) {
+  for (const row of datatable.rows()) {
+    await this.input("username", row[0]);
+    await this.input("password", row[1]);
+    const xpath = "//input[@id='kc-login']";
+    await this.page.waitForTimeout(1000);
+    await this.clickElementByXpath(xpath);
+  }
 });
 
 defineStep("I fill in the correct username credentials", async function() {
