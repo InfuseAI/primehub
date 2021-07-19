@@ -28,13 +28,18 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -yy -q --no-install-recommends insta
 sudo DEBIAN_FRONTEND=noninteractive apt-get clean
 sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+KUBECTL_VERSION=1.21.0
+K3D_VERSION=4.4.7
+HELM_VERSION=3.6.3
+HELMFILE_VERSION=0.139.9
+JQ_VERSION=1.6
+YQ_VERSION=4.11.0
+NVM_VERSION=0.38.0
+
 # Install kubectl
-curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/linux/amd64/kubectl && \
+curl -sLO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
-
-K3D_VERSION=3.0.0-rc.6
-HELM_VERSION=3.6.2
 
 # Install k3d
 curl -sLo k3d https://github.com/rancher/k3d/releases/download/v${K3D_VERSION}/k3d-linux-amd64 && \
@@ -47,19 +52,19 @@ curl -ssL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xz
   sudo mv helm /usr/local/bin
 
 # Install helmfile
-curl -sLo helmfile https://github.com/roboll/helmfile/releases/download/v0.40.3/helmfile_linux_amd64 && \
+curl -sLo helmfile https://github.com/roboll/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_linux_amd64 && \
   chmod +x helmfile && \
   sudo mv helmfile /usr/local/bin
 
 # Install jq
-curl -sLo jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && \
+curl -sLo jq https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64 && \
   chmod +x jq && \
   sudo mv jq /usr/local/bin
 
 # Install yq
-curl -sLo yq https://github.com/mikefarah/yq/releases/download/v4.9.8/yq_linux_amd64 && \
+curl -sLo yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && \
   chmod +x yq && \
   sudo mv yq /usr/local/bin
 
 # Install node
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash && bash -c 'source ~/.bashrc && nvm install 11.1 && npm install cucumber@6.0.5 puppeteer chai cucumber-html-reporter'
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash && bash -c 'source ~/.bashrc && nvm install 11.1 && npm install cucumber@6.0.5 puppeteer chai cucumber-html-reporter'
