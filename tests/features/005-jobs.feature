@@ -156,7 +156,7 @@ Feature: Job Submission
     When I click tab of "Monitoring"
     Then I "should" see element with xpath "//div[@class='']//h3[text()='GPU Device Usage']"
     When I click tab of "Logs"
-    Then I should see "NVIDIA-SMI 450.51.06    Driver Version: 450.51.06    CUDA Version: 11.0" in element "div" under active tab
+    Then I should see text of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "NVIDIA-SMI\s+\d+\W\d+\W\d+\s+Driver Version:\s+\d+\W\d+\W\d+\s+CUDA Version:\s+\d+\W\d+"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"

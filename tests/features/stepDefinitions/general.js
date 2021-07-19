@@ -475,6 +475,22 @@ defineStep("I should see group resources with CPU {string}, Memory {string}, GPU
   throw new Error('Group resources are incorrect, pls check screenshot');
 });
 
+defineStep("I should see text of element with xpath {string} is matched the regular expression {string}", async function(xpath, exp) {
+  let text;
+  const re = new RegExp(exp);
+  const ele = await this.page.$x(xpath);
+  if (ele.length > 0) {
+    for (i = 0; i < ele.length; i++) {
+      text = await (await ele[i].getProperty('textContent')).jsonValue();
+      if(text.match(re)) return;
+    }
+  }
+  else {
+    throw new Error(`Failed to get element "${xpath}"`);
+  }
+  throw new Error(`Failed to find text that matched the regular expression "${exp}"`);
+});
+
 // Helper functions
 function testIdToSelector(testId) {
   return `[data-testid="${testId}"]`;
