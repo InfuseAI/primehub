@@ -114,11 +114,11 @@ defineStep("I can see the group resource limits are {string}, {string}, and {str
 defineStep("I {string} see instance types block contains {string} instanceType with {string} description and tooltip to show {string}", async function(exist, name, desc, resource) {
   const xpath = `//div[@id='it-container']//strong[contains(text(), '${name}-${this.E2E_SUFFIX}')]`;
   let ret;
-  
+
   await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
   );
-  if (!ret) throw new Error(`failed to check '${name}-${this.E2E_SUFFIX}' instanceType is existed`);
+  if (!ret) throw new Error(`failed to check '${name}-${this.E2E_SUFFIX}' instanceType does not exist`);
   
   if (!exist.includes('not')) {
     const [element] = await this.context.$x(xpath+'//i');
