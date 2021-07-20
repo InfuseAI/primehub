@@ -59,6 +59,35 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  Scenario: Create image with latest basenotebook and connect to existing group 
+    When I choose "Admin Portal" in top-right menu
+    Then I am on the admin dashboard "Groups" page
+    When I click "Images" in admin dashboard
+    Then I am on the admin dashboard "Images" page
+    And I should see element with test-id "image"
+    When I click element with test-id "add-button"
+    Then I should see element with test-id "image/name"
+    And I should see element with test-id "image/displayName"
+    When I type "test-bs-image" to element with test-id "image/name"
+    And I type "test-bs-image-display-name" to element with test-id "image/displayName"
+    And I type "test-bs-description" to element with test-id "image/description"
+    And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
+    And I click element with test-id "connect-button"
+    And I wait for 4.0 seconds
+    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I click element with xpath on the page
+    | fields                                             |
+    | //td[contains(text(), 'e2e-test-group')]/..//input |
+    | //button/span[text()='OK']                         |
+
+    And I wait for 4.0 seconds
+    And I click element with xpath "//a/span[text()='Confirm']"
+    And I wait for 2.0 seconds
+    And I search "test-bs-image" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "test-bs-image"
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
   @daily
   Scenario: Create error image and connect to existing group
     When I choose "Admin Portal" in top-right menu
