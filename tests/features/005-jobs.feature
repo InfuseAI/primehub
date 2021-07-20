@@ -158,8 +158,7 @@ Feature: Job Submission
     When I click tab of "Monitoring"
     Then I "should" see element with xpath "//div[@class='']//h3[text()='GPU Device Usage']"
     When I click tab of "Logs"
-    Then I should see text of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "NVIDIA-SMI\s+\d+\.\d+\.\d+\s+Driver Version:\s+\d+\.
-\d+\.\d+\s+CUDA Version:\s+\d+\.\d+"
+    Then I should see text of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "NVIDIA-SMI\s+\d+\.\d+\.\d+\s+Driver Version:\s+\d+\.  \d+\.\d+\s+CUDA Version:\s+\d+\.\d+"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
