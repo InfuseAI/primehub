@@ -3,6 +3,13 @@
 ## Upcoming
 ### What's New
 
+## 3.6.1
+### What's New
+
+- UI Bugfix
+- Update Grafarna
+
+
 ## 3.6.0
 ### What's New
 
