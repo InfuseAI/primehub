@@ -47,7 +47,7 @@ Feature: Admin
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
+    #Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -69,7 +69,7 @@ Feature: Admin
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
+    #Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page
 
