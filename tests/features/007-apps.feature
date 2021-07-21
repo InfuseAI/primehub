@@ -9,7 +9,6 @@ Feature: Apps
     Then I am on the PrimeHub console "Home" page
     When I choose group with name "e2e-test-group-display-name"
 
-  @wip
   Scenario: Install MLflow
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -22,7 +21,6 @@ Feature: Apps
     And I go to the apps detail page with name "test-mlf"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @wip
   Scenario: Config MLflow in group
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -35,7 +33,6 @@ Feature: Apps
     And I provide MLflow info in Settings page from memory
     And I click element with xpath "//button/span[text()='Save']"
 
-  @wip
   Scenario: Run an existing notebook
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
@@ -61,7 +58,6 @@ Feature: Apps
     And I wait for 60.0 seconds
     Then I "should" see element with xpath "//pre[contains(text(), 'tf.Tensor')]"
 
-  @wip
   Scenario: Remove MLflow
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -101,7 +97,7 @@ Feature: Apps
     And I click "Uninstall" button
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-code-server']"
-@xd
+
   Scenario: Install Label Studio
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -113,7 +109,7 @@ Feature: Apps
     And I wait for 1.0 second
     And I go to the apps detail page with name "test-label-studio"
     Then I wait for attribute "Message" with value "Deployment is ready"
-@xd
+
   Scenario: Launch Label Studio
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -122,7 +118,7 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/label-studio" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]" after page reloaded
-@xd
+
   Scenario: Update settings of Label Studio
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -139,7 +135,7 @@ Feature: Apps
     When I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/label-studio" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]" after page reloaded
-@xd
+
   Scenario: Remove Label Studio
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -148,7 +144,7 @@ Feature: Apps
     And I click "Uninstall" button
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-label-studio']"
-@xd
+
   Scenario: Install Matlab
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -160,7 +156,7 @@ Feature: Apps
     And I wait for 1.0 second
     And I go to the apps detail page with name "test-matlab"
     Then I wait for attribute "Message" with value "Deployment is ready"
-@xd
+
   Scenario: Launch Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -169,7 +165,7 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/matlab" tab
     #Then 
-@xd
+
   Scenario: Check buttons on detail page of Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -184,7 +180,7 @@ Feature: Apps
     When I click "Start" button
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment is ready"
-@xd
+
   Scenario: Remove Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -193,7 +189,7 @@ Feature: Apps
     And I click "Uninstall" button
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-matlab']"
-@xd
+
   Scenario: Install Streamlit 
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -206,7 +202,7 @@ Feature: Apps
     And I wait for 1.0 second
     And I go to the apps detail page with name "test-streamlit"
     Then I wait for attribute "Message" with value "Deployment is ready"
-@xd
+
   Scenario: Launch Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -215,7 +211,7 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
-@xd
+
   Scenario: Stop Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -223,7 +219,7 @@ Feature: Apps
     When I click element with xpath "//ul[@class='ant-card-actions']//span[text()=' Stop']"
     And I click "Yes" button
     Then I "should" see element with xpath "//div[@class='ant-card-body']//div[text()='Stopped']"
-@xd
+
   Scenario: Remove Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
