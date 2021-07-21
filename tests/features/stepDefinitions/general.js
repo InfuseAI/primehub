@@ -492,6 +492,7 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
   let lastUsed = [], lastQuota = [], diff = [];
   let row, text;
   await this.page.waitForTimeout(1000);
+  await this.page.reload();
   if (cpuDiff && memDiff && gpuDiff)
   {
     diff = [cpuDiff, memDiff, gpuDiff]
@@ -499,7 +500,6 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
     lastQuota = this.quota;
   }
   this.used = [], this.quota = [];
-
   for (retry = 0; retry < 3; retry++) {
     for (i = 0; i < data.length; i++) {
       try {
@@ -525,7 +525,6 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
   console.log(this.used);
   console.log(this.quota);
   console.log(diff);
-
   if (cpuDiff && memDiff && gpuDiff) {
     for (i = 0; i < data.length; i++) {
       if (parseFloat(lastUsed[i]) + parseFloat(diff[i]) !== parseFloat(this.used[i])) {
