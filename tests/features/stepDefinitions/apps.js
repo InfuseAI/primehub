@@ -35,11 +35,6 @@ defineStep("I {string} have {string} installed with name {string}", async functi
   }
 });
 
-defineStep("I have {string} installed", async function(app) {
-  await this.page.waitForXPath("//div[(@class='ant-tag ant-tag-green') and (text()='Ready')]");
-  await this.page.waitForXPath(`//div[(@class='ant-tag') and contains(text(), ${app})]`);
-});
-
 defineStep("I keep MLflow info from detail page in memory", async function() {
   const info = ["App URL", "Service Endpoints"]
   for (itemCount=0; itemCount < info.length; itemCount++) {
