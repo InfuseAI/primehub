@@ -275,7 +275,7 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
 
 defineStep("I {string} see element with xpath {string} after page reloaded", async function(exist, xpath) {
   let ret;
-  for (retryCount=0; retryCount < 5; retryCount++) {
+  for (retryCount=0; retryCount < 10; retryCount++) {
     await this.checkElementExistByXPath('should exist', xpath).then(
       function(result) { ret = result; }
     );
