@@ -106,6 +106,7 @@ Feature: Hub
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
     When I click the "Tensorboard" card in the launcher
+    And I wait for 3.0 seconds
     Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
@@ -115,33 +116,12 @@ Feature: Hub
 
   @daily @admin-user @wip
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
-    When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Images" in admin dashboard
-    Then I am on the admin dashboard "Images" page
-    And I should see element with test-id "image"
-    When I click element with test-id "add-button"
-    Then I should see element with test-id "image/name"
-    And I should see element with test-id "image/displayName"
-    When I type "test-tf-image" to element with test-id "image/name"
-    And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
-    And I click element with test-id "connect-button"
-    And I wait for 4.0 seconds
-    And I click element with xpath "//td[contains(text(), 'e2e-test-group')]/..//input"
-    And I click element with xpath "//button/span[text()='OK']"
-    And I wait for 4.0 seconds
-    And I click element with xpath "//a/span[text()='Confirm']"
-    And I wait for 2.0 seconds
-    And I search "test-tf-image" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "test-tf-image"
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
     And I choose instance type
-    And I choose image with name "test-tf-image"
+    And I choose image with name "test-bs-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click element with selector "#start" in hub
