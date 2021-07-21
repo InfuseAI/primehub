@@ -57,9 +57,9 @@ Feature: MISC
     # Users - edit - send email
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
-    When I search "test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "test-user"
-    Then I should see input in test-id "user/username" with value "test-user"
+    When I search "e2e-test-group-user" in test-id "text-filter-username"
+    And I click edit-button in row contains text "e2e-test-group-user"
+    Then I should see input in test-id "user/username" with value "e2e-test-group-user"
     When I click tab of "Send Email"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
     # instanceTypes - add - tolerations

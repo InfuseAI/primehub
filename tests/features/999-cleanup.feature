@@ -12,13 +12,13 @@ Feature: Admin
   Scenario: Delete user
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
-    When I search "test-user" in test-id "text-filter-username"
-    And I delete a row with text "test-user"
+    When I search "e2e-test-group-user" in test-id "text-filter-username"
+    And I delete a row with text "e2e-test-group-user"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-user"
+    Then list-view table "should not" contain row with "e2e-test-group-user"
     When I click refresh
-    And I search "test-user" in test-id "text-filter-username"
-    Then list-view table "should not" contain row with "test-user"
+    And I search "e2e-test-group-user" in test-id "text-filter-username"
+    Then list-view table "should not" contain row with "e2e-test-group-user"
     When I choose "Logout" in top-right menu
     Then I am on login page
 

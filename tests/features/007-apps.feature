@@ -1,8 +1,9 @@
 Feature: Apps
   I would like to set up apps, so I can use it in primehub 
   Prerequisite:
-    User is in a group with shared volume, model deployment enabled
-    User is a group admin
+    User A is in a group with shared volume, model deployment enabled
+    User A is a group admin
+    User B is in different group than A
 
   Background:
     Given I am logged in
@@ -92,6 +93,37 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/code-server" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'code-server')]"
+
+  Scenario: A user can not see Code Server with default grop access scope installed by other group
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+    When I fill in the username "e2e-test-user" and password "password"
+    And I click login
+    And I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I "should not" have "code-server" installed with name "test-code-server"
+    When I choose "Logout" in top-right menu
+    Then I am on login page    
+
+ Scenario: Update access scope of Code Server to PhimeHub Users only
+    And I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I "should" have "code-server" installed with name "test-code-server"
+    When I go to the apps detail page with name "test-code-server"
+    And I click "Update" button
+    And I select option "PrimeHub users only" of access scope in apps detail page
+    And I click element with xpath "//button[@type='submit']/span[text()='Update']"
+
+  Scenario: A member not in the same group can see Code Server created by others
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+    When I fill in the username "e2e-test-user" and password "password"
+    And I click login
+    And I choose "Apps" in sidebar menu
+    Then I am on the PrimeHub console "Apps" page
+    And I "should" have "code-server" installed with name "test-code-server"
+    When I choose "Logout" in top-right menu
+    Then I am on login page    
 
   Scenario: Remove Code Server
     Given I choose "Apps" in sidebar menu

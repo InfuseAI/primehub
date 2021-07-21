@@ -1,7 +1,7 @@
 const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
-defineStep( "I provide MLflow info in Settings page from memory", async function() {
+defineStep("I provide MLflow info in Settings page from memory", async function() {
   const info = ["App URL", "Service Endpoints"]
   const xpath = ["//input[@id='uiUrl']", "//input[@id='trackingUri']"]
   for (itemCount=0; itemCount < info.length; itemCount++) {
