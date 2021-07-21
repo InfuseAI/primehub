@@ -89,8 +89,8 @@ jobs:
 
   e2e:
     machine:
-      #image: infuseai/primehub-ci:0.6.3-e2e
-      image: ubuntu-2004:202104-01
+      image: ubuntu-1604:202104-01
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -107,7 +107,8 @@ jobs:
 
   e2e_ee:
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-1604:202104-01
+    resource_class: large
     steps:
       - checkout
       - run:
