@@ -59,6 +59,8 @@ Feature: Apps
     And I wait for 60.0 seconds
     # Then I "should" see element with xpath "//pre[contains(., 'tf.Tensor')]"
     And I close all tabs in JupyterLab
+    And I click element with xpath "//button[@class='jp-Dialog-button jp-mod-accept jp-mod-warn jp-mod-styled']"
+    And I wait for 1.0 seconds
     And I switch to "Notebooks" tab
     And I stop my server in hub
     When I choose "Logout" in top-right menu
@@ -193,6 +195,7 @@ Feature: Apps
     And I click "Create" button
     And I wait for 1.0 second
     And I go to the apps detail page with name "test-matlab"
+    And I wait for 10.0 seconds
     Then I wait for attribute "Message" with value "Deployment is ready"
 
   Scenario: Launch Matlab
