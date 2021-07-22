@@ -88,10 +88,8 @@ Feature: Job Submission
     When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
     Then I am on the PrimeHub console "NewJob" page
     And I type "clone-job-test" to "displayName" text field
-    And I type "echo 'clone-test'" to "command" text field
+    And I type "clone test" to command text field
     And I click "Submit" button
-    And I wait for 2.0 seconds
-    Then I am on the PrimeHub console "Jobs" page
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
@@ -150,6 +148,7 @@ Feature: Job Submission
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: 1.0, 1.0, 1.0
+    And I keep group resources
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='gpu-job-test']" and wait for navigation
