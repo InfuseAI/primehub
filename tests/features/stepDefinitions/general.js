@@ -126,11 +126,12 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
     'Home': `-${this.E2E_SUFFIX}/home`,
-    'UserGuide': 'https://docs.primehub.io',
-    'Notebooks': `-${this.E2E_SUFFIX}/hub`,
-    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'Apps': `-${this.E2E_SUFFIX}/apps`,
     'JobDetail': `-${this.E2E_SUFFIX}/job/`,
-    'NotebooksAdmin': 'console/admin/jupyterhub'
+    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'Notebooks': `-${this.E2E_SUFFIX}/hub`,
+    'NotebooksAdmin': 'console/admin/jupyterhub',
+    'UserGuide': 'https://docs.primehub.io'
   };
   let pages, targetPage;
   if (tabname in urlMap) tabname = urlMap[tabname];

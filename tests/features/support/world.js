@@ -39,6 +39,7 @@ class World {
     this.context = null;
     this.copyText = null;
     this.copyArray = [];
+    this.appInfo = [];
     this.scenarioName = null;
   }
 
