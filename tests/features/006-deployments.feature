@@ -365,6 +365,8 @@ Feature: Model Deployment
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
+    And I wait for 1.0 second
+    And I click refresh
     And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
     When I choose "Logout" in top-right menu
     Then I am on login page
