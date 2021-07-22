@@ -46,7 +46,7 @@ defineStep("I keep MLflow info from detail page in memory", async function() {
 });
 
 defineStep("I select option {string} of access scope in apps detail page", async function(name) {
-  await this.clickElementByXpath($x("//div[contains(@class, 'ant-select-selection--single')]")[2]);
+  await this.clickElementByXpath("//div[@id='scope']//div[contains(@class, 'ant-select-selection--single')]");
   await this.page.waitForTimeout(500);
   await this.clickElementByXpath(`//li[text()='${name}']`);
   await this.takeScreenshot(`select-option-${name}`);
