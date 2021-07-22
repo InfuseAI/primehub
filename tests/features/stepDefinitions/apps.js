@@ -26,7 +26,6 @@ defineStep("I {string} have {string} installed with name {string}", async functi
   var isExist = true;
   try {
     await this.page.waitForXPath(`//h2[text()='${name}']`, {timeout: 2 * 1000});
-    await this.page.waitForXPath("//div[(@class='ant-tag ant-tag-green') and (text()='Ready')]", {timeout: 2 * 1000});
     await this.page.waitForXPath(`//div[(@class='ant-tag') and contains(text(), ${app})]`, {timeout: 2 * 1000});
   }
   catch (err) {isExist = false; }
