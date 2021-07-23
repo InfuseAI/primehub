@@ -1,3 +1,4 @@
+@released @daily
 Feature: Apps
   I would like to set up apps, so I can use it in primehub 
   Prerequisite:
