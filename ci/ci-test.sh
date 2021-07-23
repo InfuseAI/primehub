@@ -175,5 +175,5 @@ if [[ "$E2E_REGRESSION" == "true" ]]; then
   tags="(@released or @normal-user) and not (@daily or @admin-user or @wip)"
 fi
 
-~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
+~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags" --format usage
 node tests/report/generate_e2e_report.js
