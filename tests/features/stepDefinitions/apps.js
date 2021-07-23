@@ -3,7 +3,6 @@ const { expect } = require("chai");
 
 defineStep("I go to the apps detail page with name {string}", async function(name) {
   let cardXpath = `//div[@class='ant-card-body']//h2[text()='${name}']`;
-//#let cardActionXpath = `//ul[@class='ant-card-actions']//a[text()=' Manage']`;
   let cardActionXpath = `//div[@class='ant-card-body']//h2[text()='${name}']/../../following-sibling::ul[@class='ant-card-actions']//a[contains(., 'Manage')]`; 
   let titleXpath = `//span[@class='ant-breadcrumb-link']//span[text()='App: ${name}']`;
   let ele, ret;

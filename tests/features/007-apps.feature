@@ -11,6 +11,7 @@ Feature: Apps
     Then I am on the PrimeHub console "Home" page
     When I choose group with name "e2e-test-group-display-name"
 
+  @wip
   Scenario: Install MLflow
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -23,6 +24,7 @@ Feature: Apps
     And I go to the apps detail page with name "test-mlf"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
+  @wip
   Scenario: Config MLflow in group
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -35,6 +37,7 @@ Feature: Apps
     And I provide app info in Settings page from memory
     And I click element with xpath "//button/span[text()='Save']"
 
+  @wip
   Scenario: Run an existing notebook in MLflow
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
@@ -67,6 +70,7 @@ Feature: Apps
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @wip
   Scenario: Remove MLflow
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -245,6 +249,7 @@ Feature: Apps
     And I go to the apps detail page with name "test-streamlit"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
+  @wip
   Scenario: Launch Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -254,6 +259,7 @@ Feature: Apps
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
 
+  @wip
   Scenario: Stop Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
