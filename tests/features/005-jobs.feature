@@ -60,7 +60,7 @@ Feature: Job Submission
   @daily
   Scenario: User can rerun job
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    # And I keep group resources
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     And I click button of "Rerun" of item "create-job-test" to wait for "Rerun" dialogue
@@ -68,7 +68,7 @@ Feature: Job Submission
     Then I should see 1th column of 1th item is "Pending|Preparing|Running" on list
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    # And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='create-job-test']" and wait for navigation
@@ -82,7 +82,7 @@ Feature: Job Submission
   @daily
   Scenario: User can clone job
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    # And I keep group resources
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
@@ -92,7 +92,7 @@ Feature: Job Submission
     And I click "Submit" button
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    # And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
     When I click element with xpath "//tr[1]//a[text()='clone-job-test']" and wait for navigation
