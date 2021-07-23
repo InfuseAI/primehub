@@ -354,7 +354,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    # And I keep group resources
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
@@ -367,6 +367,6 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I wait for 1.0 second
     And I click refresh
-    And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
+    # And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
     When I choose "Logout" in top-right menu
     Then I am on login page
