@@ -179,6 +179,10 @@ minio:
     enabled: true
     projectId: {{$MINIO_GCSGATEWAY_PROJECT_ID | quote}}
     gcsKeyJson: {{$MINIO_GCSGATEWAY_GCS_KEY_JSON | quote}}
+{{- else }}
+minio:
+  persistence:
+    storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
 {{- end }}
 {{- end }}
 
