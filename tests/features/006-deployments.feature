@@ -35,6 +35,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
+    And I keep group resources
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I click "Create Deployment" button
@@ -53,6 +54,8 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
+    When I choose "Home" in sidebar menu
+    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -63,7 +66,6 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -106,7 +108,7 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    And I keep group resources
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -130,7 +132,7 @@ Feature: Model Deployment
     Then I should see "503 Service Temporarily Unavailable" in element "div" under active tab
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I should see group resources with diff of CPU, memory & GPU: -0.5, -1.0, 0
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -163,17 +165,18 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "0.5,2", Memory "1.0 GB,4 GB", GPU "0,2"
+    And I keep group resources
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "create-deployment-test" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test']"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -313,7 +316,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "model-uri-test"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "model-uri-test" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='model-uri-test']"
     When I choose "Logout" in top-right menu
@@ -339,7 +343,7 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
     When I click tab of "Logs"
-    Then I should see "kernel reported version is: 450.51.6" in element "div" under active tab
+    Then I should see text of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "kernel reported version is:\s+\d+\.\d+\.\d+"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -350,16 +354,19 @@ Feature: Model Deployment
     And I click login
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    #And I should see group resources with CPU "1,2", Memory "1.0 GB,4 GB", GPU "1,2"
+    And I keep group resources
     When I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test-gpu"
     And I click "Delete" button
-    And I click button of "Yes" on confirmation dialogue
+    And I type "create-deployment-test-gpu" to element with xpath "//input[@id='delete-deployment']"
+    And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='create-deployment-test-gpu']"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    #And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    And I wait for 1.0 second
+    And I click refresh
+    And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
     When I choose "Logout" in top-right menu
     Then I am on login page

@@ -33,6 +33,13 @@ Feature: Admin
     When I click refresh
     And I search "test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image"
+    When I search "test-bs-image" in test-id "text-filter-name"
+    And I delete a row with text "test-bs-image"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "test-bs-image"
+    When I click refresh
+    And I search "test-bs-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "test-bs-image"
     When I search "error-image" in test-id "text-filter-name"
     And I delete a row with text "error-image"
     And I wait for 2.0 seconds
@@ -47,7 +54,7 @@ Feature: Admin
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
+    #Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -69,7 +76,7 @@ Feature: Admin
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
+    #Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
     When I choose "Logout" in top-right menu
     Then I am on login page
 
