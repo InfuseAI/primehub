@@ -219,6 +219,7 @@ Feature: Apps
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment had stopped"
     When I click "Start" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment is ready"
 
@@ -267,5 +268,6 @@ Feature: Apps
     Then I "should" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-streamlit']"
     When I go to the apps detail page with name "test-streamlit"
     And I click "Uninstall" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-streamlit']"
