@@ -147,6 +147,9 @@ jobs:
       - store_artifacts:
           path: ~/project/e2e
 
+      - notify_slack
+      - create_ticket 
+
   e2e_regression:
     machine:
       image: ubuntu-1604:202004-01
@@ -233,8 +236,10 @@ workflows:
   version: 2
   release_builds:
     jobs:
-      - e2e_installed_ph_daily:
-          context: e2e-demo-a
+      - unit_test
+      - verify_image_list
+      - e2e
+      - e2e_ee
       - build:
           filters:
             tags:
@@ -260,3 +265,5 @@ workflows:
                 - master
     jobs:
       - e2e_regression
+      - e2e_installed_ph_daily:
+          context: e2e-demo-a
