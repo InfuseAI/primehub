@@ -53,6 +53,33 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  Scenario: Create another group
+    When I click element with test-id "add-button"
+    Then I should see element with test-id "group/name"
+    And I should see element with test-id "group/displayName"
+    When I type valid test-id on the page
+    | fields            | values                      |
+    | group/name        | e2e-another-test-group              |
+    | group/displayName | e2e-another-test-group-display-name |
+
+    And I click element with xpath on the page
+    | fields                                                                             |
+    | //div[@data-testid='group/quotaMemory']//input[@class='ant-checkbox-input']        |
+    | //div[@data-testid='group/projectQuotaCpu']//input[@class='ant-checkbox-input']    |
+    | //div[@data-testid='group/projectQuotaGpu']//input[@class='ant-checkbox-input']    |
+    | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-checkbox-input'] |
+
+    And I type valid info to element with xpath on the page
+    | fields                                                                                 | values |
+    | //div[@data-testid='group/quotaCpu']//input[@class='ant-input-number-input']           | 1      |
+    | //div[@data-testid='group/quotaGpu']//input[@class='ant-input-number-input']           | 1      |
+    | //div[@data-testid='group/quotaMemory']//input[@class='ant-input-number-input']        | 2      |
+    | //div[@data-testid='group/projectQuotaCpu']//input[@class='ant-input-number-input']    | 2      |
+    | //div[@data-testid='group/projectQuotaGpu']//input[@class='ant-input-number-input']    | 2      |
+    | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input'] | 4      |
+
+    And I click element with test-id "confirm-button"
+
   @normal-user
   Scenario: Enable model deployment and assign group admin
     When I search "e2e-test-group" in test-id "text-filter-name"

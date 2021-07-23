@@ -126,11 +126,12 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 defineStep("I switch to {string} tab", async function(tabname) {
   const urlMap = {
     'Home': `-${this.E2E_SUFFIX}/home`,
-    'UserGuide': 'https://docs.primehub.io',
-    'Notebooks': `-${this.E2E_SUFFIX}/hub`,
-    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'Apps': `-${this.E2E_SUFFIX}/apps`,
     'JobDetail': `-${this.E2E_SUFFIX}/job/`,
-    'NotebooksAdmin': 'console/admin/jupyterhub'
+    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'Notebooks': `-${this.E2E_SUFFIX}/hub`,
+    'NotebooksAdmin': 'console/admin/jupyterhub',
+    'UserGuide': 'https://docs.primehub.io'
   };
   let pages, targetPage;
   if (tabname in urlMap) tabname = urlMap[tabname];
@@ -276,6 +277,27 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
   catch (e) {
     if (!exist.includes('not')) throw new Error('element should be exist');
   }
+});
+
+defineStep("I {string} see element with xpath {string} after page reloaded", async function(exist, xpath) {
+  let ret;
+  console.time(`${exist} see element with xpath ${xpath} after page reloaded`);
+  for (retryCount=0; retryCount < 15; retryCount++) {
+    await this.checkElementExistByXPath('should exist', xpath).then(
+      function(result) { ret = result; }
+    );
+    if (exist.includes('not') === ret) {
+      await this.takeScreenshot("before-reload");
+      await this.page.waitForTimeout(3000);
+      await this.page.reload();
+    }
+    else {
+      console.timeEnd(`${exist} see element with xpath ${xpath} after page reloaded`);
+      return;
+    }
+  }
+  console.timeEnd(`${exist} see element with xpath ${xpath} after page reloaded`);
+  throw new Error(`failed to see ${xpath} after page reloaded`);
 });
 
 defineStep("I wait for {float} second(s)", async function(float) {
