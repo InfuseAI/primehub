@@ -276,7 +276,8 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
 
 defineStep("I {string} see element with xpath {string} after page reloaded", async function(exist, xpath) {
   let ret;
-  for (retryCount=0; retryCount < 10; retryCount++) {
+  console.time(`${exist} see element with xpath ${xpath} after page reloaded`);
+  for (retryCount=0; retryCount < 15; retryCount++) {
     await this.checkElementExistByXPath('should exist', xpath).then(
       function(result) { ret = result; }
     );
@@ -285,8 +286,12 @@ defineStep("I {string} see element with xpath {string} after page reloaded", asy
       await this.page.waitForTimeout(3000);
       await this.page.reload();
     }
-    else return;
+    else {
+      console.timeEnd(`${exist} see element with xpath ${xpath} after page reloaded`);
+      return;
+    }
   }
+  console.timeEnd(`${exist} see element with xpath ${xpath} after page reloaded`);
   throw new Error(`failed to see ${xpath} after page reloaded`);
 });
 
