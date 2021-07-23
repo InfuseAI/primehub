@@ -165,6 +165,13 @@ is_microk8s_cluster() {
   return -1
 }
 
+is_ubuntu() {
+  if command -v lsb_release; then
+    return 0
+  fi
+  return -1
+}
+
 search_helm_release() {
   local release=$1
   if [[ "$(helm ls -A -f "^${release}$" | grep -v NAME)" != "" ]]; then
@@ -369,6 +376,19 @@ create::singlenode() {
     microk8s.start || true
   }
   local shouldRestart=false
+
+  if ! is_ubuntu; then
+    error "[Not Support] Singlenode only supoort Ubuntu OS"
+    exit 1
+  fi
+
+  if check_k8s_cluster; then
+    if ! is_microk8s_cluster; then
+      warn "[Skip] Found running Kubernetes cluster"
+      exit 1
+    fi
+  fi
+
   if ! check_microk8s_snap; then
     warn "[Pre-check Failed] Not install microk8s"
     info "[Install] microk8s"
