@@ -102,10 +102,11 @@ jobs:
           command: |
             ./ci/ci-test.sh
 
+      - store_test_results:
+          path: ~/project/tests/report
+
       - store_artifacts:
           path: ~/project/e2e
-
-      - notify_slack
 
   e2e_ee:
     machine:
@@ -123,10 +124,11 @@ jobs:
           command: |
             ./ci/ci-test.sh
 
+      - store_test_results:
+          path: ~/project/tests/report
+
       - store_artifacts:
           path: ~/project/e2e
-
-      - notify_slack
 
   e2e_installed_ph_daily:
     machine:
