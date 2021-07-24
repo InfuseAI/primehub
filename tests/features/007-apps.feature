@@ -211,6 +211,7 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/matlab" tab
 
+  @wip
   Scenario: Check buttons on detail page of Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
