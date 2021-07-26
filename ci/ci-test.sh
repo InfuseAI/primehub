@@ -111,8 +111,8 @@ echo PH_PASSWORD=$PH_PASSWORD >> env_file
 echo PRIMEHUB_STORAGE_CLASS=$PRIMEHUB_STORAGE_CLASS >> env_file
 echo PRIMEHUB_MODE=$PRIMEHUB_MODE >> env_file
 
-INSTALLED_PH=${INSTALLED_PH:-false}
-if [[ "$INSTALLED_PH" != "true" ]]; then
+TARGET=${TARGET:-false}
+if [[ "$TARGET" != "demo.a" ]]; then
   sudo ifconfig lo:0 inet ${BIND_ADDRESS} netmask 0xffffff00
 
   # wait for docker in docker
@@ -164,15 +164,18 @@ export KC_REALM=${KC_REALM:-$KC_REALM_DEPLOY}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
-tags="@released and not (@daily or @normal-user or @ee or @regression or @wip)"
-if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
+
+if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ce" ]]; then
+  tags="@released and not (@daily or @normal-user or @ee or @regression or @wip)"
+fi
+if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="@released and not (@daily or @normal-user or @regression or @wip)"
 fi
-if [[ "${E2E_SCHEDULED}" == "daily" ]]; then
-  tags="(@released or @daily) and not (@normal-user or @regression or @wip)"
-fi
-if [[ "$E2E_REGRESSION" == "true" ]]; then
+if [[ "${TEST_TYPE}" == "sanity" ]]; then
   tags="(@released or @normal-user) and not (@daily or @admin-user or @wip)"
+fi
+if [[ "${TEST_TYPE}" == "regression" ]]; then
+  tags="(@released or @daily) and not (@normal-user or @regression or @wip)"
 fi
 
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
