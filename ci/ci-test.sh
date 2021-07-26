@@ -171,8 +171,8 @@ fi
 if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="(@smoke and @ee) and (not @wip)"
 fi
-if [[ "${TEST_TYPE}" == "sanity" ]]; then
-  tags="(@released or @normal-user) and not (@daily or @admin-user or @wip)"
+if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
+  tags="(@sanity and @ee) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "regression" ]]; then
   tags="(@released or @daily) and not (@normal-user or @regression or @wip)"

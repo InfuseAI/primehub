@@ -2,7 +2,7 @@
 Feature: Model Deployment
   Basic tests
 
-  @admin-user @smoke
+  @admin-user @sanity @smoke
   Scenario: User can see expected results when model deployment enabled/disabled
     Given I go to login page
     When I fill in the correct username credentials
@@ -29,7 +29,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
   
-  @smoke
+  @sanity @smoke
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials

@@ -21,7 +21,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @smoke
+  @sanity @smoke
   Scenario: User can start/stop the JupyterLab server
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
@@ -59,7 +59,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user
+  @normal-user @sanity
   Scenario: User can start/stop the JupyterLab server with group image
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Notebooks" in sidebar menu

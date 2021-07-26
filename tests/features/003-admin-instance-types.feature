@@ -9,7 +9,7 @@ Feature: Admin
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
-  @smoke
+  @sanity @smoke
   Scenario: Create instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page

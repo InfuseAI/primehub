@@ -138,7 +138,7 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I click element with xpath "//button/span[text()='Confirm']"
 
-  @normal-user
+  @normal-user @sanity
   Scenario: Remove myself from group admin and switch my role to normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page
