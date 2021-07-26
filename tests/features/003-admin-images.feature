@@ -1,4 +1,4 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage images
   I want to change settings
@@ -7,6 +7,7 @@ Feature: Admin
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
 
+  @smoke
   Scenario: Create image and connect to existing group
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -59,6 +60,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @smoke 
   Scenario: Create image with latest basenotebook and connect to existing group 
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page

@@ -166,10 +166,10 @@ source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
 
 if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ce" ]]; then
-  tags="@released and not (@daily or @normal-user or @ee or @regression or @wip)"
+  tags="(@smoke and @ce) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="@released and not (@daily or @normal-user or @regression or @wip)"
+  tags="(@smoke and @ee) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "sanity" ]]; then
   tags="(@released or @normal-user) and not (@daily or @admin-user or @wip)"

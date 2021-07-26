@@ -1,4 +1,4 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage groups
   I want to change settings
@@ -10,6 +10,7 @@ Feature: Admin
     Then I am on the admin dashboard "Groups" page
     And I should see element with test-id "group"
 
+  @smoke 
   Scenario: Create group and connect to existing user
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"
@@ -53,6 +54,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @smoke
   Scenario: Create another group
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"

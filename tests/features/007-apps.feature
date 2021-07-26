@@ -1,4 +1,4 @@
-@released @daily
+@released @daily @ee @ce
 Feature: Apps
   I would like to set up apps, so I can use it in primehub 
   Prerequisite:
@@ -11,7 +11,7 @@ Feature: Apps
     Then I am on the PrimeHub console "Home" page
     When I choose group with name "e2e-test-group-display-name"
 
-  @wip
+  @wip @smoke
   Scenario: Install MLflow
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -70,7 +70,7 @@ Feature: Apps
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @wip
+  @wip @smoke
   Scenario: Remove MLflow
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page

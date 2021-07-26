@@ -1,4 +1,4 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage instance types
   I want to change settings
@@ -8,7 +8,8 @@ Feature: Admin
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
- 
+
+  @smoke
   Scenario: Create instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page

@@ -1,4 +1,4 @@
-@admin-user
+@admin-user @ee
 Feature: Notebooks Admin
   Basic tests
 

@@ -1,8 +1,8 @@
-@released @ee
+@released @ee @deploy
 Feature: Model Deployment
   Basic tests
 
-  @admin-user
+  @admin-user @smoke
   Scenario: User can see expected results when model deployment enabled/disabled
     Given I go to login page
     When I fill in the correct username credentials
@@ -28,7 +28,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
     Then I am on login page
-
+  
+  @smoke
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials

@@ -1,4 +1,4 @@
-@released @daily 
+@released @daily @ee @ce @deploy
 Feature: Login
   In order to manage system
   As a user, I want to login

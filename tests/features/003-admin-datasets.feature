@@ -1,4 +1,4 @@
-@released @daily @admin-user
+@released @daily @admin-user @ee @ce
 Feature: Admin
   In order to manage datasets
   I want to change settings

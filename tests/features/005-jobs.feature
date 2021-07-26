@@ -6,6 +6,7 @@ Feature: Job Submission
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
 
+  @smoke
   Scenario: User can create job and save artifact
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Jobs" in sidebar menu

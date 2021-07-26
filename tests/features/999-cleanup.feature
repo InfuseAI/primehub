@@ -1,4 +1,4 @@
-@released @admin-user
+@released @admin-user @ee
 Feature: Admin
   Delete some created resources
 
