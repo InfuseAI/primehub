@@ -6,6 +6,7 @@ Feature: Job Submission
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
 
+  @regression @sanity @smoke
   Scenario: User can create job and save artifact
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Jobs" in sidebar menu
@@ -31,7 +32,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user
+  @normal-user @regression @sanity
   Scenario: User can create job with group image and save artifact
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Jobs" in sidebar menu
@@ -57,7 +58,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @regression @daily
   Scenario: User can rerun job
     When I choose group with name "e2e-test-group-display-name"
     # And I keep group resources
@@ -79,7 +80,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @regression @daily
   Scenario: User can clone job
     When I choose group with name "e2e-test-group-display-name"
     # And I keep group resources
@@ -103,7 +104,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can cancel job
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
@@ -131,7 +132,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can create job with GPU
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources

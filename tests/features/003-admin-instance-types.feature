@@ -1,4 +1,4 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage instance types
   I want to change settings
@@ -8,7 +8,8 @@ Feature: Admin
     Then I am on the PrimeHub console "Home" page
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
- 
+
+  @regression @sanity @smoke
   Scenario: Create instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -36,7 +37,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Create GPU instance type
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -52,7 +53,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Update GPU instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page

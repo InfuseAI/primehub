@@ -6,6 +6,7 @@ Feature: Job Schedule
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
 
+  @regression
   Scenario: User can create schedule
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Schedule" in sidebar menu
@@ -27,6 +28,7 @@ Feature: Job Schedule
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression
   Scenario: User can update schedule
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Schedule" in sidebar menu
@@ -52,6 +54,7 @@ Feature: Job Schedule
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression
   Scenario: User can delete schedule
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Schedule" in sidebar menu

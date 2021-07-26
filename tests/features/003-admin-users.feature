@@ -1,9 +1,9 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage users
   I want to change settings
 
-  @admin-user @daily
+  @admin-user @daily @regression
   Scenario: Create a normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -32,7 +32,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily
+  @admin-user @daily @regression
   Scenario: Create another normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -61,7 +61,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily
+  @admin-user @daily @regression
   Scenario: User can see expected results when no group is available
     Given I go to login page
     When I fill in the username "e2e-test-group-user" and password "password"
@@ -77,7 +77,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily
+  @admin-user @daily @regression
   Scenario: Update user info of first user and connect to existing group
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -115,7 +115,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily
+  @admin-user @daily @regression
   Scenario: Update user info of second user and connect to another group
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -138,7 +138,7 @@ Feature: Admin
     And I wait for 2.0 seconds
     And I click element with xpath "//button/span[text()='Confirm']"
 
-  @normal-user
+  @normal-user @regression @sanity
   Scenario: Remove myself from group admin and switch my role to normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page

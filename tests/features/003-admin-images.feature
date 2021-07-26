@@ -1,4 +1,4 @@
-@released
+@released @ee @ce
 Feature: Admin
   In order to manage images
   I want to change settings
@@ -7,6 +7,7 @@ Feature: Admin
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
 
+  @regression @sanity @smoke
   Scenario: Create image and connect to existing group
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -36,7 +37,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user
+  @normal-user @regression @sanity
   Scenario: Create group image
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Images" in sidebar menu
@@ -59,6 +60,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression @sanity @smoke
   Scenario: Create image with latest basenotebook and connect to existing group 
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -88,7 +90,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression 
   Scenario: Create error image and connect to existing group
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -115,7 +117,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression 
   Scenario: Create GPU image
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
@@ -133,7 +135,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression 
   Scenario: Update GPU image and connect to existing group
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page

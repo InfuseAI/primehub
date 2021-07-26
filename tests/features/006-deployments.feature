@@ -1,8 +1,8 @@
-@released @ee
+@released @ee @deploy
 Feature: Model Deployment
   Basic tests
 
-  @admin-user
+  @admin-user @regression @sanity @smoke
   Scenario: User can see expected results when model deployment enabled/disabled
     Given I go to login page
     When I fill in the correct username credentials
@@ -28,7 +28,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "CreateDeployment" page
     When I choose "Logout" in top-right menu
     Then I am on login page
-
+  
+  @regression @sanity @smoke
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -59,7 +60,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -101,7 +102,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -158,7 +159,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -180,7 +181,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Model URI: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -210,7 +211,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Model URI: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -252,7 +253,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Model URI: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -305,7 +306,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: Model URI: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -323,7 +324,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can create deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials
@@ -347,7 +348,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily
+  @daily @regression
   Scenario: User can delete deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials
