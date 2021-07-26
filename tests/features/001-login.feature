@@ -6,7 +6,7 @@ Feature: Login
   Background:
     Given I go to login page
 
-  @released @daily @error-check @admin
+  @released @daily @regression @error-check @admin
   Scenario: User can't login via incorrect username and password
     When I fill in the wrong credentials and click login
     | fields                    | values                           |

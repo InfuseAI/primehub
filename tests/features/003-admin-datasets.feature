@@ -13,6 +13,7 @@ Feature: Admin
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
 
+  @regression
   Scenario: Create dataset
     When I should see element with test-id "dataset"
     And I click element with test-id "add-button"
@@ -27,6 +28,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression
   Scenario: Update dataset and connect to existing group
     When I search "test-dataset" in test-id "text-filter-name"
     And I click edit-button in row contains text "test-dataset"
@@ -61,6 +63,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression
   Scenario: Delete dataset
     When I search "test-dataset" in test-id "text-filter-name"
     And I delete a row with text "test-dataset"

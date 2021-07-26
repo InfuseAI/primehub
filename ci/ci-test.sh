@@ -174,8 +174,8 @@ fi
 if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="(@sanity and @ee) and (not @wip)"
 fi
-if [[ "${TEST_TYPE}" == "regression" ]]; then
-  tags="(@released or @daily) and not (@normal-user or @regression or @wip)"
+if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" ]]; then
+  tags="(@regression and @ee) and (not @wip and not @normal-user)"
 fi
 
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
