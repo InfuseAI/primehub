@@ -87,9 +87,8 @@ jobs:
             python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml ./chart/templates/ph-app-templates
       - notify_slack
 
-  e2e:
+  e2e_smoke_ce:
     machine:
-      #image: infuseai/primehub-ci:0.6.3-e2e
       image: ubuntu-1604:202004-01
     steps:
       - checkout
@@ -99,15 +98,16 @@ jobs:
             ./ci/setup_env.sh
       - run:
           name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ce
+            TEST_TYPE: smoke
           command: |
             ./ci/ci-test.sh
-
       - store_artifacts:
           path: ~/project/e2e
-
       - notify_slack
 
-  e2e_ee:
+  e2e_smoke_ee:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -120,37 +120,14 @@ jobs:
           name: End-to-end tests
           environment:
             PRIMEHUB_MODE: ee
-          command: |
-            ./ci/ci-test.sh
-
-      - store_artifacts:
-          path: ~/project/e2e
-
-      - notify_slack
-
-  e2e_installed_ph_daily:
-    machine:
-      image: ubuntu-1604:202004-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            INSTALLED_PH: "true"
-            E2E_SCHEDULED: "daily"
+            TEST_TYPE: smoke
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-
       - notify_slack
-      - create_ticket 
 
-  e2e_regression:
+  e2e_sanity_ee:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -164,12 +141,32 @@ jobs:
           no_output_timeout: 20m
           environment:
             PRIMEHUB_MODE: ee
-            E2E_REGRESSION: "true"
+            TEST_TYPE: sanity
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
+      - notify_slack
 
+  e2e_regression_ee:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            TEST_TYPE: regression
+            TARGET : demo.a
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
       - notify_slack
       - create_ticket 
 
@@ -238,8 +235,13 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
-      - e2e
-      - e2e_ee
+      - e2e_smoke_ce
+      - e2e_smoke_ee
+      - e2e_sanity_ee:
+          filters:
+            branches:
+              only:
+                - master
       - build:
           filters:
             tags:
@@ -264,6 +266,5 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_regression
-      - e2e_installed_ph_daily:
+      - e2e_regression_ee:
           context: e2e-demo-a
