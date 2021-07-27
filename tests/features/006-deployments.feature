@@ -1,4 +1,4 @@
-@released @ee @deploy
+@feat-deployment @ee @deploy
 Feature: Model Deployment
   Basic tests
 
@@ -60,7 +60,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -102,7 +102,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -159,7 +159,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -181,7 +181,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: Model URI: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -211,7 +211,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: Model URI: User can update deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -253,7 +253,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: Model URI: User can stop/start deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -306,7 +306,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: Model URI: User can delete deployment
     Given I go to login page
     When I fill in the correct username credentials
@@ -324,7 +324,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can create deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials
@@ -348,7 +348,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can delete deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials

@@ -1,5 +1,5 @@
-@released @daily @admin-user @ee @ce
-Feature: Admin
+@admin-user @ee @ce
+Feature: Admin - Datasets
   In order to manage datasets
   I want to change settings
   

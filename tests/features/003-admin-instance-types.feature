@@ -1,5 +1,5 @@
-@released @ee @ce
-Feature: Admin
+@ee @ce
+Feature: Admin - Instance Types
   In order to manage instance types
   I want to change settings
 
@@ -9,7 +9,7 @@ Feature: Admin
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
-  @regression @sanity @smoke
+  @regression @sanity @smoke @prep-data
   Scenario: Create instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -37,7 +37,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @prep-data
   Scenario: Create GPU instance type
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -53,7 +53,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @prep-data
   Scenario: Update GPU instance type and connect to existing group
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page

@@ -1,4 +1,4 @@
-@released @ee @ce
+@feat-hub @ee @ce
 Feature: Hub
   In order to do machine learning experiments,
   As a user,
@@ -10,7 +10,7 @@ Feature: Hub
     And I click login
     Then I am on the PrimeHub console "Home" page
 
-  @daily @regression
+  @regression
   Scenario: User can see advanced settings
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Notebooks" in sidebar menu
@@ -91,7 +91,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @wip @regression
+  @wip @regression
   Scenario: User can start the TensorBoard
     When I choose group with name "e2e-test-group-display-name"
     When I choose "Notebooks" in sidebar menu
@@ -115,7 +115,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @admin-user @wip @regression
+  @admin-user @wip @regression
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
@@ -135,7 +135,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can start/stop the JupyterLab server with GPU
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
@@ -180,7 +180,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @error-check
   Scenario: User can cancel spawning while chose error image
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
@@ -203,4 +203,3 @@ Feature: Hub
     And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
     When I choose "Logout" in top-right menu
     Then I am on login page
-

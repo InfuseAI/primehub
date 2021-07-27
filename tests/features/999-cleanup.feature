@@ -1,5 +1,5 @@
-@released @admin-user @ee
-Feature: Admin
+@admin-user @ee
+Feature: Delete data
   Delete some created resources
 
   Background:
@@ -8,7 +8,7 @@ Feature: Admin
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete user
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
@@ -22,7 +22,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete image
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
@@ -58,7 +58,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete GPU image
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
@@ -80,7 +80,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete instance type
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -99,7 +99,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete GPU instance type
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -118,7 +118,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression @destroy-data
   Scenario: Delete group
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page

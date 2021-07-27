@@ -1,7 +1,8 @@
-@released @daily
+@ee
 Feature: MISC
   Miscellaneous tests
-  
+
+  @regression
   Scenario: User can access every single page
     Given I go to login page
     When I fill in the correct username credentials

@@ -1,4 +1,4 @@
-@released @ee @ce
+@ee @ce
 Feature: Admin
   In order to manage groups
   I want to change settings
@@ -10,7 +10,7 @@ Feature: Admin
     Then I am on the admin dashboard "Groups" page
     And I should see element with test-id "group"
 
-  @regression @sanity @smoke 
+  @regression @sanity @smoke @prep-data
   Scenario: Create group and connect to existing user
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"
@@ -54,7 +54,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @sanity @smoke 
+  @regression @sanity @smoke @prep-data
   Scenario: Create another group
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"
@@ -82,7 +82,7 @@ Feature: Admin
 
     And I click element with test-id "confirm-button"
 
-  @normal-user @regression @sanity
+  @normal-user @regression @sanity @prep-data
   Scenario: Enable model deployment and assign group admin
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
