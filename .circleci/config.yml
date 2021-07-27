@@ -148,7 +148,7 @@ jobs:
           path: ~/project/e2e
       - notify_slack
 
-  e2e_regression_ee:
+  e2e_regression_ee_a:
     machine:
       image: ubuntu-1604:202004-01
     steps:
@@ -162,6 +162,30 @@ jobs:
           environment:
             PRIMEHUB_MODE: ee
             TEST_TYPE: regression
+            FEATURE: hub.jobs.schedule
+            TARGET : demo.a
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+      - notify_slack
+      - create_ticket 
+
+  e2e_regression_ee_b:
+    machine:
+      image: ubuntu-1604:202004-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            TEST_TYPE: regression
+            FEATURE: deployment.apps
             TARGET : demo.a
           command: |
             ./ci/ci-test.sh
@@ -270,5 +294,7 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_regression_ee:
+      - e2e_regression_ee_a:
+          context: e2e-demo-a
+      - e2e_regression_ee_b:
           context: e2e-demo-a
