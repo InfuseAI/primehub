@@ -557,13 +557,13 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
   }
 });
 
-defineStep("I should see text of element with xpath {string} is matched the regular expression {string}", async function(xpath, exp) {
+defineStep("I should see the property {string} of element with xpath {string} is matched the regular expression {string}", async function(property, xpath, exp) {
   let text;
   const re = new RegExp(exp);
   const ele = await this.page.$x(xpath);
   if (ele.length > 0) {
     for (i = 0; i < ele.length; i++) {
-      text = await (await ele[i].getProperty('textContent')).jsonValue();
+      text = await (await ele[i].getProperty(property)).jsonValue();
       if(text.match(re)) return;
     }
   }
