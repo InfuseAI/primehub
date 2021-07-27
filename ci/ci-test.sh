@@ -174,8 +174,11 @@ fi
 if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="(@sanity and @ee) and (not @wip)"
 fi
-if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="(@regression and @ee) and (not @wip and not @normal-user)"
+if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "hub.jobs.schedule" ]]; then
+  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-hub or @feat-jobs or @feat-schedule)) and (not @wip)"
+fi
+if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "deployment.apps" ]]; then
+  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-deployment or @feat-apps)) and (not @wip)"
 fi
 
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
