@@ -1,4 +1,4 @@
-@released @ee
+@feat-jobs @ee
 Feature: Job Submission
   Basic tests
 
@@ -58,7 +58,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @daily
+  @regression
   Scenario: User can rerun job
     When I choose group with name "e2e-test-group-display-name"
     # And I keep group resources
@@ -80,7 +80,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @daily
+  @regression
   Scenario: User can clone job
     When I choose group with name "e2e-test-group-display-name"
     # And I keep group resources
@@ -104,7 +104,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can cancel job
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
@@ -132,7 +132,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @daily @regression
+  @regression
   Scenario: User can create job with GPU
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources

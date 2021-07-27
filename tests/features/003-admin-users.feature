@@ -1,9 +1,9 @@
-@released @ee @ce
-Feature: Admin
+@ee @ce
+Feature: Admin - Users
   In order to manage users
   I want to change settings
 
-  @admin-user @daily @regression
+  @admin-user @regression @prep-data
   Scenario: Create a normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -32,7 +32,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily @regression
+  @admin-user @regression @prep-data
   Scenario: Create another normal user
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -61,7 +61,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily @regression
+  @admin-user @regression @error-check
   Scenario: User can see expected results when no group is available
     Given I go to login page
     When I fill in the username "e2e-test-group-user" and password "password"
@@ -77,7 +77,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily @regression
+  @admin-user @regression @prep-data
   Scenario: Update user info of first user and connect to existing group
     Given I am logged in
     When I am on the PrimeHub console "Home" page
@@ -115,7 +115,7 @@ Feature: Admin
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @daily @regression
+  @admin-user @regression @prep-data
   Scenario: Update user info of second user and connect to another group
     Given I am logged in
     When I am on the PrimeHub console "Home" page

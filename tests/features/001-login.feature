@@ -1,4 +1,4 @@
-@released @daily @ee @ce @deploy
+@ee @ce @deploy
 Feature: Login
   In order to manage system
   As a user, I want to login
@@ -6,7 +6,7 @@ Feature: Login
   Background:
     Given I go to login page
 
-  @released @daily @regression @error-check @admin
+  @regression @error-check @admin
   Scenario: User can't login via incorrect username and password
     When I fill in the wrong credentials and click login
     | fields                    | values                           |

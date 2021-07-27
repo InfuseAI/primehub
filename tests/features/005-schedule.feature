@@ -1,4 +1,4 @@
-@released @daily @ee
+@feat-schedule @ee
 Feature: Job Schedule
   Basic tests
 
