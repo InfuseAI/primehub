@@ -40,6 +40,18 @@ print_usage() {
   echo ""
 }
 
+yq_json() {
+  local file=$1
+  local yq_version=$(yq -V| awk '{print $3}')
+    if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
+      # yq4
+      yq e "${file}" -j
+    else
+      # For yq@2 or yq@3
+      yq r "${file}" -j
+    fi
+}
+
 list_groups() {
   local -a groups=()
   local yq_version=$(yq -V| awk '{print $3}')
@@ -49,18 +61,9 @@ list_groups() {
       echo "$file not found"
       exit -1
     fi
-
-    if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
-      # For yq@4
-      for group in $(yq e "${file}" -j | jq -r '. | keys[]'); do
-        groups+=("$group")
-      done
-    else
-      # For yq@2 or yq@3
-      for group in $(yq r "${file}" -j | jq -r '. | keys[]'); do
-        groups+=("$group")
-      done
-    fi
+    for group in $(yq_json "${file}" | jq -r '. | keys[]'); do
+          groups+=("$group")
+    done
   done
   echo "${groups[@]}" | xargs -n1 | sort -u
 }
@@ -162,10 +165,8 @@ function main() {
       exit -1
     fi
 
-    for image in $(yq r "${file}" -j | jq -r ".[\"${GROUP}\"] // {} | to_entries | .[].value"); do
-
+    for image in $(yq_json "${file}" | jq -r ".[\"${GROUP}\"] // {} | to_entries | .[].value"); do
       IMAGES+=("$image")
-
     done
   done
 
