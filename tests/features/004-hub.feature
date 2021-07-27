@@ -165,7 +165,7 @@ Feature: Hub
     And I click the "Terminal" card in the launcher
     And I input "nvidia-smi > tmp.txt" command in the terminal
     And I open "tmp.txt" file in the file browser
-    Then I should see text of element with xpath "//div[@style='position: relative;']//span[@role='presentation']" is matched the regular expression "NVIDIA-SMI\s+\d+\.\d+\.\d+\s+Driver Version:\s+\d+\.\d+\.\d+\s+CUDA Version:\s+\d+\.\d+"
+    Then I should see the property "textContent" of element with xpath "//div[@style='position: relative;']//span[@role='presentation']" is matched the regular expression "NVIDIA-SMI\s+\d+\.\d+\.\d+\s+Driver Version:\s+\d+\.\d+\.\d+\s+CUDA Version:\s+\d+\.\d+"
     And I close all tabs in JupyterLab
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page

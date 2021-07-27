@@ -42,6 +42,10 @@ Feature: Model Deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test" to "name" text field
+    And I wait for 1.0 second
+    And I click element with xpath "//input[@type='checkbox']"
+    Then I should see the property "value" of element with xpath "//input[@id='id']" is matched the regular expression "create-deployment-test-[0-9a-z]{5}"
+    When I type "customizable-deployment-id" to "id" text field
     And I choose radio button with name "test-instance-type"
     And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
@@ -60,6 +64,21 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression @sanity
+  Scenario: User can't set the same deployment ID
+    Given I go to login page
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
+    When I choose "Deployments" in sidebar menu
+    Then I am on the PrimeHub console "Deployments" page
+    When I click "Create Deployment" button
+    Then I am on the PrimeHub console "CreateDeployment" page
+    When I click element with xpath "//input[@type='checkbox']"
+    And I type "customizable-deployment-id" to "id" text field
+    Then I "should" see element with xpath "//div[text()='The ID has been used by other users. Change your ID to a unique string to try again.']"
+
   @regression
   Scenario: User can update deployment
     Given I go to login page
@@ -71,7 +90,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Update" button
-    And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
+    Then I "should" see element with xpath "//input[@id='id' and @disabled]"
+    When I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click "Confirm and Deploy" button
     Then I am on the PrimeHub console "Deployments" page
     When I go to the deployment detail page with name "create-deployment-test"
@@ -344,7 +364,7 @@ Feature: Model Deployment
     Then I wait for attribute "Status" with value "Deployed"
     And I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
     When I click tab of "Logs"
-    Then I should see text of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "kernel reported version is:\s+\d+\.\d+\.\d+"
+    Then I should see the property "textContent" of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "kernel reported version is:\s+\d+\.\d+\.\d+"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
