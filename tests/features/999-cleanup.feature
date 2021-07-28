@@ -124,10 +124,13 @@ Feature: Delete data
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I delete a row with text "e2e-test-group"
-    And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-group"
-    When I click refresh
+    And I search "e2e-another-test-group" in test-id "text-filter-name"
+    And I delete a row with text "e2e-another-test-group"
+    And I wait for 1.0 second
+    And I click refresh
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-group" 
+    Then list-view table "should not" contain row with "e2e-test-group"
+    And I search "e2e-another-test-group" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-another-test-group"
     When I choose "Logout" in top-right menu
     Then I am on login page

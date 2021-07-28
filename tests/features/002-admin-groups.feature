@@ -81,21 +81,17 @@ Feature: Admin
     | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input'] | 4      |
 
     And I click element with test-id "confirm-button"
+    When I choose "Logout" in top-right menu
+    Then I am on login page
 
   @normal-user @regression @sanity @prep-data
-  Scenario: Enable model deployment and assign group admin
+  Scenario: Assign group admin
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
-    When I check boolean input with test-id "group/enabledDeployment"
     # checkbox of group admin
-    And I click element with xpath "//table//input"
+    When I click element with xpath "//table//input"
     And I click element with test-id "confirm-button"
-    And I wait for 2.0 seconds
-    And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
-    When I click edit-button in row contains text "e2e-test-group"
-    Then boolean input with test-id "group/enabledDeployment" should have value "true"
-    And I "should" see element with xpath "//table//span[@class='ant-checkbox ant-checkbox-checked']"
+    And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
