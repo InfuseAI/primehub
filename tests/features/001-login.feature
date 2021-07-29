@@ -6,7 +6,7 @@ Feature: Login
   Background:
     Given I go to login page
 
-  @regression @error-check @admin
+  @regression @sanity @error-check
   Scenario: User can't login via incorrect username and password
     When I fill in the wrong credentials and click login
     | fields                    | values                           |
@@ -14,5 +14,5 @@ Feature: Login
     | \n\n\n\n\n\n\n\n\n\n\n\n  | %s/pass/\$PASSWORD/g             |
     | phadmin                   | grep -r temp \/                  |
 
-    And I wait for 3.0 seconds
+    And I wait for 2.0 seconds
     Then I am on login page

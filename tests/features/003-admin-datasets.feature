@@ -1,4 +1,4 @@
-@admin-user @ee @ce
+@ee @ce
 Feature: Admin - Datasets
   In order to manage datasets
   I want to change settings
@@ -13,7 +13,7 @@ Feature: Admin - Datasets
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
 
-  @regression
+  @regression @sanity @smoke
   Scenario: Create dataset
     When I should see element with test-id "dataset"
     And I click element with test-id "add-button"
