@@ -363,7 +363,7 @@ install::primehub_required_bin() {
     tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
   fi
 
-  # Check nfs-commo
+  # Check nfs-common
   if command -v lsb_release > /dev/null; then
     install:nfs-common
   fi
@@ -1575,6 +1575,10 @@ main() {
     create)
       if ! check_primehub_required_bin; then
         install::primehub_required_bin
+      fi
+      if [[ "$(command -v curl)" == "" ]]; then
+        warn "cURL is required and not installed on this server."
+        return -1
       fi
       create::${target}
     ;;
