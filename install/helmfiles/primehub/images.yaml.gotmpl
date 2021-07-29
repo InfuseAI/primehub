@@ -18,7 +18,7 @@ tusd:
 jupyterhub:
   hub:
     image:
-      name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/jupyterhub-k8s
+      name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-hub
   proxy:
     chp:
       image:
@@ -72,7 +72,7 @@ gitsync:
 
 controller:
   image:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-controller-ee
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-controller
 
   proxy:
     image:
@@ -139,4 +139,7 @@ keycloak:
 metacontroller:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/metacontroller
+  webhook:
+    image:
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
 {{end}}

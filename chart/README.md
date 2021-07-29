@@ -97,7 +97,7 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `controller.replicaCount` | The number of primehub controller replicas | `1`
-`controller.image.repository` | The primehub controller image repository  | `infuseai/primehub-controller-ee`
+`controller.image.repository` | The primehub controller image repository  | `infuseai/primehub-controller`
 `controller.image.tag` | The primehub controller image tag | Please see [values.yaml](values.yaml)
 `controller.nodeSelector` | Node labels for pod assignment | `{}`
 `controller.proxy.image.repository` | The kube-rbac-proxy image repository | `gcr.io/kubebuilder/kube-rbac-proxy`
