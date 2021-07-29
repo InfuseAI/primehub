@@ -81,6 +81,7 @@ Feature: Admin
     | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input'] | 4      |
 
     And I click element with test-id "confirm-button"
+    And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
 

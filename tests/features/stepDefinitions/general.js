@@ -55,8 +55,10 @@ defineStep("I choose {string} in top-right menu", async function(menuitem) {
     }
     else console.log("Cannot find top-right icon");
 
-    await this.clickElementByXpath(xpath);
-    await this.page.waitForNavigation();
+    await Promise.all([
+      this.clickElementByXpath(xpath),
+      this.page.waitForNavigation(),
+    ]);
     await this.checkElementExistByXPath('should exist', xpath).then(
       function(result) { ret = !result; }
     );
@@ -111,6 +113,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewImage': `-${this.E2E_SUFFIX}/images/create`,
     'Settings': `-${this.E2E_SUFFIX}/settings`
   };
+
   await this.page.waitForXPath(xpathMap[menuitem]);
 
   for (retryCount=0; retryCount < 5; retryCount++) {
