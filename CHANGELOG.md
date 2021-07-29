@@ -3,6 +3,11 @@
 ## Upcoming
 ### What's New
 
+## 3.6.2
+### What's New
+
+- Bugfix: patch airgap image issue
+
 ## 3.6.1
 ### What's New
 
