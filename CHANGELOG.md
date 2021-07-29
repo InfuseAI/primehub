@@ -3,11 +3,108 @@
 ## Upcoming
 ### What's New
 
+## 3.7.0
+### What's New
+
+- Add in-notebook tutorial for getting started
+
 ### Breaking Changes
 
-Upgrade helm version from 3.3.4 to 3.6.2
-Upgrade helm-diff version to 3.1.3
-Upgrade helmfile version to 0.139.9
+- Upgrade helm version from 3.3.4 to 3.6.2
+- Upgrade helm-diff version to 3.1.3
+- Upgrade helmfile version to 0.139.9
+
+### Available in CE
+
+#### Getting-started tutorials within notebook env
+
+- Write in-notebook documents for gpu testing (ch17752)
+- pytorch get started tutorial in notebook (ch17751)
+- tensorflow2 getting-started in notebook (ch17750)
+- Add getting started notebook links in home page (ch17905)
+- Copy the primehub examples to the notebook env (ch17753)
+- The notebooks page support to open by path, image, instancetype (ch17904)
+
+#### Drop Canner Dependencies
+
+- Remove unused portal-config and home-config (ch18422)
+- Drop Canner: System Settings (ch16907)
+- Refactor the root page for the admin portal (ch14982)
+
+#### CE Telemetry
+
+- [CE Telemetry] Modify `jupyterhub_profile.py` to send Notebook telemetry (ch18270)
+- [CE Telemetry] Notebook Telemetry GraphQL Endpoint (ch18269)
+- [CE Telemetry] phapp telemetry (ch18268)
+
+#### Pluggability (PrimeHub App)
+
+- Create E2E for Pluggability - Sanity (ch18566)
+
+#### Miscellaneous
+
+- Path log view component  (ch18058)
+- CE: PrimeHub Apps: Access Scope (ch18801)
+
+### EE Only
+
+#### Model Deployment
+
+- Allows customizing deployment ID when creating a deployment (ch17708)
+- Visualize model metadata like accuracy and different metrics (ch18200)
+- Model deployment: support NFS (ch18018)
+- Allows to support long request and big data size for model deployment request. (ch18170)
+- Make the Deployed Models is represented as all running models (ch18765)
+- Model deployment limit per group (ch18541)
+- Rename all "Models" to "Deployments" (ch18275)
+
+#### Pluggability (PrimeHub App)
+
+- Fix Label Studio version in app template (ch17728)
+- [Bugfix] Model management: Can CONFIG the MLflow Server on [EE|Deploy] (ch18176)
+
+#### Get notified when E2E failed
+
+- Add test result to slack automatically when daily or merged tests fail on MASTER (ch18212)
+- Add a ticket automatically when daily or merged tests fail on MASTER (ch18168)
+
+#### AWS one-click install web action
+
+- [AWS-CDK] User can create EKS cluster without giving domain name, just use the domain name provided by ELB (ch18726)
+- customImage.pushSecretName should be configured by aws-registry if we use  aws-ecr-credential. (ch18448)
+
+#### Miscellaneous
+
+- Use the upstream keycloak-nodejs-admin-client for primehub-console (ch17886)
+- Upgrade buildah to 1.19.8 (ch17778)
+- Check k8s resource before install (ch17965)
+- Performance tuning of querying 'me' in graphql (ch17845)
+- Cleanup the PrimeHub gitlab repo (ch17657)
+- support primehub-install env which is equivalent to phenv (ch18694)
+- Upgrade to yq v4 (ch18686)
+- yq r is deprecated after yq v4 (ch18394)
+- All images should have locked version in airgap image list (ch18796)
+- Create the end-to-end tutorial in PrimeHub (ch18456)
+- The primehub helmfile for airgap should use the fetched primehub chart (ch18029)
+- [Bugfix] The GPU autoscaling does not work in dev eks (ch19044)
+- [Bugfix] Should not have 'Model Deployment' switch in Group Mgt UI (ch18358)
+- [Bugfix] Incorrect render of parameters Display in the model metrics and params in the version list (ch19257)
+- [Bugfix] Gitlab primehub install makefile fail to install (ch18920)
+- [Bugfix] unknown anchor in the images.yaml (ch18683)
+- [Bugfix] Dataset upload function (ch18914)
+- [Bugfix] Unable to access admin portal with admin permission by clicking the "Admin portal" (ch18349)
+- [Bugfix] Api token page didn't show apiToken correctly (ch18264)
+- [Bugfix] Model pod is not created by default (ch17980)
+- [Bugfix] PrimeHub-install fix minio storage class doesn't eat PRIMEHUB_STORAGE_CLASS (ch19067)
+- [Bugfix] The jupyter spawning page is stuck at progress page. (ch19040)
+- [Bugfix] Stop the MLflow server, the model page shows blank and the deployment can't be started (ch18819)
+- [Bugfix] Error font formatting in pop-up while stopping PhApp (ch18872)
+- [Bugfix] Unable to access System Settings of a freshly installed EE (ch18857)
+- [Bugfix] the notebook is opened inside the Primehub page. (ch18714)
+- [Bugfix] Image builder fail to pull while skip tls verify (ch18769)
+- [Bugfix] notebook spawning progress bar error (ch18723)
+- [Bugfix] UI staying in Deploying when creating a Deployment, but the pods are running, endpoints are accessible (ch18571)
+- [Bugfix] Landing page link issue of deployment (ch18458)
 
 ## 3.6.1
 ### What's New
