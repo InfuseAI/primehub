@@ -1,8 +1,8 @@
-@admin-user @ee
+@ee
 Feature: Notebooks Admin
   Basic tests
 
-  @wip @admin-user @regression
+  @wip @regression
   Scenario: User can access/stop the JupyterLab server in notebooks admin page
     Given I am logged in
     Then I am on the PrimeHub console "Home" page

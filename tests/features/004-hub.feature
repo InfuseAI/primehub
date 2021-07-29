@@ -115,7 +115,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @admin-user @wip @regression
+  @wip @regression
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page

@@ -1,4 +1,4 @@
-@admin-user @ee
+@ee
 Feature: Delete data
   Delete some created resources
 

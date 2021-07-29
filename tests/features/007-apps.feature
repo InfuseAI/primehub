@@ -80,7 +80,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-mlf']"
 
-  @regression
+  @regression @sanity
   Scenario: Install Code Server
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -107,7 +107,7 @@ Feature: Apps
   Scenario: A user can not see Code Server with default group access scope installed by other group
     When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the username "e2e-test-user" and password "password"
+    When I fill in the username "e2e-test-another-user" and password "password"
     And I click login
     And I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -128,7 +128,7 @@ Feature: Apps
     And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
-    When I fill in the username "e2e-test-user" and password "password"
+    When I fill in the username "e2e-test-another-user" and password "password"
     And I click login
     And I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -139,7 +139,7 @@ Feature: Apps
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @regression @sanity
   Scenario: Remove Code Server
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
