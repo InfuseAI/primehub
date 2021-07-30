@@ -119,6 +119,20 @@ defineStep("I select option {string} in admin dashboard", async function(name) {
   await this.takeScreenshot(`select-option-${name}`);
 });
 
+defineStep("I assign group admin of {string} to {string}", async function(group, user) {
+  const groupXpath = `//div[contains(@data-testid, "group/name")]//input[@value='${group}-${this.E2E_SUFFIX}']`;
+  const userGroupAdminXpath = (user == "me") ? `//tr//td[text()='${this.USERNAME}']/following-sibling::td//input` : `//tr//td[text()='${user}-${this.E2E_SUFFIX}']/following-sibling::td//input`;
+  try {
+    await this.page.waitForXPath(groupXpath, {timeout: 1000});
+    await this.page.waitForXPath(userGroupAdminXpath, {timeout: 1000});
+    await this.clickElementByXpath(userGroupAdminXpath);
+    await this.takeScreenshot(`I-assign-group-admin-of-${group}-to-${user}`);
+  }
+  catch (e) {
+    throw new Error(`assign group admin of ${group}-${this.E2E_SUFFIX} to ${user} failed`);
+  }
+});
+
 function testIdToSelector(testId) {
   return `[data-testid="${testId}"]`;
 }

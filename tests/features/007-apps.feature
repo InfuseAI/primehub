@@ -273,14 +273,14 @@ Feature: Apps
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
 
-  @wip @regression
+  @regression
   Scenario: Stop Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
     And I "should" have "streamlit" installed with name "test-streamlit"
-    When I click element with xpath "//ul[@class='ant-card-actions']//span[text()=' Stop']"
+    When I "Stop" the apps with name "test-streamlit"
     And I click "Yes" button
-    Then I "should" see element with xpath "//div[@class='ant-card-body']//div[text()='Stopped']"
+    Then I should see the status "Stopped" of the apps "test-streamlit"
 
   @regression
   Scenario: Remove Streamlit
