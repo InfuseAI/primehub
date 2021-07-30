@@ -10,11 +10,6 @@ defineStep("I am on the admin dashboard {string} page", async function(string) {
   await this.takeScreenshot(`admin-dashboard-${string}`);
 });
 
-defineStep("I see {string} in logo alt text", function(string) {
-  // Write code here that turns the phrase above into concrete actions
-  return "pending";
-});
-
 defineStep("I click element with test-id {string}", async function(testId) {
   await this.clickElementBySelector(testIdToSelector(testId));
 });

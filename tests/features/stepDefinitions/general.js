@@ -220,10 +220,6 @@ defineStep("I click element with xpath {string} and wait for xpath {string} appe
   throw new Error(`failed to click ${xpath} and wait for ${waitXpath} appearing`);
 });
 
-defineStep("I fill in {string} with {string}", async function(string, string2) {
-  await this.input(string, string2);
-});
-
 defineStep("I fill in the wrong credentials and click login", async function(datatable) {
   for (const row of datatable.rows()) {
     await this.input("username", row[0]);
@@ -236,11 +232,6 @@ defineStep("I fill in the wrong credentials and click login", async function(dat
 
 defineStep("I fill in the correct username credentials", async function() {
   await this.input("username", this.USERNAME);
-  await this.input("password", this.PASSWORD);
-});
-
-defineStep("I fill in the correct email credentials", async function() {
-  await this.input("username", this.USER_EMAIL);
   await this.input("password", this.PASSWORD);
 });
 
@@ -338,12 +329,6 @@ defineStep("I change language to {string}", async function(lang) {
   return await this.clickByText(lang, "div[@class='kc-dropdown']/ul//");
 });
 
-defineStep("the login heading should be {string}", async function(heading) {
-  await this.page.waitForNavigation();
-  return await this.checkText("#kc-page-title", heading);
-});
-
-
 /* 
 *  Action on elements, such as click, switch, input 
 */
@@ -380,13 +365,6 @@ defineStep("I click button of {string} of item {string} to wait for {string} dia
   throw new Error(`failed to wait for ${dialog} dialogue`);
 });
 
-defineStep("I click svg button of {string} of item {string}", async function(action, string) {
-  //tr[contains(.,'aaron')]//button[contains(@*,'edit')]
-  const xpath = `//tr[contains(.,'${string}')]//button[contains(@*,'${action}')]`;
-  let elem = await this.page.$(xpath);
-  await this.clickElementByXpath(xpath);
-});
-
 defineStep("I click button of {string} on confirmation dialogue", async function(action) {
   //div[@class='ant-modal-confirm-body-wrapper']//button[contains(.,'Yes')]
   await this.page.waitForTimeout(1000);
@@ -401,17 +379,6 @@ defineStep("I click button of {string} on deletion confirmation dialogue", async
   await this.clickElementByXpath(xpath);
 });
 
-defineStep("I click switch of {string}", async function(testId) {
-  //div[@data-testid='user/enabled']//button
-  const xpath = `//div[@data-testid='${testId}']//button`;
-  await this.clickElementByXpath(xpath);
-});
-
-defineStep("I click element {string} of {string}", async function(element, title) {
-  const xpath = `//${element}[text()='${title}']/..`;
-  await this.clickElementByXpath(xpath);
-});
-
 defineStep("I type {string} to {string} text field", async function(text, id) {
   const selector = `#${id}`;
   await this.page.waitForSelector(selector, {visible: true});
@@ -420,15 +387,6 @@ defineStep("I type {string} to {string} text field", async function(text, id) {
   await this.page.keyboard.press("Backspace");
   await this.page.type(selector, text);
   await this.takeScreenshot(`type-${text}-to-${id}`.replace(/\//g, '-'));
-});
-
-// Input
-defineStep("I fill {string} in input of {string}", async function(string, testId) {
-  const selector = `input${testIdToSelector(testId)}`;
-  await this.page.focus(selector);
-  await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
-  await this.page.keyboard.press("Backspace");
-  await this.page.type(selector, string);
 });
 
 defineStep("I should see confirmation dialogue of {string}", async function(string) {

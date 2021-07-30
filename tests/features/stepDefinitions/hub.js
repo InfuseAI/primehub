@@ -55,11 +55,6 @@ defineStep("I choose instance type", async function() {
   await this.clickElementBySelector(selector, context = this.context);
 });
 
-defineStep("I choose image", async function() {
-  const selector = "#image-container label:first-child input[type='radio']";
-  await this.clickElementBySelector(selector, context = this.context);
-});
-
 defineStep("I choose instance type with name {string}", async function(name) {
   const selector = this.E2E_SUFFIX ? `#it-container input[value='${name}-${this.E2E_SUFFIX}']` : `#it-container input[value='${name}']`;
   await this.clickElementBySelector(selector, context = this.context);
