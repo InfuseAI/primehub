@@ -77,6 +77,7 @@ Feature: Apps
     And I "should" have "mlflow" installed with name "test-mlf"
     When I go to the apps detail page with name "test-mlf"
     And I click "Uninstall" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-mlf']"
 
@@ -146,6 +147,7 @@ Feature: Apps
     And I "should" have "code-server" installed with name "test-code-server"
     When I go to the apps detail page with name "test-code-server"
     And I click "Uninstall" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-code-server']"
 
@@ -196,6 +198,7 @@ Feature: Apps
     And I "should" have "label-studio" installed with name "test-label-studio"
     When I go to the apps detail page with name "test-label-studio"
     And I click "Uninstall" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-label-studio']"
 
@@ -246,6 +249,7 @@ Feature: Apps
     And I "should" have "matlab" installed with name "test-matlab"
     When I go to the apps detail page with name "test-matlab"
     And I click "Uninstall" button
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='test-matlab']"
 
@@ -263,7 +267,7 @@ Feature: Apps
     And I go to the apps detail page with name "test-streamlit"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @wip @regression
+  @regression
   Scenario: Launch Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -279,6 +283,7 @@ Feature: Apps
     Then I am on the PrimeHub console "Apps" page
     And I "should" have "streamlit" installed with name "test-streamlit"
     When I "Stop" the apps with name "test-streamlit"
+    And I wait for 1.0 second
     And I click "Yes" button
     Then I should see the status "Stopped" of the apps "test-streamlit"
 
