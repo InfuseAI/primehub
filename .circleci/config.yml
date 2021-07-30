@@ -168,7 +168,6 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-      - notify_slack
       - create_ticket 
 
   e2e_regression_ee_b:
@@ -191,7 +190,6 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-      - notify_slack
       - create_ticket 
 
   build:
