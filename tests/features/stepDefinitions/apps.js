@@ -21,6 +21,23 @@ defineStep("I go to the apps detail page with name {string}", async function(nam
   throw new Error(`failed to go to apps detail page with name ${name}`);
 });
 
+defineStep("I {string} the apps with name {string}", async function(action, apps) {
+  xpath = `//div[@class='ant-card-body']//h2[text()='${apps}']/../../following-sibling::ul[@class='ant-card-actions']//span[contains(., '${action}')]`
+  await this.clickElementByXpath(xpath);
+  await this.takeScreenshot(`${action}-the-apps-with-${apps}`);
+});
+
+defineStep("I should see the status {string} of the apps {string}", async function(status, apps) {
+  xpath = `//h2[text()='${apps}']/following-sibling::div//div[contains(., ${status})]`;
+  try {
+    await this.page.waitForXPath(xpath, {timeout: 1000});
+  }
+  catch (err) {
+    throw new Error(`should see the status ${status} of the apps ${apps}`);
+    await this.takeScreenshot(`should-see-the-status-${status}-of-the-apps-${app}`);
+  }
+});
+
 defineStep("I {string} have {string} installed with name {string}", async function(exist, app, name) {
   var isExist = true;
   try {
@@ -30,7 +47,7 @@ defineStep("I {string} have {string} installed with name {string}", async functi
   catch (err) {isExist = false; }
   if (exist.includes("not") === isExist) {
     throw new Error(`Apps ${app} ${name} exist?:  ${isExist}`);
-    await this.takeScreenshot(`I-${exist}-have-${app}-installed-with-name-${name}-isExist-${isExist}`);
+    await this.takeScreenshot(`${exist}-have-${app}-installed-with-name-${name}-isExist-${isExist}`);
   }
 });
 

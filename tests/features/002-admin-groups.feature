@@ -1,5 +1,5 @@
 @ee @ce
-Feature: Admin
+Feature: Admin - Groups
   In order to manage groups
   I want to change settings
 
@@ -11,10 +11,13 @@ Feature: Admin
     And I should see element with test-id "group"
 
   @regression @sanity @smoke @prep-data
-  Scenario: Create group and connect to existing user
+  Scenario: Create a group
     When I click element with test-id "add-button"
-    Then I should see element with test-id "group/name"
-    And I should see element with test-id "group/displayName"
+    Then I should see element with test-id on the page
+    | fields            |
+    | group/name        |
+    | group/displayName |
+
     When I type valid test-id on the page
     | fields            | values                      |
     | group/name        | e2e-test-group              |
@@ -36,20 +39,41 @@ Feature: Admin
     | //div[@data-testid='group/projectQuotaGpu']//input[@class='ant-input-number-input']    | 2      |
     | //div[@data-testid='group/projectQuotaMemory']//input[@class='ant-input-number-input'] | 4      |
 
-    And I click element with test-id "connect-button"
-    And I wait for 4.0 seconds
+    And I click element with test-id "confirm-button"
+    And I wait for 1.0 second
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @regression @sanity @smoke @prep-data
+  Scenario: Connect a group to an existing user
+    When I search "e2e-test-group" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "e2e-test-group"
+    When I click edit-button in row contains text "e2e-test-group"
+    Then I should see element with test-id on the page
+    | fields            |
+    | group/name        |
+    | group/displayName |
+
+    When I click element with test-id "connect-button"
+    And I wait for 2.0 seconds
     And I search my username in name filter
     And I click my username
     And I click element with xpath "//button/span[text()='OK']"
-    And I wait for 4.0 seconds
-    And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
-    And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    And I click element with test-id "confirm-button"
+    And I wait for 1.0 second
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
     And I should see user limits with CPU, Memory, GPU is "1,2,1"
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+  @regression @sanity @smoke @prep-data
+  Scenario: Check group resources of a new group as speficied upon creation
+    When I click on PrimeHub icon
+    Then I am on the PrimeHub console "Home" page
+    And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -57,8 +81,11 @@ Feature: Admin
   @regression @sanity @smoke @prep-data
   Scenario: Create another group
     When I click element with test-id "add-button"
-    Then I should see element with test-id "group/name"
-    And I should see element with test-id "group/displayName"
+    Then I should see element with test-id on the page
+    | fields            |
+    | group/name        |
+    | group/displayName |
+
     When I type valid test-id on the page
     | fields            | values                      |
     | group/name        | e2e-another-test-group              |
@@ -86,12 +113,11 @@ Feature: Admin
     Then I am on login page
 
   @normal-user @regression @sanity @prep-data
-  Scenario: Assign group admin
+  Scenario: Assign group admin to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
-    # checkbox of group admin
-    When I click element with xpath "//table//input"
+    When I assign group admin of "e2e-test-group" to "me"
     And I click element with test-id "confirm-button"
     And I wait for 1.0 second
     When I choose "Logout" in top-right menu

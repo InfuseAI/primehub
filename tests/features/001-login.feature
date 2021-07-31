@@ -13,6 +13,7 @@ Feature: Login
     | //span[text()='username'] | document.getElementById('temp')] |
     | \n\n\n\n\n\n\n\n\n\n\n\n  | %s/pass/\$PASSWORD/g             |
     | phadmin                   | grep -r temp \/                  |
+    | ^\S+@\S+$                 | password                         |
 
     And I wait for 2.0 seconds
     Then I am on login page
