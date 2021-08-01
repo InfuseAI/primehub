@@ -1,4 +1,4 @@
-@ee @ce
+@admin-instance-types @ee @ce
 Feature: Admin - Instance Types
   In order to manage instance types
   I want to change settings

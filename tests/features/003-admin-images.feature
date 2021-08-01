@@ -1,4 +1,4 @@
-@ee @ce
+@admin-images @ee @ce
 Feature: Admin - Images
   In order to manage images
   I want to change settings
@@ -61,7 +61,7 @@ Feature: Admin - Images
     Then I am on login page
 
   @regression @sanity @smoke @prep-data
-  Scenario: Create image with latest basenotebook and connect to existing group 
+  Scenario: Create image with latest base notebook and connect to existing group 
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
     When I click "Images" in admin dashboard

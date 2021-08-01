@@ -1,4 +1,4 @@
-@ee @ce
+@admin-groups @ee @ce
 Feature: Admin - Groups
   In order to manage groups
   I want to change settings
