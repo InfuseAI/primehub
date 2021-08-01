@@ -32,7 +32,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user @regression @sanity
+  @regression @sanity
   Scenario: User can create job with group image and save artifact
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Jobs" in sidebar menu

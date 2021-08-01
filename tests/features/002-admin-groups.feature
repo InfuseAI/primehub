@@ -112,7 +112,7 @@ Feature: Admin - Groups
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user @regression @sanity @prep-data
+  @regression @sanity @prep-data
   Scenario: Assign group admin to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"

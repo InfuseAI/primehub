@@ -175,7 +175,7 @@ if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="(@sanity and @ee) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "hub.jobs.schedule" ]]; then
-  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-hub or @feat-jobs or @feat-schedule)) and (not @wip)"
+  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-hub or @feat-jobs or @feat-schedule or @feat-edition)) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "deployment.apps" ]]; then
   tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-deployment or @feat-apps)) and (not @wip)"

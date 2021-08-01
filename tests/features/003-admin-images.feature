@@ -37,7 +37,7 @@ Feature: Admin - Images
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @normal-user @regression @sanity @prep-data
+  @regression @sanity @prep-data
   Scenario: Create group image
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Images" in sidebar menu
