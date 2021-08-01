@@ -216,7 +216,7 @@ Feature: Apps
     And I wait for 10.0 seconds
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression
+  @wip @regression
   Scenario: Launch Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -267,7 +267,7 @@ Feature: Apps
     And I go to the apps detail page with name "test-streamlit"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression
+  @wip @regression
   Scenario: Launch Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -277,7 +277,7 @@ Feature: Apps
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
 
-  @regression
+  @wip @regression
   Scenario: Stop Streamlit
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page

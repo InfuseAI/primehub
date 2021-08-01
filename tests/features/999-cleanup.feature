@@ -8,8 +8,8 @@ Feature: Delete data
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
-  @regression @destroy-data
-  Scenario: Delete user
+  @regression @admin-users @destroy-data
+  Scenario: Delete users
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     When I search "e2e-test-group-user" in test-id "text-filter-username"
@@ -19,11 +19,18 @@ Feature: Delete data
     When I click refresh
     And I search "e2e-test-group-user" in test-id "text-filter-username"
     Then list-view table "should not" contain row with "e2e-test-group-user"
+    When I search "e2e-test-another-user" in test-id "text-filter-username"
+    And I delete a row with text "e2e-test-another-user"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "e2e-test-another-user"
+    When I click refresh
+    And I search "e2e-test-another-user" in test-id "text-filter-username"
+    Then list-view table "should not" contain row with "e2e-test-another-user"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @destroy-data
-  Scenario: Delete image
+  @regression @admin-images @destroy-data
+  Scenario: Delete images
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
     When I search "test-image" in test-id "text-filter-name"
@@ -58,8 +65,8 @@ Feature: Delete data
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @destroy-data
-  Scenario: Delete GPU image
+  @regression @admin-images @destroy-data
+  Scenario: Delete GPU images
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
     When I search "test-image-gpu" in test-id "text-filter-name"
@@ -69,19 +76,12 @@ Feature: Delete data
     When I click refresh
     And I search "test-image-gpu" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "test-image-gpu"
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I get the iframe object
-    And I go to the spawner page
-    #Then I "should not" see images block contains "test-image-gpu-display-name" image with "System / GPU" type and "test-description-gpu" description
+    And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @destroy-data
-  Scenario: Delete instance type
+  @regression @admin-instance-types @destroy-data
+  Scenario: Delete instance types
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
     When I search "test-instance-type" in test-id "text-filter-name"
@@ -99,7 +99,7 @@ Feature: Delete data
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @destroy-data
+  @regression @admin-instance-types @destroy-data
   Scenario: Delete GPU instance type
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
@@ -107,19 +107,12 @@ Feature: Delete data
     And I delete a row with text "test-instance-type-gpu"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-instance-type-gpu"
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I get the iframe object
-    And I go to the spawner page
-    Then I "should not" see instance types block contains "test-instance-type-gpu-display-name" instanceType with "test-description-gpu" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 1"
+    And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @destroy-data
-  Scenario: Delete group
+  @regression @admin-groups @destroy-data
+  Scenario: Delete groups
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"

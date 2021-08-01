@@ -1,4 +1,4 @@
-@ee @ce
+@admin-datasets @ee @ce
 Feature: Admin - Datasets
   In order to manage datasets
   I want to change settings

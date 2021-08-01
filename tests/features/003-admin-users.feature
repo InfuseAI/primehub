@@ -1,4 +1,4 @@
-@ee @ce
+@admin-users @ee @ce
 Feature: Admin - Users
   In order to manage users
   I want to change settings
