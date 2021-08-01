@@ -2,7 +2,7 @@
 Feature: MISC
   Miscellaneous tests
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can access every single page
     Given I go to login page
     When I fill in the correct username credentials
