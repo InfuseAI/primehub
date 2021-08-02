@@ -1151,7 +1151,7 @@ destroy::primehub() {
   backup_config
 
   info "[Delete] primehub helm"
-  ns=$(helm ls -A -f primehub -o json | jq -r '.[0].namespace')
+  ns=$(helm ls -A -a -f primehub -o json | jq -r '.[0].namespace')
   helm uninstall -n $ns primehub
 
   info "[Delete] Primehub CRD"
