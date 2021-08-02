@@ -107,7 +107,7 @@ Feature: Features
     # Notebooks Admin
     When I click "Notebooks Admin" in admin dashboard
     Then I go to the notebooks admin page
-    And I "should" see element with xpath "//th[text()='Last Activity']"
+    And I "should" see element with xpath "//thead//th[contains(., 'Last Activity')]"
 
     # Usage Reports
     When I click "Usage Reports" in admin dashboard
