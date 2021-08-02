@@ -53,9 +53,9 @@ Feature: Features
     Then I am on the admin dashboard "Instance Types" page
 
     # Admin - Instance Types - Search
-    When I search "test-instance-type" in test-id "text-filter-name"
-    And I click edit-button in row contains text "test-instance-type"
-    Then I should see input in test-id "instanceType/name" with value "test-instance-type"
+    When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    And I click edit-button in row contains text "e2e-test-instance-type"
+    Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
 
   @regression
   Scenario: Admin can access pages in Admin Portal - Images and Image Builder in EE
@@ -88,8 +88,8 @@ Feature: Features
     # Admin - Datasets
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
-    Then I "should" see element with xpath "//h2//span[text()='Datasets']"
-    Then I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
+    And I "should" see element with xpath "//h2//span[text()='Datasets']"
+    And I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
      
     # Secrets - add
     When I click "Secrets" in admin dashboard
@@ -103,16 +103,12 @@ Feature: Features
     Then I am on the admin dashboard "Secrets" page
 
   @regression
-  Scenario: Admin can access pages in Admin Portal - Notebook Admin Usage Reports and System Settings in EE
-    # Notebooks Admin
-    When I click "Notebooks Admin" in admin dashboard
-    Then I go to the notebooks admin page
-    And I "should" see element with xpath "//thead//th[contains(., 'Last Activity')]"
-
+  Scenario: Admin can access pages in Admin Portal - Usage Reports and System Settings in EE
     # Usage Reports
     When I click "Usage Reports" in admin dashboard
     Then I am on the admin dashboard "Usage Reports" page
-    And I should see element with test-id "view-button"
+    And I "should" see element with xpath "//div[contains(., 'Summary Report')]"
+    And I "should" see element with xpath "//div[contains(., 'Detailed Report')]"
 
     # System Settings
     When I click "System Settings" in admin dashboard

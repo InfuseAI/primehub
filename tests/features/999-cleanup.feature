@@ -33,27 +33,27 @@ Feature: Delete data
   Scenario: Delete images
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
-    When I search "test-image" in test-id "text-filter-name"
-    And I delete a row with text "test-image"
+    When I search "e2e-test-image" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-image"
+    Then list-view table "should not" contain row with "e2e-test-image"
     When I click refresh
-    And I search "test-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "test-image"
-    When I search "test-bs-image" in test-id "text-filter-name"
-    And I delete a row with text "test-bs-image"
+    And I search "e2e-test-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-test-image"
+    When I search "e2e-test-bs-image" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-bs-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-bs-image"
+    Then list-view table "should not" contain row with "e2e-test-bs-image"
     When I click refresh
-    And I search "test-bs-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "test-bs-image"
-    When I search "error-image" in test-id "text-filter-name"
-    And I delete a row with text "error-image"
+    And I search "e2e-test-bs-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-test-bs-image"
+    When I search "e2e-error-image" in test-id "text-filter-name"
+    And I delete a row with text "e2e-error-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "error-image"
+    Then list-view table "should not" contain row with "e2e-error-image"
     When I click refresh
-    And I search "error-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "error-image"
+    And I search "e2e-error-image" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-error-image"
     And I wait for 1.0 seconds
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -62,13 +62,13 @@ Feature: Delete data
   Scenario: Delete GPU images
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
-    When I search "test-image-gpu" in test-id "text-filter-name"
-    And I delete a row with text "test-image-gpu"
+    When I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-image-gpu"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-image-gpu"
+    Then list-view table "should not" contain row with "e2e-test-image-gpu"
     When I click refresh
-    And I search "test-image-gpu" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "test-image-gpu"
+    And I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-test-image-gpu"
     And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -77,22 +77,22 @@ Feature: Delete data
   Scenario: Delete instance types
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
-    When I search "test-instance-type" in test-id "text-filter-name"
-    And I delete a row with text "test-instance-type"
+    When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-instance-type"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-instance-type"
+    Then list-view table "should not" contain row with "e2e-test-instance-type"
     And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
 
   @regression @admin-instance-types @destroy-data
-  Scenario: Delete GPU instance type
+  Scenario: Delete GPU instance types
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
-    When I search "test-instance-type-gpu" in test-id "text-filter-name"
-    And I delete a row with text "test-instance-type-gpu"
+    When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-instance-type-gpu"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-instance-type-gpu"
+    Then list-view table "should not" contain row with "e2e-test-instance-type-gpu"
     And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -103,13 +103,13 @@ Feature: Delete data
     Then I am on the admin dashboard "Groups" page
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I delete a row with text "e2e-test-group"
-    And I search "e2e-another-test-group" in test-id "text-filter-name"
-    And I delete a row with text "e2e-another-test-group"
+    And I search "e2e-test-another-group" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-another-group"
     And I wait for 1.0 second
     And I click refresh
     And I search "e2e-test-group" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-group"
-    And I search "e2e-another-test-group" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-another-test-group"
+    And I search "e2e-test-another-group" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-test-another-group"
     When I choose "Logout" in top-right menu
     Then I am on login page

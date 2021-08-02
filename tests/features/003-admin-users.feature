@@ -88,7 +88,7 @@ Feature: Admin - Users
     When I search "e2e-test-group-user" in test-id "text-filter-username"
     And I click edit-button in row contains text "e2e-test-group-user"
     Then I should see input in test-id "user/username" with value "e2e-test-group-user"
-    When I type "test" to element with test-id "user/firstName"
+    When I type "e2e-test" to element with test-id "user/firstName"
     And I check boolean input with test-id "user/isAdmin"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
@@ -105,7 +105,7 @@ Feature: Admin - Users
     Then list-view table "should" contain row with "e2e-test-group-user"
     When I click edit-button in row contains text "e2e-test-group-user"
     Then I should see input in test-id "user/username" with value "e2e-test-group-user"
-    And I should see input in test-id "user/firstName" with value "test"
+    And I should see input in test-id "user/firstName" with value "e2e-test"
     And boolean input with test-id "user/isAdmin" should have value "true"
     When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
@@ -129,10 +129,10 @@ Feature: Admin - Users
     When I type "another test" to element with test-id "user/firstName"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
-    And I search "e2e-another-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-another-group" in test-id "text-filter-name"
     And I click element with xpath on the page
     | fields	                                           |
-    | //td[contains(text(), 'e2e-another-test-group')]/..//input |
+    | //td[contains(text(), 'e2e-test-another-group')]/..//input |
     | //button/span[text()='OK']                         |
 
     And I wait for 2.0 seconds

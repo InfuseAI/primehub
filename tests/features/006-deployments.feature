@@ -46,7 +46,7 @@ Feature: Model Deployment
     And I click element with xpath "//input[@type='checkbox']"
     Then I should see the property "value" of element with xpath "//input[@id='id']" is matched the regular expression "create-deployment-test-[0-9a-z]{5}"
     When I type "customizable-deployment-id" to "id" text field
-    And I choose radio button with name "test-instance-type"
+    And I choose radio button with name "e2e-test-instance-type"
     And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Deployments" page
@@ -109,8 +109,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type"
-    And I choose radio button with name "test-image"
+    When I choose radio button with name "e2e-test-instance-type"
+    And I choose radio button with name "e2e-test-image"
     And I type "deployment-endpoint-test" to "displayName" text field
     And I type "endpoint curl test" to command text field
     And I click "Submit" button
@@ -213,7 +213,7 @@ Feature: Model Deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "model-uri-test" to "name" text field
-    And I choose radio button with name "test-instance-type"
+    And I choose radio button with name "e2e-test-instance-type"
     And I type "infuseai/tensorflow2-prepackaged_rest:v0.4.2" to "modelImage input" text field
     And I type "gs://primehub-models/tensorflow2/mnist/" to "modelURI" text field
     And I click element with xpath "//span[text()='Deploy']"
@@ -260,8 +260,8 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type"
-    And I choose radio button with name "test-image"
+    When I choose radio button with name "e2e-test-instance-type"
+    And I choose radio button with name "e2e-test-image"
     And I type "deployment-endpoint-test" to "displayName" text field
     And I type "endpoint curl test" to command text field
     And I click "Submit" button
@@ -356,7 +356,7 @@ Feature: Model Deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
     When I type "create-deployment-test-gpu" to "name" text field
-    And I choose radio button with name "test-instance-type-gpu"
+    And I choose radio button with name "e2e-test-instance-type-gpu"
     And I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Deployments" page

@@ -11,8 +11,8 @@ Feature: Notebooks Admin
     When I get the iframe object
     And I go to the spawner page
     And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type"
-    And I choose image with name "test-image"
+    And I choose instance type with name "e2e-test-instance-type"
+    And I choose image with name "e2e-test-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I choose "Admin Portal" in top-right menu
