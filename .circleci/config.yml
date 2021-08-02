@@ -89,7 +89,7 @@ jobs:
 
   e2e_smoke_ce:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202104-01
     steps:
       - checkout
       - run:
@@ -109,7 +109,7 @@ jobs:
 
   e2e_smoke_ee:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202104-01
     steps:
       - checkout
       - run:
@@ -129,7 +129,7 @@ jobs:
 
   e2e_sanity_ee:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202104-01
     steps:
       - checkout
       - run:
@@ -150,7 +150,7 @@ jobs:
 
   e2e_regression_ee_a:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202104-01
     steps:
       - checkout
       - run:
@@ -172,7 +172,7 @@ jobs:
 
   e2e_regression_ee_b:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:202104-01
     steps:
       - checkout
       - run:
