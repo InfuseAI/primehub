@@ -849,6 +849,10 @@ store:
   accessKey: "AKIAIOSFODNN7EXAMPLE"
   secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   bucket: "primehub"
+  createBucket:
+    enabled: true
+    policy: none
+    purge: false
 
   phfs:
     enabled: true
