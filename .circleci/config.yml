@@ -295,6 +295,4 @@ workflows:
       - e2e_regression_ee_a:
           context: e2e-demo-a
       - e2e_regression_ee_b:
-          requires:
-            - e2e_regression_ee_a
           context: e2e-demo-a
