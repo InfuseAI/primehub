@@ -30,8 +30,8 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type"
-    And I choose image with name "test-image"
+    And I choose instance type with name "e2e-test-instance-type"
+    And I choose image with name "e2e-test-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click tab of "Logs"
@@ -67,8 +67,8 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type"
-    And I click element with xpath "//div[@id='image-container']//input[contains(@value, 'test-group-image')]" in hub
+    And I choose instance type with name "e2e-test-instance-type"
+    And I click element with xpath "//div[@id='image-container']//input[contains(@value, 'e2e-test-group-image')]" in hub
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click tab of "Logs"
@@ -122,7 +122,7 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I choose instance type
-    And I choose image with name "test-bs-image"
+    And I choose image with name "e2e-test-bs-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click element with selector "#start" in hub
@@ -144,8 +144,8 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type-gpu"
-    And I choose image with name "test-image-gpu"
+    And I choose instance type with name "e2e-test-instance-type-gpu"
+    And I choose image with name "e2e-test-image-gpu"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
     When I click on PrimeHub icon
@@ -189,8 +189,8 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     And I wait for 2.0 seconds
-    And I choose instance type with name "test-instance-type"
-    And I choose image with name "error-image"
+    And I choose instance type with name "e2e-test-instance-type"
+    And I choose image with name "e2e-error-image"
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for log "[Warning] Error: ImagePullBackOff"
     And I click tab of "Logs"

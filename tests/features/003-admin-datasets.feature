@@ -19,22 +19,22 @@ Feature: Admin - Datasets
     And I click element with test-id "add-button"
     Then I should see element with test-id "dataset/name"
     And I should see element with test-id "dataset/displayName"
-    When I type "test-dataset" to element with test-id "dataset/name"
+    When I type "e2e-test-dataset" to element with test-id "dataset/name"
     And I select option "Env" in admin dashboard
     And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
-    And I search "test-dataset" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "test-dataset"
+    And I search "e2e-test-dataset" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "e2e-test-dataset"
     When I choose "Logout" in top-right menu
     Then I am on login page
 
   @regression
   Scenario: Update dataset and connect to existing group
-    When I search "test-dataset" in test-id "text-filter-name"
-    And I click edit-button in row contains text "test-dataset"
-    Then I should see input in test-id "dataset/name" with value "test-dataset"
-    And I should see input in test-id "dataset/displayName" with value "test-dataset"
-    When I type "test-dataset-display-name" to element with test-id "dataset/displayName"
+    When I search "e2e-test-dataset" in test-id "text-filter-name"
+    And I click edit-button in row contains text "e2e-test-dataset"
+    Then I should see input in test-id "dataset/name" with value "e2e-test-dataset"
+    And I should see input in test-id "dataset/displayName" with value "e2e-test-dataset"
+    When I type "e2e-test-dataset-display-name" to element with test-id "dataset/displayName"
     And I click element with test-id "connect-button"
     And I wait for 4.0 seconds
     And I search "e2e-test-group" in test-id "text-filter-name"
@@ -46,11 +46,11 @@ Feature: Admin - Datasets
     And I wait for 4.0 seconds
     And I click element with test-id "confirm-button"
     And I wait for 2.0 seconds
-    And I search "test-dataset" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "test-dataset"
-    When I click edit-button in row contains text "test-dataset"
-    Then I should see input in test-id "dataset/name" with value "test-dataset"
-    And I should see input in test-id "dataset/displayName" with value "test-dataset-display-name"
+    And I search "e2e-test-dataset" in test-id "text-filter-name"
+    Then list-view table "should" contain row with "e2e-test-dataset"
+    When I click edit-button in row contains text "e2e-test-dataset"
+    Then I should see input in test-id "dataset/name" with value "e2e-test-dataset"
+    And I should see input in test-id "dataset/displayName" with value "e2e-test-dataset-display-name"
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
@@ -58,19 +58,19 @@ Feature: Admin - Datasets
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'test-dataset-display-name')]" in hub
+    Then I "should" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'e2e-test-dataset-display-name')]" in hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
   @regression
   Scenario: Delete dataset
-    When I search "test-dataset" in test-id "text-filter-name"
-    And I delete a row with text "test-dataset"
+    When I search "e2e-test-dataset" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-dataset"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "test-dataset"
+    Then list-view table "should not" contain row with "e2e-test-dataset"
     When I click refresh
-    And I search "test-dataset" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "test-dataset" 
+    And I search "e2e-test-dataset" in test-id "text-filter-name"
+    Then list-view table "should not" contain row with "e2e-test-dataset" 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
@@ -78,6 +78,6 @@ Feature: Admin - Datasets
     Then I am on the PrimeHub console "Notebooks" page
     When I get the iframe object
     And I go to the spawner page
-    Then I "should not" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'test-dataset-display-name')]" in hub
+    Then I "should not" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'e2e-test-dataset-display-name')]" in hub
     When I choose "Logout" in top-right menu
     Then I am on login page

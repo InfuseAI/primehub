@@ -88,8 +88,8 @@ Feature: Admin - Groups
 
     When I type valid test-id on the page
     | fields            | values                      |
-    | group/name        | e2e-another-test-group              |
-    | group/displayName | e2e-another-test-group-display-name |
+    | group/name        | e2e-test-another-group              |
+    | group/displayName | e2e-test-another-group-display-name |
 
     And I click element with xpath on the page
     | fields                                                                             |

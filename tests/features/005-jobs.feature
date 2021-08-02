@@ -13,8 +13,8 @@ Feature: Job Submission
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type"
-    And I choose radio button with name "test-image"
+    When I choose radio button with name "e2e-test-instance-type"
+    And I choose radio button with name "e2e-test-image"
     And I type "create-job-test" to "displayName" text field
     And I type "artifact test" to command text field
     And I click "Submit" button
@@ -39,13 +39,13 @@ Feature: Job Submission
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type"
-    And I click element with xpath "//div[@id='image']//input[contains(@value, 'test-group-image')]"
-    And I type "group-image-test" to "displayName" text field
+    When I choose radio button with name "e2e-test-instance-type"
+    And I click element with xpath "//div[@id='image']//input[contains(@value, 'e2e-test-group-image')]"
+    And I type "e2e-test-group-image" to "displayName" text field
     And I type "artifact test" to command text field
     And I click "Submit" button
     Then I am on the PrimeHub console "Jobs" page
-    When I click element with xpath "//tr[1]//a[text()='group-image-test']" and wait for navigation
+    When I click element with xpath "//tr[1]//a[text()='e2e-test-group-image']" and wait for navigation
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Message" with value "Job completed"
     When I click tab of "Artifacts"
@@ -112,8 +112,8 @@ Feature: Job Submission
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type"
-    And I choose radio button with name "test-image"
+    When I choose radio button with name "e2e-test-instance-type"
+    And I choose radio button with name "e2e-test-image"
     And I type "cancel-job-test" to "displayName" text field
     And I type "echo 'test'" to "command" text field
     And I click "Submit" button
@@ -139,8 +139,8 @@ Feature: Job Submission
     Then I am on the PrimeHub console "Jobs" page
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
-    When I choose radio button with name "test-instance-type-gpu"
-    And I choose radio button with name "test-image-gpu"
+    When I choose radio button with name "e2e-test-instance-type-gpu"
+    And I choose radio button with name "e2e-test-image-gpu"
     And I type "gpu-job-test" to "displayName" text field
     And I type "gpu driver info" to command text field
     And I click "Submit" button
