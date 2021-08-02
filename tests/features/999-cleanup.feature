@@ -54,14 +54,7 @@ Feature: Delete data
     When I click refresh
     And I search "error-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "error-image"
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I get the iframe object
-    And I go to the spawner page
-    #Then I "should not" see images block contains "test-image-display-name" image with "System / Universal" type and "test-description" description
+    And I wait for 1.0 seconds
     When I choose "Logout" in top-right menu
     Then I am on login page
 
@@ -88,14 +81,7 @@ Feature: Delete data
     And I delete a row with text "test-instance-type"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "test-instance-type"
-    When I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
-    And I choose group with name "e2e-test-group-display-name"
-    When I choose "Notebooks" in sidebar menu
-    Then I am on the PrimeHub console "Notebooks" page
-    When I get the iframe object
-    And I go to the spawner page
-    Then I "should not" see instance types block contains "test-instance-type-display-name" instanceType with "test-description" description and tooltip to show "CPU: 0.5 / Memory: 1G / GPU: 0"
+    And I wait for 1.0 second
     When I choose "Logout" in top-right menu
     Then I am on login page
 
