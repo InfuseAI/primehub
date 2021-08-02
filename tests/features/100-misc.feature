@@ -72,15 +72,16 @@ Feature: Features
     Then I am on the admin dashboard "Image Builder" page
 
     # Admin - Image Builder - Edit
-    When I click element with test-id "edit-button"
-    Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Base Image']"
-    # imageBuilders - existing - job
-    When I click tab of "Jobs"
-    Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Image Revision']"
+    # When I click element with test-id "edit-button"
+    # Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Base Image']"
 
-    # imageBuilders - existing - job - info
-    When I click element with test-id "view-button"
-    Then I "should" see element with xpath "//div[@data-testid='buildImageJob/logEndpoint']//div[text()='Please download the log to view more than 2000 lines.']"
+    # Admin - Image Builder - existing - job
+    # Then I click tab of "Jobs"
+    # Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Image Revision']"
+
+    # Admin - Image Builder - existing - view
+    # When I click element with test-id "view-button"
+    # Then I "should" see element with xpath "//div[@data-testid='buildImageJob/logEndpoint']//div[text()='Please download the log to view more than 2000 lines.']"
 
   @regression
   Scenario: Admin can access pages in Admin Portal - Datasets and Secrets in EE
@@ -89,7 +90,7 @@ Feature: Features
     Then I am on the admin dashboard "Datasets" page
     Then I "should" see element with xpath "//h2//span[text()='Datasets']"
     Then I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
-
+     
     # Secrets - add
     When I click "Secrets" in admin dashboard
     Then I am on the admin dashboard "Secrets" page
@@ -100,15 +101,13 @@ Feature: Features
     And I wait for 2.0 seconds
     And I click element with test-id "reset-button"
     Then I am on the admin dashboard "Secrets" page
-    When I click element with test-id "edit-button"
-    Then I should see element with test-id "secret/name"
 
   @regression
   Scenario: Admin can access pages in Admin Portal - Notebook Admin Usage Reports and System Settings in EE
     # Notebooks Admin
     When I click "Notebooks Admin" in admin dashboard
     Then I go to the notebooks admin page
-    And I "should" see element with xpath "//a[text()='delete user']" in hub
+    And I "should" see element with xpath "//th[text()='Last Activity']"
 
     # Usage Reports
     When I click "Usage Reports" in admin dashboard
@@ -138,7 +137,7 @@ Feature: Features
     When I choose "User Profile" in top-right menu
     Then I "should" see element with xpath "//h2[text()='Edit Account']"
     And I "should" see element with xpath "//label[text()='Username']"
-    When I click "Back to PrimeHub" button
+    When I click element with xpath "//li//a[@id='referrer']"
     And I wait for 1 second
     And I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
     Then I "should" see element with xpath "//h2[text()='User Guide']"
@@ -151,7 +150,7 @@ Feature: Features
     When I choose "Change Password" in top-right menu
     Then I "should" see element with xpath "//h2[text()='Change Password']"
     And I "should" see element with xpath "//label[text()='Confirmation']"
-    When I click "Back to PrimeHub" button
+    When I click element with xpath "//li//a[@id='referrer']"
     And I wait for 1 second
     And I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
