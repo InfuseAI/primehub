@@ -54,7 +54,6 @@ defineStep("I choose {string} in top-right menu", async function(menuitem) {
       await this.page.waitForTimeout(500);
     }
     else console.log("Cannot find top-right icon");
-
     await Promise.all([
       this.clickElementByXpath(xpath),
       this.page.waitForNavigation(),
@@ -503,11 +502,11 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
     await this.page.reload();
     await this.page.waitForTimeout(2000);
   }
-  console.log(lastUsed);
-  console.log(lastQuota);
-  console.log(this.used);
-  console.log(this.quota);
-  console.log(diff);
+  console.log('    last used: ' + lastUsed);
+  console.log('   last quota: ' + lastQuota);
+  console.log(' current used: ' + this.used);
+  console.log('current quota: ' + this.quota);
+  console.log('         diff: ' + diff);
   if (cpuDiff && memDiff && gpuDiff) {
     for (i = 0; i < data.length; i++) {
       if (parseFloat(lastUsed[i]) + parseFloat(diff[i]) !== parseFloat(this.used[i])) {

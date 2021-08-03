@@ -182,7 +182,7 @@ defineStep("I can see advanced settings", async function() {
   throw new Error("failed to get information tooltip");
 });
 
-defineStep("I can see the spawning page and wait for notebook started", {timeout: -1}, async function() {
+defineStep("I can see the spawning page and wait for notebook started", {timeout: 500 * 1000}, async function() {
   let ret;
   await this.context.waitForXPath("//div[@id='custom-progress-bar']");
   await this.takeScreenshot("spawning-page");

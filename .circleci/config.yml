@@ -170,9 +170,31 @@ jobs:
           path: ~/project/e2e
       - create_ticket 
 
-  e2e_regression_ee_b:
+  e2e_regression_ee_a_k3d:
     machine:
       image: ubuntu-1604:202104-01
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            TEST_TYPE: regression
+            FEATURE: hub.jobs.schedule
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+
+  e2e_regression_ee_b_k3d:
+    machine:
+      image: ubuntu-1604:202104-01
+    resource_class: large
     steps:
       - checkout
       - run:
@@ -185,12 +207,10 @@ jobs:
             PRIMEHUB_MODE: ee
             TEST_TYPE: regression
             FEATURE: deployment.apps
-            TARGET : demo.a
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-      - create_ticket 
 
   build:
     docker:
@@ -294,5 +314,5 @@ workflows:
     jobs:
       - e2e_regression_ee_a:
           context: e2e-demo-a
-      - e2e_regression_ee_b:
-          context: e2e-demo-a
+      - e2e_regression_ee_a_k3d
+      - e2e_regression_ee_b_k3d

@@ -344,7 +344,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @wip @regression
   Scenario: User can create deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials
@@ -368,7 +368,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @wip @regression
   Scenario: User can delete deployment with GPU
     Given I go to login page
     When I fill in the correct username credentials

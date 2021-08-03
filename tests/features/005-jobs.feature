@@ -132,7 +132,7 @@ Feature: Job Submission
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @wip @regression
   Scenario: User can create job with GPU
     When I choose group with name "e2e-test-group-display-name"
     And I choose "Jobs" in sidebar menu
