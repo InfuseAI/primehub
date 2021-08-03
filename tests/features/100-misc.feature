@@ -105,10 +105,10 @@ Feature: Features
   @regression
   Scenario: Admin can access pages in Admin Portal - Usage Reports and System Settings in EE
     # Usage Reports
-    When I click "Usage Reports" in admin dashboard
-    Then I am on the admin dashboard "Usage Reports" page
-    And I "should" see element with xpath "//div[contains(., 'Summary Report')]"
-    And I "should" see element with xpath "//div[contains(., 'Detailed Report')]"
+    # When I click "Usage Reports" in admin dashboard
+    # Then I am on the admin dashboard "Usage Reports" page
+    # And I "should" see element with xpath "//div[contains(., 'Summary Report')]"
+    # And I "should" see element with xpath "//div[contains(., 'Detailed Report')]"
 
     # System Settings
     When I click "System Settings" in admin dashboard

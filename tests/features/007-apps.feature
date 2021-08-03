@@ -202,7 +202,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-label-studio']"
 
-  @regression
+  @wip @regression
   Scenario: Install Matlab
     When I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -242,7 +242,7 @@ Feature: Apps
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression
+  @wip @regression
   Scenario: Remove Matlab
     Given I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page

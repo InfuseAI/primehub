@@ -135,7 +135,7 @@ Feature: Hub
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression
+  @wip @regression
   Scenario: User can start/stop the JupyterLab server with GPU
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
