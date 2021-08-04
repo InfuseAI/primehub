@@ -498,6 +498,7 @@ defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory &
     }
     if (this.used.length === data.length && this.quota.length === data.length) break;
     console.log('The group resource table is not showing well, try to reload the page...');
+    this.used = [], this.quota = [];
     await this.page.waitForTimeout(3000);
     await this.page.reload();
     await this.page.waitForTimeout(2000);
