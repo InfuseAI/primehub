@@ -134,8 +134,9 @@ Feature: Features
     Then I "should" see element with xpath "//h2[text()='Edit Account']"
     And I "should" see element with xpath "//label[text()='Username']"
     When I click element with xpath "//li//a[@id='referrer']"
-    And I wait for 1 second
+    And I wait for 2 seconds
     And I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
+    And I wait for 2 seconds
     Then I "should" see element with xpath "//h2[text()='User Guide']"
 
     # API Token

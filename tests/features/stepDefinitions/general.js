@@ -58,6 +58,7 @@ defineStep("I choose {string} in top-right menu", async function(menuitem) {
       this.clickElementByXpath(xpath),
       this.page.waitForNavigation(),
     ]);
+    await this.page.waitForTimeout(500);
     await this.checkElementExistByXPath('should exist', xpath).then(
       function(result) { ret = !result; }
     );
