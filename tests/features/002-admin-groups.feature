@@ -18,7 +18,7 @@ Feature: Admin - Groups
     | group/name        |
     | group/displayName |
 
-    When I type valid test-id on the page
+    When I type valid info to test-id on the page
     | fields            | values                      |
     | group/name        | e2e-test-group              |
     | group/displayName | e2e-test-group-display-name |
@@ -86,7 +86,7 @@ Feature: Admin - Groups
     | group/name        |
     | group/displayName |
 
-    When I type valid test-id on the page
+    When I type valid info to test-id on the page
     | fields            | values                      |
     | group/name        | e2e-test-another-group              |
     | group/displayName | e2e-test-another-group-display-name |

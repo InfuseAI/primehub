@@ -3,15 +3,18 @@ Feature: Admin - Users
   In order to manage users
   I want to change settings
 
-  @regression @sanity @prep-data
-  Scenario: Create a normal user
+  Background:
     Given I am logged in
-    When I am on the PrimeHub console "Home" page
-    And I choose "Admin Portal" in top-right menu
+    Then I am on the PrimeHub console "Home" page
+    When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
+
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
     And I should see element with test-id "user"
+
+  @regression @sanity @prep-data
+  Scenario: Create a normal user
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
     | fields         |
@@ -34,13 +37,6 @@ Feature: Admin - Users
 
   @regression @prep-data
   Scenario: Create another normal user
-    Given I am logged in
-    When I am on the PrimeHub console "Home" page
-    And I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
-    And I should see element with test-id "user"
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
     | fields         |
@@ -63,8 +59,10 @@ Feature: Admin - Users
 
   @regression @error-check
   Scenario: User can see expected results when no group is available
-    Given I go to login page
-    When I fill in the username "e2e-test-group-user" and password "password"
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+    When I go to login page
+    And I fill in the username "e2e-test-group-user" and password "password"
     And I click login
     Then I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Home']"
     And I "should not" see element with xpath "//div[@class='ant-layout-sider-children']//span[text()='Notebooks']"
@@ -79,12 +77,6 @@ Feature: Admin - Users
 
   @regression @prep-data
   Scenario: Update user info of first user and connect to existing group
-    Given I am logged in
-    When I am on the PrimeHub console "Home" page
-    And I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
     When I search "e2e-test-group-user" in test-id "text-filter-username"
     And I click edit-button in row contains text "e2e-test-group-user"
     Then I should see input in test-id "user/username" with value "e2e-test-group-user"
@@ -117,12 +109,6 @@ Feature: Admin - Users
 
   @regression @prep-data
   Scenario: Update user info of second user and connect to another group
-    Given I am logged in
-    When I am on the PrimeHub console "Home" page
-    And I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
     When I search "e2e-test-another-user" in test-id "text-filter-username"
     And I click edit-button in row contains text "e2e-test-another-user"
     Then I should see input in test-id "user/username" with value "e2e-test-another-user"
@@ -140,10 +126,9 @@ Feature: Admin - Users
 
   @regression
   Scenario: Remove myself from group admin and switch my role to normal user
-    Given I am logged in
-    When I am on the PrimeHub console "Home" page
-    And I choose "Admin Portal" in top-right menu
+    When I click "Groups" in admin dashboard
     Then I am on the admin dashboard "Groups" page
+    And I should see element with test-id "group"
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
     Then I "should" see element with xpath "//table//span[@class='ant-checkbox ant-checkbox-checked']"
