@@ -19,7 +19,7 @@ defineStep("I type {string} to element with test-id {string}", async function(st
   await this.inputText(selector, string);
 });
 
-defineStep("I type valid test-id on the page", async function(datatable) {
+defineStep("I type valid info to test-id on the page", async function(datatable) {
   for (const row of datatable.rows()) {
     const selector = await `${testIdToSelector(row[0])} input`
     await this.inputText(selector, row[1]);
