@@ -92,15 +92,15 @@ Feature: Features
     And I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
      
     # Secrets - add
-    When I click "Secrets" in admin dashboard
-    Then I am on the admin dashboard "Secrets" page
-    When I click element with test-id "add-button"
-    Then I should see element with test-id "secret/name"
+    # When I click "Secrets" in admin dashboard
+    # Then I am on the admin dashboard "Secrets" page
+    # When I click element with test-id "add-button"
+    # Then I should see element with test-id "secret/name"
 
     # Secrets - edit
-    And I wait for 2.0 seconds
-    And I click element with test-id "reset-button"
-    Then I am on the admin dashboard "Secrets" page
+    # And I wait for 2.0 seconds
+    # And I click element with test-id "reset-button"
+    # Then I am on the admin dashboard "Secrets" page
 
   @regression
   Scenario: Admin can access pages in Admin Portal - Usage Reports and System Settings in EE
