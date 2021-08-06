@@ -334,11 +334,5 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_regression_ee_a:
-          context: e2e-demo-a
-      - e2e_regression_ee_b:
-          requires:
-            - e2e_regression_ee_a
-          context: e2e-demo-a
       - e2e_regression_ee_a_k3d
       - e2e_regression_ee_b_k3d
