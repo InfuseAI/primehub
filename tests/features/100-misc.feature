@@ -61,7 +61,7 @@ Feature: Features
   Scenario: Admin can access pages in Admin Portal - Images and Image Builder in EE
     # Admin - Images
     When I click "Images" in admin dashboard
-    Then I "should" see element with xpath "//h2//span[text()='Images']"
+    Then I "should" see element with xpath "//span[text()='Images']"
 
     # Admin - Image Builder - Add
     When I click "Image Builder" in admin dashboard
@@ -88,7 +88,7 @@ Feature: Features
     # Admin - Datasets
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
-    And I "should" see element with xpath "//h2//span[text()='Datasets']"
+    And I "should" see element with xpath "//span[text()='Datasets']"
     And I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
      
     # Secrets - add

@@ -6,7 +6,7 @@ defineStep("I click {string} in admin dashboard", async function(string) {
 });
 
 defineStep("I am on the admin dashboard {string} page", async function(string) {
-  await this.page.waitForXPath(`//h2[contains(., '${string}')]`);
+  await this.page.waitForXPath(`//span[contains(., '${string}')]`);
   await this.takeScreenshot(`admin-dashboard-${string}`);
 });
 
