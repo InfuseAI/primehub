@@ -23,18 +23,17 @@ spec:
           - name: streamlit
             image: infuseai/streamlit:v0.79.0
             command:
-            - streamlit
+            - bash
+            - -c
             args:
-            - run
-            - $(FILE_PATH)
-            - --server.address
-            - 0.0.0.0
-            - --server.baseUrlPath
-            - $(PRIMEHUB_APP_BASE_URL)
-            - --server.enableWebsocketCompression
-            - "false"
-            - --server.enableCORS
-            - "false"
+            - cd $(dirname $FILE_PATH);
+              [ -f "packages.txt" ] && apt-get update && xargs -P1 apt-get install -yq < packages.txt;
+              [ -f "requirements.txt" ] && pip install --upgrade pip && xargs -n 1 pip install < requirements.txt;
+              streamlit run $(FILE_PATH)
+                --server.address 0.0.0.0
+                --server.baseUrlPath $(PRIMEHUB_APP_BASE_URL)
+                --server.enableWebsocketCompression "false"
+                --server.enableCORS "false"
             ports:
             - containerPort: 8501
               name: http
