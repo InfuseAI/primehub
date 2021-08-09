@@ -273,6 +273,18 @@ defineStep("I {string} see element with xpath {string}", async function(exist, s
   }
 });
 
+defineStep("I should see element with xpath on the page", async function(datatable) {
+  for (const row of datatable.rows()) {
+    try {
+      await this.page.waitForXPath(row[1], {timeout: 5 * 1000});
+      if (row[0].includes('not')) throw new Error('element should not exist');
+    }
+    catch (e) {
+      if (!row[0].includes('not')) throw new Error('element should be exist');
+    }
+  }
+});
+
 defineStep("I {string} see element with xpath {string} after page reloaded", async function(exist, xpath) {
   let ret;
   console.time(`${exist} see element with xpath ${xpath} after page reloaded`);
@@ -312,7 +324,7 @@ defineStep("I type {string} to element with xpath {string}", async function(stri
   await element.type(string);
 });
 
-defineStep("I type valid info to element with xpath on the page", async function(datatable) {
+defineStep("I type value to element with xpath on the page", async function(datatable) {
   for (const row of datatable.rows()) {
     const [element] = await this.page.$x(row[0]);
     await element.focus();

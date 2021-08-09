@@ -19,7 +19,7 @@ defineStep("I type {string} to element with test-id {string}", async function(st
   await this.inputText(selector, string);
 });
 
-defineStep("I type valid info to test-id on the page", async function(datatable) {
+defineStep("I type value to test-id on the page", async function(datatable) {
   for (const row of datatable.rows()) {
     const selector = await `${testIdToSelector(row[0])} input`
     await this.inputText(selector, row[1]);
@@ -100,6 +100,16 @@ defineStep("I should see input in test-id {string} with value {string}", async f
   const inputValue = await this.getXPathValue(xpath);
   await this.takeScreenshot(`test-id-${testId.replace('/', '-')}-value-${string}-${this.E2E_SUFFIX}`);
   expect(inputValue).to.equal(`${string}-${this.E2E_SUFFIX}`);
+});
+
+defineStep("I should see value of element with test-id on the page", async function(datatable) {
+  for (const row of datatable.rows()) {
+    // xpath: //*[@data-testid='user/username']//input
+    const xpath = `${testIdToXpath(row[0])}//input`;
+    const inputValue = await this.getXPathValue(xpath);
+    await this.takeScreenshot(`test-id-${row[0].replace('/', '-')}-value-${row[1]}-${this.E2E_SUFFIX}`);
+    expect(inputValue).to.equal(`${row[1]}-${this.E2E_SUFFIX}`);
+  }
 });
 
 defineStep("boolean input with test-id {string} should have value {string}", async function(testId, rawValue) {
