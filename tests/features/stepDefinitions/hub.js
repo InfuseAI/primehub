@@ -26,18 +26,15 @@ defineStep("I go to the spawner page", async function() {
   throw new Error("failed to go to the spawner page");
 });
 
-defineStep("I go to the notebooks admin page", async function() {
+defineStep("I am on the notebooks admin page", async function() {
   let frame, ret;
   let xpath = "//title[text()='JupyterHub']";
   for (retryCount=0; retryCount < 5; retryCount++) {
-    try { frame = this.page.frames()[1]; }
-    catch (e) {}
-    await this.checkElementExistByXPath('should exist', xpath, context = frame).then(
+    await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = result; }
     );
     if (ret) {
       await this.page.waitForTimeout(2000);
-      this.context = frame;
       await this.takeScreenshot("notebooks-admin-page");
       return;
     }
