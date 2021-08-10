@@ -29,7 +29,7 @@ Feature: Model Deployment
     When I choose "Logout" in top-right menu
     Then I am on login page
   
-  @regression @smoke
+  @regression
   Scenario: User can create deployment
     Given I go to login page
     When I fill in the correct username credentials
