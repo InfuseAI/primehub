@@ -2,11 +2,11 @@ const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
 defineStep("I go to the deployment detail page with name {string}", async function(name) {
-    let cardXpath = `//div[@class='ant-card-body']//h2[text()='${name}']`;
+    let cardActionXpath = `//div[@class='ant-col-xs-24 ant-col-md-12 ant-col-xl-8 ant-col-xxl-6']//div[text()='${name}']/../following-sibling::div//div[@class='sc-dlMDgC fcgqZf' and contains(., 'Manage')]`;
     let titleXpath = `//span[@class='ant-breadcrumb-link']//span[text()='Deployment: ${name}']`;
     let ele, ret;
     for (retryCount=0; retryCount < 5; retryCount++) {
-        [ele] = await this.page.$x(cardXpath, {timeout: 5000});
+        [ele] = await this.page.$x(cardActionXpath, {timeout: 5000});
         if (ele) ele.click();
 
         await this.checkElementExistByXPath('should exist', titleXpath).then(
