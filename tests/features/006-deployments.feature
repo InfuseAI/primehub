@@ -1,4 +1,4 @@
-@wip @feat-deployment @ee @deploy
+@feat-deployment @ee @deploy
 Feature: Model Deployment
   Basic tests
 
@@ -25,7 +25,7 @@ Feature: Model Deployment
     Then I should see element with test-id "group/enabledDeployment"
     And I check boolean input with test-id "group/enabledDeployment"
     And I click element with test-id "confirm-button"
-    Then I am on the PrimeHub console "Deployments" page
+    Then I am on the admin dashboard "Groups" page
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
