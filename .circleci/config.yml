@@ -212,6 +212,7 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
+      - create_ticket 
 
   e2e_regression_ee_b_k3d:
     machine:
@@ -233,6 +234,7 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
+      - create_ticket 
 
   build:
     docker:
