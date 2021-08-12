@@ -1,4 +1,4 @@
-@admin-groups @ee @ce
+@admin-groups @ee @ce @deploy
 Feature: Admin - Groups
   In order to manage groups
   I want to change settings

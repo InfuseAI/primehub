@@ -1,4 +1,4 @@
-@feat-edition @ee
+@feat-edition
 Feature: Features
   Available feature in different edition for different roles
 
@@ -8,8 +8,8 @@ Feature: Features
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
-  @regression
-  Scenario: Admin can access pages in Admin Portal - Group and User in EE
+  @regression @ee @ce @deploy
+  Scenario: Admin can access pages in Admin Portal - Group and User
     # Admin - Groups - Add
     When I click element with test-id "add-button"
     Then I should see element with test-id "group/name"
@@ -29,8 +29,8 @@ Feature: Features
     When I click tab of "Send Email"
     Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
 
-  @regression
-  Scenario: Admin can access pages in Admin Portal - Instance Types in EE
+  @regression @ee @ce @deploy
+  Scenario: Admin can access pages in Admin Portal - Instance Types
     # Admin - Instance Types
     When I click "Instance Types" in admin dashboard
     And I wait for 1.0 second
@@ -57,40 +57,22 @@ Feature: Features
     And I click edit-button in row contains text "e2e-test-instance-type"
     Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
 
-  @regression
-  Scenario: Admin can access pages in Admin Portal - Images and Image Builder in EE
+  @regression @ee @ce
+  Scenario: Admin can access pages in Admin Portal - Images and Image Builder
     # Admin - Images
     When I click "Images" in admin dashboard
     Then I "should" see element with xpath "//span[text()='Images']"
 
-    # Admin - Image Builder - Add
-    When I click "Image Builder" in admin dashboard
-    Then I am on the admin dashboard "Image Builder" page
-    When I click element with test-id "add-button"
-    Then I should see element with test-id "buildImage/name"
-    And I click element with test-id "reset-button"
-    Then I am on the admin dashboard "Image Builder" page
-
-    # Admin - Image Builder - Edit
-    # When I click element with test-id "edit-button"
-    # Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Base Image']"
-
-    # Admin - Image Builder - existing - job
-    # Then I click tab of "Jobs"
-    # Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Image Revision']"
-
-    # Admin - Image Builder - existing - view
-    # When I click element with test-id "view-button"
-    # Then I "should" see element with xpath "//div[@data-testid='buildImageJob/logEndpoint']//div[text()='Please download the log to view more than 2000 lines.']"
-
-  @regression
-  Scenario: Admin can access pages in Admin Portal - Datasets and Secrets in EE
+  @regression @ee @ce
+  Scenario: Admin can access pages in Admin Portal - Datasets and Secrets
     # Admin - Datasets
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
     And I "should" see element with xpath "//span[text()='Datasets']"
     And I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
      
+  @regression @ee @ce @deploy
+  Scenario: Admin can access pages in Admin Portal - Datasets and Secrets
     # Secrets - add
     # When I click "Secrets" in admin dashboard
     # Then I am on the admin dashboard "Secrets" page
@@ -102,14 +84,16 @@ Feature: Features
     # And I click element with test-id "reset-button"
     # Then I am on the admin dashboard "Secrets" page
 
-  @regression
-  Scenario: Admin can access pages in Admin Portal - Usage Reports and System Settings in EE
+  @regression @ee
+  Scenario: Admin can access pages in Admin Portal - Usage Reports
     # Usage Reports
     # When I click "Usage Reports" in admin dashboard
     # Then I am on the admin dashboard "Usage Reports" page
     # And I "should" see element with xpath "//div[contains(., 'Summary Report')]"
     # And I "should" see element with xpath "//div[contains(., 'Detailed Report')]"
 
+  @regression @ee @ce @deploy
+  Scenario: Admin can access pages in Admin Portal - System Settings
     # System Settings
     When I click "System Settings" in admin dashboard
     Then I am on the admin dashboard "System Settings" page
@@ -117,8 +101,8 @@ Feature: Features
     And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'System Settings')]"
     And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'Email Settings')]"    
 
-  @regression
-  Scenario: User can access pages in User Portal in EE
+  @regression @ee @ce @deploy
+  Scenario: User can access pages in User Portal
     # Go to user portal
     When I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
     Then I "should" see element with xpath "//h2[text()='User Guide']"
@@ -128,7 +112,7 @@ Feature: Features
     Then I "should" see element with xpath "//a[text()='Shared Files']"
 
   @regression
-  Scenario: User can access items via the top right menu in EE
+  Scenario: User can access items via the top right menu
     # User Profile
     When I choose "User Profile" in top-right menu
     Then I "should" see element with xpath "//h2[text()='Edit Account']"
