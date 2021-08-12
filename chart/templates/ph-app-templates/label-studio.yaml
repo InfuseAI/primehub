@@ -15,11 +15,11 @@ spec:
   defaultEnvs:
   - name: DEFAULT_USERNAME
     description: "The default username to login"
-    defaultValue: "$(PRIMEHUB_GROUP)@infuseai.io"
+    defaultValue: "default_user@localhost"
     optional: false
   - name: DEFAULT_PASSWORD
     description: "The default password to login"
-    defaultValue: "$(PRIMEHUB_GROUP)_password!"
+    defaultValue: "default_user_password!"
     optional: false
   - name: LABEL_STUDIO_BASE_DATA_DIR
     description: "Directory to use to store all application-related data."
