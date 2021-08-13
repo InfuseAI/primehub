@@ -6,8 +6,17 @@ Feature: Login
   Background:
     Given I go to login page
 
+  @regression
+  Scenario: User can login with correct username and password
+    When I fill in the correct username credentials
+    And I click login
+    Then I am on the PrimeHub console "Home" page
+
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
   @regression @sanity @error-check
-  Scenario: User can't login via incorrect username and password
+  Scenario: User can't login with incorrect username and password
     When I fill in the wrong credentials and click login
     | username                  | password                         |
     | //span[text()='username'] | document.getElementById('temp')] |
@@ -16,3 +25,4 @@ Feature: Login
     | ^\S+@\S+$                 | password                         |
 
     Then I am on login page
+

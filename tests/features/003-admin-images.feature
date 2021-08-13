@@ -32,10 +32,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image to an existing group
     When I search "e2e-test-image" in test-id "text-filter-name"
@@ -58,10 +54,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke @prep-data
   Scenario: Create an image with latest base notebook
     When I click element with test-id "add-button"
@@ -79,9 +71,6 @@ Feature: Admin - Images
     And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image with latest base notebook to an existing group
@@ -105,10 +94,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @error-check @prep-data
   Scenario: Create an error image
     When I click element with test-id "add-button"
@@ -126,10 +111,6 @@ Feature: Admin - Images
     And I type "error-url" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
-
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @error-check @prep-data
   Scenario: Connect an error image to an existing group
@@ -153,10 +134,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Create a GPU image
     When I click element with test-id "add-button"
@@ -172,10 +149,6 @@ Feature: Admin - Images
 
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
-
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @prep-data
   Scenario: Update a GPU image
@@ -200,10 +173,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Connect a GPU image to an existing group
     When I search "e2e-test-image-gpu" in test-id "text-filter-name"
@@ -226,10 +195,6 @@ Feature: Admin - Images
     And I click element with xpath "//a/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Description']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @prep-data
   Scenario: Create a group image
     When I click on PrimeHub icon
@@ -251,10 +216,6 @@ Feature: Admin - Images
     And I click "Create" button
     Then I "should" see element with xpath "//a[text()='e2e-test-group-image']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @prep-data
   Scenario: Show a group image in spawner page
     When I click on PrimeHub icon
@@ -267,7 +228,3 @@ Feature: Admin - Images
     When I get the iframe object
     And I go to the spawner page
     #Then I "should" see images block contains "e2e-test-group-image" image with "Group / Universal" type and "e2e-test-group-image-description" description
-
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page

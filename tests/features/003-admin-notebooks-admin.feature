@@ -30,9 +30,6 @@ Feature: Notebooks Admin
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: User can access the JupyterLab server in notebooks admin page
     When I access my server in notebooks admin
@@ -42,9 +39,6 @@ Feature: Notebooks Admin
 
     When I switch to "NotebooksAdmin" tab
     Then I am on the notebooks admin page
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: User can stop the JupyterLab server in notebooks admin page
@@ -57,7 +51,4 @@ Feature: Notebooks Admin
 
     When I get the iframe object
     And I go to the spawner page
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 

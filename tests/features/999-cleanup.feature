@@ -5,6 +5,7 @@ Feature: Delete data
   Background:
     Given I am logged in
     Then I am on the PrimeHub console "Home" page
+
     When I choose "Admin Portal" in top-right menu
     Then I am on the admin dashboard "Groups" page
 
@@ -17,6 +18,7 @@ Feature: Delete data
     And I delete a row with text "e2e-test-group-user"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-group-user"
+
     When I click refresh
     And I search "e2e-test-group-user" in test-id "text-filter-username"
     Then list-view table "should not" contain row with "e2e-test-group-user"
@@ -25,6 +27,7 @@ Feature: Delete data
     And I delete a row with text "e2e-test-another-user"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-another-user"
+
     When I click refresh
     And I search "e2e-test-another-user" in test-id "text-filter-username"
     Then list-view table "should not" contain row with "e2e-test-another-user"
@@ -42,6 +45,7 @@ Feature: Delete data
     And I delete a row with text "e2e-test-image"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-image"
+
     When I click refresh
     And I search "e2e-test-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-image"
@@ -58,6 +62,7 @@ Feature: Delete data
     And I delete a row with text "e2e-test-error-image"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-error-image"
+
     When I click refresh
     And I search "e2e-test-error-image" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-error-image"
@@ -75,6 +80,7 @@ Feature: Delete data
     And I delete a row with text "e2e-test-image-gpu"
     And I wait for 2.0 seconds
     Then list-view table "should not" contain row with "e2e-test-image-gpu"
+
     When I click refresh
     And I search "e2e-test-image-gpu" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-image-gpu"

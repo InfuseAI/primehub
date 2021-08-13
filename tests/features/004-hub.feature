@@ -10,8 +10,7 @@ Feature: Hub
 
     When I choose group with name "e2e-test-group-display-name"
     And I keep group resources
-
-    When I choose "Notebooks" in sidebar menu
+    And I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
 
   @regression
@@ -19,9 +18,6 @@ Feature: Hub
     When I get the iframe object
     And I go to the spawner page
     Then I can see advanced settings
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @sanity @smoke
   Scenario: User can start the JupyterLab server
@@ -44,9 +40,6 @@ Feature: Hub
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke
   Scenario: User can stop the JupyterLab server
     When I get the iframe object
@@ -63,9 +56,6 @@ Feature: Hub
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @sanity
   Scenario: User can start the JupyterLab server with group image
@@ -84,9 +74,6 @@ Feature: Hub
     And I should see "Granting jovyan sudo access and appending /opt/conda/bin to sudo PATH" in element "div" under active tab
     And I should see "--ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab" in element "div" under active tab
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity
   Scenario: User can stop the JupyterLab server with group image
     When I get the iframe object
@@ -103,9 +90,6 @@ Feature: Hub
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @wip @regression
   Scenario: User can start the TensorBoard
@@ -129,9 +113,6 @@ Feature: Hub
     Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @wip @regression
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I get the iframe object
@@ -149,9 +130,6 @@ Feature: Hub
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
     And I stop my server in hub
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @wip @regression
   Scenario: User can start/stop the JupyterLab server with GPU
@@ -198,9 +176,6 @@ Feature: Hub
     And I choose group with name "e2e-test-group-display-name"
     And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @error-check
   Scenario: User can cancel spawning while chose error image
     When I get the iframe object
@@ -221,6 +196,3 @@ Feature: Hub
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
