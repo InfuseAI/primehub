@@ -37,9 +37,6 @@ Feature: Model Deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: User can create a deployment
     When I click "Create Deployment" button
@@ -71,9 +68,6 @@ Feature: Model Deployment
     When I choose "Home" in sidebar menu
     And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @error-check
   Scenario: User can't set the same deployment ID
     When I click "Create Deployment" button
@@ -82,9 +76,6 @@ Feature: Model Deployment
     When I click element with xpath "//input[@type='checkbox']"
     And I type "customizable-deployment-id" to "id" text field
     Then I "should" see element with xpath "//div[text()='The ID has been used by other users. Change your ID to a unique string to try again.']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: User can update a deployment
@@ -107,9 +98,6 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Model Image" with value "infuseai/model-tensorflow2-mnist:v0.2.0"
     And I click escape
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: User can use an updated deployment in jobs
@@ -135,9 +123,6 @@ Feature: Model Deployment
     When I click tab of "Logs"
     Then I should see "predicted_number ...Download to see more... 3127632811083e-06" in element "div" under active tab
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: User can stop a deployment
     When I go to the deployment detail page with name "create-deployment-test"
@@ -149,9 +134,6 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Deployment Stopped" with value "True"
     And I click escape
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: User cannot use a stopped deployment in jobs
@@ -171,9 +153,6 @@ Feature: Model Deployment
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: -0.5, -1.0, 0
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
    
   @regression
   Scenario: User can start a stopped deployment
@@ -194,9 +173,6 @@ Feature: Model Deployment
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: User can rerun a job with deployment
     When I choose "Jobs" in sidebar menu
@@ -212,9 +188,6 @@ Feature: Model Deployment
     When I click tab of "Logs"
     Then I should see "predicted_number ...Download to see more... 3127632811083e-06|503 Service Temporarily Unavailable" in element "div" under active tab
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: User can delete deployment
     When I go to the deployment detail page with name "create-deployment-test"
@@ -227,9 +200,6 @@ Feature: Model Deployment
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Model URI: User can create deployment
@@ -255,9 +225,6 @@ Feature: Model Deployment
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: Model URI: User can update deployment
     When I go to the deployment detail page with name "model-uri-test"
@@ -277,9 +244,6 @@ Feature: Model Deployment
     And I click element with xpath "//a[text()='View']"
     Then I wait for attribute "Model URI" with value "gs://seldon-models/keras/mnist"
     And I click escape
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Model URI: User can use an updated deployment in jobs
@@ -304,9 +268,6 @@ Feature: Model Deployment
 
     When I click tab of "Logs"
     Then I should see "...Download to see more... 305647406407e-07" in element "div" under active tab
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Model URI: User can stop a deployment
@@ -349,9 +310,6 @@ Feature: Model Deployment
     When I click tab of "Logs"
     Then I should see "...Download to see more... 305647406407e-07|503 Service Temporarily Unavailable" in element "div" under active tab
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: Model URI: User can delete deployment
     When I go to the deployment detail page with name "model-uri-test"
@@ -360,9 +318,6 @@ Feature: Model Deployment
     And I click button of "Delete" on deletion confirmation dialogue
     Then I am on the PrimeHub console "Deployments" page
     And I "should not" see element with xpath "//div[@class='ant-col-xs-24 ant-col-md-12 ant-col-xl-8 ant-col-xxl-6']//div[text()='model-uri-test']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @wip @regression
   Scenario: User can create deployment with GPU
@@ -382,9 +337,6 @@ Feature: Model Deployment
     When I click tab of "Logs"
     Then I should see the property "textContent" of element with xpath "//div[contains(@style, 'position: absolute')]" is matched the regular expression "kernel reported version is:\s+\d+\.\d+\.\d+"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @wip @regression
   Scenario: User can delete deployment with GPU
     When I go to the deployment detail page with name "create-deployment-test-gpu"
@@ -399,6 +351,3 @@ Feature: Model Deployment
     And I wait for 1.0 second
     And I click refresh
     # And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page

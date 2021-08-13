@@ -43,9 +43,6 @@ Feature: Admin - Groups
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='Group CPU Quota']"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke @prep-data
   Scenario: Connect a group to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
@@ -72,9 +69,6 @@ Feature: Admin - Groups
     When I choose group with name "e2e-test-group-display-name"
     Then I should see user limits with CPU, Memory, GPU is "1,2,1"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke @prep-data
   Scenario: Check group resources of a new group as speficied upon creation
     When I click on PrimeHub icon
@@ -82,9 +76,6 @@ Feature: Admin - Groups
 
     When I choose group with name "e2e-test-group-display-name"
     Then I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @sanity @smoke @prep-data
   Scenario: Create another group
@@ -119,9 +110,6 @@ Feature: Admin - Groups
     And I wait for 1.0 second
     Then I "should" see element with xpath "//span[text()='Group CPU Quota']"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @prep-data
   Scenario: Assign group admin to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
@@ -131,6 +119,3 @@ Feature: Admin - Groups
     When I assign group admin of "e2e-test-group" to "me"
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='Group CPU Quota']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page

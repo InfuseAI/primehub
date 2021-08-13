@@ -31,9 +31,6 @@ Feature: Admin - Users
     And I click edit-button in row contains text "e2e-test-group-user"
     Then I should see input in test-id "user/username" with value "e2e-test-group-user"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @prep-data
   Scenario: Update password for a normal user
     When I search "e2e-test-group-user" in test-id "text-filter-username"
@@ -47,9 +44,6 @@ Feature: Admin - Users
     And I type "password" to "confirm" text field
     And I click element with test-id "reset-password-reset-button"
     Then I "should" see element with xpath "//span[text()='Users']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @prep-data
   Scenario: Create another normal user
@@ -68,9 +62,6 @@ Feature: Admin - Users
     And I click edit-button in row contains text "e2e-test-another-user"
     Then I should see input in test-id "user/username" with value "e2e-test-another-user"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Update password for another normal user
     When I search "e2e-test-another-user" in test-id "text-filter-username"
@@ -84,9 +75,6 @@ Feature: Admin - Users
     And I type "password" to "confirm" text field
     And I click element with test-id "reset-password-reset-button"
     Then I "should" see element with xpath "//span[text()='Is Admin']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @error-check
   Scenario: User can see expected results when no group is available
@@ -106,9 +94,6 @@ Feature: Admin - Users
     | should     | //span[@class='ant-alert-message' and text()='No group is available']                                         |
     | should     | //span[@class='ant-alert-description' and text()='Please contact your administrator to be added to a group.'] |
     | should     | //div[@class='ant-select-selection-selected-value' and text()='None']                                         |
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @prep-data
   Scenario: Update user info of first user and connect to existing group
@@ -147,9 +132,6 @@ Feature: Admin - Users
     And I click edit-button in row contains text "e2e-test-group"
     Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-group-user')]"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Update user info of second user and connect to another group
     When I search "e2e-test-another-user" in test-id "text-filter-username"
@@ -168,9 +150,6 @@ Feature: Admin - Users
     And I wait for 2.0 seconds
     And I click element with xpath "//button/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Is Admin']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Remove myself from group admin and switch my role to normal user
@@ -204,6 +183,3 @@ Feature: Admin - Users
 
     When I click element with test-id "edit-button"
     Then boolean input with test-id "user/isAdmin" should have value "false"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page

@@ -32,10 +32,6 @@ Feature: Admin - Instance Types
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='CPU Limit']"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
-
   @regression @sanity @smoke @prep-data
   Scenario: Connect an instance type to an existing group
     When I search "e2e-test-instance-type" in test-id "text-filter-name"
@@ -57,10 +53,6 @@ Feature: Admin - Instance Types
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='CPU Limit']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Create an GPU instance type
     When I click element with test-id "add-button"
@@ -77,9 +69,6 @@ Feature: Admin - Instance Types
 
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='CPU Limit']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @prep-data
   Scenario: Update an GPU instance type
@@ -98,9 +87,6 @@ Feature: Admin - Instance Types
 
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='CPU Limit']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression @prep-data
   Scenario: Connect an GPU instance type to an existing group
@@ -123,10 +109,6 @@ Feature: Admin - Instance Types
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//span[text()='CPU Limit']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @prep-data
   Scenario: Show an GPU instance type in spawner page
     When I click on PrimeHub icon
@@ -139,6 +121,3 @@ Feature: Admin - Instance Types
     When I get the iframe object
     And I go to the spawner page
     #Then I "should" see instance types block contains "e2e-test-instance-type-display-name-gpu" instanceType with "e2e-test-description-gpu" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 1"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page

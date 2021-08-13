@@ -28,16 +28,10 @@ Feature: Admin - Datasets
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//div[text()='Upload Server']"
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression @sanity @smoke
   Scenario: Search a dataset
     When I search "e2e-test-dataset" in test-id "text-filter-name"
     Then list-view table "should" contain row with "e2e-test-dataset"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Update a dataset
@@ -54,9 +48,6 @@ Feature: Admin - Datasets
 
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//div[text()='Upload Server']"
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Connect a dataset to an existing group
@@ -78,10 +69,6 @@ Feature: Admin - Datasets
     And I click element with test-id "confirm-button"
     Then I "should" see element with xpath "//div[text()='Upload Server']"
 
-    When I wait for 1.0 second
-    And I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: Show a dataset in spawner page
     When I click on PrimeHub icon
@@ -95,9 +82,6 @@ Feature: Admin - Datasets
     And I go to the spawner page
     Then I "should" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'e2e-test-dataset-display-name')]" in hub
 
-    When I choose "Logout" in top-right menu
-    Then I am on login page
-
   @regression
   Scenario: Delete a dataset
     When I search "e2e-test-dataset" in test-id "text-filter-name"
@@ -106,9 +90,6 @@ Feature: Admin - Datasets
     And I click refresh
     And I search "e2e-test-dataset" in test-id "text-filter-name"
     Then list-view table "should not" contain row with "e2e-test-dataset" 
-
-    And I choose "Logout" in top-right menu
-    Then I am on login page
 
   @regression
   Scenario: Do not show a deleted dataset in spawner page
@@ -122,6 +103,3 @@ Feature: Admin - Datasets
     When I get the iframe object
     And I go to the spawner page
     Then I "should not" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'e2e-test-dataset-display-name')]" in hub
-
-    When I choose "Logout" in top-right menu
-    Then I am on login page

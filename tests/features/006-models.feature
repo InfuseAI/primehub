@@ -10,4 +10,3 @@ Feature: Model Management
     And I keep group resources
     And I choose "Models" in sidebar menu
     Then I am on the PrimeHub console "Models" page
-
