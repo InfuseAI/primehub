@@ -339,6 +339,6 @@ workflows:
       - e2e_regression_ee_a_k3d
       - e2e_regression_ee_b_k3d
       - e2e_regression_ee_a
-      - e2e_regression_ee_b
+      - e2e_regression_ee_b:
           requires:
             - e2e_regression_ee_a      
