@@ -330,7 +330,7 @@ workflows:
   daily_workflow:
     triggers:
       - schedule:
-          cron: "0 21 * * *"
+          cron: "0 22 * * 0-6"
           filters:
             branches:
               only:
@@ -338,3 +338,7 @@ workflows:
     jobs:
       - e2e_regression_ee_a_k3d
       - e2e_regression_ee_b_k3d
+      - e2e_regression_ee_a
+      - e2e_regression_ee_b
+          requires:
+            - e2e_regression_ee_a      
