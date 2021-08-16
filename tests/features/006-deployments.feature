@@ -45,7 +45,7 @@ Feature: Model Deployment
     When I type "create-deployment-test" to "name" text field
     And I wait for 1.0 second
     And I click element with xpath "//input[@type='checkbox']"
-    Then I should see the property "value" of element with xpath "//input[@id='id']" is matched the regular expression "create-deployment-test-[0-9a-z]{5}"
+    Then I should see the property "value" of element with xpath "//input[@id='id']" is matched the regular expression "create-deployment-test-[a-z0-9][a-z0-9-]{1,61}[a-z0-9]"
 
     When I type "customizable-deployment-id" to "id" text field
     And I choose radio button with name "e2e-test-instance-type"
