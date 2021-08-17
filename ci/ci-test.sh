@@ -165,6 +165,9 @@ export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
 mkdir -p e2e/screenshots e2e/webpages
 
+if [[ "${TEST_TYPE}" == "temp" && "${PRIMEHUB_MODE}" == "ee" ]]; then
+  tags="(@ee) and (@feat-edition) and (not @wip)"
+fi
 if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ce" ]]; then
   tags="(@smoke and @ce) and (not @wip)"
 fi

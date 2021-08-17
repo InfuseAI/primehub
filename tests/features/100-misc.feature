@@ -17,20 +17,23 @@ Feature: Features
     And I click element with test-id "reset-button"
 
     # Admin - Groups - Search
-    When I search "e2e-test-group" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-group"
-    Then I should see input in test-id "group/name" with value "e2e-test-group"
+    # When I search "e2e-test-group" in test-id "text-filter-name"
+    # And I click edit-button in row contains text "e2e-test-group"
+    # Then I should see input in test-id "group/name" with value "e2e-test-group"
 
     # Users - edit - send email
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
 
-    When I search "e2e-test-group-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-group-user"
-    Then I should see input in test-id "user/username" with value "e2e-test-group-user"
+    # When I search "e2e-test-group-user" in test-id "text-filter-username"
+    # And I click edit-button in row contains text "e2e-test-group-user"
+    # Then I should see input in test-id "user/username" with value "e2e-test-group-user"
 
-    When I click tab of "Send Email"
-    Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
+    # When I click tab of "Send Email"
+    # When Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
+    When I click element with xpath "//input[@type='checkbox']"
+    And I click element with xpath "//button[@type='button']//span[contains(., 'Send Mail')]"
+    Then I "should" see element with xpath "//div[@class='ant-modal-title' and contains(., 'Send Email Form')]"
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Instance Types
@@ -56,9 +59,9 @@ Feature: Features
     Then I am on the admin dashboard "Instance Types" page
 
     # Admin - Instance Types - Search
-    When I search "e2e-test-instance-type" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-instance-type"
-    Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
+    # When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    # And I click edit-button in row contains text "e2e-test-instance-type"
+    # Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
 
   @regression @ee @ce
   Scenario: Admin can access pages in Admin Portal - Images and Image Builder

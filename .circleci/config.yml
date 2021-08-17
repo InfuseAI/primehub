@@ -87,6 +87,26 @@ jobs:
             python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml ./chart/templates/ph-app-templates
       - notify_slack
 
+  e2e_temp_ee:
+    machine:
+      image: ubuntu-1604:202104-01
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            TEST_TYPE: temp
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+      - notify_slack
+
   e2e_smoke_ce:
     machine:
       image: ubuntu-1604:202104-01
@@ -301,17 +321,7 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
-      - e2e_smoke_ce
-      - e2e_smoke_ee:
-          filters:
-            branches:
-              ignore:
-                - master
-      - e2e_sanity_ee:
-          filters:
-            branches:
-              only:
-                - master
+      - e2e_temp_ee
       - build:
           filters:
             tags:
@@ -327,14 +337,3 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-  daily_workflow:
-    triggers:
-      - schedule:
-          cron: "0 22 * * 0-6"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - e2e_regression_ee_a_k3d
-      - e2e_regression_ee_b_k3d
