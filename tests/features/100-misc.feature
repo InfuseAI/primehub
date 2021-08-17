@@ -29,8 +29,11 @@ Feature: Features
     # And I click edit-button in row contains text "e2e-test-group-user"
     # Then I should see input in test-id "user/username" with value "e2e-test-group-user"
 
-    When I click tab of "Send Email"
-    Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
+    # When I click tab of "Send Email"
+    # When Then I "should" see element with xpath "//div[@aria-hidden='false']//span[text()='Reset Actions']"
+    When I click element with xpath "//input[@type='checkbox']"
+    And I click element with xpath "//button[@type='button']//span[contains(., 'Send Mail')]"
+    Then I "should" see element with xpath "//div[@class='ant-modal-title' and contains(., 'Send Email Form')]"
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Instance Types
