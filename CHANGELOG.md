@@ -3,6 +3,13 @@
 ## Upcoming
 ### What's New
 
+## 3.7.2
+### What's New
+
+- Fix cudnn version to match cuda 11.
+- Fix JupyterHub ssh server domain display.
+- Allows to override the default instancetypes in 1 click installation.
+
 ## 3.7.1
 ### What's New
 
