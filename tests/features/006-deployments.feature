@@ -69,12 +69,18 @@ Feature: Model Deployment
     And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
   @regression @error-check
-  Scenario: User can't set the same deployment ID
+  Scenario: User can't set the invalid/empty/duplicate deployment ID
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
 
     When I click element with xpath "//input[@type='checkbox']"
-    And I type "customizable-deployment-id" to "id" text field
+    And I type "-)(*&^%$#@!" to "id" text field
+    Then I "should" see element with xpath "//div[text()=\"lower case alphanumeric characters, '-', and must start and end with an alphanumeric character.\"]"
+
+    When I type "" to "id" text field
+    Then I "should" see element with xpath "//div[text()='Please input an ID']"
+
+    When I type "customizable-deployment-id" to "id" text field
     Then I "should" see element with xpath "//div[text()='The ID has been used by other users. Change your ID to a unique string to try again.']"
 
   @regression
