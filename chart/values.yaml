@@ -694,10 +694,14 @@ controller:
 
 # Image builder
 customImage:
+  ## Configure the image registry and repository to push.
+  ## For more information, please see https://docs.primehub.io/docs/next/getting_started/configure-image-builder
+
   #registryEndpoint: https://gcr.io
   #registryUsername: _json_key
   #registryPassword: _password_
-  #pushRepoPrefix: gcr.io/_prefix_
+  #pushRepo: gcr.io/<project>/custom-image
+  #pushRepoPrefix: gcr.io/<project>
   insecureSkipVerify: false
   pushSecretName: primehub-controller-custom-image-push-secret
 
