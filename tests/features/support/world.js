@@ -23,6 +23,10 @@ class World {
     this.PRIMEHUB_DOMAIN = process.env.PRIMEHUB_DOMAIN;
     this.USERNAME = process.env.PH_USERNAME;
     this.PASSWORD = process.env.PH_PASSWORD;
+    this.PH_ADMIN_USERNAME = process.env.PH_ADMIN_USERNAME;
+    this.PH_ADMIN_PASSWORD = process.env.PH_ADMIN_PASSWORD;
+    this.PH_USER_USERNAME = process.env.PH_USER_USERNAME;
+    this.PH_USER_PASSWORD = process.env.PH_USER_PASSWORD;
     this.DEBUG = process.env.DEBUG;
     this.E2E_SUFFIX = process.env.E2E_SUFFIX;
     // Default SPAWNER_START_TIMEOUT: 1200 (https://github.com/InfuseAI/primehub/pull/304)
