@@ -3,6 +3,18 @@
 ## Upcoming
 ### What's New
 
+## 3.7.1
+### What's New
+
+- ImageBuilder support single repo.
+- Several bugfix.
+- Support 1-Click install.
+
+## 3.7.0
+### What's New
+
+- Add in-notebook tutorial for getting started
+
 ### Breaking Changes
 
 Upgrade helm version from 3.3.4 to 3.6.2
