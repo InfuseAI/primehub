@@ -14,14 +14,14 @@ Feature: Delete data
     When I click "Users" in admin dashboard
     Then I am on the admin dashboard "Users" page
 
-    When I search "e2e-test-group-user" in test-id "text-filter-username"
-    And I delete a row with text "e2e-test-group-user"
+    When I search "e2e-test-user" in test-id "text-filter-username"
+    And I delete a row with text "e2e-test-user"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-group-user"
+    Then list-view table "should not" contain row with "e2e-test-user"
 
     When I click refresh
-    And I search "e2e-test-group-user" in test-id "text-filter-username"
-    Then list-view table "should not" contain row with "e2e-test-group-user"
+    And I search "e2e-test-user" in test-id "text-filter-username"
+    Then list-view table "should not" contain row with "e2e-test-user"
 
     When I search "e2e-test-another-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-another-user"

@@ -23,19 +23,19 @@ Feature: Admin - Users
     | user/email     |
     | user/sendEmail |
 
-    When I type "e2e-test-group-user" to element with test-id "user/username"
+    When I type "e2e-test-user" to element with test-id "user/username"
     And I click element with xpath "//button/span[text()='Confirm']"
     Then I "should" see element with xpath "//span[text()='Users']"
 
-    When I search "e2e-test-group-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-group-user"
-    Then I should see input in test-id "user/username" with value "e2e-test-group-user"
+    When I search "e2e-test-user" in test-id "text-filter-username"
+    And I click edit-button in row contains text "e2e-test-user"
+    Then I should see input in test-id "user/username" with value "e2e-test-user"
 
   @regression @sanity @prep-data
   Scenario: Update password for a normal user
-    When I search "e2e-test-group-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-group-user"
-    Then I should see input in test-id "user/username" with value "e2e-test-group-user"
+    When I search "e2e-test-user" in test-id "text-filter-username"
+    And I click edit-button in row contains text "e2e-test-user"
+    Then I should see input in test-id "user/username" with value "e2e-test-user"
 
     When I click element with xpath "//div[@role='tab']//span[text()='Reset Password']"
     Then I should see element with test-id "reset-password-reset-button" 
@@ -82,7 +82,7 @@ Feature: Admin - Users
     Then I am on login page
 
     When I go to login page
-    And I fill in the username "e2e-test-group-user" and password "password"
+    And I fill in the username "e2e-test-user" and password "password"
     And I click login
     Then I should see element with xpath on the page 
     | exist      | xpath                                                                                                         |
@@ -97,9 +97,9 @@ Feature: Admin - Users
 
   @regression @prep-data
   Scenario: Update user info of first user and connect to existing group
-    When I search "e2e-test-group-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-group-user"
-    Then I should see input in test-id "user/username" with value "e2e-test-group-user"
+    When I search "e2e-test-user" in test-id "text-filter-username"
+    And I click edit-button in row contains text "e2e-test-user"
+    Then I should see input in test-id "user/username" with value "e2e-test-user"
 
     When I type "e2e-test" to element with test-id "user/firstName"
     And I check boolean input with test-id "user/isAdmin"
@@ -114,13 +114,13 @@ Feature: Admin - Users
     And I wait for 4.0 seconds
     And I click element with xpath "//button/span[text()='Confirm']"
     And I wait for 2.0 seconds
-    And I search "e2e-test-group-user" in test-id "text-filter-username"
-    Then list-view table "should" contain row with "e2e-test-group-user"
+    And I search "e2e-test-user" in test-id "text-filter-username"
+    Then list-view table "should" contain row with "e2e-test-user"
 
-    When I click edit-button in row contains text "e2e-test-group-user"
+    When I click edit-button in row contains text "e2e-test-user"
     Then I should see value of element with test-id on the page
     | test-id        | value               |
-    | user/username  | e2e-test-group-user |
+    | user/username  | e2e-test-user |
     | user/firstName | e2e-test            |
 
     And boolean input with test-id "user/isAdmin" should have value "true"
@@ -130,7 +130,7 @@ Feature: Admin - Users
 
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-group"
-    Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-group-user')]"
+    Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-user')]"
 
   @regression @prep-data
   Scenario: Update user info of second user and connect to another group
