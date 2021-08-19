@@ -2,8 +2,9 @@
 Feature: Job Schedule
   Basic tests
 
-  Background:
-    Given I am logged in
+  @regression
+  Scenario Outline: User can create schedule
+    Given I am logged in as a <role>
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
@@ -11,8 +12,6 @@ Feature: Job Schedule
     And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
 
-  @regression
-  Scenario: User can create schedule
     When I click "New Schedule" button
     Then I am on the PrimeHub console "NewSchedule" page
 
@@ -31,8 +30,21 @@ Feature: Job Schedule
     When I click tab of "Logs"
     Then I should see "test" in element "div" under active tab
 
+    Examples:
+    | role  |
+    | admin |
+    | user  |
+
   @regression
-  Scenario: User can update schedule
+  Scenario Outline: User can update schedule
+    Given I am logged in as a <role>
+    Then I am on the PrimeHub console "Home" page
+
+    When I choose group with name "e2e-test-group-display-name"
+    And I keep group resources
+    And I choose "Schedule" in sidebar menu
+    Then I am on the PrimeHub console "Schedule" page
+
     When I click element with xpath "//td[text()='create-schedule-test']//..//button[2]" and wait for navigation
     Then I am on the PrimeHub console "UpdateSchedule" page    
 
@@ -56,8 +68,26 @@ Feature: Job Schedule
     When I click tab of "Logs"
     Then I should see "update-test" in element "div" under active tab
 
+    Examples:
+    | role  |
+    | admin |
+    | user  |
+
   @regression
-  Scenario: User can delete schedule
+  Scenario Outline: User can delete schedule
+    Given I am logged in as a <role>
+    Then I am on the PrimeHub console "Home" page
+
+    When I choose group with name "e2e-test-group-display-name"
+    And I keep group resources
+    And I choose "Schedule" in sidebar menu
+    Then I am on the PrimeHub console "Schedule" page
+
     When I click element with xpath "//td[text()='update-schedule-test']//..//button[3]" and wait for xpath "//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'Delete')]" appearing
     And I click button of "Yes" on confirmation dialogue
     Then I "should not" see element with xpath "//td[text()='update-schedule-test']"
+
+    Examples:
+    | role  |
+    | admin |
+    | user  |

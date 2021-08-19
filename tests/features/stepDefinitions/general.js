@@ -170,22 +170,22 @@ defineStep("I am on login page", async function() {
 });
 
 defineStep(/^I am logged in(?: as a (.*))?$/, async function(role) {
-  let u, p;
+  let username, password;
   if (role == null || role.includes('user')) {
-    u = this.PH_USER_USERNAME;
-    p = this.PH_USER_PASSWORD;
-    console.log('user');	  
+    username = this.PH_USER_USERNAME;
+    password = this.PH_USER_PASSWORD;
   } else if (role.includes('admin')) {
-    u = this.PH_ADMIN_USERNAME;
-    p = this.PH_ADMIN_PASSWORD;
-    console.log('admin');	  
+    username = this.PH_ADMIN_USERNAME;
+    password = this.PH_ADMIN_PASSWORD;
   }
   await this.page.goto(this.HOME_URL);
   await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
+  await this.input("username", username);
+  await this.input("password", password);
   const xpath = "//input[@id='kc-login']";
-  await this.clickElementByXpath(xpath);	
+  await this.clickElementByXpath(xpath);
 });
 
 defineStep("I click element with xpath {string}", async function(string) {
