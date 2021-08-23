@@ -87,8 +87,13 @@ spec:
           volumeMounts:
             - name: bootstrap
               mountPath: /bootstrap
+            - name: instancetypes
+              mountPath: /instancetypes
       volumes:
         - name: bootstrap
           configMap:
             name: primehub-bootstrap-scripts
+        - name: instancetypes
+          configMap:
+            name: primehub-bootstrap-instancetypes
 {{- end }}

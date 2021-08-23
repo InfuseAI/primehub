@@ -180,12 +180,14 @@ function create_default_resources() {
   print_info "Add client role: realm-management:realm-admin -> $PH_USER"
   kc_user_add_client_role $KC_REALM $PH_USER realm-management realm-admin
 
-  instances='cpu-1 cpu-2 gpu-1 gpu-2'
+  instances="$(cat /instancetypes/list.txt)"
   for instance in $instances; do
     kc_role_create ROLE_IT $KC_REALM "it:${instance}"
     print_info "Bind instancetypes: it:${instance} -> everyone"
     kc_group_add_realm_role $KC_REALM everyone "it:${instance}" || true
   done
+  print_info "Add CRDs from /instancetypes/crds.yaml"
+  kubectl apply -n $PRIMEHUB_NAMESPACE -f /instancetypes/crds.yaml || true
 
   images='base-notebook pytorch-1 tf-1 tf-2'
   for image in $images; do
@@ -195,9 +197,8 @@ function create_default_resources() {
   done
 
   # add crds
-  print_info "Add CRDs: img:base-notebook img:pytorch-1 img:tf-1 img:tf-2 it:cpu-1 it:cpu-2 it:gpu-1 it:gpu-2"
+  print_info "Add CRDs: img:base-notebook img:pytorch-1 img:tf-1 img:tf-2"
   kubectl apply -n $PRIMEHUB_NAMESPACE -f $DIR/crds.yaml || true
-
 }
 
 function add_admission_labels() {

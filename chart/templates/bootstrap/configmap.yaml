@@ -10,3 +10,26 @@ metadata:
     heritage: "{{ .Release.Service }}"
 data:
   {{- tpl (.Files.Glob "scripts/bootstrap/*").AsConfig . | nindent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primehub-bootstrap-instancetypes
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: primehub-bootstrap
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  crds.yaml: |
+  {{- range $.Values.bootstrap.instanceTypes }}
+    {{ print "---" }}
+    apiVersion: primehub.io/v1alpha1
+    kind: InstanceType
+  {{- . | toYaml | nindent 4 -}}
+  {{- end }}
+  list.txt: |
+  {{- range $.Values.bootstrap.instanceTypes }}
+  {{- .metadata.name | nindent 4 -}}
+  {{- end }}
+

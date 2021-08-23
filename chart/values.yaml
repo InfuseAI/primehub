@@ -413,6 +413,73 @@ bootstrap:
   username: phadmin
   password:
   group: phusers
+  instanceTypes:
+  - metadata:
+      name: cpu-1
+    spec:
+      description: 1 CPU / 2G
+      displayName: CPU 1
+      limits.cpu: 1
+      limits.memory: 2G
+      limits.nvidia.com/gpu: 0
+      requests.cpu: 1
+      requests.memory: 2G
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+  - metadata:
+      name: cpu-2
+    spec:
+      description: 2 CPU / 10G
+      displayName: CPU 2
+      limits.cpu: 2
+      limits.memory: 10G
+      limits.nvidia.com/gpu: 0
+      nodeSelector: {}
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+  - metadata:
+      name: gpu-1
+    spec:
+      description: 2 CPU / 7G / 1 GPU
+      displayName: GPU 1
+      limits.cpu: 2
+      limits.memory: 7G
+      limits.nvidia.com/gpu: 1
+      requests.cpu: 1.5
+      requests.memory: 5G
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+  - metadata:
+      name: gpu-2
+    spec:
+      description: 4 CPU / 14G / 2 GPU
+      displayName: GPU 2
+      limits.cpu: 4
+      limits.memory: 14G
+      limits.nvidia.com/gpu: 2
+      requests.cpu: 4
+      requests.memory: 14G
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+
 
 # Dataset upload
 datasetUpload:
