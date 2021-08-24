@@ -186,7 +186,7 @@ function create_default_resources() {
     print_info "Bind instancetypes: it:${instance} -> everyone"
     kc_group_add_realm_role $KC_REALM everyone "it:${instance}" || true
   done
-  print_info "Add CRDs from /instancetypes/crds.yaml"
+  print_info "Add InstanceTypes: ${instances}"
   kubectl apply -n $PRIMEHUB_NAMESPACE -f /instancetypes/crds.yaml || true
 
   images='base-notebook pytorch-1 tf-1 tf-2'
