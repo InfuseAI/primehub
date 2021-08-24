@@ -28,8 +28,5 @@ data:
     kind: InstanceType
   {{- . | toYaml | nindent 4 -}}
   {{- end }}
-  list.txt: |
-  {{- range $.Values.bootstrap.instanceTypes }}
-  {{- .metadata.name | nindent 4 -}}
-  {{- end }}
+  list.txt: {{ range $.Values.bootstrap.instanceTypes }}{{- .metadata.name -}}{{ print " " }}{{ end }}
 
