@@ -43,7 +43,7 @@ Feature: Features
     Then I am on the admin dashboard "Instance Types" page
     And I "should" see element with xpath "//div[@class='ant-table-column-sorters']//span[text()='CPU Limit']"
 
-    # Admin - Instance Types - Add 
+    # Admin - Instance Types - Add
     When I click element with test-id "add-button"
     Then I should see element with test-id "instanceType/name"
 
@@ -53,7 +53,7 @@ Feature: Features
 
     # Admin - Instance Types - Add - Node Selector
     When I click tab of "Node Selector"
-    Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/nodeSelector']//p[text()='There is no fields.']"    
+    Then I "should" see element with xpath "//div[@aria-hidden='false']//div[@data-testid='instanceType/nodeSelector']//p[text()='There is no fields.']"
     And I wait for 1.0 second
     And I click element with test-id "reset-button"
     Then I am on the admin dashboard "Instance Types" page
@@ -69,15 +69,15 @@ Feature: Features
     When I click "Images" in admin dashboard
     Then I "should" see element with xpath "//span[text()='Images']"
 
-  @regression @ee @ce
+  @wip @regression @ee @ce
   Scenario: Admin can access pages in Admin Portal - Datasets and Secrets
     # Admin - Datasets
     When I click "Datasets" in admin dashboard
     Then I am on the admin dashboard "Datasets" page
     And I "should" see element with xpath "//span[text()='Datasets']"
     And I "should" see element with xpath "//div[@class='ant-table-column-sorters' and text()='Upload Server']"
-     
-  @regression @ee @ce @deploy
+
+  @wip @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Datasets and Secrets
     # Secrets - add
     # When I click "Secrets" in admin dashboard
@@ -105,7 +105,7 @@ Feature: Features
     Then I am on the admin dashboard "System Settings" page
     And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'PrimeHub License')]"
     And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'System Settings')]"
-    And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'Email Settings')]"    
+    And I "should" see element with xpath "//div[@class='ant-card-head-title' and contains(text(), 'Email Settings')]"
 
   @regression @ee @ce @deploy
   Scenario: User can access pages in User Portal
