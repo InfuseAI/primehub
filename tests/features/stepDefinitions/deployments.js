@@ -32,7 +32,7 @@ defineStep("I wait for attribute {string} with value {string}", {timeout: 360 * 
         }
         catch (e) {}
         console.log(`${att}: ${text}`);
-        if (text != value) {
+        if (text.indexOf(value) === -1) {
             await this.takeScreenshot(`wait-for-${att}-${value}`);
             await this.page.waitForTimeout(10000);
         }
