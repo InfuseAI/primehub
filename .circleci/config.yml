@@ -72,7 +72,7 @@ jobs:
 
       - store_artifacts:
           path: /tmp/artifacts
-      - upload_codecov:
+      - codecov/upload:
           flags: unittests
           file: coverage.xml
       - notify_slack
