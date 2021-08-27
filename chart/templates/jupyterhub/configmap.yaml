@@ -55,6 +55,9 @@ data:
     sshServer:
       enabled: {{ .Values.sshBastionServer.enabled }}
       servicePort: {{ .Values.sshBastionServer.service.port }}
+      {{- if .Values.sshBastionServer.customHostname }}
+      customHostname: {{ .Values.sshBastionServer.customHostname }}
+      {{- end}}
     host: {{ index .Values.ingress.hosts 0 }}
     telemetry:
       enabled: {{ .Values.telemetry.enabled }}

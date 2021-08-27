@@ -1086,6 +1086,7 @@ rclone:
 
 sshBastionServer:
   enabled: true
+  customHostname: ""
   image:
     repository: mltooling/ssh-proxy
     tag: 0.1.11
