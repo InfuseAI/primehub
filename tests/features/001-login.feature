@@ -1,7 +1,7 @@
 @ee @ce @deploy
 Feature: Login
   In order to manage system
-  As a user, I want to login
+  As a user, I want to login to system
 
   Background:
     Given I go to login page
