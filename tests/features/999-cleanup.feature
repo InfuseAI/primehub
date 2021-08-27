@@ -117,6 +117,20 @@ Feature: Delete data
     And I choose "Logout" in top-right menu
     Then I am on login page
 
+  @regression @admin-instance-types @destroy-data @error-check
+  Scenario: Delete instance type that exceeds resource quota
+    When I click "Instance Types" in admin dashboard
+    Then I am on the admin dashboard "Instance Types" page
+
+    When I search "e2e-test-instance-type-large" in test-id "text-filter-name"
+    And I delete a row with text "e2e-test-instance-type-large"
+    And I wait for 2.0 seconds
+    Then list-view table "should not" contain row with "e2e-test-instance-type-large"
+
+    When I wait for 1.0 second
+    And I choose "Logout" in top-right menu
+    Then I am on login page
+
   @regression @admin-groups @destroy-data
   Scenario: Delete groups
     When I click "Groups" in admin dashboard
