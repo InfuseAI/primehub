@@ -72,9 +72,6 @@ jobs:
 
       - store_artifacts:
           path: /tmp/artifacts
-      - upload_codecov:
-          flags: unittests
-          file: coverage.xml
       - notify_slack
 
   verify_image_list:
