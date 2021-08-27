@@ -67,7 +67,4 @@ install-dev-requirements:
 		pip3 install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
 
 test:
-	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml
-
-test-html:
-	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report html
+	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml:coverage.xml --cov-report html
