@@ -186,6 +186,19 @@ Feature: Apps
     And I switch to "console/apps/label-studio" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Label Studio Community Edition')]" after page reloaded
 
+  @regression @error-check
+  Scenario: Update Label Studio with empty USERNAME
+    And I "should" have "label-studio" installed with name "e2e-test-label-studio"
+
+    When I go to the apps detail page with name "e2e-test-label-studio"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I type " " to element with xpath "//input[@value='DEFAULT_USERNAME']/following-sibling::input"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "e2e-test-label-studio"
+    Then I wait for attribute "Message" with value "label-studio start: error: argument --username: expected one argument"
+
   @regression
   Scenario: Remove Label Studio
     And I "should" have "label-studio" installed with name "e2e-test-label-studio"
@@ -235,6 +248,19 @@ Feature: Apps
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment is ready"
 
+  @regression @error-check
+  Scenario: Update Matlab with insufficient resource
+    And I "should" have "matlab" installed with name "e2e-test-matlab"
+
+    When I go to the apps detail page with name "e2e-test-matlab"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I choose radio button with name "e2e-test-instance-type-large"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "e2e-test-matlab"
+    Then I wait for attribute "Message" with value "exceeded cpu quota: 2, requesting 3.0"
+
   @wip @regression
   Scenario: Remove Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
@@ -266,6 +292,19 @@ Feature: Apps
     And I click element with xpath "//span[contains(text(), 'Open Web UI')]"
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
+
+  @regression @error-check
+  Scenario: Update Streamlit with invalid FILE_PATH
+    And I "should" have "streamlit" installed with name "e2e-test-streamlit"
+
+    When I go to the apps detail page with name "e2e-test-streamlit"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I type "https://raw.githubusercontent.com/streamlit/streamlit-example/master/streamlit_app" to element with xpath "//input[contains(@value, 'FILE_PATH')]/following-sibling::input"
+    And I click "Update" button
+    And I wait for 1.0 second
+    And I go to the apps detail page with name "e2e-test-streamlit"
+    Then I wait for attribute "Message" with value "Error: Streamlit requires raw Python (.py) files, but the provided file has no extension"
 
   @wip @regression
   Scenario: Stop Streamlit
