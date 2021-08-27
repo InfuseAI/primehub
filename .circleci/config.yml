@@ -322,7 +322,6 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
-      - e2e_temp_ee
       - build:
           filters:
             tags:
