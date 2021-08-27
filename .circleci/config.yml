@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@4.4.2
+  codecov: codecov/codecov@3.0.0
 
 commands:
   notify_slack:
@@ -72,6 +73,9 @@ jobs:
 
       - store_artifacts:
           path: /tmp/artifacts
+      - codecov/upload:
+          flags: unittests
+          file: /tmp/artifacts/coverage.xml
       - notify_slack
 
   verify_image_list:
