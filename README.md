@@ -6,6 +6,8 @@
 
 # PrimeHub Community Edition
 
+  [![Launch Stack](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v0.8.0/primehub-ce-starter-cloudformation.yaml)
+
 Welcome to the PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environments*, *easy dataset loading*, and *management of various resources* and *access-control*. All of these are designed from *a project/team-centric* concept. 
 
 In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterprise Edition↗](https://www.infuseai.io/primehub).
