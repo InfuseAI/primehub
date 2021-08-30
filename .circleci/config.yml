@@ -332,12 +332,12 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-      - build_vm:
-          context: build-vm
-          requires:
-            - build
-          filters:
-            tags:
-              only: /v.*/
-            branches:
-              ignore: /.*/
+      #- build_vm:
+          #context: build-vm
+          #requires:
+            #- build
+          #filters:
+            #tags:
+              #only: /v.*/
+            #branches:
+              #ignore: /.*/
