@@ -11,4 +11,4 @@ export PRIMEHUB_DOMAIN=hub.primehub.local
 export PH_PASSWORD=passw0rd
 export KC_PASSWORD=passw0rd
 
-./primehub-install create singlenode --k8s-version 1.17 && ./primehub-install create primehub --primehub-version ${PRIMEHUB_VERSION}
+./primehub-install create singlenode --k8s-version 1.21 && ./primehub-install create primehub --primehub-version ${PRIMEHUB_VERSION}
