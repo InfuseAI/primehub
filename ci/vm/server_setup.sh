@@ -23,7 +23,7 @@ curl -O https://storage.googleapis.com/primehub-release/bin/primehub-install
 chmod +x primehub-install
 
 # Install microk8s
-./primehub-install create singlenode --k8s-version 1.17 || true
+./primehub-install create singlenode --k8s-version 1.21 || true
 
 # Reboot to relogin with microk8s group
 sudo reboot now
