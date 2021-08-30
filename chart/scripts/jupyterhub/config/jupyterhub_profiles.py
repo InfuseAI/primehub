@@ -1160,7 +1160,7 @@ class PrimeHubSpawner(KubeSpawner):
             self.log.error('Failed to fetch groups', exc_info=True)
             return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        self.user.spawner.ssh_config['host'] = get_primehub_config('host', '')
+        self.user.spawner.ssh_config['host'] = get_primehub_config('sshServer.customHostname', get_primehub_config('host', ''))
         self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub'))
         self.user.spawner.ssh_config['port'] = get_primehub_config('sshServer.servicePort', '2222')
 
