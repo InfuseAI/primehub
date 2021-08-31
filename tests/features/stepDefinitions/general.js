@@ -169,7 +169,7 @@ defineStep("I am on login page", async function() {
   expect(url).to.contain(this.KC_SERVER_URL);
 });
 
-defineStep(/^I am logged in(?: as a (.*))?$/, async function(role) {
+defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
   let username, password;
   if (role == null || role.includes('user')) {
     username = this.PH_USER_USERNAME;
@@ -241,8 +241,8 @@ defineStep("I fill in the wrong credentials and click login", async function(dat
 });
 
 defineStep("I fill in the correct username credentials", async function() {
-  await this.input("username", this.USERNAME);
-  await this.input("password", this.PASSWORD);
+  await this.input("username", this.PH_ADMIN_USERNAME);
+  await this.input("password", this.PH_ADMIN_PASSWORD);
 });
 
 defineStep("I fill in the username {string} and password {string}", async function(username, password) {

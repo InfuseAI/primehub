@@ -4,15 +4,18 @@ Feature: Admin - Instance Types
   I want to change settings
 
   Background:
-    Given I am logged in
+    Given I am logged in as an admin
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
+    Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
-    And I should see element with test-id "instanceType"
+    And I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @sanity @smoke @prep-data
   Scenario: Create an instance type
@@ -22,7 +25,7 @@ Feature: Admin - Instance Types
     | instanceType/name        |
     | instanceType/displayName |    
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id                  | value                               |
     | instanceType/name        | e2e-test-instance-type              |
     | instanceType/displayName | e2e-test-instance-type-display-name |
@@ -30,12 +33,15 @@ Feature: Admin - Instance Types
     | instanceType/cpuLimit    | 0.5                                 |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an instance type to an existing group
     When I search "e2e-test-instance-type" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-instance-type"
+    Then I "should" see list-view table containing row with "e2e-test-instance-type"
 
     When I click edit-button in row contains text "e2e-test-instance-type"
     Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
@@ -43,7 +49,7 @@ Feature: Admin - Instance Types
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
     | xpath                                              |
@@ -51,7 +57,10 @@ Feature: Admin - Instance Types
     | //button/span[text()='OK']                         |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @prep-data
   Scenario: Create an GPU instance type
@@ -61,14 +70,17 @@ Feature: Admin - Instance Types
     | instanceType/name        |
     | instanceType/displayName |    
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id                  | value                      |
     | instanceType/name        | e2e-test-instance-type-gpu |
     | instanceType/displayName | e2e-test-instance-type-gpu |
     | instanceType/cpuLimit    | 0.5                        |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @prep-data
   Scenario: Update an GPU instance type
@@ -79,19 +91,22 @@ Feature: Admin - Instance Types
     | instanceType/name        | e2e-test-instance-type-gpu |
     | instanceType/displayName | e2e-test-instance-type-gpu |
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id                  | value                                   |
     | instanceType/displayName | e2e-test-instance-type-display-name-gpu |
     | instanceType/description | e2e-test-instance-type-description-gpu  |
     | instanceType/cpuLimit    | 1                                       |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @prep-data
   Scenario: Connect an GPU instance type to an existing group
     When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-instance-type-gpu"
+    Then I "should" see list-view table containing row with "e2e-test-instance-type-gpu"
 
     When I click edit-button in row contains text "e2e-test-instance-type-gpu"
     Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type-gpu"
@@ -99,7 +114,7 @@ Feature: Admin - Instance Types
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
     | xpath                                              |
@@ -107,7 +122,10 @@ Feature: Admin - Instance Types
     | //button/span[text()='OK']                         |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @prep-data
   Scenario: Show an GPU instance type in spawner page
@@ -130,19 +148,22 @@ Feature: Admin - Instance Types
     | instanceType/name        |
     | instanceType/displayName |
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id                  | value                        |
     | instanceType/name        | e2e-test-instance-type-large |
     | instanceType/displayName | e2e-test-instance-type-large |
     | instanceType/cpuLimit    | 3.0                          |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |
 
   @regression @prep-data @error-check
   Scenario: Connect an instance type that exceeds resource quota to an existing group
     When I search "e2e-test-instance-type-large" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-instance-type-large"
+    Then I "should" see list-view table containing row with "e2e-test-instance-type-large"
 
     When I click edit-button in row contains text "e2e-test-instance-type-large"
     Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type-large"
@@ -150,7 +171,7 @@ Feature: Admin - Instance Types
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
     | xpath                                              |
@@ -158,4 +179,7 @@ Feature: Admin - Instance Types
     | //button/span[text()='OK']                         |
 
     And I click element with test-id "confirm-button"
-    Then I "should" see element with xpath "//span[text()='CPU Limit']"
+    Then I should see element with test-id on the page
+    | test-id             |
+    | instanceType-active |
+    | add-button          |

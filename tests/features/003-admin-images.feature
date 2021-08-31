@@ -4,15 +4,18 @@ Feature: Admin - Images
   I want to change settings
 
   Background:
-    Given I am logged in
+    Given I am logged in as an admin
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
+    Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
-    And I should see element with test-id "image"
+    And I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @sanity @smoke @prep-data
   Scenario: Create an image
@@ -22,7 +25,7 @@ Feature: Admin - Images
     | image/name        |
     | image/displayName |    
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id           | value                       |
     | image/name        | e2e-test-image              |
     | image/displayName | e2e-test-image-display-name |
@@ -30,12 +33,15 @@ Feature: Admin - Images
 
     And I type "jupyter/datascience-notebook:b90cce83f37b" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id    |
+    | image      |
+    | add-button |
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image to an existing group
     When I search "e2e-test-image" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-image"
+    Then I "should" see list-view table containing row with "e2e-test-image"
 
     When I click edit-button in row contains text "e2e-test-image"
     Then I should see input in test-id "image/name" with value "e2e-test-image"
@@ -43,7 +49,7 @@ Feature: Admin - Images
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-image"
 
     And I click element with xpath on the page
     | xpath                                              |
@@ -52,7 +58,10 @@ Feature: Admin - Images
 
     And I wait for 1.0 second
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @sanity @smoke @prep-data
   Scenario: Create an image with latest base notebook
@@ -60,9 +69,9 @@ Feature: Admin - Images
     Then I should see element with test-id on the page
     | test-id           |
     | image/name        |
-    | image/displayName |    
+    | image/displayName |
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id           | value                          |
     | image/name        | e2e-test-bs-image              |
     | image/displayName | e2e-test-bs-image-display-name |
@@ -70,12 +79,15 @@ Feature: Admin - Images
 
     And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image with latest base notebook to an existing group
     When I search "e2e-test-bs-image" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-bs-image"
+    Then I "should" see list-view table containing row with "e2e-test-bs-image"
 
     When I click edit-button in row contains text "e2e-test-bs-image"
     Then I should see input in test-id "image/name" with value "e2e-test-bs-image"
@@ -83,7 +95,7 @@ Feature: Admin - Images
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
     | xpath                                              |
@@ -92,7 +104,10 @@ Feature: Admin - Images
 
     And I wait for 1.0 second
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @error-check @prep-data
   Scenario: Create an error image
@@ -102,7 +117,7 @@ Feature: Admin - Images
     | image/name        |
     | image/displayName |    
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id           | value                             |
     | image/name        | e2e-test-error-image              |
     | image/displayName | e2e-test-error-image-display-name |
@@ -110,12 +125,15 @@ Feature: Admin - Images
 
     And I type "error-url" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @error-check @prep-data
   Scenario: Connect an error image to an existing group
     When I search "e2e-test-error-image" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-error-image"
+    Then I "should" see list-view table containing row with "e2e-test-error-image"
 
     When I click edit-button in row contains text "e2e-test-error-image"
     Then I should see input in test-id "image/name" with value "e2e-test-error-image"
@@ -123,7 +141,7 @@ Feature: Admin - Images
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
     | xpath                                              |
@@ -132,7 +150,10 @@ Feature: Admin - Images
 
     And I wait for 1.0 second
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @prep-data
   Scenario: Create a GPU image
@@ -142,24 +163,27 @@ Feature: Admin - Images
     | image/name        |
     | image/displayName |    
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id           | value                |
     | image/name        | e2e-test-image-gpu   |
     | image/displayName | e2e-test-image-gpu   |
 
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @prep-data
   Scenario: Update a GPU image
     When I search "e2e-test-image-gpu" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-image-gpu"
+    Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
     Then I should see input in test-id "image/name" with value "e2e-test-image-gpu"
     And I should see input in test-id "image/displayName" with value "e2e-test-image-gpu"
 
-    When I type value to test-id on the page
+    When I type value to element with test-id on the page
     | test-id           | value                           |
     | image/displayName | e2e-test-image-display-name-gpu |
     | image/description | e2e-test-image-description-gpu  |
@@ -171,12 +195,15 @@ Feature: Admin - Images
 
     And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//div[@data-testid='image/url']//input"
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @prep-data
   Scenario: Connect a GPU image to an existing group
     When I search "e2e-test-image-gpu" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-image-gpu"
+    Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
     Then I should see input in test-id "image/name" with value "e2e-test-image-gpu"
@@ -184,7 +211,7 @@ Feature: Admin - Images
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should" contain row with "e2e-test-group"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     And I click element with xpath on the page
     | xpath                                              |
@@ -193,7 +220,10 @@ Feature: Admin - Images
 
     And I wait for 1.0 second
     And I click element with xpath "//a/span[text()='Confirm']"
-    Then I "should" see element with xpath "//span[text()='Description']"
+    Then I should see element with test-id on the page
+    | test-id      |
+    | image-active |
+    | add-button   |
 
   @regression @sanity @prep-data
   Scenario: Create a group image

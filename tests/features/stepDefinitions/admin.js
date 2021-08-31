@@ -16,61 +16,62 @@ defineStep("I click element with test-id {string}", async function(testId) {
 
 defineStep("I type {string} to element with test-id {string}", async function(string, testId) {
   const selector = `${testIdToSelector(testId)} input`;
-  await this.inputText(selector, string);
+  await this.inputTextWithE2ESuffix(selector, string);
 });
 
-defineStep("I type value to test-id on the page", async function(datatable) {
+defineStep("I type value to element with test-id on the page", async function(datatable) {
   for (const row of datatable.rows()) {
-    const selector = await `${testIdToSelector(row[0])} input`
-    await this.inputText(selector, row[1]);
+    const selector = await `${testIdToSelector(row[0])}`
+    await this.inputTextWithE2ESuffix(selector, row[1]);
+    await this.takeScreenshot(`type-element-test-id-${row[1]}-${this.E2E_SUFFIX}`);
   }
 });
 
 defineStep("I search {string} in test-id {string}", async function(name, testId) {
   const selector = testIdToSelector(testId);
-  await this.inputText(selector, name);
+  await this.inputTextWithE2ESuffix(selector, name);
   await this.page.keyboard.press("Enter");
   await this.page.waitForTimeout(500);
   await this.takeScreenshot(`search-${name}`);
 });
 
 defineStep("I search my username in name filter", async function() {
-  const selector = testIdToSelector("text-filter-username");
+  const selector = testIdToSelector("text-filter");
   await this.page.waitForSelector(selector, {visible: true});
   await this.page.focus(selector);
   await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
   await this.page.keyboard.press("Backspace");
-  await this.page.type(selector, this.USERNAME);
+  await this.page.type(selector, this.PH_ADMIN_USERNAME);
   await this.page.keyboard.press("Enter");
   await this.page.waitForTimeout(500);
-  await this.takeScreenshot(`search-${this.USERNAME}`);
+  await this.takeScreenshot(`search-${this.PH_ADMIN_USERNAME}`);
 });
 
 defineStep("I click my username", async function() {
-  await this.clickElementByXpath(`//td[text()='${this.USERNAME}']/..//input`);
+  await this.clickElementByXpath(`//td[contains(., '${this.PH_ADMIN_USERNAME}')]//preceding-sibling::td//input`);
 });
 
 defineStep("I click edit-button in row contains text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then edit button
   // xpath: //tr[contains(., 'hlb')]//button[@data-testid='edit-button']
-  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//button[@data-testid='edit-button']`;
+  const xpath = `//td[contains(., '${string}-${this.E2E_SUFFIX}')]/following-sibling::td//button[@data-testid='edit-button']`;
   await this.clickElementByXpath(xpath);
 });
 
 defineStep("I delete a row with text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then delete button
-  // xpath: //tr[contains(., 'string')]//button[@data-testid='delete-button']
-  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//button[@data-testid='delete-button']`;
+  // xpath: //tr[contains(., 'string')]//td//button[@data-testid='delete-button']
+  const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]//td//button[@data-testid='delete-button']`;
   await this.clickElementByXpath(xpath);
   await this.page.waitForTimeout(3*1000);
   // press OK button in popup
-  const okButtonXPath = `//button[contains(., 'OK')]`;
+  const okButtonXPath = `//button[contains(., 'OK') or contains(., 'Yes')]`;
   await this.clickElementByXpath(okButtonXPath);
 });
 
 defineStep("I check boolean input with test-id {string}", async function(testId) {
   // the boolean checkbox we use is a <button>
-  const xpath = `${testIdToXpath(testId)}//button`;
+  const xpath = `${testIdToXpath(testId)}`;
   await this.clickElementByXpath(xpath);
 });
 
@@ -84,7 +85,7 @@ defineStep("I should see element with test-id on the page", async function(datat
   }
 });
 
-defineStep("list-view table {string} contain row with {string}", async function(exist, string) {
+defineStep("I {string} see list-view table containing row with {string}", async function(exist, string) {
   // use xpath to find the <tr> containing 'text'
   const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]`;
   var isExist = true;
@@ -95,8 +96,8 @@ defineStep("list-view table {string} contain row with {string}", async function(
 });
 
 defineStep("I should see input in test-id {string} with value {string}", async function(testId, string) {
-  // xpath: //*[@data-testid='user/username']//input
-  const xpath = `${testIdToXpath(testId)}//input`;
+  // xpath: //*[@data-testid='username']//input
+  const xpath = `${testIdToXpath(testId)}`;
   const inputValue = await this.getXPathValue(xpath);
   await this.takeScreenshot(`test-id-${testId.replace('/', '-')}-value-${string}-${this.E2E_SUFFIX}`);
   expect(inputValue).to.equal(`${string}-${this.E2E_SUFFIX}`);
@@ -104,17 +105,17 @@ defineStep("I should see input in test-id {string} with value {string}", async f
 
 defineStep("I should see value of element with test-id on the page", async function(datatable) {
   for (const row of datatable.rows()) {
-    // xpath: //*[@data-testid='user/username']//input
-    const xpath = `${testIdToXpath(row[0])}//input`;
+    // xpath: //*[@data-testid='username']//input
+    const xpath = `${testIdToXpath(row[0])}`;
     const inputValue = await this.getXPathValue(xpath);
     await this.takeScreenshot(`test-id-${row[0].replace('/', '-')}-value-${row[1]}-${this.E2E_SUFFIX}`);
     expect(inputValue).to.equal(`${row[1]}-${this.E2E_SUFFIX}`);
   }
 });
 
-defineStep("boolean input with test-id {string} should have value {string}", async function(testId, rawValue) {
+defineStep("I should see boolean input with test-id {string} having value {string}", async function(testId, rawValue) {
   // the boolean checkbox we use is a <button>
-  const xpath = `${testIdToXpath(testId)}//button`;
+  const xpath = `${testIdToXpath(testId)}`;
   const value = (rawValue === 'true');
   const rawInputValue = await this.getXPathAttribute(xpath, 'aria-checked');
   const inputValue = (rawInputValue === 'true');
@@ -130,8 +131,8 @@ defineStep("I select option {string} in admin dashboard", async function(name) {
 });
 
 defineStep("I assign group admin of {string} to {string}", async function(group, user) {
-  const groupXpath = `//div[contains(@data-testid, "group/name")]//input[@value='${group}-${this.E2E_SUFFIX}']`;
-  const userGroupAdminXpath = (user == "me") ? `//tr//td[text()='${this.USERNAME}']/following-sibling::td//input` : `//tr//td[text()='${user}-${this.E2E_SUFFIX}']/following-sibling::td//input`;
+  const groupXpath = `//input[contains(@data-testid, "group/name") and @value='${group}-${this.E2E_SUFFIX}']`;
+  const userGroupAdminXpath = (user == "me") ? `//input[@value='${this.PH_ADMIN_USERNAME}']` : `//input[@value='${user}-${this.E2E_SUFFIX}']`;
   try {
     await this.page.waitForXPath(groupXpath, {timeout: 1000});
     await this.page.waitForXPath(userGroupAdminXpath, {timeout: 1000});
