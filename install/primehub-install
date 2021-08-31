@@ -1208,17 +1208,17 @@ show_versions() {
   info "[Available] PrimeHub Versions:"
   if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
     # For YQ 4
-    curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep -v "\-rc"
+    curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep 'v\d*\.\d*\.\d*$'
     if [[ ${SHOW_RC_VERSION} == true ]]; then
       warn "[Available] PrimeHub Beta Versions:"
-      curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep "\-rc"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep 'v\d*\.\d*\.\d*-rc.*$'
     fi
   else
     # For YQ 2 or 3
-    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep -v "\-rc"
+    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep 'v\d*\.\d*\.\d*$'
     if [[ ${SHOW_RC_VERSION} == true ]]; then
       warn "[Available] PrimeHub Beta Versions:"
-      curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep "\-rc"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep 'v\d*\.\d*\.\d*-rc.*$'
     fi
   fi
 
