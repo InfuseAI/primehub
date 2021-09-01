@@ -3,6 +3,9 @@
 ## Upcoming
 ### What's New
 
+### Deprecated
+- Maintenance notebook
+
 ## 3.7.2
 ### What's New
 
