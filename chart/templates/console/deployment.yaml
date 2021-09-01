@@ -133,6 +133,10 @@ spec:
                   name: authoritative-secret
                   key: max_group
             {{- end }}
+            {{- if .Values.telemetry.enabled }}
+            - name: PRIMEHUB_FEATURE_TELEMETRY
+              value: {{ .Values.telemetry.enabled | quote }}
+            {{- end }}
             {{- if .Values.store.enabled }}
             - name: PRIMEHUB_FEATURE_STORE
               value: "true"
