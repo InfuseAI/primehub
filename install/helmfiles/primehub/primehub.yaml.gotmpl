@@ -131,6 +131,10 @@ ingress:
     ingress.kubernetes.io/affinity: cookie
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+    {{ if eq $PRIMEHUB_SCHEME "http" }}
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{ end }}
   hosts:
   {{ if (regexFind "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $PRIMEHUB_DOMAIN) }}
   - null
