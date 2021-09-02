@@ -38,6 +38,7 @@ LOGS_TAIL=10000
 
 HELM_TIMEOUT=1000
 DOMAIN_CHECK=true
+DISK_SIZE_CHECK=true
 SHOW_RC_VERSION=false
 
 MINIMAL_CPU_REQUEST=3700 # 4 CPU
@@ -125,6 +126,7 @@ Options:
   --tail              <#line>                    : Number of line to collect log    (Default: ${LOGS_TAIL})
   --helm-timeout      <timeout-duration>         : Timeout of helm install          (Default: 1000)
   --skip-domain-check                            : Skip the domain name check
+  --skip-disk-space-check                        : Skip the disk space check when install singlenode k8s
 EOF
 }
 
@@ -166,7 +168,7 @@ is_microk8s_cluster() {
 }
 
 is_ubuntu() {
-  if command -v lsb_release; then
+  if command -v lsb_release > /dev/null; then
     return 0
   fi
   return -1
@@ -187,7 +189,7 @@ infuseai_repo_update() {
   fi
 }
 
-check_microk8s_snap() {
+check::microk8s::snap() {
   if ! command -v snap > /dev/null; then
     return -1
   fi
@@ -197,28 +199,43 @@ check_microk8s_snap() {
   return -1
 }
 
-check_microk8s_group() {
+check::microk8s::group() {
   if [[ "$(groups | grep microk8s)" != "" ]]; then
     return 0
   fi
   return -1
 }
 
-check_microk8s() {
-  function check_microk8s_addon () {
+check::microk8s::disk_space() {
+  local availSpaceSize=$(( $(df /var/snap/ | tail -1 | awk '{print $4}') / 1024 / 1024 ))
+
+  if [[ "${DISK_SIZE_CHECK}" == 'false' ]]; then
+    warn "[Skip] Check disk space"
+  elif (( $availSpaceSize < 20 )) ; then
+    error "[Resource] At least 20G of disk space required by singlenode Microk8s"
+    df /var/snap/ -h
+    return 1
+  fi
+
+  df /var/snap/ -h
+  return 0
+}
+
+check::microk8s() {
+  function check::microk8s::addon () {
     local addon=${1}
-    if ! microk8s.status | grep "${addon}: enabled" > /dev/null ; then
+    if ! microk8s.status --format short | grep "${addon}: enabled" > /dev/null ; then
       error "[Pre-check Failed] microk8s addons: ${addon} is not enabled"
       exit 1
     fi
   }
 
-  if ! check_microk8s_snap; then
+  if ! check::microk8s::snap; then
     error "[Pre-check Failed] Not install microk8s"
     exit 1
   fi
 
-  if ! check_primehub_required_bin; then
+  if ! check::primehub::required_bin; then
     error "[Pre-check Failed] Not install PrimeHub requested app"
     exit 1
   fi
@@ -227,19 +244,19 @@ check_microk8s() {
     error "[Pre-check Failed] microk8s is not running"
   fi
 
-  check_microk8s_addon "rbac"
-  check_microk8s_addon "dns"
-  check_microk8s_addon "storage"
+  check::microk8s::addon "rbac"
+  check::microk8s::addon "dns"
+  check::microk8s::addon "storage"
 }
 
-check_k8s_cluster() {
+check::k8s::cluster() {
   if kubectl version --request-timeout=3 > /dev/null; then
     return 0
   fi
   return -1
 }
 
-check_primehub_required_bin() {
+check::primehub::required_bin() {
   if [[ "$(command -v jq)" != "" && "$(command -v yq)" != "" && "$(command -v helm)" != "" && "$(command -v kubectl)" != "" ]]; then
     return 0
   fi
@@ -343,7 +360,7 @@ install:nfs-common() {
   fi
 }
 
-install::primehub_required_bin() {
+install::primehub::required_bin() {
   local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
   mkdir -p ~/bin
@@ -382,19 +399,25 @@ create::singlenode() {
     exit 1
   fi
 
-  if check_k8s_cluster; then
+  if check::k8s::cluster; then
     if ! is_microk8s_cluster; then
       warn "[Skip] Found running Kubernetes cluster"
       exit 1
     fi
   fi
 
-  if ! check_microk8s_snap; then
-    warn "[Pre-check Failed] Not install microk8s"
-    info "[Install] microk8s"
+  if ! check::microk8s::snap; then
+    warn "[Pre-check] Not install microk8s"
+
+    info "[Check] Available disk space for microk8s"
+    if ! check::microk8s::disk_space; then
+      exit 1
+    fi
+
+    info "[Install] microk8s ${K8S_VERSION}"
     sudo snap install microk8s --classic --channel=${K8S_VERSION}/stable
 
-    if ! check_microk8s_group; then
+    if ! check::microk8s::group; then
       info "[Add] current user $USER to group microk8s"
       sudo usermod -a -G microk8s $USER
 
@@ -403,9 +426,9 @@ create::singlenode() {
     fi
   fi
 
-  if ! check_primehub_required_bin; then
+  if ! check::primehub::required_bin; then
     warn "[Pre-check Failed] Not install PrimeHub requested app"
-    install::primehub_required_bin
+    install::primehub::required_bin
   fi
 
   info "[check] microk8s status"
@@ -484,8 +507,10 @@ EOF
 }
 
 status::singlenode() {
-  check_microk8s
+  check::microk8s
 
+  info "[K8S] Free Disk Space"
+  check::microk8s::disk_space
   info "[K8S] Node Status"
   kubectl get node -o wide
   info "[StorageClass] Storage Class"
@@ -498,7 +523,7 @@ status::singlenode() {
 destroy::singlenode() {
   local CONFIG_PATH="$(primehub_config_path)"
 
-  if ! check_microk8s_snap; then
+  if ! check::microk8s::snap; then
     error "[Pre-check Failed] Not install microk8s"
     exit 1
   fi
@@ -524,7 +549,7 @@ usage_PRIMEHUB_DOMAIN() {
 
 preflight_check() {
   info "[Preflight Check]"
-  check_infrastructure
+  check::infrastructure
   local url=${PRIMEHUB_DOMAIN:-localhost}
 
   if [[ ${DOMAIN_CHECK} == true ]]; then
@@ -893,7 +918,7 @@ diff::prometheus() {
 }
 
 destroy::prometheus() {
-  check_infrastructure
+  check::infrastructure
 
   if ! search_helm_release prometheus-operator; then
     warn "[Skip] No Prometheus installed by helm"
@@ -1073,20 +1098,20 @@ create::primehub() {
   info "[Completed]"
 }
 
-check_infrastructure() {
-  if ! check_primehub_required_bin; then
+check::infrastructure() {
+  if ! check::primehub::required_bin; then
     error "[Pre-check Failed] Not install PrimeHub requested app"
     exit 1
   fi
 
-  if ! check_k8s_cluster; then
+  if ! check::k8s::cluster; then
     error "[Pre-check Failed] No kubernetes cluster running"
     exit 1
   fi
 }
 
-check_primehub() {
-  check_infrastructure
+check::primehub() {
+  check::infrastructure
 
   if ! search_helm_release primehub; then
     error "[Pre-check] Not install PrimeHub"
@@ -1095,7 +1120,7 @@ check_primehub() {
 }
 
 status::primehub() {
-  check_primehub
+  check::primehub
 
   info "[Helm] Primehub"
   helm list -A -f primehub
@@ -1143,7 +1168,7 @@ backup_config() {
 }
 
 destroy::primehub() {
-  check_infrastructure
+  check::infrastructure
 
   verify_action "Primehub" "PrimeHub"
 
@@ -1178,14 +1203,14 @@ destroy::primehub() {
 }
 
 show_license() {
-  check_primehub
+  check::primehub
 
   info "[PrimeHub License]"
   kubectl get license -n ${PRIMEHUB_NAMESPACE} -o yaml | grep status: -A5
 }
 
 apply_license() {
-  check_primehub
+  check::primehub
   local license_path=${LICENSE_PATH:-$(search_primehub_license)}
 
   if [[ ${license_path} == "" ]]; then
@@ -1528,6 +1553,9 @@ main() {
       --skip-domain-check)
         DOMAIN_CHECK=false
       ;;
+      --skip-disk-space-check)
+        DISK_SIZE_CHECK=false
+      ;;
       --beta)
         SHOW_RC_VERSION=true
       ;;
@@ -1564,17 +1592,17 @@ main() {
 
   case "$cmd" in
     create | diff | upgrade)
-      if ! check_primehub_required_bin; then
+      if ! check::primehub::required_bin; then
         warn "[Pre-check Failed] Not install PrimeHub requested app"
-        install::primehub_required_bin
+        install::primehub::required_bin
       fi
       ;;
   esac
 
   case "$cmd" in
     create)
-      if ! check_primehub_required_bin; then
-        install::primehub_required_bin
+      if ! check::primehub::required_bin; then
+        install::primehub::required_bin
       fi
       if [[ "$(command -v curl)" == "" ]]; then
         warn "cURL is required and not installed on this server."
@@ -1592,14 +1620,14 @@ main() {
       config::${target}
     ;;
     diff)
-      if ! check_primehub_required_bin; then
-        install::primehub_required_bin
+      if ! check::primehub::required_bin; then
+        install::primehub::required_bin
       fi
       diff::${target}
     ;;
     upgrade)
-      if ! check_primehub_required_bin; then
-        install::primehub_required_bin
+      if ! check::primehub::required_bin; then
+        install::primehub::required_bin
       fi
       install::${target}
     ;;
@@ -1617,11 +1645,11 @@ main() {
       verify_minimal_resources
     ;;
     required-bin)
-      install::primehub_required_bin
+      install::primehub::required_bin
     ;;
     diagnose)
       preflight_check
-      check_primehub_required_bin
+      check::primehub::required_bin
       diagnose_k8s_cluster
     ;;
     env)
