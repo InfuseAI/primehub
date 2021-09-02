@@ -1038,7 +1038,7 @@ class PrimeHubSpawner(KubeSpawner):
 
     def merge_group_properties(self, key, groups):
         seen = set()
-        return [x for g in groups for x in g[key] if x['name']
+        return [x for g in groups for x in g.get(key, []) if x['name']
                 not in seen and not seen.add(x['name'])]
 
     @property
