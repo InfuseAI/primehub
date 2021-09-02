@@ -522,6 +522,11 @@ usage_PRIMEHUB_DOMAIN() {
   warn "For more detail information, please access https://docs.primehub.io/docs/next/getting_started/install_primehub to get help."
 }
 
+usage_PRIMEHUB_STORAGE_CLASS() {
+  error "Please provide a storageclass which configured in your k8s cluster"
+  warn "To learn the detail of Kubernetes Storage Classes, please reference https://kubernetes.io/docs/concepts/storage/storage-classes/"
+}
+
 preflight_check() {
   info "[Preflight Check]"
   check_infrastructure
@@ -621,12 +626,22 @@ verify_primehub_domain() {
 prepare_primehub_env() {
   local CONFIG_PATH="$(primehub_config_path)"
   local HELM_OVERRIDE_PATH="$CONFIG_PATH/helm_override"
+  PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
 
   if [ ! -f ${CONFIG_PATH}/.env ]; then
     info "[Prepare] PrimeHub require values"
     prepare_env_varible PRIMEHUB_DOMAIN || (usage_PRIMEHUB_DOMAIN; exit 1)
     prepare_env_varible KC_PASSWORD || (info "Will auto generate KC_PASSWORD for you."; true)
     prepare_env_varible PH_PASSWORD || (info "Will auto generate PH_PASSWORD for you."; true)
+    if [[ "${PRIMEHUB_STORAGE_CLASS}" == "" ]]; then
+      info "[Available] K8S StorageClass"
+      kubectl get storageclass
+      prepare_env_varible PRIMEHUB_STORAGE_CLASS
+      if ! kubectl get storageclass ${PRIMEHUB_STORAGE_CLASS} > /dev/null; then
+        usage_PRIMEHUB_STORAGE_CLASS
+        exit 1
+      fi
+    fi
 
     if [[ "$PH_PASSWORD" == "" ]]; then
       PH_PASSWORD=$(openssl rand -hex 16)
@@ -650,7 +665,7 @@ prepare_primehub_env() {
     export KC_SCHEME=${KC_SCHEME:-$PRIMEHUB_SCHEME}
     export KC_USER="keycloak"
     export KC_REALM="primehub"
-    export PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
+    export PRIMEHUB_STORAGE_CLASS
     export PRIMEHUB_NAMESPACE
     export PH_PASSWORD
     export KC_PASSWORD
