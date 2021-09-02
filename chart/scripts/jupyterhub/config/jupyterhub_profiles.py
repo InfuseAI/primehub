@@ -231,10 +231,6 @@ phfs_pvc = get_primehub_config('phfsPVC', '')
 
 grantSudo = get_primehub_config('grantSudo', True)
 
-# Support old group volume convention.
-support_old_group_volume_convention = os.environ.get(
-    'SUPPORT_OLD_GROUP_VOLUME_CONVENTION', False) == "true"
-
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['authorization'] = 'Bearer'
 
@@ -765,36 +761,26 @@ class OIDCAuthenticator(GenericOAuthenticator):
             spawner.environment.update(mlflow_envs)
 
 
-        if support_old_group_volume_convention:
-            self.log.warn('Old group volume convention (Project-${group_name}) is deprecated as of PrimeHub v1.6.0. Use new group volume options instead.')
-            for group in groups:
-                [name, is_project] = re.subn('^[Pp]roject[-_]', '', group['name'])
-                name = re.sub('_', '-', name).lower()
-                if is_project:
-                    yield self.attach_project_pvc(spawner, name, name, '200Gi')
-                    self.chown_extra.append('/project/' + name)
+        for group in groups:
+            if not group.get('enabledSharedVolume', False):
+                continue
+
+            shared_volume_capacity = group.get('sharedVolumeCapacity', None)
+            home_symlink = group.get('homeSymlink', True)
+            launch_group_only = group.get('launchGroupOnly', True)
+
+            if not shared_volume_capacity:
+                raise Exception(
+                    'sharedVolumeCapacity cannot be None when enabledSharedVolume is True.')
+
+            if not launch_group_only or (launch_group_only and launch_group == group['name']):
+                name = re.sub('_', '-', group['name']).lower()
+                # Append Gi to end of shared volume capacity string
+                size = '%sGi' % str(shared_volume_capacity)
+                yield self.attach_project_pvc(spawner, name, name, size)
+                self.chown_extra.append('/project/' + name)
+                if home_symlink:
                     self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
-        else:
-            for group in groups:
-                if not group.get('enabledSharedVolume', False):
-                    continue
-
-                shared_volume_capacity = group.get('sharedVolumeCapacity', None)
-                home_symlink = group.get('homeSymlink', True)
-                launch_group_only = group.get('launchGroupOnly', True)
-
-                if not shared_volume_capacity:
-                    raise Exception(
-                        'sharedVolumeCapacity cannot be None when enabledSharedVolume is True.')
-
-                if not launch_group_only or (launch_group_only and launch_group == group['name']):
-                    name = re.sub('_', '-', group['name']).lower()
-                    # Append Gi to end of shared volume capacity string
-                    size = '%sGi' % str(shared_volume_capacity)
-                    yield self.attach_project_pvc(spawner, name, name, size)
-                    self.chown_extra.append('/project/' + name)
-                    if home_symlink:
-                        self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
 
         if phfs_enabled:
             spawner.volumes.append({'name': 'phfs',
@@ -1052,7 +1038,7 @@ class PrimeHubSpawner(KubeSpawner):
 
     def merge_group_properties(self, key, groups):
         seen = set()
-        return [x for g in groups for x in g[key] if x['name']
+        return [x for g in groups for x in g.get(key, []) if x['name']
                 not in seen and not seen.add(x['name'])]
 
     @property
@@ -1218,6 +1204,7 @@ class PrimeHubSpawner(KubeSpawner):
             {
                 **(group),
                 **({
+                    'datasets': self.merge_group_properties('datasets', [group] + role_groups),
                     'images': self.merge_group_properties('images', [group] + role_groups),
                     'instanceTypes': self.merge_group_properties('instanceTypes', [group] + role_groups)
                 }),
