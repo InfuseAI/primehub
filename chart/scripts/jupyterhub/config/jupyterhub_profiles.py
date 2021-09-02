@@ -1218,6 +1218,7 @@ class PrimeHubSpawner(KubeSpawner):
             {
                 **(group),
                 **({
+                    'datasets': self.merge_group_properties('datasets', [group] + role_groups),
                     'images': self.merge_group_properties('images', [group] + role_groups),
                     'instanceTypes': self.merge_group_properties('instanceTypes', [group] + role_groups)
                 }),
