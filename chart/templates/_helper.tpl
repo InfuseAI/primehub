@@ -97,6 +97,9 @@ Console
 Graphql
 */}}
 {{- define "primehub.graphql.path" -}}/api{{- end -}}
+{{- define "primehub.graphql.url" -}}
+{{- printf "%s%s" (include "primehub.url" .) (include "primehub.graphql.path" .) -}}
+{{- end -}}
 {{- define "primehub.graphql.endpoint" -}}
 http://{{ include "primehub.name" . }}-graphql{{include "primehub.graphql.path" .}}/graphql
 {{- end -}}
