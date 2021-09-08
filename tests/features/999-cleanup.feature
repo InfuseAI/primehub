@@ -41,31 +41,31 @@ Feature: Delete data
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
 
-    When I search "e2e-test-image" in test-id "text-filter-name"
+    When I search "e2e-test-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-image"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-image"
 
     When I click refresh
-    And I search "e2e-test-image" in test-id "text-filter-name"
+    And I search "e2e-test-image" in test-id "text-filter"
     Then I "should not" see list-view table containing row with "e2e-test-image"
 
-    When I search "e2e-test-bs-image" in test-id "text-filter-name"
+    When I search "e2e-test-bs-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-bs-image"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-bs-image"
 
     When I click refresh
-    And I search "e2e-test-bs-image" in test-id "text-filter-name"
+    And I search "e2e-test-bs-image" in test-id "text-filter"
     Then I "should not" see list-view table containing row with "e2e-test-bs-image"
 
-    When I search "e2e-test-error-image" in test-id "text-filter-name"
+    When I search "e2e-test-error-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-error-image"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-error-image"
 
     When I click refresh
-    And I search "e2e-test-error-image" in test-id "text-filter-name"
+    And I search "e2e-test-error-image" in test-id "text-filter"
     Then I "should not" see list-view table containing row with "e2e-test-error-image"
 
     When I wait for 1.0 second
@@ -77,13 +77,13 @@ Feature: Delete data
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
 
-    When I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-image-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-image-gpu"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click refresh
-    And I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    And I search "e2e-test-image-gpu" in test-id "text-filter"
     Then I "should not" see list-view table containing row with "e2e-test-image-gpu"
 
     When I wait for 1.0 second
@@ -95,7 +95,7 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-instance-type"
@@ -109,7 +109,7 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-gpu"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-instance-type-gpu"
@@ -123,7 +123,7 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type-large" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-large" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-large"
     And I wait for 2.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-instance-type-large"
