@@ -107,7 +107,7 @@ spec:
               value: {{ .Values.primehub.keycloak.maxFreeSockets | quote }}
             {{- end }}
             - name: GRAPHQL_ENDPOINT
-              value: {{ include "primehub.graphql.path" . }}/graphql
+              value: {{ include "primehub.graphql.url" . }}/graphql
             - name: GRAPHQL_SVC_ENDPOINT
               value: {{ include "primehub.graphql.endpoint" . }}
             - name: GRAPHQL_PREFIX
