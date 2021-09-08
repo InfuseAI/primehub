@@ -21,18 +21,18 @@ Feature: Admin - Images
   Scenario: Create an image
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
-    | test-id           |
-    | image/name        |
-    | image/displayName |    
+    | test-id     |
+    | name        |
+    | displayName |    
 
     When I type value to element with test-id on the page
-    | test-id           | value                       |
-    | image/name        | e2e-test-image              |
-    | image/displayName | e2e-test-image-display-name |
-    | image/description | e2e-test-description        |
+    | test-id     | value                       |
+    | name        | e2e-test-image              |
+    | displayName | e2e-test-image-display-name |
+    | description | e2e-test-description        |
 
-    And I type "jupyter/datascience-notebook:b90cce83f37b" to element with xpath "//div[@data-testid='image/url']//input"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I type "jupyter/datascience-notebook:b90cce83f37b" to element with xpath "//input[@data-testid='imageUrl']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id    |
     | image      |
@@ -44,7 +44,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image"
 
     When I click edit-button in row contains text "e2e-test-image"
-    Then I should see input in test-id "image/name" with value "e2e-test-image"
+    Then I should see input in test-id "name" with value "e2e-test-image"
 
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
@@ -57,7 +57,7 @@ Feature: Admin - Images
     | //button/span[text()='OK']                         |
 
     And I wait for 1.0 second
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -67,18 +67,18 @@ Feature: Admin - Images
   Scenario: Create an image with latest base notebook
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
-    | test-id           |
-    | image/name        |
-    | image/displayName |
+    | test-id     |
+    | name        |
+    | displayName |
 
     When I type value to element with test-id on the page
-    | test-id           | value                          |
-    | image/name        | e2e-test-bs-image              |
-    | image/displayName | e2e-test-bs-image-display-name |
-    | image/description | e2e-test-bs-description        |
+    | test-id     | value                          |
+    | name        | e2e-test-bs-image              |
+    | displayName | e2e-test-bs-image-display-name |
+    | description | e2e-test-bs-description        |
 
-    And I type "jupyter/base-notebook:latest" to element with xpath "//div[@data-testid='image/url']//input"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I type "jupyter/base-notebook:latest" to element with xpath "//input[@data-testid='imageUrl']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -90,7 +90,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-bs-image"
 
     When I click edit-button in row contains text "e2e-test-bs-image"
-    Then I should see input in test-id "image/name" with value "e2e-test-bs-image"
+    Then I should see input in test-id "name" with value "e2e-test-bs-image"
 
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
@@ -103,7 +103,7 @@ Feature: Admin - Images
     | //button/span[text()='OK']                         |
 
     And I wait for 1.0 second
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -113,18 +113,18 @@ Feature: Admin - Images
   Scenario: Create an error image
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
-    | test-id           |
-    | image/name        |
-    | image/displayName |    
+    | test-id     |
+    | name        |
+    | displayName |    
 
     When I type value to element with test-id on the page
-    | test-id           | value                             |
-    | image/name        | e2e-test-error-image              |
-    | image/displayName | e2e-test-error-image-display-name |
-    | image/description | e2e-test-error-description        |
+    | test-id     | value                             |
+    | name        | e2e-test-error-image              |
+    | displayName | e2e-test-error-image-display-name |
+    | description | e2e-test-error-description        |
 
-    And I type "error-url" to element with xpath "//div[@data-testid='image/url']//input"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I type "error-url" to element with xpath "//input[@data-testid='imageUrl']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -136,7 +136,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-error-image"
 
     When I click edit-button in row contains text "e2e-test-error-image"
-    Then I should see input in test-id "image/name" with value "e2e-test-error-image"
+    Then I should see input in test-id "name" with value "e2e-test-error-image"
 
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
@@ -149,7 +149,7 @@ Feature: Admin - Images
     | //button/span[text()='OK']                         |
 
     And I wait for 1.0 second
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -159,16 +159,16 @@ Feature: Admin - Images
   Scenario: Create a GPU image
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
-    | test-id           |
-    | image/name        |
-    | image/displayName |    
+    | test-id     |
+    | name        |
+    | displayName |    
 
     When I type value to element with test-id on the page
-    | test-id           | value                |
-    | image/name        | e2e-test-image-gpu   |
-    | image/displayName | e2e-test-image-gpu   |
+    | test-id     | value                |
+    | name        | e2e-test-image-gpu   |
+    | displayName | e2e-test-image-gpu   |
 
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -180,21 +180,21 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
-    Then I should see input in test-id "image/name" with value "e2e-test-image-gpu"
-    And I should see input in test-id "image/displayName" with value "e2e-test-image-gpu"
+    Then I should see input in test-id "name" with value "e2e-test-image-gpu"
+    And I should see input in test-id "displayName" with value "e2e-test-image-gpu"
 
     When I type value to element with test-id on the page
-    | test-id           | value                           |
-    | image/displayName | e2e-test-image-display-name-gpu |
-    | image/description | e2e-test-image-description-gpu  |
+    | test-id     | value                           |
+    | displayName | e2e-test-image-display-name-gpu |
+    | description | e2e-test-image-description-gpu  |
 
     And I click element with xpath on the page
     | xpath                               |
     | //div[@data-testid='image/type']//i |
     | //li[text()='GPU']                  |
 
-    And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//div[@data-testid='image/url']//input"
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//input[@data-testid='imageUrl']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -206,7 +206,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
-    Then I should see input in test-id "image/name" with value "e2e-test-image-gpu"
+    Then I should see input in test-id "name" with value "e2e-test-image-gpu"
 
     When I click element with test-id "connect-button"
     And I wait for 1.0 second
@@ -219,7 +219,7 @@ Feature: Admin - Images
     | //button/span[text()='OK']                         |
 
     And I wait for 1.0 second
-    And I click element with xpath "//a/span[text()='Confirm']"
+    And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id      |
     | image-active |
