@@ -3,8 +3,138 @@
 ## Upcoming
 ### What's New
 
+## 3.8.0
+### What's New
+
+- Support 1-click install PrimeHub on AWS.
+- Built-in image customize tool: Right now we can manual build image in image creating page.
+  - Previously, our custom image builder is scattered around multiple pages.
+  - In 3.8.0, we've consolidated the function into one single page for ease of use.
+  - For users of the old custom image builder: please use the command `kubectl -n hub get imagespec -o yaml > /tmp/imagespecs.yaml` to export your images
+- Python SDK/CLI wrapper for PrimeHub GraphQL API.
+
 ### Deprecated
-- Maintenance notebook
+
+- Maintenance notebook will remove next version.
+
+### Available in CE
+
+#### Extend PHFS file browser to support rendering notebooks
+
+- Jupyter notebook viewer (ch19097)
+
+#### Drop Canner Dependencies
+
+- Make image, instancetype, dataset default global in the creating page (ch19533)
+- Drop Canner: Groups (ch16908)
+- Drop Canner: Instance Types (ch16901)
+- Drop Canner: Datasets (ch16902)
+- Drop Canner: Users (ch16909)
+- Drop Canner: usage report (ch16906)
+- Drop Canner: secret (ch16904)
+- Prevent to show fullscreen error if something error in admin portal page. (ch20171)
+- Secret requires to check the name is DNS-compatible (ch19790)
+- [Feature] variable basename for breadcrumbs share component (ch19710)
+- [Bugfix] Drop Canner: System Settings (ch19618)
+- [Bugfix] Default page of Admin portal changed from Groups to Image (ch20613)
+- [Bugfix] Drop Canner: Secrets (ch20013)
+
+#### AWS one-click install web action
+
+- Use cloudfront to solve the untrusted certificate problem (ch19658)
+- Provide custom PrimeHub instanceType for AWS env (ch20215)
+- Fix JupyterHub SSH Server show the ELB domain instead of using cloudFront domain. (ch20507)
+- Allows to override the default instancetypes (ch20257)
+- Change default node pool for cpu from  0 to 1 (ch20265)
+- Make EKS CDK can eat primehub chart version by config option (ch20142)
+- Disable group quota for default group (phusers) (ch19875)
+- Support ECR as registry (ch19723)
+- Design and implement CloudFormation template for our production use of one click button (ch18670)
+- Support to customize the different cpu/gpu instance types in cf template (ch19882)
+- Enlarge the instance disk size (ch19884)
+- Investigate why the cpu request/limit raise since late jul (ch19703)
+- [AWS-CDK]  Enable EFS CSI dynamic provisioning in EKS cluster, and configure it on group volume storage class (ch18728)
+- [AWS-CDK]  Enable PHStore and rclone to use AWS S3 endpoint directly use IAM role instead of using account/secret key to access S3 API (ch18729)
+- [AWS-CDK]  Support all the AWS region, currently we only support Tokyo region (ch18727)
+
+#### PrimeHub CLI/SDK
+
+- CLI/SDK notebook (ch19232)
+- CLI/SDK Basic Functions (ch19227)
+- CLI/SDK print human friendly format by default (ch19455)
+- Command primehub group doesn't need to show images, instancetypes, datasets. (ch19676)
+- Show resources not found (ch19902)
+- CLI support no argument option (ch19722)
+- Python CLI and SDK config search logic (ch19231)
+
+#### Polishing Apps
+
+- [PHApp] K8s native configurability - Init container (ch18974)
+- [PHApp] Persistence with Customize Group Volume Mount Path (ch18972)
+
+#### PrimeHub App
+
+- PrimeHub App: Streamlit supports external package dependency (ch19646)
+
+#### Build Image: Single Image Repository Support
+
+- Image Builder: Single Repository Support (ch19650)
+
+
+#### UI/UX Inconsistencies - 2021Q3
+
+- Different Cell/Block/Card Style (ch19094)
+- Different ways of showing datasets (ch19102)
+
+#### Miscellaneous
+
+- Allow SysAdmin to do what GroupAdmin can do (ch19375)
+- Modify example notebook to be cpu/gpu agnostic (ch20357)
+- Label-studio app: use fixed login credentials (ch19946)
+- Email Collector for self-served user (ch20220)
+- Global dataset cannot be found in spawner/job page (ch20019)
+- Make the type of secret to be read-only in edit mode (ch19519)
+- Fix cudnn version to match cuda 11 (ch20193)
+- Clarify the Kubernetes support version as PrimeHub v3.6+ (ch18968)
+- [Bugfix] PrimeHub Deploy: There should be no "Shared Volume" in the group admin setting (ch19577)
+- [Bugfix] primehub-aws-cdk one click can not create primehub ce cluster (ch20188)
+- [Bugfix] the layout of monitoring tab is broken (ch19927)
+- [Bugfix] Incorrect display of license usage when max limit is -1 (ch19870)
+- [Bugfix] System setting "Default User Volume Capacity" change issue (ch19832)
+- [Bugfix] In PrimeHub Deploy, the admin portal should not show image, image buidler, datasets, admin notebook. (ch19580)
+- [Bugfix] PrimeHub CE: When i click admin > systems, it will show error message (ch19584)
+- [Bugfix] Miss Intl module in cms (ch19331)
+
+### EE Only
+
+#### PrimeHub CLI/SDK
+
+- Enhance the download behavior for files and job-artifact (ch19672)
+- CLI/SDK for Deployments (ch19230)
+- CLI/SDK Job artifact and files (ch19229)
+- CLI/SDK for Jobs/Schedules (ch19228)
+
+#### Submit Notebook as Job
+
+- [Bugfix] Notebook JSON is invalid: Additional properties are not allowed ('id' was unexpected) (ch19515)
+
+#### PrimeHub Install
+
+- [Bugfix] primehub-install script failed to process PRIMEHUB_STORAGE_CLASS when user's customer don't have default storage class. (ch20737)
+
+#### Model Deployment
+
+- Enhancement of "model deployment # limit per group" (ch19183)
+- the update action can bypass the model deployment maximum constraint (ch19901)
+- [Bugfix] Server error while deleting a deployment (ch19855)
+- [Bugfix] Failed to update deployment when the number of deployments is equal to maximum deployment limitation (ch20480)
+- [Bugfix] PriemHub EE unlicensed can support to create 1 deployment (ch19235)
+
+#### Miscellaneous
+
+- Don't show “GraphQL error: ….” when creating group in EE-Trial (ch20255)
+- [Bugfix] the 'maximum deployment' should not include the stopped deployment (ch19290)
+- [Bugfix] Primehub-install version don't show alpha release version (ch20648)
 
 ## 3.7.2
 ### What's New
