@@ -22,16 +22,18 @@ Feature: Admin - Instance Types
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
     | test-id                  |
-    | instanceType/name        |
-    | instanceType/displayName |    
+    | name                     |
+    | displayName              |
 
     When I type value to element with test-id on the page
     | test-id                  | value                               |
-    | instanceType/name        | e2e-test-instance-type              |
-    | instanceType/displayName | e2e-test-instance-type-display-name |
-    | instanceType/description | e2e-test-description                |
-    | instanceType/cpuLimit    | 0.5                                 |
+    | name                     | e2e-test-instance-type              |
+    | displayName              | e2e-test-instance-type-display-name |
+    | description              | e2e-test-description                |
+    | CPU Limit                | 0.5                                 |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -40,15 +42,17 @@ Feature: Admin - Instance Types
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an instance type to an existing group
-    When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type"
 
     When I click edit-button in row contains text "e2e-test-instance-type"
-    Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type"
+    And I wait for 0.5 second
+    Then I should see input in test-id "name" with value "e2e-test-instance-type"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "Global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
@@ -56,6 +60,8 @@ Feature: Admin - Instance Types
     | //td[contains(text(), 'e2e-test-group')]/..//input |
     | //button/span[text()='OK']                         |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -67,15 +73,16 @@ Feature: Admin - Instance Types
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
     | test-id                  |
-    | instanceType/name        |
-    | instanceType/displayName |    
+    | name                     |
+    | displayName              |
 
     When I type value to element with test-id on the page
     | test-id                  | value                      |
-    | instanceType/name        | e2e-test-instance-type-gpu |
-    | instanceType/displayName | e2e-test-instance-type-gpu |
-    | instanceType/cpuLimit    | 0.5                        |
+    | name                     | e2e-test-instance-type-gpu |
+    | displayName              | e2e-test-instance-type-gpu |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -84,19 +91,22 @@ Feature: Admin - Instance Types
 
   @regression @prep-data
   Scenario: Update an GPU instance type
-    When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I click edit-button in row contains text "e2e-test-instance-type-gpu"
+    And I wait for 0.5 second
     Then I should see value of element with test-id on the page
     | test-id                  | value                      |
-    | instanceType/name        | e2e-test-instance-type-gpu |
-    | instanceType/displayName | e2e-test-instance-type-gpu |
+    | name                     | e2e-test-instance-type-gpu |
+    | displayName              | e2e-test-instance-type-gpu |
 
     When I type value to element with test-id on the page
     | test-id                  | value                                   |
-    | instanceType/displayName | e2e-test-instance-type-display-name-gpu |
-    | instanceType/description | e2e-test-instance-type-description-gpu  |
-    | instanceType/cpuLimit    | 1                                       |
+    | displayName              | e2e-test-instance-type-display-name-gpu |
+    | description              | e2e-test-instance-type-description-gpu  |
+    | GPU Limit                | 1                                       |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -105,15 +115,17 @@ Feature: Admin - Instance Types
 
   @regression @prep-data
   Scenario: Connect an GPU instance type to an existing group
-    When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type-gpu"
 
     When I click edit-button in row contains text "e2e-test-instance-type-gpu"
-    Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type-gpu"
+    And I wait for 0.5 second
+    Then I should see input in test-id "name" with value "e2e-test-instance-type-gpu"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "Global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
@@ -121,6 +133,8 @@ Feature: Admin - Instance Types
     | //td[contains(text(), 'e2e-test-group')]/..//input |
     | //button/span[text()='OK']                         |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -145,15 +159,17 @@ Feature: Admin - Instance Types
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
     | test-id                  |
-    | instanceType/name        |
-    | instanceType/displayName |
+    | name                     |
+    | displayName              |
 
     When I type value to element with test-id on the page
     | test-id                  | value                        |
-    | instanceType/name        | e2e-test-instance-type-large |
-    | instanceType/displayName | e2e-test-instance-type-large |
-    | instanceType/cpuLimit    | 3.0                          |
+    | name                     | e2e-test-instance-type-large |
+    | displayName              | e2e-test-instance-type-large |
+    | CPU Limit                | 3.0                          |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -162,15 +178,17 @@ Feature: Admin - Instance Types
 
   @regression @prep-data @error-check
   Scenario: Connect an instance type that exceeds resource quota to an existing group
-    When I search "e2e-test-instance-type-large" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-large" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type-large"
 
     When I click edit-button in row contains text "e2e-test-instance-type-large"
-    Then I should see input in test-id "instanceType/name" with value "e2e-test-instance-type-large"
+    And I wait for 0.5 second
+    Then I should see input in test-id "name" with value "e2e-test-instance-type-large"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "Global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
@@ -178,6 +196,8 @@ Feature: Admin - Instance Types
     | //td[contains(text(), 'e2e-test-group')]/..//input |
     | //button/span[text()='OK']                         |
 
+    And I click element with xpath "//div[text()='Node Selector']"
+    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
