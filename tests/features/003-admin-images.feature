@@ -40,16 +40,17 @@ Feature: Admin - Images
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image to an existing group
-    When I search "e2e-test-image" in test-id "text-filter-name"
+    When I search "e2e-test-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image"
 
     When I click edit-button in row contains text "e2e-test-image"
     Then I should see input in test-id "name" with value "e2e-test-image"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
-    Then I "should" see list-view table containing row with "e2e-test-image"
+    And I search "e2e-test-group" in test-id "text-filter"
+    Then I "should" see list-view table containing row with "e2e-test-group"
 
     And I click element with xpath on the page
     | xpath                                              |
@@ -86,15 +87,16 @@ Feature: Admin - Images
 
   @regression @sanity @smoke @prep-data
   Scenario: Connect an image with latest base notebook to an existing group
-    When I search "e2e-test-bs-image" in test-id "text-filter-name"
+    When I search "e2e-test-bs-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-bs-image"
 
     When I click edit-button in row contains text "e2e-test-bs-image"
     Then I should see input in test-id "name" with value "e2e-test-bs-image"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
@@ -132,15 +134,16 @@ Feature: Admin - Images
 
   @regression @error-check @prep-data
   Scenario: Connect an error image to an existing group
-    When I search "e2e-test-error-image" in test-id "text-filter-name"
+    When I search "e2e-test-error-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-error-image"
 
     When I click edit-button in row contains text "e2e-test-error-image"
     Then I should see input in test-id "name" with value "e2e-test-error-image"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
@@ -164,9 +167,9 @@ Feature: Admin - Images
     | displayName |    
 
     When I type value to element with test-id on the page
-    | test-id     | value                |
-    | name        | e2e-test-image-gpu   |
-    | displayName | e2e-test-image-gpu   |
+    | test-id     | value              |
+    | name        | e2e-test-image-gpu |
+    | displayName | e2e-test-image-gpu |
 
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
@@ -176,7 +179,7 @@ Feature: Admin - Images
 
   @regression @prep-data
   Scenario: Update a GPU image
-    When I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-image-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
@@ -189,9 +192,9 @@ Feature: Admin - Images
     | description | e2e-test-image-description-gpu  |
 
     And I click element with xpath on the page
-    | xpath                               |
-    | //div[@data-testid='image/type']//i |
-    | //li[text()='GPU']                  |
+    | xpath                                |
+    | //div[@id='instance-type-form_type'] |
+    | //li[text()='GPU']                   |
 
     And I type "infuseai/docker-stacks:base-notebook-2d701645-gpu" to element with xpath "//input[@data-testid='imageUrl']"
     And I click element with test-id "confirm-button"
@@ -202,15 +205,16 @@ Feature: Admin - Images
 
   @regression @prep-data
   Scenario: Connect a GPU image to an existing group
-    When I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-image-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
     Then I should see input in test-id "name" with value "e2e-test-image-gpu"
 
-    When I click element with test-id "connect-button"
+    When I click element with test-id "global"
+    And I click element with test-id "connect-button"
     And I wait for 1.0 second
-    And I search "e2e-test-group" in test-id "text-filter-name"
+    And I search "e2e-test-group" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     And I click element with xpath on the page
