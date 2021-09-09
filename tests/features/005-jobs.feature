@@ -7,7 +7,7 @@ Feature: Job Submission
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
 
@@ -69,7 +69,7 @@ Feature: Job Submission
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    # And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    # And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
  
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
@@ -91,7 +91,7 @@ Feature: Job Submission
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    # And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    # And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
     When I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
@@ -127,7 +127,7 @@ Feature: Job Submission
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: 0, 0, 0
 
   @wip @regression
   Scenario: User can create job with GPU

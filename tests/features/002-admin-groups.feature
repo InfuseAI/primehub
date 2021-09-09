@@ -86,7 +86,7 @@ Feature: Admin - Groups
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    Then I should see group resources with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
+    Then I should see group resource data with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
 
   @regression @sanity @smoke @prep-data
   Scenario: Create another group

@@ -8,7 +8,7 @@ Feature: Job Schedule
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
 
@@ -41,7 +41,7 @@ Feature: Job Schedule
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
 
@@ -79,7 +79,7 @@ Feature: Job Schedule
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Schedule" in sidebar menu
     Then I am on the PrimeHub console "Schedule" page
 

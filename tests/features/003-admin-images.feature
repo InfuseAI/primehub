@@ -44,7 +44,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image"
 
     When I click edit-button in row contains text "e2e-test-image"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image"
 
     When I click element with test-id "global"
@@ -92,7 +92,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-bs-image"
 
     When I click edit-button in row contains text "e2e-test-bs-image"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-bs-image"
 
     When I click element with test-id "global"
@@ -140,7 +140,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-error-image"
 
     When I click edit-button in row contains text "e2e-test-error-image"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-error-image"
 
     When I click element with test-id "global"
@@ -186,7 +186,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image-gpu"
     And I should see input in test-id "displayName" with value "e2e-test-image-gpu"
 
@@ -213,7 +213,7 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click edit-button in row contains text "e2e-test-image-gpu"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image-gpu"
 
     When I click element with test-id "global"

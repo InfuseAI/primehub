@@ -7,7 +7,7 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Deployments" in sidebar menu
     Then I am on the PrimeHub console "Deployments" page
 
@@ -66,7 +66,7 @@ Feature: Model Deployment
     And I click escape
 
     When I choose "Home" in sidebar menu
-    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
   @regression @error-check
   Scenario: User can't set the invalid/empty/duplicate deployment ID
@@ -158,7 +158,7 @@ Feature: Model Deployment
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: -0.5, -1.0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: -0.5, -1.0, 0
    
   @regression
   Scenario: User can start a stopped deployment
@@ -205,7 +205,7 @@ Feature: Model Deployment
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: 0, 0, 0
 
   @regression
   Scenario: Model URI: User can create deployment
@@ -356,4 +356,4 @@ Feature: Model Deployment
     Then I am on the PrimeHub console "Home" page
     And I wait for 1.0 second
     And I click refresh
-    # And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
+    # And I should see group resource data with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
