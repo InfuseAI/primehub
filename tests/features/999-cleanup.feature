@@ -17,20 +17,20 @@ Feature: Delete data
     When I search "e2e-test-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-user"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-user"
+    Then I "should not" see list-view table containing row with "e2e-test-user"
 
     When I click refresh
     And I search "e2e-test-user" in test-id "text-filter-username"
-    Then list-view table "should not" contain row with "e2e-test-user"
+    Then I "should not" see list-view table containing row with "e2e-test-user"
 
     When I search "e2e-test-another-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-another-user"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-another-user"
+    Then I "should not" see list-view table containing row with "e2e-test-another-user"
 
     When I click refresh
     And I search "e2e-test-another-user" in test-id "text-filter-username"
-    Then list-view table "should not" contain row with "e2e-test-another-user"
+    Then I "should not" see list-view table containing row with "e2e-test-another-user"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -41,31 +41,32 @@ Feature: Delete data
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
 
-    When I search "e2e-test-image" in test-id "text-filter-name"
+    When I search "e2e-test-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-image"
+    Then I "should not" see list-view table containing row with "e2e-test-image"
 
     When I click refresh
-    And I search "e2e-test-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-image"
+    And I search "e2e-test-image" in test-id "text-filter"
+    Then I "should not" see list-view table containing row with "e2e-test-image"
 
-    When I search "e2e-test-bs-image" in test-id "text-filter-name"
+    When I search "e2e-test-bs-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-bs-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-bs-image"
-    When I click refresh
-    And I search "e2e-test-bs-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-bs-image"
+    Then I "should not" see list-view table containing row with "e2e-test-bs-image"
 
-    When I search "e2e-test-error-image" in test-id "text-filter-name"
+    When I click refresh
+    And I search "e2e-test-bs-image" in test-id "text-filter"
+    Then I "should not" see list-view table containing row with "e2e-test-bs-image"
+
+    When I search "e2e-test-error-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-error-image"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-error-image"
+    Then I "should not" see list-view table containing row with "e2e-test-error-image"
 
     When I click refresh
-    And I search "e2e-test-error-image" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-error-image"
+    And I search "e2e-test-error-image" in test-id "text-filter"
+    Then I "should not" see list-view table containing row with "e2e-test-error-image"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -76,14 +77,14 @@ Feature: Delete data
     When I click "Images" in admin dashboard
     Then I am on the admin dashboard "Images" page
 
-    When I search "e2e-test-image-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-image-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-image-gpu"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-image-gpu"
+    Then I "should not" see list-view table containing row with "e2e-test-image-gpu"
 
     When I click refresh
-    And I search "e2e-test-image-gpu" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-image-gpu"
+    And I search "e2e-test-image-gpu" in test-id "text-filter"
+    Then I "should not" see list-view table containing row with "e2e-test-image-gpu"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -94,10 +95,10 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-instance-type"
+    Then I "should not" see list-view table containing row with "e2e-test-instance-type"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -108,10 +109,10 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type-gpu" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-gpu"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-instance-type-gpu"
+    Then I "should not" see list-view table containing row with "e2e-test-instance-type-gpu"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -122,10 +123,10 @@ Feature: Delete data
     When I click "Instance Types" in admin dashboard
     Then I am on the admin dashboard "Instance Types" page
 
-    When I search "e2e-test-instance-type-large" in test-id "text-filter-name"
+    When I search "e2e-test-instance-type-large" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-large"
     And I wait for 2.0 seconds
-    Then list-view table "should not" contain row with "e2e-test-instance-type-large"
+    Then I "should not" see list-view table containing row with "e2e-test-instance-type-large"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu
@@ -141,14 +142,14 @@ Feature: Delete data
     And I wait for 1.0 second
     And I click refresh
     And I search "e2e-test-group" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-group"
+    Then I "should not" see list-view table containing row with "e2e-test-group"
 
     When I search "e2e-test-another-group" in test-id "text-filter-name"
     And I delete a row with text "e2e-test-another-group"
     And I wait for 1.0 second
     And I click refresh
     And I search "e2e-test-another-group" in test-id "text-filter-name"
-    Then list-view table "should not" contain row with "e2e-test-another-group"
+    Then I "should not" see list-view table containing row with "e2e-test-another-group"
 
     When I wait for 1.0 second
     And I choose "Logout" in top-right menu

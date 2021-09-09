@@ -181,7 +181,7 @@ class World {
     return (exist.includes("not") === !ui_element) ? true : false;
   }
 
-  async inputText(selector, text) {
+  async inputTextWithE2ESuffix(selector, text) {
     await this.page.waitForSelector(selector, {visible: true});
     await this.page.focus(selector);
     await this.page.$eval(selector, el => el.setSelectionRange(0, el.value.length));
