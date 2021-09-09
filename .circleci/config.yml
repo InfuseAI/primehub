@@ -326,18 +326,24 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
+      - e2e_smoke_ce:
+          filters:
+            branches:
+              ignore:
+                - master
+      - e2e_smoke_ee:
+          filters:
+            branches:
+              ignore:
+                - master
+      - e2e_sanity_ee:
+          filters:
+            branches:
+              ignore:
+                - master
       - build:
           filters:
             tags:
               only: /v.*/
             branches:
               ignore: /.*/
-      #- build_vm:
-          #context: build-vm
-          #requires:
-            #- build
-          #filters:
-            #tags:
-              #only: /v.*/
-            #branches:
-              #ignore: /.*/
