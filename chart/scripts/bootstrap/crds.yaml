@@ -6,8 +6,8 @@ spec:
   displayName: "base-notebook"
   description: "base notebook"
   type: "both"
-  url: infuseai/docker-stacks:base-notebook-0002780c
-  urlForGpu: infuseai/docker-stacks:base-notebook-0002780c-gpu
+  url: infuseai/docker-stacks:base-notebook-1eb85fe1
+  urlForGpu: infuseai/docker-stacks:base-notebook-1eb85fe1-gpu
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
@@ -17,8 +17,8 @@ spec:
   displayName: "PyTorch 1.8.0 (Python 3.7)"
   description: "PyTorch 1.8.0 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:pytorch-notebook-v1-8-0-0002780c
-  urlForGpu: infuseai/docker-stacks:pytorch-notebook-v1-8-0-0002780c-gpu-cuda-11
+  url: infuseai/docker-stacks:pytorch-notebook-v1-8-0-1eb85fe1
+  urlForGpu: infuseai/docker-stacks:pytorch-notebook-v1-8-0-1eb85fe1-gpu-cuda-11
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
@@ -28,8 +28,8 @@ spec:
   displayName: "TensorFlow 1.15.4 (Python 3.7)"
   description: "TensorFlow 1.15.4 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-0002780c
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-0002780c-gpu
+  url: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1-gpu
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
@@ -39,5 +39,5 @@ spec:
   displayName: "TensorFlow 2.5.0 (Python 3.7)"
   description: "TensorFlow 2.5.0 (Python 3.7)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-v2-5-0-0002780c
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v2-5-0-0002780c-gpu-cuda-11
+  url: infuseai/docker-stacks:tensorflow-notebook-v2-5-0-1eb85fe1
+  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v2-5-0-1eb85fe1-gpu-cuda-11
