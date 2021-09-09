@@ -9,7 +9,7 @@ Feature: Hub
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    And I keep group resources
+    And I keep group resource data
     And I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
 
@@ -38,21 +38,19 @@ Feature: Hub
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
   @regression @sanity @smoke
   Scenario: User can stop the JupyterLab server
     When I get the iframe object
     And I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
+    And I wait for 2.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
-    #And I check the group warning message against group "e2e-test-group"
-    #And I switch group
-    #And I check the group warning message against group "e2e-test-group"
+    
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
@@ -78,20 +76,18 @@ Feature: Hub
   Scenario: User can stop the JupyterLab server with group image
     When I get the iframe object
     And I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
+    And I wait for 2.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
-    #And I check the group warning message against group "e2e-test-group"
-    #//And I switch group
-    #And I check the group warning message against group "e2e-test-group"
+ 
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
 
-  @wip @regression
+  @regression
   Scenario: User can start the TensorBoard
     When I get the iframe object
     And I go to the spawner page
@@ -101,19 +97,23 @@ Feature: Hub
     Then I can see the spawning page and wait for notebook started
 
     When I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
+    And I wait for 2.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
 
     When I click the "Tensorboard" card in the launcher
     And I wait for 3.0 seconds
+    And I switch to "JupyterLab" tab
     Then I "should" see element with xpath "//div[text()='Tensorboard 1']"
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
-    And I stop my server in hub
 
-  @wip @regression
+    When I stop my server in hub
+    And I get the iframe object
+    Then I "should" see element with xpath "//div//a[@id='start']" in hub
+
+  @regression
   Scenario: User can start/stop the JupyterLab server with latest jupyter/base-notebook
     When I get the iframe object
     And I go to the spawner page
@@ -123,13 +123,16 @@ Feature: Hub
     Then I can see the spawning page and wait for notebook started
 
     When I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
+    And I wait for 2.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
-    And I stop my server in hub
+
+    When I stop my server in hub
+    And I get the iframe object
+    Then I "should" see element with xpath "//div//a[@id='start']" in hub
 
   @wip @regression
   Scenario: User can start/stop the JupyterLab server with GPU
@@ -143,21 +146,20 @@ Feature: Hub
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 1.0, 1.0, 1.0
+    And I should see group resource data with diff of CPU, memory & GPU: 1.0, 1.0, 1.0
 
-    When I keep group resources
+    When I keep group resource data
     When I choose "Notebooks" in sidebar menu
     Then I am on the PrimeHub console "Notebooks" page
 
     When I get the iframe object
     And I click element with selector "#start" in hub
-    And I wait for 4.0 seconds
+    And I wait for 2.0 seconds
     And I switch to "JupyterLab" tab
     Then I can see the JupyterLab page
 
     When I click element with xpath "//div[text()='File']"
     And I click element with xpath "//div[@class='lm-Menu-itemLabel p-Menu-itemLabel' and text()='Close All Tabs']"
-    #When I click element with xpath "//button[@title='New Launcher']"
     And I click the "Terminal" card in the launcher
     And I input "nvidia-smi > tmp.txt" command in the terminal
     And I open "tmp.txt" file in the file browser
@@ -169,12 +171,15 @@ Feature: Hub
     And I check the group warning message against group "e2e-test-group"
     And I switch group
     And I check the group warning message against group "e2e-test-group"
-    And I stop my server in hub
+
+    When I stop my server in hub
+    And I get the iframe object
+    Then I "should" see element with xpath "//div//a[@id='start']" in hub
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
     And I choose group with name "e2e-test-group-display-name"
-    And I should see group resources with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
+    And I should see group resource data with diff of CPU, memory & GPU: -1.0, -1.0, -1.0
 
   @regression @error-check
   Scenario: User can cancel spawning while chose error image
@@ -195,4 +200,4 @@ Feature: Hub
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resources with diff of CPU, memory & GPU: 0, 0, 0
+    And I should see group resource data with diff of CPU, memory & GPU: 0, 0, 0
