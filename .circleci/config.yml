@@ -304,10 +304,18 @@ workflows:
   version: 2
   release_builds:
     jobs:
-      - e2e_sanity_ee:
+      - unit_test
+      - verify_image_list
+      - e2e_smoke_ce
+      - e2e_smoke_ee:
           filters:
             branches:
               ignore:
+                - master
+      - e2e_sanity_ee:
+          filters:
+            branches:
+              only:
                 - master
       - build:
           filters:
@@ -315,14 +323,3 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-  daily_workflow:
-    triggers:
-      - schedule:
-          cron: "0 22 * * 0-6"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - e2e_regression_ee_a_k3d
-      - e2e_regression_ee_b_k3d
