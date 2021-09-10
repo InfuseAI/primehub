@@ -212,7 +212,7 @@ jobs:
           environment:
             PRIMEHUB_MODE: ee
             TEST_TYPE: regression
-            FEATURE: hub.jobs.schedule
+            FEATURE: hub.jobs.schedule.edition
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
@@ -311,6 +311,11 @@ workflows:
           filters:
             branches:
               ignore:
+                - master
+      - e2e_sanity_ee:
+          filters:
+            branches:
+              only:
                 - master
       - build:
           filters:

@@ -38,7 +38,7 @@ Feature: Hub
 
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
-    And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
+    #And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
   @regression @sanity
   Scenario: User can stop the JupyterLab server
