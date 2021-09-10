@@ -19,7 +19,7 @@ Feature: Hub
     And I go to the spawner page
     Then I can see advanced settings
 
-  @regression @sanity @smoke
+  @regression @sanity
   Scenario: User can start the JupyterLab server
     When I get the iframe object
     And I go to the spawner page
@@ -40,7 +40,7 @@ Feature: Hub
     Then I am on the PrimeHub console "Home" page
     And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
-  @regression @sanity @smoke
+  @regression @sanity
   Scenario: User can stop the JupyterLab server
     When I get the iframe object
     And I click element with selector "#start" in hub
