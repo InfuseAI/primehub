@@ -462,7 +462,7 @@ defineStep("I should see user limits with CPU, Memory, GPU is {string}", async f
   }
 });
 
-defineStep("I should see group resources with CPU {string}, Memory {string}, GPU {string}", async function(cpu, mem, gpu) {
+defineStep("I should see group resource data with CPU {string}, Memory {string}, GPU {string}", async function(cpu, mem, gpu) {
   const input = {
     'CPU': cpu.split(','),
     'Memory': mem.split(','),
@@ -492,7 +492,7 @@ defineStep("I should see group resources with CPU {string}, Memory {string}, GPU
   throw new Error('Group resources are incorrect, pls check screenshot');
 });
 
-defineStep(/^I (?:keep|should see) group resources(?: with diff of CPU, memory & GPU: (.*), (.*), (.*))?$/, async function(cpuDiff, memDiff, gpuDiff) {
+defineStep(/^I (?:keep|should see) group resource data(?: with diff of CPU, memory & GPU: (.*), (.*), (.*))?$/, async function(cpuDiff, memDiff, gpuDiff) {
   const data = ['CPU', 'Memory', 'GPU']
   let lastUsed = [], lastQuota = [], diff = [];
   let row, text;
