@@ -309,8 +309,6 @@ workflows:
             branches:
               ignore:
                 - master
-      - e2e_regression_ee_a_k3d
-      - e2e_regression_ee_b_k3d
       - build:
           filters:
             tags:
