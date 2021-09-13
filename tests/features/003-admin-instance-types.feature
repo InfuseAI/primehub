@@ -32,8 +32,8 @@ Feature: Admin - Instance Types
     | description              | e2e-test-description                |
 
     And I type value to element with xpath on the page
-    | xpath                                                          | value |
-    | //label[contains(., 'CPU Limit)]/following-sibling::div//input | 0.5   |
+    | xpath                                                           | value |
+    | //label[contains(., 'CPU Limit')]/following-sibling::div//input | 0.5   |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
@@ -108,8 +108,8 @@ Feature: Admin - Instance Types
     | description              | e2e-test-instance-type-description-gpu  |
 
     And I type value to element with xpath on the page
-    | xpath                                                          | value |
-    | //label[contains(., 'GPU Limit)]/following-sibling::div//input | 1     |
+    | xpath                                                           | value |
+    | //label[contains(., 'GPU Limit')]/following-sibling::div//input | 1     |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
@@ -174,8 +174,8 @@ Feature: Admin - Instance Types
     | displayName              | e2e-test-instance-type-large |
 
     And I type value to element with xpath on the page
-    | xpath                                                          | value |
-    | //label[contains(., 'CPU Limit)]/following-sibling::div//input | 3.0   |
+    | xpath                                                           | value |
+    | //label[contains(., 'CPU Limit')]/following-sibling::div//input | 3.0   |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
