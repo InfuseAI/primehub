@@ -185,7 +185,7 @@ fi
 if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
   tags="(@sanity and @ee) and (not @wip)"
 fi
-if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${SET}" == "admin" ]]; then
+if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "admin" ]]; then
   tags="(@regression and @ee) and (@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin) and (not @wip)"
 fi
 if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "hub.jobs.schedule.edition" ]]; then
