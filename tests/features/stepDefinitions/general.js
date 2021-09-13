@@ -133,7 +133,7 @@ defineStep("I switch to {string} tab", async function(tabname) {
     'Home': `-${this.E2E_SUFFIX}/home`,
     'Apps': `-${this.E2E_SUFFIX}/apps`,
     'JobDetail': `-${this.E2E_SUFFIX}/job/`,
-    'JupyterLab': `/user/${this.USERNAME}/lab`,
+    'JupyterLab': `/user/${this.PH_USER_USERNAME}/lab`,
     'Notebooks': `-${this.E2E_SUFFIX}/hub`,
     'NotebooksAdmin': 'console/admin/jupyterhub',
     'UserGuide': 'https://docs.primehub.io'
@@ -370,7 +370,7 @@ defineStep("I click button of {string}", async function(title) {
 
 defineStep("I click button of {string} of item {string} to wait for {string} dialogue", async function(action, string, dialog) {
   //tr[contains(.,'gabriel')]//button[contains(*,'Rerun')]
-  const buttonXpath = `//tr//a[contains(.,'$string')]/../following-sibling::td//button//span[contains(.,'${action}')]`;
+  const buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//span[contains(.,'${action}')]`;
   const dialogXpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${dialog}')]`;
   let ret;
   for (retryCount=0; retryCount < 3; retryCount++) {

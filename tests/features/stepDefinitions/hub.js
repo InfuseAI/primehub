@@ -235,12 +235,12 @@ defineStep("I stop my server in hub", async function() {
 
 defineStep("I access my server in notebooks admin", async function() {
   await this.clickElementByXpath(
-    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'access server')]`, context = this.context);
+    `//tr[@data-user='${this.PH_USER_USERNAME}']//a[contains(text(), 'access server')]`, context = this.context);
 });
 
 defineStep("I stop my server in notebooks admin", async function() {
   await this.clickElementByXpath(
-    `//tr[@data-user='${this.USERNAME}']//a[contains(text(), 'stop server')]`, context = this.context);
+    `//tr[@data-user='${this.PH_USER_USERNAME}']//a[contains(text(), 'stop server')]`, context = this.context);
   await this.page.waitForTimeout(20000);
   // might sometimes failed, blocked by ch13256
   /*
