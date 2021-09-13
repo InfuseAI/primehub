@@ -326,7 +326,6 @@ workflows:
   version: 2
   release_builds:
     jobs:
-      - e2e_regression_ee_user_k3d_a
       - unit_test
       - verify_image_list
       - e2e_smoke_ce
@@ -356,4 +355,4 @@ workflows:
                 - master
     jobs:
       - e2e_regression_ee_admin_k3d
-
+      - e2e_regression_ee_user_k3d_a
