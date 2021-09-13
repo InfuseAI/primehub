@@ -13,8 +13,8 @@ Feature: Notebooks Admin
     And I get the iframe object
     Then I am on the notebooks admin page
 
-  @regression
-  Scenario: User can start the JupyterLab server
+  @wip @regression
+  Scenario: Admin can start the JupyterLab server
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
 
@@ -30,7 +30,7 @@ Feature: Notebooks Admin
     And I click element with selector "input[value='Start Notebook']" in hub
     Then I can see the spawning page and wait for notebook started
 
-  @regression
+  @wip @regression
   Scenario: User can access the JupyterLab server in notebooks admin page
     When I access my server in notebooks admin
     And I wait for 4.0 seconds
@@ -40,7 +40,7 @@ Feature: Notebooks Admin
     When I switch to "NotebooksAdmin" tab
     Then I am on the notebooks admin page
 
-  @regression
+  @wip @regression
   Scenario: User can stop the JupyterLab server in notebooks admin page
     When I stop my server in notebooks admin
     And I click on PrimeHub icon
@@ -51,4 +51,3 @@ Feature: Notebooks Admin
 
     When I get the iframe object
     And I go to the spawner page
-

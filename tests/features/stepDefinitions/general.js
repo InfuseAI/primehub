@@ -247,7 +247,7 @@ defineStep("I fill in the correct username credentials", async function() {
 
 defineStep("I fill in the username {string} and password {string}", async function(username, password) {
   await this.input("username", `${username}-${this.E2E_SUFFIX}`);
-  await this.input("password", password);
+  await this.input("password", `${password}`);
 });
 
 defineStep("I click login", async function() {
@@ -370,7 +370,7 @@ defineStep("I click button of {string}", async function(title) {
 
 defineStep("I click button of {string} of item {string} to wait for {string} dialogue", async function(action, string, dialog) {
   //tr[contains(.,'gabriel')]//button[contains(*,'Rerun')]
-  const buttonXpath = `//tr[contains(.,'${string}')]//button[contains(*,'${action}')]`;
+  const buttonXpath = `//tr//a[contains(.,'$string')]/../following-sibling::td//button//span[contains(.,'${action}')]`;
   const dialogXpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${dialog}')]`;
   let ret;
   for (retryCount=0; retryCount < 3; retryCount++) {

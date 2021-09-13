@@ -197,6 +197,28 @@ jobs:
           path: ~/project/e2e
       - create_ticket 
 
+  e2e_regression_ee_admin_k3d:
+    machine:
+      image: ubuntu-1604:202104-01
+    resource_class: large
+    steps:
+      - checkout
+      - run:
+          name: Setup
+          command: |
+            ./ci/setup_env.sh
+      - run:
+          name: End-to-end tests
+          environment:
+            PRIMEHUB_MODE: ee
+            TEST_TYPE: regression
+            FEATURE: admin
+          command: |
+            ./ci/ci-test.sh
+      - store_artifacts:
+          path: ~/project/e2e
+      - create_ticket 
+
   e2e_regression_ee_a_k3d:
     machine:
       image: ubuntu-1604:202104-01
@@ -322,4 +344,15 @@ workflows:
             tags:
               only: /v.*/
             branches:
-              ignore: /.*/
+              ignore: /.*/            
+  daily_workflow:
+    triggers:
+      - schedule:
+          cron: "0 21 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - e2e_regression_ee_admin_k3d
+
