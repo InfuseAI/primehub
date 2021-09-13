@@ -219,7 +219,7 @@ jobs:
           path: ~/project/e2e
       - create_ticket 
 
-  e2e_regression_ee_a_k3d:
+  e2e_regression_ee_user_k3d_a:
     machine:
       image: ubuntu-1604:202104-01
     resource_class: large
@@ -326,6 +326,7 @@ workflows:
   version: 2
   release_builds:
     jobs:
+      - e2e_regression_ee_user_k3d_a
       - unit_test
       - verify_image_list
       - e2e_smoke_ce
