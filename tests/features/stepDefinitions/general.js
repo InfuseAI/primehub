@@ -247,7 +247,7 @@ defineStep("I fill in the correct username credentials", async function() {
 
 defineStep("I fill in the username {string} and password {string}", async function(username, password) {
   await this.input("username", `${username}-${this.E2E_SUFFIX}`);
-  await this.input("password", password);
+  await this.input("password", `${password}`);
 });
 
 defineStep("I click login", async function() {
