@@ -345,7 +345,7 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-                daily_workflow:
+  daily_workflow:
     triggers:
       - schedule:
           cron: "0 21 * * *"
