@@ -81,7 +81,7 @@ Feature: Features
     Then I am on the admin dashboard "Instance Types" page
 
     # Admin - Instance Types - Search
-    When I search "e2e-test-instance-type" in test-id "search-button"
+    When I search "e2e-test-instance-type" in test-id "text-filter"
     And I click edit-button in row contains text "e2e-test-instance-type"
     Then I should see input in test-id "name" with value "e2e-test-instance-type"
 
