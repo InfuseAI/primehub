@@ -328,7 +328,6 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
-      - e2e_smoke_ce
       - e2e_smoke_ee:
           filters:
             branches:
