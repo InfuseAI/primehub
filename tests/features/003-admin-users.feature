@@ -51,11 +51,8 @@ Feature: Admin - Users
     | reset-password-password-input |
     | reset-password-reset-button   |
 
-    When I type value to element with xpath on the page
-    | xpath                                                 | value    |
-    | //input[@data-testid='reset-password-password-input'] | password |
-    | //input[@data-testid='reset-password-confirm-input']  | password |
-
+    When I type "password" to "password" text field
+    And I type "password" to "confirm" text field    
     And I click element with test-id "reset-password-reset-button"
     Then I should see element with xpath on the page
     | exist  | xpath                                                                       |
@@ -97,11 +94,8 @@ Feature: Admin - Users
     | reset-password-password-input |
     | reset-password-reset-button   |
 
-    When I type value to element with xpath on the page
-    | xpath                                                 | value    |
-    | //input[@data-testid='reset-password-password-input'] | password |
-    | //input[@data-testid='reset-password-confirm-input']  | password |
-
+    When I type "password" to "password" text field
+    And I type "password" to "confirm" text field
     And I click element with test-id "reset-password-reset-button"
     Then I should see element with xpath on the page
     | exist  | xpath                                                                       |
