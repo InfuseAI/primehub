@@ -115,6 +115,7 @@ Feature: Admin - Users
 
     When I go to login page
     And I fill in the username "e2e-test-user" and password "password"
+    And I wait for 1.0 second
     And I click login
     Then I should see element with xpath on the page 
     | exist      | xpath                                                                 |
@@ -225,3 +226,42 @@ Feature: Admin - Users
     When I search "e2e-test-another-group" in test-id "text-filter-name"
     And I click edit-button in row contains text "e2e-test-another-group"
     Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-another-user')]"
+
+  @regression @prep-data
+  Scenario: Newly created users can login
+    When I choose "Logout" in top-right menu
+    Then I am on login page
+
+    When I go to login page
+    And I fill in the username "e2e-test-user" and password "password"
+    And I wait for 1.0 second
+    And I click login
+    Then I should see element with xpath on the page 
+    | exist  | xpath                                                                 |
+    | should | //div[@class='ant-layout-sider-children']//span[text()='Home']        |
+    | should | //div[@class='ant-layout-sider-children']//span[text()='Notebooks']   |
+
+    When I choose "User Profile" in top-right menu
+    Then I "should" see element with xpath "//h2[text()='Edit Account']"
+    And I "should" see element with xpath "//label[text()='Username']"
+    And I "should" see element with xpath "//input[@id='username' and contains(@value, 'e2e-test-user')]"
+
+    When I click element with xpath "//li//a[contains(text(), 'Sign Out')]"
+    Then I am on login page
+
+    When I go to login page
+    And I fill in the username "e2e-test-another-user" and password "password"
+    And I wait for 1.0 second
+    And I click login
+    Then I should see element with xpath on the page 
+    | exist  | xpath                                                                 |
+    | should | //div[@class='ant-layout-sider-children']//span[text()='Home']        |
+    | should | //div[@class='ant-layout-sider-children']//span[text()='Notebooks']   |
+
+    When I choose "User Profile" in top-right menu
+    Then I "should" see element with xpath "//h2[text()='Edit Account']"
+    And I "should" see element with xpath "//label[text()='Username']"
+    And I "should" see element with xpath "//input[@id='username' and contains(@value, 'e2e-test-another-user')]"
+
+    When I click element with xpath "//li//a[contains(text(), 'Sign Out')]"
+    Then I am on login page

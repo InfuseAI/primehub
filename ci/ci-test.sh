@@ -171,6 +171,7 @@ KC_REALM_DEPLOY="$(cut -d' ' -f2 <<< $(kubectl describe deploy -n hub primehub-c
 export KC_REALM=${KC_REALM:-$KC_REALM_DEPLOY}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
+env | sort
 mkdir -p e2e/screenshots e2e/webpages
 
 if [[ "${TEST_TYPE}" == "temp" && "${PRIMEHUB_MODE}" == "ee" ]]; then

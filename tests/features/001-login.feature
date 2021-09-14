@@ -8,7 +8,7 @@ Feature: Login
 
   @regression
   Scenario: User can login with correct username and password
-    When I fill in the correct username credentials
+    When I fill in the correct admin username credentials
     And I click login
     Then I am on the PrimeHub console "Home" page
 
