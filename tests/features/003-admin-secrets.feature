@@ -10,8 +10,8 @@ Feature: Admin - Secrets
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Secrets" in admin dashboard
-    Then I am on the admin dashboard "Secrets" page
+    When I click "Secrets" in admin portal
+    Then I am on the admin portal "Secrets" page
     And I should see element with test-id on the page
     | test-id       |
     | secret-active |

@@ -103,7 +103,7 @@ defineStep("I can see the group resource limits are {string}, {string}, and {str
   }
 });
 
-defineStep("I {string} see instance types block contains {string} instanceType with {string} description and tooltip to show {string}", async function(exist, name, desc, resource) {
+defineStep("I {string} see instance types block containing {string} instanceType with {string} description and tooltip to show {string}", async function(exist, name, desc, resource) {
   const xpath = `//div[@id='it-container']//strong[contains(text(), '${name}-${this.E2E_SUFFIX}')]`;
   let ret;
 
@@ -129,7 +129,7 @@ defineStep("I {string} see instance types block contains {string} instanceType w
   }
 });
 
-defineStep("I {string} see images block contains {string} image with {string} type and {string} description", async function(exist, name, type, desc) {
+defineStep("I {string} see images block containing {string} image with {string} type and {string} description", async function(exist, name, type, desc) {
   let ret;
   let xpath = `//div[@id='image-container']//strong[contains(text(), '${name}')]`;
   

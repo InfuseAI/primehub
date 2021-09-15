@@ -10,8 +10,8 @@ Feature: Admin - Datasets
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Datasets" in admin dashboard
-    Then I am on the admin dashboard "Datasets" page
+    When I click "Datasets" in admin portal
+    Then I am on the admin portal "Datasets" page
     And I should see element with test-id on the page
     | test-id        |
     | dataset-active |
@@ -29,7 +29,7 @@ Feature: Admin - Datasets
     | test-id            | value            |
     | dataset/input-name | e2e-test-dataset |
 
-    And I select option "Env" in admin dashboard
+    And I select option "Env" in admin portal
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id        |
@@ -44,7 +44,7 @@ Feature: Admin - Datasets
   @regression
   Scenario: Update a dataset
     When I search "e2e-test-dataset" in test-id "text-filter"
-    And I click edit-button in row contains text "e2e-test-dataset"
+    And I click edit-button in row containing text "e2e-test-dataset"
     Then I should see value of element with test-id on the page
     | test-id                   | value            |
     | dataset/input-name        | e2e-test-dataset |
@@ -63,7 +63,7 @@ Feature: Admin - Datasets
   @regression
   Scenario: Connect a dataset to an existing group
     When I search "e2e-test-dataset" in test-id "text-filter"
-    And I click edit-button in row contains text "e2e-test-dataset"
+    And I click edit-button in row containing text "e2e-test-dataset"
     Then I should see value of element with test-id on the page
     | test-id                   | value                         |
     | dataset/input-name        | e2e-test-dataset              |

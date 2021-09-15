@@ -7,12 +7,12 @@ Feature: Delete data
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
+    Then I am on the admin portal "Groups" page
 
   @regression @admin-users @destroy-data
   Scenario: Delete users
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
+    When I click "Users" in admin portal
+    Then I am on the admin portal "Users" page
 
     When I search "e2e-test-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-user"
@@ -38,8 +38,8 @@ Feature: Delete data
 
   @regression @admin-images @destroy-data
   Scenario: Delete images
-    When I click "Images" in admin dashboard
-    Then I am on the admin dashboard "Images" page
+    When I click "Images" in admin portal
+    Then I am on the admin portal "Images" page
 
     When I search "e2e-test-image" in test-id "text-filter"
     And I delete a row with text "e2e-test-image"
@@ -74,8 +74,8 @@ Feature: Delete data
 
   @regression @admin-images @destroy-data
   Scenario: Delete GPU images
-    When I click "Images" in admin dashboard
-    Then I am on the admin dashboard "Images" page
+    When I click "Images" in admin portal
+    Then I am on the admin portal "Images" page
 
     When I search "e2e-test-image-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-image-gpu"
@@ -92,8 +92,8 @@ Feature: Delete data
 
   @regression @admin-instance-types @destroy-data
   Scenario: Delete instance types
-    When I click "Instance Types" in admin dashboard
-    Then I am on the admin dashboard "Instance Types" page
+    When I click "Instance Types" in admin portal
+    Then I am on the admin portal "Instance Types" page
 
     When I search "e2e-test-instance-type" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type"
@@ -106,8 +106,8 @@ Feature: Delete data
 
   @regression @admin-instance-types @destroy-data
   Scenario: Delete GPU instance types
-    When I click "Instance Types" in admin dashboard
-    Then I am on the admin dashboard "Instance Types" page
+    When I click "Instance Types" in admin portal
+    Then I am on the admin portal "Instance Types" page
 
     When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-gpu"
@@ -120,8 +120,8 @@ Feature: Delete data
 
   @regression @admin-instance-types @destroy-data @error-check
   Scenario: Delete instance type that exceeds resource quota
-    When I click "Instance Types" in admin dashboard
-    Then I am on the admin dashboard "Instance Types" page
+    When I click "Instance Types" in admin portal
+    Then I am on the admin portal "Instance Types" page
 
     When I search "e2e-test-instance-type-large" in test-id "text-filter"
     And I delete a row with text "e2e-test-instance-type-large"
@@ -134,8 +134,8 @@ Feature: Delete data
 
   @regression @admin-groups @destroy-data
   Scenario: Delete groups
-    When I click "Groups" in admin dashboard
-    Then I am on the admin dashboard "Groups" page
+    When I click "Groups" in admin portal
+    Then I am on the admin portal "Groups" page
 
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I delete a row with text "e2e-test-group"

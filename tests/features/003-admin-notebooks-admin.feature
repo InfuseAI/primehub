@@ -9,7 +9,7 @@ Feature: Notebooks Admin
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Notebooks Admin" in admin dashboard
+    When I click "Notebooks Admin" in admin portal
     And I get the iframe object
     Then I am on the notebooks admin page
 

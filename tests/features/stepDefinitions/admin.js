@@ -1,13 +1,13 @@
 const { defineStep } = require("cucumber");
 const { expect } = require("chai");
 
-defineStep("I click {string} in admin dashboard", async function(string) {
+defineStep("I click {string} in admin portal", async function(string) {
   await this.clickElementByXpath(`//li[contains(., '${string}')]`);
 });
 
-defineStep("I am on the admin dashboard {string} page", async function(string) {
+defineStep("I am on the admin portal {string} page", async function(string) {
   await this.page.waitForXPath(`//span[contains(., '${string}')]`);
-  await this.takeScreenshot(`admin-dashboard-${string}`);
+  await this.takeScreenshot(`admin-portal-${string}`);
 });
 
 defineStep("I click element with test-id {string}", async function(testId) {
@@ -51,7 +51,7 @@ defineStep("I click my username", async function() {
   await this.clickElementByXpath(`//td[contains(., '${this.PH_ADMIN_USERNAME}')]//preceding-sibling::td//input`);
 });
 
-defineStep("I click edit-button in row contains text {string}", async function(string) {
+defineStep("I click edit-button in row containing text {string}", async function(string) {
   // use xpath to find the <tr> containing 'text', then edit button
   // xpath: //tr[contains(., 'hlb')]//button[@data-testid='edit-button']
   const xpath = `//td[contains(., '${string}-${this.E2E_SUFFIX}')]/following-sibling::td//button[@data-testid='edit-button']`;
@@ -123,7 +123,7 @@ defineStep("I should see boolean input with test-id {string} having value {strin
   expect(inputValue).to.equal(value);
 });
 
-defineStep("I select option {string} in admin dashboard", async function(name) {
+defineStep("I select option {string} in admin portal", async function(name) {
   await this.clickElementByXpath("//div[contains(@class, 'ant-select-selection--single')]");
   await this.page.waitForTimeout(500);
   await this.clickElementByXpath(`//li[text()='${name}']`);
