@@ -1,0 +1,6 @@
+{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "ce") }}
+{{- range $path, $_ := .Files.Glob "modules/awesome-primehub-apps/app-templates/**.yaml" }}
+---
+{{ $.Files.Get $path }}
+{{- end }}
+{{- end }}
