@@ -10,8 +10,8 @@ Feature: Admin - Groups
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Groups" in admin dashboard
-    Then I am on the admin dashboard "Groups" page
+    When I click "Groups" in admin portal
+    Then I am on the admin portal "Groups" page
     And I should see element with test-id on the page
     | test-id      |
     | group-active |
@@ -56,7 +56,7 @@ Feature: Admin - Groups
     When I search "e2e-test-group" in test-id "text-filter-name"
     Then I "should" see list-view table containing row with "e2e-test-group"
 
-    When I click edit-button in row contains text "e2e-test-group"
+    When I click edit-button in row containing text "e2e-test-group"
     Then I should see element with test-id on the page
     | test-id           |
     | group/name        |
@@ -125,7 +125,7 @@ Feature: Admin - Groups
   @regression @sanity @prep-data
   Scenario: Assign group admin to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-group"
+    And I click edit-button in row containing text "e2e-test-group"
     Then I should see input in test-id "group/displayName" with value "e2e-test-group-display-name"
 
     When I assign group admin of "e2e-test-group" to "me"

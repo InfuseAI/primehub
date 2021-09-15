@@ -10,8 +10,8 @@ Feature: Admin - Users
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
+    When I click "Users" in admin portal
+    Then I am on the admin portal "Users" page
     And I should see element with test-id on the page
     | test-id     |
     | user-active |
@@ -36,13 +36,13 @@ Feature: Admin - Users
     | add-button  |
 
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see input in test-id "username" with value "e2e-test-user"
 
   @regression @sanity @prep-data
   Scenario: Update password for a normal user
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see input in test-id "username" with value "e2e-test-user"
 
     When I click element with xpath "//div[@role='tab' and text()='Reset Password']"
@@ -79,13 +79,13 @@ Feature: Admin - Users
     | add-button  |
 
     When I search "e2e-test-another-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-another-user"
+    And I click edit-button in row containing text "e2e-test-another-user"
     Then I should see input in test-id "username" with value "e2e-test-another-user"
 
   @regression @prep-data
   Scenario: Update password for another normal user
     When I search "e2e-test-another-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-another-user"
+    And I click edit-button in row containing text "e2e-test-another-user"
     Then I should see input in test-id "username" with value "e2e-test-another-user"
 
     When I click element with xpath "//div[@role='tab' and text()='Reset Password']"
@@ -120,7 +120,7 @@ Feature: Admin - Users
   @regression @prep-data
   Scenario: Update user info of first user
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see value of element with test-id on the page
     | test-id   | value         |
     | username  | e2e-test-user |
@@ -133,7 +133,7 @@ Feature: Admin - Users
     And I click element with xpath "//button/span[text()='Update']"
 
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see boolean input with test-id "isAdmin" having value "true"
     And I should see value of element with test-id on the page
     | test-id   | value         |
@@ -143,7 +143,7 @@ Feature: Admin - Users
   @regression @prep-data
   Scenario: Connect first user to existing group
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see value of element with test-id on the page
     | test-id   | value         |
     | username  | e2e-test-user |
@@ -162,17 +162,17 @@ Feature: Admin - Users
     And I search "e2e-test-user" in test-id "text-filter-username"
     Then I "should" see list-view table containing row with "e2e-test-user"
 
-    When I click "Groups" in admin dashboard
-    Then I am on the admin dashboard "Groups" page
+    When I click "Groups" in admin portal
+    Then I am on the admin portal "Groups" page
 
     When I search "e2e-test-group" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-group"
+    And I click edit-button in row containing text "e2e-test-group"
     Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-user')]"    
 
   @regression @prep-data
   Scenario: Update user info of second user
     When I search "e2e-test-another-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-another-user"
+    And I click edit-button in row containing text "e2e-test-another-user"
     Then I should see value of element with test-id on the page
     | test-id   | value                 |
     | username  | e2e-test-another-user |
@@ -185,7 +185,7 @@ Feature: Admin - Users
     And I click element with xpath "//button/span[text()='Update']"
 
     When I search "e2e-test-another-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-another-user"
+    And I click edit-button in row containing text "e2e-test-another-user"
     Then I should see boolean input with test-id "isAdmin" having value "true"
     And I should see value of element with test-id on the page
     | test-id   | value                 |
@@ -195,7 +195,7 @@ Feature: Admin - Users
   @regression @prep-data
   Scenario: Connect second user to existing group
     When I search "e2e-test-another-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-another-user"
+    And I click edit-button in row containing text "e2e-test-another-user"
     Then I should see value of element with test-id on the page
     | test-id   | value                 |
     | username  | e2e-test-another-user |
@@ -214,11 +214,11 @@ Feature: Admin - Users
     And I search "e2e-test-another-user" in test-id "text-filter-username"
     Then I "should" see list-view table containing row with "e2e-test-another-user"
 
-    When I click "Groups" in admin dashboard
-    Then I am on the admin dashboard "Groups" page
+    When I click "Groups" in admin portal
+    Then I am on the admin portal "Groups" page
 
     When I search "e2e-test-another-group" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-another-group"
+    And I click edit-button in row containing text "e2e-test-another-group"
     Then I "should" see element with xpath "//td[contains(text(), 'e2e-test-another-user')]"
 
   @regression @prep-data

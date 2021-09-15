@@ -7,7 +7,7 @@ Feature: Features
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
-    Then I am on the admin dashboard "Groups" page
+    Then I am on the admin portal "Groups" page
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Group
@@ -18,14 +18,14 @@ Feature: Features
 
     # Admin - Groups - Search
     When I search "e2e-test-group" in test-id "text-filter-name"
-    And I click edit-button in row contains text "e2e-test-group"
+    And I click edit-button in row containing text "e2e-test-group"
     Then I should see input in test-id "group/name" with value "e2e-test-group"
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Users
     # Admin - Users
-    When I click "Users" in admin dashboard
-    Then I am on the admin dashboard "Users" page
+    When I click "Users" in admin portal
+    Then I am on the admin portal "Users" page
     And I should see element with test-id on the page
     | test-id     |
     | user-active |
@@ -33,7 +33,7 @@ Feature: Features
 
     # Admin - Users - Search
     When I search "e2e-test-user" in test-id "text-filter-username"
-    And I click edit-button in row contains text "e2e-test-user"
+    And I click edit-button in row containing text "e2e-test-user"
     Then I should see input in test-id "username" with value "e2e-test-user"
 
     # Admin - Users - Edit - Send Email
@@ -51,8 +51,8 @@ Feature: Features
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Instance Types
     # Admin - Instance Types
-    When I click "Instance Types" in admin dashboard
-    Then I am on the admin dashboard "Instance Types" page
+    When I click "Instance Types" in admin portal
+    Then I am on the admin portal "Instance Types" page
     And I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -78,18 +78,18 @@ Feature: Features
     | add-field-button |
 
     When I click element with test-id "reset-button"
-    Then I am on the admin dashboard "Instance Types" page
+    Then I am on the admin portal "Instance Types" page
 
     # Admin - Instance Types - Search
     When I search "e2e-test-instance-type" in test-id "text-filter"
-    And I click edit-button in row contains text "e2e-test-instance-type"
+    And I click edit-button in row containing text "e2e-test-instance-type"
     Then I should see input in test-id "name" with value "e2e-test-instance-type"
 
   @regression @ee @ce
   Scenario: Admin can access pages in Admin Portal - Images
     # Admin - Images
-    When I click "Images" in admin dashboard
-    Then I am on the admin dashboard "Images" page
+    When I click "Images" in admin portal
+    Then I am on the admin portal "Images" page
     And I should see element with test-id on the page
     | test-id     |
     | image-active |
@@ -98,8 +98,8 @@ Feature: Features
   @wip @regression @ee @ce
   Scenario: Admin can access pages in Admin Portal - Datasets
     # Admin - Datasets
-    When I click "Datasets" in admin dashboard
-    Then I am on the admin dashboard "Datasets" page
+    When I click "Datasets" in admin portal
+    Then I am on the admin portal "Datasets" page
     And I should see element with xpath on the page
     | exist  | xpath                                                               |
     | should | //div[@class='ant-table-column-sorters' and text()='Upload Server'] |
@@ -107,8 +107,8 @@ Feature: Features
   @wip @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Secrets
     # Admin - Secrets - Add
-    When I click "Secrets" in admin dashboard
-    Then I am on the admin dashboard "Secrets" page
+    When I click "Secrets" in admin portal
+    Then I am on the admin portal "Secrets" page
     And I should see element with test-id on the page
     | test-id       |
     | secret-active |
@@ -120,13 +120,13 @@ Feature: Features
     # Secrets - Edit
     And I wait for 2.0 seconds
     And I click element with test-id "reset-button"
-    Then I am on the admin dashboard "Secrets" page
+    Then I am on the admin portal "Secrets" page
 
   @wip @regression @ee
   Scenario: Admin can access pages in Admin Portal - Usage Reports
     # Admin - Usage Reports
-    When I click "Usage Reports" in admin dashboard
-    Then I am on the admin dashboard "Usage Reports" page
+    When I click "Usage Reports" in admin portal
+    Then I am on the admin portal "Usage Reports" page
     And I should see element with test-id on the page
     | test-id            |
     | usageReport-active |
@@ -139,8 +139,8 @@ Feature: Features
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - System Settings
     # Admin - System Settings
-    When I click "System Settings" in admin dashboard
-    Then I am on the admin dashboard "System Settings" page
+    When I click "System Settings" in admin portal
+    Then I am on the admin portal "System Settings" page
     And I should see element with test-id on the page
     | test-id       |
     | system-active |

@@ -10,8 +10,8 @@ Feature: Admin - Images
     When I choose "Admin Portal" in top-right menu
     Then I "should" see element with xpath "//a[contains(text(), 'Back to User Portal')]"
 
-    When I click "Images" in admin dashboard
-    Then I am on the admin dashboard "Images" page
+    When I click "Images" in admin portal
+    Then I am on the admin portal "Images" page
     And I should see element with test-id on the page
     | test-id      |
     | image-active |
@@ -43,7 +43,7 @@ Feature: Admin - Images
     When I search "e2e-test-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image"
 
-    When I click edit-button in row contains text "e2e-test-image"
+    When I click edit-button in row containing text "e2e-test-image"
     And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image"
 
@@ -91,7 +91,7 @@ Feature: Admin - Images
     When I search "e2e-test-bs-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-bs-image"
 
-    When I click edit-button in row contains text "e2e-test-bs-image"
+    When I click edit-button in row containing text "e2e-test-bs-image"
     And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-bs-image"
 
@@ -139,7 +139,7 @@ Feature: Admin - Images
     When I search "e2e-test-error-image" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-error-image"
 
-    When I click edit-button in row contains text "e2e-test-error-image"
+    When I click edit-button in row containing text "e2e-test-error-image"
     And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-error-image"
 
@@ -185,7 +185,7 @@ Feature: Admin - Images
     When I search "e2e-test-image-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
-    When I click edit-button in row contains text "e2e-test-image-gpu"
+    When I click edit-button in row containing text "e2e-test-image-gpu"
     And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image-gpu"
     And I should see input in test-id "displayName" with value "e2e-test-image-gpu"
@@ -212,7 +212,7 @@ Feature: Admin - Images
     When I search "e2e-test-image-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-image-gpu"
 
-    When I click edit-button in row contains text "e2e-test-image-gpu"
+    When I click edit-button in row containing text "e2e-test-image-gpu"
     And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-image-gpu"
 
@@ -266,4 +266,4 @@ Feature: Admin - Images
 
     When I get the iframe object
     And I go to the spawner page
-    #Then I "should" see images block contains "e2e-test-group-image" image with "Group / Universal" type and "e2e-test-group-image-description" description
+    #Then I "should" see images block containing "e2e-test-group-image" image with "Group / Universal" type and "e2e-test-group-image-description" description
