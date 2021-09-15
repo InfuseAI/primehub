@@ -273,7 +273,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-matlab']"
 
-  @regression
+  @wip @regression
   Scenario: Install Streamlit 
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
@@ -318,7 +318,7 @@ Feature: Apps
     And I wait for 2.0 seconds
     Then I should see the status "Stopped" of the apps "e2e-test-streamlit"
 
-  @regression
+  @wip @regression
   Scenario: Remove Streamlit
     Then I "should" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-streamlit']"
 
