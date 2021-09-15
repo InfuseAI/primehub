@@ -122,7 +122,7 @@ Feature: Features
     And I click element with test-id "reset-button"
     Then I am on the admin dashboard "Secrets" page
 
-  @regression @ee
+  @wip @regression @ee
   Scenario: Admin can access pages in Admin Portal - Usage Reports
     # Admin - Usage Reports
     When I click "Usage Reports" in admin dashboard

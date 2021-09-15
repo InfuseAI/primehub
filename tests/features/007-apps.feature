@@ -107,6 +107,7 @@ Feature: Apps
     Then I am on login page
 
     When I fill in the username "e2e-test-another-user" and password "password"
+    And I wait for 1.0 second
     And I click login
     And I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -127,6 +128,7 @@ Feature: Apps
     Then I am on login page
 
     When I fill in the username "e2e-test-another-user" and password "password"
+    And I wait for 1.0 second
     And I click login
     And I choose "Apps" in sidebar menu
     Then I am on the PrimeHub console "Apps" page
@@ -209,7 +211,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-label-studio']"
 
-  @wip @regression
+  @regression
   Scenario: Install Matlab
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
@@ -219,10 +221,10 @@ Feature: Apps
     And I click "Create" button
     And I wait for 1.0 second
     And I go to the apps detail page with name "e2e-test-matlab"
-    And I wait for 10.0 seconds
-    Then I wait for attribute "Message" with value "Deployment is ready"
+    # And I wait for 10.0 seconds
+    # Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @wip @regression
+  @regression
   Scenario: Launch Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
@@ -271,7 +273,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-matlab']"
 
-  @regression
+  @wip @regression
   Scenario: Install Streamlit 
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
@@ -293,7 +295,7 @@ Feature: Apps
     And I switch to "console/apps/streamlit" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'Welcome to Streamlit!')]" after page reloaded
 
-  @regression @error-check
+  @wip @regression @error-check
   Scenario: Update Streamlit with invalid FILE_PATH
     And I "should" have "streamlit" installed with name "e2e-test-streamlit"
 
@@ -313,9 +315,10 @@ Feature: Apps
     When I "Stop" the apps with name "e2e-test-streamlit"
     And I wait for 1.0 second
     And I click "Yes" button
+    And I wait for 2.0 seconds
     Then I should see the status "Stopped" of the apps "e2e-test-streamlit"
 
-  @regression
+  @wip @regression
   Scenario: Remove Streamlit
     Then I "should" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-streamlit']"
 

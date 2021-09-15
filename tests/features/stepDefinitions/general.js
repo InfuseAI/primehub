@@ -240,14 +240,14 @@ defineStep("I fill in the wrong credentials and click login", async function(dat
   }
 });
 
-defineStep("I fill in the correct username credentials", async function() {
+defineStep("I fill in the correct admin username credentials", async function() {
   await this.input("username", this.PH_ADMIN_USERNAME);
   await this.input("password", this.PH_ADMIN_PASSWORD);
 });
 
 defineStep("I fill in the username {string} and password {string}", async function(username, password) {
   await this.input("username", `${username}-${this.E2E_SUFFIX}`);
-  await this.input("password", `${password}`);
+  await this.input("password", password);
 });
 
 defineStep("I click login", async function() {
