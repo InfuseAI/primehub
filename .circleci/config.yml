@@ -115,6 +115,14 @@ jobs:
         description: "demo.a, k3d"
         default: "k3d"
         type: string
+      notify:
+        description: "notify slack"
+        default: false
+        type: boolean
+      ticket:
+        description: "create ticket on shorcut"
+        default: false
+        type: boolean
 
     machine:
       image: ubuntu-1604:202104-01
@@ -136,6 +144,14 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
+      - when:
+          condition: << parameters.notify >>
+          steps: 
+            - notify_slack 
+      - when:
+          condition: << parameters.ticket >>
+          steps: 
+            - create_ticket 
 
   build:
     docker:
@@ -203,15 +219,19 @@ workflows:
       - unit_test
       - verify_image_list
       - e2e_test:
+          name: "e2e_smoke_ee"
           primehub_mode: "ee"
           test_type: "smoke" 
+          notify: true
           filters:
             branches:
               ignore:
                 - master
       - e2e_test:
+          name: "e2e_sanity_ee"
           primehub_mode: "ee"
           test_type: "sanity" 
+          notify: true
           filters:
             branches:
               only:
@@ -232,22 +252,30 @@ workflows:
                 - master
     jobs:
       - e2e_test:
+          name: "e2e_regression_ee_admin_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "admin"
+          ticket: true
       - e2e_test:
+          name: "e2e_regression_ee_user_hub.edition_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "hub.edition"
+          ticket: true
       - e2e_test:
+          name: "e2e_regression_ee_user_jobs.schedule_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "jobs.schedule"
+          ticket: true
       - e2e_test:
+          name: "e2e_regression_ee_user_deployment.apps_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "deployment.apps"
+          ticket: true
