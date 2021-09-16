@@ -174,27 +174,41 @@ source ~/.bashrc
 env | sort
 mkdir -p e2e/screenshots e2e/webpages
 
-if [[ "${TEST_TYPE}" == "temp" && "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="(@ee) and (@feat-edition) and (not @wip)"
+# Get info from config.yml and assemble tags for cucumber
+test_type="@${TEST_TYPE}"
+primehub_mode="@${PRIMEHUB_MODE}"
+wip="(not @wip)"
+feature=""
+
+case ${FEATURE} in
+        "admin")
+		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin)"
+		echo $feature
+                ;;
+        "hub.edition")
+		feature="((@prep-data or @destroy-data) or (@feat-hub or @feat-edition))"
+		echo $feature
+                ;;
+        "jobs.schedule")
+		feature="((@prep-data or @destroy-data) or (@feat-jobs or @feat-schedule))"
+		echo $feature
+                ;;
+        "deployment.apps")
+		feature="((@prep-data or @destroy-data) or (@feat-deployment or @feat-apps))"
+		echo $feature
+                ;;
+        *)
+		feature=""
+		echo $feature
+                ;;
+esac
+
+if [[ "$feature" == "" ]]; then
+  tags="$test_type and $primehub_mode and $wip"
+else 
+  tags="$test_type and $primehub_mode and $feature and $wip"
 fi
-if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ce" ]]; then
-  tags="(@smoke and @ce) and (not @wip)"
-fi
-if [[ "${TEST_TYPE}" == "smoke" && "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="(@smoke and @ee) and (not @wip)"
-fi
-if [[ "${TEST_TYPE}" == "sanity" && "${PRIMEHUB_MODE}" == "ee" ]]; then
-  tags="(@sanity and @ee) and (not @wip)"
-fi
-if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "admin" ]]; then
-  tags="(@regression and @ee) and (@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin) and (not @wip)"
-fi
-if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "hub.jobs.schedule.edition" ]]; then
-  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-hub or @feat-jobs or @feat-schedule or @feat-edition)) and (not @wip)"
-fi
-if [[ "${TEST_TYPE}" == "regression" && "${PRIMEHUB_MODE}" == "ee" && "${FEATURE}" == "deployment.apps" ]]; then
-  tags="(@regression and @ee) and ((@prep-data or @destroy-data) or (@feat-deployment or @feat-apps)) and (not @wip)"
-fi
+echo $tags
 
 ~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js

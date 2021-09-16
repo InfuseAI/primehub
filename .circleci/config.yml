@@ -92,29 +92,41 @@ jobs:
             python3 ci/check_airgap_images.py ./chart/images.yaml ./chart/scripts/bootstrap/crds.yaml ./chart/templates/ph-app-templates
       - notify_slack
 
-  e2e_smoke_ce:
-    machine:
-      image: ubuntu-1604:202104-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ce
-            TEST_TYPE: smoke
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - notify_slack
+  e2e_test:
+    description: A parameterized job to run E2E
+    parameters:
+      machine_resource_class:
+        description: "medium, large"
+        default: "medium"
+        type: string
+      primehub_mode:
+        description: "ce, ee, deploy"
+        default: "ee"
+        type: string
+      test_type:
+        description: "smoke, sanity, regression"
+        default: "regression"
+        type: string
+      feature:
+        description: "admin, hub.edition, jobs.schedule, deployment.apps"
+        default: ""
+        type: string
+      target:
+        description: "demo.a, k3d"
+        default: "k3d"
+        type: string
+      notify:
+        description: "notify slack"
+        default: false
+        type: boolean
+      ticket:
+        description: "create ticket on shorcut"
+        default: false
+        type: boolean
 
-  e2e_smoke_ee:
     machine:
       image: ubuntu-1604:202104-01
+    resource_class: << parameters.machine_resource_class >>
     steps:
       - checkout
       - run:
@@ -122,124 +134,24 @@ jobs:
           command: |
             ./ci/setup_env.sh
       - run:
-          name: End-to-end tests
+          name: Tests << parameters.feature >> in << parameters.test_type >> on << parameters.primehub_mode >>
           environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: smoke
+            PRIMEHUB_MODE: << parameters.primehub_mode >>
+            TEST_TYPE: << parameters.test_type >>
+            FEATURE: << parameters.feature >> 
+            TARGET : << parameters.target >>
           command: |
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-      - notify_slack
-
-  e2e_sanity_ee:
-    machine:
-      image: ubuntu-1604:202104-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          no_output_timeout: 20m
-          environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: sanity
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - notify_slack
-
-  e2e_regression_ee_user_b:
-    machine:
-      image: ubuntu-1604:202104-01
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: regression
-            FEATURE: deployment.apps
-            TARGET : demo.a
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - create_ticket 
-
-  e2e_regression_ee_admin_k3d:
-    machine:
-      image: ubuntu-1604:202104-01
-    resource_class: large
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: regression
-            FEATURE: admin
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - create_ticket 
-
-  e2e_regression_ee_user_k3d_a:
-    machine:
-      image: ubuntu-1604:202104-01
-    resource_class: large
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: regression
-            FEATURE: hub.jobs.schedule.edition
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - create_ticket 
-
-  e2e_regression_ee_user_k3d_b:
-    machine:
-      image: ubuntu-1604:202104-01
-    resource_class: large
-    steps:
-      - checkout
-      - run:
-          name: Setup
-          command: |
-            ./ci/setup_env.sh
-      - run:
-          name: End-to-end tests
-          environment:
-            PRIMEHUB_MODE: ee
-            TEST_TYPE: regression
-            FEATURE: deployment.apps
-          command: |
-            ./ci/ci-test.sh
-      - store_artifacts:
-          path: ~/project/e2e
-      - create_ticket 
+      - when:
+          condition: << parameters.notify >>
+          steps: 
+            - notify_slack 
+      - when:
+          condition: << parameters.ticket >>
+          steps: 
+            - create_ticket 
 
   build:
     docker:
@@ -306,12 +218,20 @@ workflows:
     jobs:
       - unit_test
       - verify_image_list
-      - e2e_smoke_ee:
+      - e2e_test:
+          name: "e2e_smoke_ee"
+          primehub_mode: "ee"
+          test_type: "smoke" 
+          notify: true
           filters:
             branches:
               ignore:
                 - master
-      - e2e_sanity_ee:
+      - e2e_test:
+          name: "e2e_sanity_ee"
+          primehub_mode: "ee"
+          test_type: "sanity" 
+          notify: true
           filters:
             branches:
               only:
@@ -331,6 +251,31 @@ workflows:
               only:
                 - master
     jobs:
-      - e2e_regression_ee_admin_k3d
-      - e2e_regression_ee_user_k3d_a
-      - e2e_regression_ee_user_k3d_b
+      - e2e_test:
+          name: "e2e_regression_ee_admin_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "ee"
+          test_type: "regression" 
+          feature: "admin"
+          ticket: true
+      - e2e_test:
+          name: "e2e_regression_ee_user_hub.edition_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "ee"
+          test_type: "regression" 
+          feature: "hub.edition"
+          ticket: true
+      - e2e_test:
+          name: "e2e_regression_ee_user_jobs.schedule_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "ee"
+          test_type: "regression" 
+          feature: "jobs.schedule"
+          ticket: true
+      - e2e_test:
+          name: "e2e_regression_ee_user_deployment.apps_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "ee"
+          test_type: "regression" 
+          feature: "deployment.apps"
+          ticket: true
