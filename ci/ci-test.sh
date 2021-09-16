@@ -181,26 +181,26 @@ wip="(not @wip)"
 feature=""
 
 case ${FEATURE} in
-        "admin")
+  "admin")
 		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin)"
 		echo $feature
-                ;;
-        "hub.edition")
+    ;;
+  "hub.edition")
 		feature="((@prep-data or @destroy-data) or (@feat-hub or @feat-edition))"
 		echo $feature
-                ;;
-        "jobs.schedule")
+    ;;
+  "jobs.schedule")
 		feature="((@prep-data or @destroy-data) or (@feat-jobs or @feat-schedule))"
 		echo $feature
-                ;;
-        "deployment.apps")
+    ;;
+  "deployment.apps")
 		feature="((@prep-data or @destroy-data) or (@feat-deployment or @feat-apps))"
 		echo $feature
-                ;;
-        *)
+    ;;
+  *)
 		feature=""
 		echo $feature
-                ;;
+    ;;
 esac
 
 if [[ "$feature" == "" ]]; then
