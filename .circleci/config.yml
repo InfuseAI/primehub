@@ -96,8 +96,8 @@ jobs:
     description: A parameterized job to run E2E
     parameters:
       machine_resource_class:
-        description: "Medium, Large"
-        default: "Medium"
+        description: "medium, large"
+        default: "medium"
         type: string
       primehub_mode:
         description: "ce, ee, deploy"
@@ -233,35 +233,22 @@ workflows:
                 - master
     jobs:
       - e2e_test:
-          machine_resource_class: "Large"
+          machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "admin"
-          filters:
-            branches:
-              only:
       - e2e_test:
-          machine_resource_class: "Large"
+          machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "hub.edition"
-          filters:
-            branches:
-              only:
       - e2e_test:
-          machine_resource_class: "Large"
+          machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "jobs.schedule"
-          filters:
-            branches:
-              only:
       - e2e_test:
-          machine_resource_class: "Large"
+          machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "deployment.apps"
-          filters:
-            branches:
-              only:
-                - master
