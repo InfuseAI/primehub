@@ -136,7 +136,6 @@ jobs:
             ./ci/ci-test.sh
       - store_artifacts:
           path: ~/project/e2e
-      - create_ticket 
 
   build:
     docker:
