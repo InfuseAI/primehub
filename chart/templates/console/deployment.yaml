@@ -119,6 +119,8 @@ spec:
                   key: sharedSecret
             - name: APP_PREFIX
               value: {{ include "primehub.console.path" . }}
+            - name: PRIMEHUB_FEATURE_TELEMETRY
+              value: {{ .Values.telemetry.enabled | quote }}
             {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
             - name: PRIMEHUB_FEATURE_LICENSE
               value: "true"
@@ -132,10 +134,6 @@ spec:
                 secretKeyRef:
                   name: authoritative-secret
                   key: max_group
-            {{- end }}
-            {{- if .Values.telemetry.enabled }}
-            - name: PRIMEHUB_FEATURE_TELEMETRY
-              value: {{ .Values.telemetry.enabled | quote }}
             {{- end }}
             {{- if .Values.store.enabled }}
             - name: PRIMEHUB_FEATURE_STORE
