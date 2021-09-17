@@ -185,12 +185,12 @@ case ${FEATURE} in
 		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin)"
 		echo $feature
     ;;
-  "hub.edition")
-		feature="((@prep-data or @destroy-data) or (@feat-hub or @feat-edition))"
+  "hub")
+		feature="((@prep-data or @destroy-data) or (@feat-hub))"
 		echo $feature
     ;;
-  "jobs.schedule")
-		feature="((@prep-data or @destroy-data) or (@feat-jobs or @feat-schedule))"
+  "jobs.schedule.edition")
+		feature="((@prep-data or @destroy-data) or (@feat-jobs or @feat-schedule or @feat-edition))"
 		echo $feature
     ;;
   "deployment.apps")
