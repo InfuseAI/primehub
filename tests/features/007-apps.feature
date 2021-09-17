@@ -260,7 +260,9 @@ Feature: Apps
     And I choose radio button with name "e2e-test-instance-type-large"
     And I click "Update" button
     And I wait for 1.0 second
-    And I go to the apps detail page with name "e2e-test-matlab"
+    Then I "should" have "matlab" installed with name "e2e-test-matlab"
+
+    When I go to the apps detail page with name "e2e-test-matlab"
     Then I wait for attribute "Message" with value "exceeded cpu quota: 2, requesting 3.0"
 
   @wip @regression
