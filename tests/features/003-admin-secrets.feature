@@ -19,7 +19,8 @@ Feature: Admin - Secrets
 
   @regression @sanity @prep-data
   Scenario: Create a secret
-    When I click element with test-id "add-button"
+    When I wait for 1.0 second
+    And I click element with test-id "add-button"
     And I wait for 1.0 second
     And I click element with test-id "reset-button"
     Then I should see element with test-id on the page

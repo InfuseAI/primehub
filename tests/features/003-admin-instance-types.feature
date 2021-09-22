@@ -49,7 +49,7 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-instance-type"
 
     When I click edit-button in row containing text "e2e-test-instance-type"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-instance-type"
 
     When I click element with test-id "Global"
@@ -96,7 +96,7 @@ Feature: Admin - Instance Types
   Scenario: Update an GPU instance type
     When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I click edit-button in row containing text "e2e-test-instance-type-gpu"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see value of element with test-id on the page
     | test-id                  | value                      |
     | name                     | e2e-test-instance-type-gpu |
@@ -125,7 +125,7 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-instance-type-gpu"
 
     When I click edit-button in row containing text "e2e-test-instance-type-gpu"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-instance-type-gpu"
 
     When I click element with test-id "Global"
@@ -191,7 +191,7 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-instance-type-large"
 
     When I click edit-button in row containing text "e2e-test-instance-type-large"
-    And I wait for 0.5 second
+    And I wait for 1.0 second
     Then I should see input in test-id "name" with value "e2e-test-instance-type-large"
 
     When I click element with test-id "Global"
