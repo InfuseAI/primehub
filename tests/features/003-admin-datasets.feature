@@ -29,7 +29,6 @@ Feature: Admin - Datasets
     | test-id            | value            |
     | dataset/input-name | e2e-test-dataset |
 
-    And I select option "Env" in admin portal
     And I click element with xpath "//div[contains(@class, 'ant-select-selection--single')]"
     And I wait for 1.5 seconds
     And I click element with xpath "//li[text()='Env']"
