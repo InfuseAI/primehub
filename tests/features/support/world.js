@@ -57,6 +57,7 @@ class World {
       args: ['--no-sandbox', '--disable-setuid-sandbox', "--proxy-server='direct://'", '--proxy-bypass-list=*']
     });
     this.page = await this.browser.newPage();
+    this.page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36');
     this.page.setDefaultTimeout(defaultTimeout);
     // suppress console.log unless DEBUG is true.
     if (this.DEBUG) {
