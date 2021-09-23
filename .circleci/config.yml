@@ -219,6 +219,15 @@ workflows:
       - unit_test
       - verify_image_list
       - e2e_test:
+          name: "e2e_smoke_ce"
+          primehub_mode: "ce"
+          test_type: "smoke" 
+          notify: true
+          filters:
+            branches:
+              ignore:
+                - master
+      - e2e_test:
           name: "e2e_smoke_ee"
           primehub_mode: "ee"
           test_type: "smoke" 
