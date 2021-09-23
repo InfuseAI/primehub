@@ -125,7 +125,7 @@ defineStep("I should see boolean input with test-id {string} having value {strin
 
 defineStep("I select option {string} in admin portal", async function(name) {
   await this.clickElementByXpath("//div[contains(@class, 'ant-select-selection--single')]");
-  await this.page.waitForTimeout(500);
+  await this.page.waitForTimeout(1000);
   await this.clickElementByXpath(`//li[text()='${name}']`);
   await this.takeScreenshot(`select-option-${name}`);
 });
