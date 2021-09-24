@@ -83,7 +83,7 @@ Feature: Job Submission
 
   @regression
   Scenario: User can clone job
-    When I click element with xpath "//tr[1]//button[contains(., 'Clone')]" and wait for navigation
+    When I click element with xpath "//i[@aria-label='icon: copy']" and wait for navigation
     Then I am on the PrimeHub console "NewJob" page
     And I type "clone-job-test" to "displayName" text field
     And I type "clone test" to command text field

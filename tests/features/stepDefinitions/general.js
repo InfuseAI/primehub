@@ -369,8 +369,12 @@ defineStep("I click button of {string}", async function(title) {
 });
 
 defineStep("I click button of {string} of item {string} to wait for {string} dialogue", async function(action, string, dialog) {
-  //tr[contains(.,'gabriel')]//button[contains(*,'Rerun')]
-  const buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//span[contains(.,'${action}')]`;
+  let buttonXpath;
+  if (action.toLowerCase().includes('Rerun'.toLowerCase()) || action.toLowerCase().includes('Re-run'.toLowerCase())) {
+    buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//i[@aria-label='icon: caret-right']`;
+  } else if (action.toLowerCase().includes('Cancel'.toLowerCase())) {
+    buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//i[@aria-label='icon: close-circle']`;
+  }
   const dialogXpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${dialog}')]`;
   let ret;
   for (retryCount=0; retryCount < 3; retryCount++) {
