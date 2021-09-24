@@ -373,7 +373,7 @@ defineStep("I click button of {string} of item {string} to wait for {string} dia
   if (action.toLowerCase().includes('Rerun'.toLowerCase()) || action.toLowerCase().includes('Re-run'.toLowerCase())) {
     buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//i[@aria-label='icon: caret-right']`;
   } else if (action.toLowerCase().includes('Cancel'.toLowerCase())) {
-    buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//i[@aria-label='icon: icon: close-circle']`;
+    buttonXpath = `//tr//a[contains(.,'${string}')]/../following-sibling::td//button//i[@aria-label='icon: close-circle']`;
   }
   const dialogXpath = `//div[@class='ant-modal-confirm-body-wrapper']//span[contains(.,'${dialog}')]`;
   let ret;
