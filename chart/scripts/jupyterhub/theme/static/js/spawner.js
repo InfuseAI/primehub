@@ -247,6 +247,9 @@
       $notReadyImages = $('label.image-option[data-is-ready="false"]');
       $notReadyImages.addClass('disabled');
       $notReadyImages.find('input[type="radio"]').attr('disabled', 'disabled');
+      $('input[name="instance_type_display_name"]:hidden')
+        .val($(this)
+        .data('display-name'));
     });
 
     $imageContainer.off('click.images');
@@ -261,6 +264,10 @@
       if (itHasGpu && imageData.spec && imageData.spec.type === 'cpu') {
         $('div[role="image-not-match-gpu-instance"]').toggleClass('hide', false);
       }
+
+      $('input[name="image_display_name"]:hidden')
+        .val($(this)
+        .data('image-name'));
     });
     var reloadPage = function() {
       location.href = '/hub/spawn';

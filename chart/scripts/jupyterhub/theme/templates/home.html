@@ -8,30 +8,79 @@
 {% block main %}
 <div class="container">
   <div class="row">
+    {% if not default_server.active %}
     <div class="text-center">
-      {% if (user.spawner and
-             user.spawner.ready and
-             user.spawner.active_group and
-             user.spawner.launch_group and
-             user.spawner.active_group != user.spawner.launch_group)
-      %}
-      <h3>The current server is launched by another group ({{ user.spawner.launch_group }})</h3>
-      {% endif %}
-
-      {% if default_server.active %}
-        <a id="stop" role="button" class="btn btn-lg btn-danger">
-          Stop My Server
-        </a>
-      {% endif %}
-      <a id="start" role="button" class="btn btn-lg btn-primary" href="{{ url }}">
-      {% if not default_server.active %}Start{% endif %}
-      My Server
+      <a
+        id="start"
+        role="button"
+        class="btn btn-lg btn-primary"
+        href="{{ url }}"
+      >
+        Start My Server
       </a>
     </div>
+    {% endif %}
+
+    {% if (user.spawner and
+      user.spawner.ready and
+      user.spawner.active_group and
+      user.spawner.launch_group and
+      user.spawner.active_group != user.spawner.launch_group)
+    %}
+    <div class="warning">
+      <i class="fa fa-info-circle" aria-hidden="true"></i> The current server is launched by another group ({{ user.spawner.launch_group }})
+    </div>
+    {% endif %}
+
+    {% if default_server.active %}
+    <div class="server-info">
+      <h2>My Server Information</h2>
+
+      <div class="information">
+        <div class="resources">
+          <span>Instance Type</span>
+          <span>{{ default_server.instance_type }}</span>
+        </div>
+        <div class="resources">
+          <span style="margin-right: 48px;">Image</span>
+          <span>{{ default_server.launch_image }}</span>
+        </div>
+        <div class="resources">
+          <span>Creation Time</span>
+          <span>{{ default_server.created_time }}</span>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="notebook-actions">
+        <a
+          id="start"
+          role="button"
+          class="btn btn-lg btn-primary"
+          href="{{ url }}"
+        >
+          Launch Notebook Server
+        </a>
+
+        <a id="stop" role="button" class="btn btn-danger">
+          Shutdown Server
+        </a>
+      </div>
+    </div>
+
+    {% endif %}
   </div>
+
+  {% if default_server.active and default_server.ssh_config['enabled'] %}
   <div class="row">
-    {% if default_server.active and default_server.ssh_config['enabled'] %}
-    <div id="ssh-information">
+    <div>
+      <a id="show-instruction" class="collapsed" data-status="close" data-toggle="collapse" href="#ssh-information">
+        <i class="fa fa-chevron-right"></i>
+        SSH Server Instruction
+      </a>
+    </div>
+    <div id="ssh-information" class="collapse" style="margin: 0">
       <h3>SSH Server Instruction</h3>
       🔑&emsp;<strong>From your jupyter notebook</strong>
       <p>
@@ -59,8 +108,8 @@
         <pre class='snippet'><code>$ ssh jupyter</code></pre>
       </p>
     </div>
-    {% endif %}
   </div>
+  {% endif %}
 </div>
 {% endblock main %}
 {% block script %}
@@ -81,15 +130,47 @@ require(["jquery"], function(
   // On stop button is clicked, "My server" would be grayed out. And then change to "Start my server"
   // In this case, we don't want to open in new tab
   $("#stop").click(function() {
-    $("#start").removeAttr("target");
+    $(this).attr('disabled', true);
+    $("#start").css('opacity', 0);
     $("#ssh-information").hide();
   });
+
+  const shutdownButton = document.getElementById('stop');
+  const observer = new MutationObserver((record) => {
+
+    const [shutdownButtonAttribute] = record;
+
+    // ref: https://github.com/jupyterhub/jupyterhub/blob/1.2.2/share/jupyterhub/static/js/home.js#L100-L102
+    // After stopping the server successfully, it hides the shutdown button but we can't modify `home.js` directly,
+    // so use `MutationObserver` to observe button attribute changed then execute the function.
+    if (shutdownButtonAttribute.attributeName === 'style') {
+      window.location.reload();
+    }
+  });
+
+  if (shutdownButton) {
+    observer.observe(shutdownButton, { attributes: true });
+  } else {
+    observer.disconnect();
+  }
 
   // force refresh the access token in case to get 403 in the API call.
   // please see ch12047
   setTimeout(function(){
     window.location.reload();
   }, 5 * 60 * 1000);
+
+  $('#show-instruction').on('click', function() {
+    const status = $(this).data('status');
+
+    if (status === 'close') {
+      $(this).find('i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+      $(this).data('status', 'open');
+    } else {
+      $(this).find('i').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+      $(this).data('status', 'close');
+    }
+  });
 });
 </script>
 
