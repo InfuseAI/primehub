@@ -30,7 +30,6 @@ Feature: Admin - Datasets
     | dataset/input-name | e2e-test-dataset |
 
     And I click element with xpath "//div[contains(@class, 'ant-select-selection--single')]"
-    And I wait for 1.5 seconds
     And I click element with xpath "//li[text()='Env']"
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
