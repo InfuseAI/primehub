@@ -3,7 +3,7 @@ primehub-all:
   busybox: &busybox busybox:1.31
   primehub-admission: &primehub-admission infuseai/primehub-admission:6162f37732
   primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
-  primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.0
+  primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
   primehub-controller: &primehub-controller infuseai/primehub-controller:latest
