@@ -8,6 +8,11 @@ defineStep("I get the iframe object", async function() {
 defineStep("I go to the spawner page", async function() {
   let frame, ret;
   let xpath = "//h4[text()='Select your notebook settings']";
+
+  await this.page.waitForSelector('#stop', { visible: true, timeout: 1000 }).then(
+    await this.context.click("#stop")
+    await this.page.waitForTimeout(5000);
+  );
   for (retryCount=0; retryCount < 10; retryCount++) {
     try {
       await this.context.click("#start");
