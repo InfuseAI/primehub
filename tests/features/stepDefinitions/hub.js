@@ -8,11 +8,18 @@ defineStep("I get the iframe object", async function() {
 defineStep("I go to the spawner page", async function() {
   let frame, ret;
   let xpath = "//h4[text()='Select your notebook settings']";
-
-  await this.page.waitForSelector('#stop', { visible: true, timeout: 1000 }).then(
-    await this.context.click("#stop");
-    await this.page.waitForTimeout(5000);
-  );
+  let selector = "a[id='stop']";
+  for (retryCount=0; retryCount < 5; retryCount++) {
+    try {
+      await this.context.waitForSelector(selector, {visible: true, timeout: 5000});
+      await this.context.click(selector);
+      await this.page.waitForTimeout(1000);
+      console.log("still stopping my server");
+    }
+    catch (e) {
+      await this.takeScreenshot("server-stopped");
+    }
+  }
   for (retryCount=0; retryCount < 10; retryCount++) {
     try {
       await this.context.click("#start");
@@ -29,6 +36,7 @@ defineStep("I go to the spawner page", async function() {
     await this.page.waitForTimeout(2000);
   }
   throw new Error("failed to go to the spawner page");
+
 });
 
 defineStep("I am on the notebooks admin page", async function() {
