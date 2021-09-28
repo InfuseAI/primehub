@@ -3,7 +3,7 @@ Feature: Delete data
   Delete some created resources
 
   Background:
-    Given I am logged in
+    Given I am logged in as a admin
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
