@@ -4,6 +4,7 @@
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FInfuseAI%2Fprimehub?ref=badge_shield)
 [![CircleCI](https://circleci.com/gh/InfuseAI/primehub.svg?style=shield)](https://circleci.com/gh/InfuseAI/primehub)
 [![codecov](https://codecov.io/gh/InfuseAI/primehub/branch/master/graph/badge.svg?token=WOO4EXU96F)](https://codecov.io/gh/InfuseAI/primehub)
+[![InfuseAI Discord Invite](https://img.shields.io/discord/664381609771925514?color=%237289DA&label=chat&logo=discord&logoColor=white)](https://discord.com/invite/5zb2aK9KBV)
 
 # PrimeHub Community Edition
 
