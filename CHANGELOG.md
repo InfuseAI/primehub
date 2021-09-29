@@ -3,6 +3,8 @@
 ## Upcoming
 ### What's New
 
+- Admin could invite users by an invitation link.
+
 ## 3.8.0
 ### What's New
 
