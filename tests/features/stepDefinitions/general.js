@@ -190,12 +190,14 @@ defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
 
 defineStep("I click element with xpath {string}", async function(string) {
   await this.clickElementByXpath(string);
+  await this.takeScreenshot("I-click-element-with-xpath");
 });
 
 defineStep("I click element with xpath on the page", async function(datatable) {
   for (const row of datatable.rows()) {
     await this.clickElementByXpath(row);
   }
+  await this.takeScreenshot("I-click-element-with-xpath-on-the-page");
 });
 
 defineStep("I click element with xpath {string} and wait for navigation", async function(xpath) {

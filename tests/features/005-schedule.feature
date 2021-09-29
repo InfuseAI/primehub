@@ -22,8 +22,10 @@ Feature: Job Schedule
     And I click "Submit" button
     Then I am on the PrimeHub console "Schedule" page
 
-    When I click element with xpath "//td[text()='create-schedule-test']//..//button[1]" and wait for xpath "//div[@class='ant-modal-content']//a" appearing
-    And I click element with xpath "//div[@class='ant-modal-content']//a"
+    When I click element with xpath "//span[text()='Submitted By Me']/preceding-sibling::span//input[@type='checkbox']"
+    And I "run" the "create-schedule-test" in Schedule
+    And I wait for 1.0 second
+    And I click element with xpath "//a//u[contains(., 'view your job details here.')]"
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
     And I wait for attribute "Job Name" with value "create-schedule-test"
 

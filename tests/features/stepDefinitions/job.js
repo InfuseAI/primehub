@@ -43,3 +43,12 @@ defineStep("I wait for attribute {string} with value {string} in job upper pane"
     }
     throw new Error(`failed to wait for ${att} with value ${value}`);
 });
+
+defineStep("I {string} the {string} in Schedule", async function(action, entry) {
+  // run, edit, delete an entry in schedule 
+  let actionClass;
+  if (action.toLowerCase().includes('run')) { actionClass = "caret-right" }
+  const xpath = `//tr//td[contains(., '${entry}')]/following-sibling::td//button//i[@class='anticon anticon-${actionClass}']`;
+  await this.clickElementByXpath(xpath);
+  await this.takeScreenshot(`I-${action}-the-${entry}-in-Schedule`);
+});
