@@ -16,7 +16,7 @@ Feature: Delete data
 
     When I search "e2e-test-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-user"
-    And I wait for 2.0 seconds
+    And I wait for 4.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-user"
 
     When I click refresh
@@ -25,7 +25,7 @@ Feature: Delete data
 
     When I search "e2e-test-another-user" in test-id "text-filter-username"
     And I delete a row with text "e2e-test-another-user"
-    And I wait for 2.0 seconds
+    And I wait for 4.0 seconds
     Then I "should not" see list-view table containing row with "e2e-test-another-user"
 
     When I click refresh
