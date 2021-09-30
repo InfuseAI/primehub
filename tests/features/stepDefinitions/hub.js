@@ -124,7 +124,7 @@ defineStep("I {string} see instance types block containing {string} instanceType
       function(result) { ret = result; }
   );
   if (!ret) throw new Error(`failed to check '${name}-${this.E2E_SUFFIX}' instanceType does not exist`);
-  
+
   if (!exist.includes('not')) {
     const [element] = await this.context.$x(xpath+'//i');
     await element.hover();
@@ -145,12 +145,12 @@ defineStep("I {string} see instance types block containing {string} instanceType
 defineStep("I {string} see images block containing {string} image with {string} type and {string} description", async function(exist, name, type, desc) {
   let ret;
   let xpath = `//div[@id='image-container']//strong[contains(text(), '${name}')]`;
-  
+
   await this.checkElementExistByXPath(exist, xpath, context = this.context).then(
       function(result) { ret = result; }
   );
   if (!ret) throw new Error(`failed to check image '${name}' is existed`);
-  
+
   if (!exist.includes('not')) {
     const [element] = await this.context.$x(xpath+'//i');
     await element.hover();
@@ -172,7 +172,7 @@ defineStep("I {string} see images block containing {string} image with {string} 
 defineStep("I can see advanced settings", async function() {
   let ret;
   const xpath = "//div[@aria-expanded='true']//label[text()='Enable Safe Mode ']";
-  
+
   await this.clickElementByXpath("//a[@href='#advanced-setup']", context = this.context);
   await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = result; }
@@ -181,8 +181,8 @@ defineStep("I can see advanced settings", async function() {
 
   for (retryCount=0; retryCount < 5; retryCount++) {
     await this.checkElementExistByXPath(
-      'should exist', 
-      xpath+"//i[@data-original-title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']", 
+      'should exist',
+      xpath+"//i[@data-original-title='Safe Mode mounts your persistent home directory under /home/jovyan/user.']",
       context = this.context).then(
         function(result) { ret = result; }
     );
@@ -231,7 +231,7 @@ defineStep("I can see the JupyterLab page", async function() {
 
 defineStep("I stop my server in hub", async function() {
   const selector = "a[id='stop']";
-  for (retryCount=0; retryCount < 10; retryCount++) {
+  for (retryCount=0; retryCount < 30; retryCount++) {
     try {
       await this.context.waitForSelector(selector, {visible: true, timeout: 5000});
       await this.context.click(selector);
@@ -260,10 +260,10 @@ defineStep("I stop my server in notebooks admin", async function() {
   const xpath = `//tr[@data-user='${this.USERNAME}']//a[text()='stopping...']`;
   let ele, ret;
   for (retryCount=0; retryCount < 5; retryCount++) {
-    try { 
+    try {
       [ele] = await this.context.$x(xpath, {timeout: 5000});
       await ele.click();
-    } 
+    }
     catch (e) {}
     await this.checkElementExistByXPath('should exist', xpath, context = this.context).then(
       function(result) { ret = !result; }
