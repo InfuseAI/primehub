@@ -64,6 +64,7 @@
         </a>
 
         <a id="stop" role="button" class="btn btn-danger">
+          <i id="stop-spinner" style="display: none;" class="fa fa-spinner fa-spin"></i>
           Shutdown Server
         </a>
       </div>
@@ -131,6 +132,7 @@ require(["jquery"], function(
   // In this case, we don't want to open in new tab
   $("#stop").click(function() {
     $(this).attr('disabled', true);
+    $('#stop-spinner').css('display', 'inline-block');
     $("#start").css('opacity', 0);
     $("#ssh-information").hide();
   });
