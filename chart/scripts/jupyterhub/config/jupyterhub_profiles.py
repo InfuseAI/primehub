@@ -937,6 +937,10 @@ class PrimeHubSpawner(KubeSpawner):
     _default_image = None
     _default_instance_type = None
     _autolaunch = None
+    started_at = None
+    created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    launch_image = ""
+    instance_type = ""
 
     @property
     def primehub_pod_reflector(self):
@@ -1255,6 +1259,15 @@ class PrimeHubSpawner(KubeSpawner):
 
         gpu_request = int(it['spec'].get('limits.nvidia.com/gpu', 0))
         self.apply_kubespawner_override(self.image_to_override(img, gpu_request))
+
+        try:
+            self.instance_type = formdata.get('instance_type_display_name')[0]
+            self.launch_image = formdata.get('image_display_name')[0]
+        except:
+            self.instance_type = '<unknown>'
+            self.launch_image = '<unknown>'
+            pass
+
         return options
 
     def apply_kubespawner_override(self, kubespawner_override):
@@ -1370,6 +1383,7 @@ class PrimeHubHomeHandler(BaseHandler):
                 self.redirect(url)
                 return
 
+
         html = self.render_template(
             'home.html',
             user=user,
@@ -1380,7 +1394,7 @@ class PrimeHubHomeHandler(BaseHandler):
             group=group,
             # can't use user.spawners because the stop method of User pops named servers from user.spawners when they're stopped
             spawners=user.orm_user._orm_spawners,
-            default_server=user.spawner,
+            default_server=user.spawner
         )
         self.finish(html)
 

@@ -179,7 +179,7 @@
     {{#.}}
     <label for="instance_type-item-{{index}}" class="form-control input-group">
         <div class="col-md-1">
-            <input type="radio" name="instance_type" id="instance_type-item-{{index}}" data-index="{{index}}" value="{{name}}" />
+            <input type="radio" name="instance_type" data-display-name="{{ displayName }}" id="instance_type-item-{{index}}" data-index="{{index}}" value="{{name}}" />
         </div>
         <div class="col-md-11">
             <strong>{{displayName}} <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{{resourceLimits}}" id="instance_type-item-info-icon-{{index}}"></i></strong>
@@ -189,12 +189,13 @@
         </div>
     </label>
     {{/.}}
+    <input type="hidden" name="instance_type_display_name" value="" />
 </script>
 <script id="image-template" type="x-tmpl-mustache">
     {{#.}}
     <label for="image-item-{{index}}" data-image-type="{{spec.type}}" class="form-control input-group image-option" data-is-ready="{{isReady}}">
         <div class="col-md-1">
-            <input type="radio" name="image" id="image-item-{{index}}" data-index="{{index}}" value="{{name}}" />
+            <input type="radio" name="image" data-image-name="{{ displayName }}" id="image-item-{{index}}" data-index="{{index}}" value="{{name}}" />
         </div>
         <div class="col-md-11">
             <strong>{{displayName}} <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{{typeLabel}}"></i></strong>
@@ -204,8 +205,12 @@
         </div>
     </label>
     {{/.}}
+    <input type="hidden" name="image_display_name" value="" />
 </script>
 {% endraw %}
+
+<input type="hidden" name="instance_display_name" value="" />
+<input type="hidden" name="image_display_name" value="" />
 
 <script src="{{ static_url("components/primehub/spawner.js") }}"></script>
 <script src="{{ static_url("components/primehub/snippets.js") }}"></script>
