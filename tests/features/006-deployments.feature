@@ -52,6 +52,7 @@ Feature: Model Deployment
     And I type "infuseai/model-tensorflow2-mnist:v0.1.0" to "modelImage input" text field
     And I click element with xpath "//span[text()='Deploy']"
     Then I am on the PrimeHub console "Deployments" page
+    And I wait for 2.0 seconds
     
     When I go to the deployment detail page with name "create-deployment-test"
     Then I wait for attribute "Status" with value "Deployed"
