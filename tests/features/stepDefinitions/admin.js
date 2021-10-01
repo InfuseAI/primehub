@@ -89,10 +89,12 @@ defineStep("I {string} see list-view table containing row with {string}", async 
   // use xpath to find the <tr> containing 'text'
   const xpath = `//tr[contains(., '${string}-${this.E2E_SUFFIX}')]`;
   var isExist = true;
-  try {await this.page.waitForXPath(xpath, {timeout: 10 * 1000});}
+  try {
+    await this.page.waitForXPath(xpath, {timeout: 10 * 1000});
+    await this.takeScreenshot(`list-view-${string}-${this.E2E_SUFFIX}-isExist-${isExist}`);
+  }
   catch (err) {isExist = false;}
   if (exist.includes("not") === isExist) throw new Error(`list view ${string}-${this.E2E_SUFFIX} is exist: ${isExist}`);
-  await this.takeScreenshot(`list-view-${string}-${this.E2E_SUFFIX}-isExist-${isExist}`);
 });
 
 defineStep("I should see input in test-id {string} with value {string}", async function(testId, string) {
