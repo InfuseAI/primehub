@@ -938,7 +938,7 @@ class PrimeHubSpawner(KubeSpawner):
     _default_instance_type = None
     _autolaunch = None
     started_at = None
-    created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    created_time = None
     launch_image = ""
     instance_type = ""
 
@@ -1263,6 +1263,7 @@ class PrimeHubSpawner(KubeSpawner):
         try:
             self.instance_type = formdata.get('instance_type_display_name')[0]
             self.launch_image = formdata.get('image_display_name')[0]
+            self.created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         except:
             self.instance_type = '<unknown>'
             self.launch_image = '<unknown>'
