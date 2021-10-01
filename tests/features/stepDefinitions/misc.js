@@ -1,4 +1,4 @@
-const { defineStep } = require("cucumber");
+const { defineStep } = require("@cucumber/cucumber");
 const { expect } = require("chai");
 
 defineStep("I am on the user guide page", async function() {

@@ -1,10 +1,10 @@
-const { setWorldConstructor } = require("cucumber");
+const { setWorldConstructor } = require("@cucumber/cucumber");
 const { expect } = require("chai");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const defaultTimeout = 120 * 1000
 
-const {setDefaultTimeout} = require('cucumber');
+const {setDefaultTimeout} = require('@cucumber/cucumber');
 setDefaultTimeout(defaultTimeout);
 
 const escapeXpathString = str => {

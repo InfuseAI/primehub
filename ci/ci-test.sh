@@ -210,5 +210,5 @@ else
 fi
 echo $tags
 
-~/project/node_modules/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
+~/project/node_modules/\@cucumber/cucumber/bin/cucumber-js tests/features/ -f json:tests/report/cucumber_report.json --tags "$tags"
 node tests/report/generate_e2e_report.js

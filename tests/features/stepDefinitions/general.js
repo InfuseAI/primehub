@@ -1,4 +1,4 @@
-const { defineStep, After, Before } = require("cucumber");
+const { defineStep, After, Before } = require("@cucumber/cucumber");
 const { expect } = require("chai");
 const fs = require("fs");
 const rimraf = require("rimraf");
