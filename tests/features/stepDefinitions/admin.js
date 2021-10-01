@@ -126,11 +126,18 @@ defineStep("I should see boolean input with test-id {string} having value {strin
 });
 
 defineStep("I select option {string} in admin portal", async function(name) {
-  await this.clickElementByXpath("//div[contains(@class, 'ant-select-selection--single')]");
-  hovers = await this.page.$x(`//li[text()='${name}']`);
-  await hovers[0].hover();
-  await this.clickElementByXpath(`//li[text()='${name}']`);
-  await this.takeScreenshot(`select-option-${name}`);
+  const xpath = `//li[text()='${name}']`;
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    await this.page.mouse.move(0, 0);
+    const hovers = await this.page.$x("//div[contains(@class, 'ant-select-selection--single')]");
+    if (hovers.length > 0) {
+      await hovers[0].click();
+      await this.page.waitForTimeout(500);
+      await this.clickElementByXpath(xpath);
+    }
+    else console.log("Cannot find dropdown menu");
+    await this.takeScreenshot(`select-option-for-${name}-admin-portal`);
+  }
 });
 
 defineStep("I assign group admin of {string} to {string}", async function(group, user) {
