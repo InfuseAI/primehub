@@ -412,6 +412,8 @@ bootstrap:
       memory: 128Mi
   username: phadmin
   password:
+  email:
+  enforceUpdatePassword: false
   group: phusers
   instanceTypes:
   - metadata:

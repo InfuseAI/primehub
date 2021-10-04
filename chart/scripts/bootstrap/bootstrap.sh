@@ -151,6 +151,7 @@ function update_theme() {
 function create_default_resources() {
   local usercount=$($KCADM get -r $KC_REALM users | jq -r '. | length')
   if (( $usercount > 0 )); then
+    print_section "Skip default resources"
     return 0
   fi
 
@@ -158,10 +159,13 @@ function create_default_resources() {
   PH_USER=${PH_USER:-phadmin}
   PH_GROUP=${PH_GROUP:-phusers}
   PH_PASSWORD=${PH_PASSWORD:-$(openssl rand -hex 12)}
+  PH_USER_EMAIL=${PH_USER_EMAIL:-"$PH_USER@example.com"}
+  PH_USER_ENFORCE_UPDATE_PASSWORD=${PH_USER_ENFORCE_UPDATE_PASSWORD:-false}
 
   # Create user: phadmin
-  print_info "Create user: $PH_USER"
-  kc_user_create PH_ADMIN $KC_REALM $PH_USER $PH_PASSWORD
+  print_info "Create user: $PH_USER email: $PH_USER_EMAIL"
+  print_info "Enforce Update Password: $PH_USER_ENFORCE_UPDATE_PASSWORD"
+  kc_user_create PH_ADMIN $KC_REALM $PH_USER $PH_PASSWORD $PH_USER_EMAIL $PH_USER_ENFORCE_UPDATE_PASSWORD
 
   # Create group: phusers
   print_info "Create group: $PH_GROUP"
