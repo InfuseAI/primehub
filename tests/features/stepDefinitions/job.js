@@ -1,4 +1,4 @@
-const { defineStep } = require("cucumber");
+const { defineStep } = require("@cucumber/cucumber");
 const { expect } = require("chai");
 
 defineStep("I type {string} to command text field", {timeout: 300 * 1000}, async function(command) {

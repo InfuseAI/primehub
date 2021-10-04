@@ -62,4 +62,4 @@ curl -sLo yq https://github.com/mikefarah/yq/releases/download/v4.9.8/yq_linux_a
   sudo mv yq /usr/local/bin
 
 # Install node
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash && bash -c 'source ~/.bashrc && nvm install 11.1 && npm install cucumber@6.0.5 puppeteer chai cucumber-html-reporter'
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && bash -c 'source ~/.bashrc && nvm install v14.18.0 && npm install @cucumber/cucumber puppeteer chai cucumber-html-reporter'
