@@ -77,6 +77,14 @@ spec:
               secretKeyRef:
                 name: "primehub-bootstrap"
                 key: password
+          {{- if .Values.bootstrap.email }}
+          - name: "PH_USER_EMAIL"
+            value: {{ .Values.bootstrap.email }}
+          {{- end }}
+          {{- if .Values.bootstrap.enforceUpdatePassword }}
+          - name: PH_USER_ENFORCE_UPDATE_PASSWORD
+            value: "true"
+          {{- end }}
           - name: PH_GROUP
             value: {{ .Values.bootstrap.group }}
           - name: PRIMEHUB_MODE
