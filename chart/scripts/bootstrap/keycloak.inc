@@ -94,19 +94,25 @@ function kc_user_create() {
   local realm=$2
   local user=$3
   local password=$4
+  local email=${5:-}
+  local enforceUpdatePassword=${6:-false}
   local user_id
+  local requiredActions=''
+
+  if [ "$email" == "" ]; then
+    email="$user@example.com"
+  fi
 
   local result=$(
     $KCADM get -r $realm users -q username=$user
   )
-
   local result_count=`echo $result | jq length`
   if (( $result_count == 0 )); then
     user_id=$(\
       $KCADM create users \
         -r $realm \
         -s username=$user \
-        -s email=dev+$user@infuseai.io \
+        -s email=$email \
         -s enabled=true \
         -s emailVerified=true \
         --id \
@@ -119,6 +125,13 @@ function kc_user_create() {
       -r $realm \
       --username $user \
       --new-password $password
+
+  if [ "$enforceUpdatePassword" != 'false' ]; then
+    $KCADM update \
+      users/$user_id \
+      -r $realm \
+      -s "requiredActions=[\"UPDATE_PASSWORD\"]"
+  fi
 
   eval "${prefix}_USER_ID=$user_id"
   eval "${prefix}_USER=$user"
