@@ -11,7 +11,7 @@ Before(async function(scenario) {
 });
 
 After(async function(scenario) {
-  if (scenario.result.status === 'failed') {
+  if (scenario.result.status.toLowerCase() === 'failed') {
     await this.exportPageContent(this.scenarioName);
     await this.takeScreenshot(`After-${this.scenarioName}`);
   }
