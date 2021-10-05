@@ -22,7 +22,7 @@ Feature: Job Schedule
     And I click "Submit" button
     Then I am on the PrimeHub console "Schedule" page
 
-    When I click element with xpath "//span[text()='Submitted By Me']/preceding-sibling::span//input[@type='checkbox']"
+    When I wait for 1.0 second
     And I "run" the "create-schedule-test" in Schedule
     And I wait for 1.0 second
     And I click element with xpath "//a//u[contains(., 'view your job details here.')]"
