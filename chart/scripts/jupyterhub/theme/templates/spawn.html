@@ -198,10 +198,12 @@
             <input type="radio" name="image" data-image-name="{{ displayName }}" id="image-item-{{index}}" data-index="{{index}}" value="{{name}}" />
         </div>
         <div class="col-md-11">
-            <strong>{{displayName}} <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{{typeLabel}}"></i></strong>
+          <div class="image-name">
+            <p style="font-weight: 700">{{displayName}}</p> <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="{{typeLabel}}"></i>
+          </div>
             {{#description}}
-            <p>{{description}}</p>
-            {{/description}}
+            <p class="image-description">{{description}}</p>
+          {{/description}}
         </div>
     </label>
     {{/.}}

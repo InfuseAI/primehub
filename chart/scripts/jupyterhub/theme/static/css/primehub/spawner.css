@@ -163,3 +163,22 @@
   }
 }
 
+.image-name {
+   display: flex;
+   gap: 4px;
+   align-items: center;
+   margin-bottom: 8px;
+}
+
+.image-name > p {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0;
+}
+
+.image-description  {
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
