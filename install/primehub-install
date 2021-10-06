@@ -103,7 +103,7 @@ USAGE:
   $SELF destroy primehub                         : Uninstall PrimeHub
   $SELF destroy prometheus                       : Uninstall Prometheus
   $SELF license                                  : Show the license of PrimeHub
-  $SELF version [--beta]                         : Show the default and available PrimeHub versions
+  $SELF version [--beta] [--aws]                 : Show the default and available PrimeHub versions
   $SELF apply-license [--license-path path]      : Apply the license of PrimeHub
   $SELF usage                                    : Show the resource usage of the k8s environment
   $SELF required-bin                             : Install the required binaries manually
@@ -127,6 +127,7 @@ Options:
   --helm-timeout      <timeout-duration>         : Timeout of helm install          (Default: 1000)
   --skip-domain-check                            : Skip the domain name check
   --skip-disk-space-check                        : Skip the disk space check when install singlenode k8s
+  --aws                                          : Set the latest PrimeHub AWS version as default verion
 EOF
 }
 
