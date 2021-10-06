@@ -39,7 +39,7 @@ LOGS_TAIL=10000
 HELM_TIMEOUT=1000
 DOMAIN_CHECK=true
 DISK_SIZE_CHECK=true
-SHOW_RC_VERSION=false
+SHOW_VERSION=release
 
 MINIMAL_CPU_REQUEST=3700 # 4 CPU
 MINIMAL_MEM_REQUEST=8388608 # 8Gi Mem
@@ -185,8 +185,9 @@ search_helm_release() {
 infuseai_repo_update() {
   if [[ "$(helm repo list | grep infuseai)" == "" ]]; then
     helm repo add infuseai https://charts.infuseai.io
-    helm repo update
   fi
+  info "[Update] helm repo"
+  helm repo update
 }
 
 check::microk8s::snap() {
@@ -1250,24 +1251,35 @@ show_versions() {
     grep_options='-P'
   fi
 
-  info "[Available] PrimeHub Versions:"
   if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
     # For YQ 4
-    curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep ${grep_options} 'v\d*\.\d*\.\d*$'
-    if [[ ${SHOW_RC_VERSION} == true ]]; then
+    if [[ ${SHOW_VERSION} == 'rc' ]]; then
       warn "[Available] PrimeHub Beta Versions:"
       curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep ${grep_options} 'v\d*\.\d*\.\d*-rc.*$'
+    elif [[ ${SHOW_VERSION} == 'aws' ]]; then
+      warn "[Available] PrimeHub AWS Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep ${grep_options} 'v\d*\.\d*\.\d*-aws.*$'
+    else
+      info "[Available] PrimeHub Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq e '.entries.primehub[].appVersion' - | grep ${grep_options} 'v\d*\.\d*\.\d*$'
     fi
   else
     # For YQ 2 or 3
-    curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep ${grep_options} 'v\d*\.\d*\.\d*$'
-    if [[ ${SHOW_RC_VERSION} == true ]]; then
+    if [[ ${SHOW_VERSION} == 'rc' ]]; then
       warn "[Available] PrimeHub Beta Versions:"
       curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep ${grep_options} 'v\d*\.\d*\.\d*-rc.*$'
+    elif [[ ${SHOW_VERSION} == 'aws' ]]; then
+      warn "[Available] PrimeHub AWS Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep ${grep_options} 'v\d*\.\d*\.\d*-aws.*$'
+    else
+      info "[Available] PrimeHub Versions:"
+      curl -s ${PRIMEHUB_HELM_CHART} | yq r - 'entries.primehub[*].appVersion' | grep ${grep_options} 'v\d*\.\d*\.\d*$'
     fi
   fi
+}
 
-
+primehub_aws_latest_version() {
+  curl -s ${PRIMEHUB_HELM_CHART} | grep 'appVersion: .*-aws' | sed 's/.*appVersion: //' | head -1
 }
 
 verify_minimal_resources() {
@@ -1577,7 +1589,11 @@ main() {
         DISK_SIZE_CHECK=false
       ;;
       --beta)
-        SHOW_RC_VERSION=true
+        SHOW_VERSION=rc
+      ;;
+      --aws)
+        SHOW_VERSION=aws
+        PRIMEHUB_VERSION=$(primehub_aws_latest_version)
       ;;
       --logs-path|--log-path)
         shift
