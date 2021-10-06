@@ -39,6 +39,7 @@ class World {
 
     this.HOME_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/console/g`;
     this.KC_SERVER_URL = `${this.KC_SCHEME}://${this.KC_DOMAIN}${this.KC_PORT}/auth/realms`;
+    this.API_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/api/graphql`;
 
     this.context = null;
     this.copyText = null;

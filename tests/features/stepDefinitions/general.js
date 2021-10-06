@@ -94,7 +94,8 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewApps': `${prefix}//span[text()='Add App to PrimeHub']`,
     'Images': `${prefix}//a[text()='Images']`,
     'NewImage': `${prefix}//span[text()='New Images']`,
-    'Settings': `${prefix}//a[text()='Settings']`
+    'Settings': `${prefix}//a[text()='Settings']`,
+    'API Token': `${prefix}//span[text()='API Token']`
   };
   const urlMap = {
     'Home': '/home', // temporarily used
@@ -113,7 +114,8 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'NewApps': `-${this.E2E_SUFFIX}/apps/create`,
     'Images': `-${this.E2E_SUFFIX}/images`,
     'NewImage': `-${this.E2E_SUFFIX}/images/create`,
-    'Settings': `-${this.E2E_SUFFIX}/settings`
+    'Settings': `-${this.E2E_SUFFIX}/settings`,
+    'API Token': `-${this.E2E_SUFFIX}/api-token`
   };
 
   await this.page.waitForXPath(xpathMap[menuitem]);
@@ -561,6 +563,42 @@ defineStep("I should see the property {string} of element with xpath {string} is
     throw new Error(`Failed to get element "${xpath}"`);
   }
   throw new Error(`Failed to find text that matched the regular expression "${exp}"`);
+});
+
+defineStep(/^I should see (?:(.*)) in (?:(.*)) in API Token?$/, async function(item, tag) {
+  let inputXpath, textareaXpath, text, ele, ret;
+  if (item.includes('API Token')) {
+    try { 
+      inputXpath = `//input[@class='ant-input']`; 
+      [ele] = await this.page.$x(inputXpath);
+      text = await (await ele.getProperty('value')).jsonValue();
+    } catch (e) {
+      if (!text) {
+        await this.takeScreenshot(`I-should-see-${item}-in-${tag}`);
+        throw new Error('API Token not found');
+      }
+    }
+    if (tag.includes('textarea')) {
+      textareaXpath = `//textarea[contains(., ${text})]`;
+      await this.checkElementExistByXPath('should exist', textareaXpath).then(
+        function(result) { ret = !result; } );
+      if (ret) {
+        await this.takeScreenshot(`I-should-see-${item}-in-${tag}`);
+	throw new Error(`API Token is missing or not matching in Example`);      
+      }
+    } 
+  }
+
+  if ((item.includes('URL')) && (tag.includes('textarea'))) {
+      let url = this.API_URL;
+      textareaXpath = `//textarea[contains(., '${this.API_URL}')]`;
+      await this.checkElementExistByXPath('should exist', textareaXpath).then(
+        function(result) { ret = !result; } );
+      if (ret) {
+        await this.takeScreenshot(`I-should-see-${item}-in-${tag}`);
+	throw new Error(`URL is missing from Example`);
+      }
+    } 
 });
 
 // Helper functions
