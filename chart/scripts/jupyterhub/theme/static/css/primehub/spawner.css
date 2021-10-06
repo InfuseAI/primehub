@@ -163,21 +163,21 @@
   }
 }
 
-.image-name {
+.image-name, .instance-type-name {
    display: flex;
    gap: 4px;
    align-items: center;
    margin-bottom: 8px;
 }
 
-.image-name > p {
-  max-width: 400px;
+.image-name > p, .instance-type-name > p {
+  max-width: 380px;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 0;
 }
 
-.image-description  {
+.image-description, .instance-type-description  {
   max-width: 400px;
   overflow: hidden;
   text-overflow: ellipsis;
