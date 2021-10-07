@@ -1,4 +1,3 @@
-{{- if .Values.admission.enabled }}
 {{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
@@ -44,7 +43,7 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        primehub.io/pvc-check-webhook: "enabled"
+        primehub.io/admission-webhook: "enabled"
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: MutatingWebhookConfiguration
@@ -67,7 +66,30 @@ webhooks:
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
-        primehub.io/resources-validation-webhook: "enabled"
+        primehub.io/admission-webhook: "enabled"
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: license-validating-webhook
+webhooks:
+  - name: license-validating-webhook.primehub.io
+    sideEffects: None
+    clientConfig:
+      service:
+        name: primehub-admission
+        namespace: {{ .Release.Namespace }}
+        path: /license-check
+      caBundle: {{ $ca.Cert | b64enc }}
+    failurePolicy: Ignore
+    namespaceSelector:
+      matchLabels:
+        primehub.io/admission-webhook: "enabled"
+    rules:
+      - operations: [ "CREATE", "UPDATE" ]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["licenses"]
 ---
 {{- $cn := "primehub-admission" }}
 {{- $altName1 := printf "%s.%s" $cn .Release.Namespace }}
@@ -83,4 +105,3 @@ type: Opaque
 data:
   cert.pem: {{ $cert.Cert | b64enc }}
   key.pem: {{ $cert.Key | b64enc }}
-{{- end }}

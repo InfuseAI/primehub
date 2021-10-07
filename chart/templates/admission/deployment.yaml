@@ -41,6 +41,8 @@ spec:
           value: "false"
         - name: LOGURU_LEVEL
           value: INFO
+        - name: PLATFORM_TYPE
+          value: {{ .Values.primehub.mode }}
         volumeMounts:
           - name: certs
             mountPath: /app/ssl
