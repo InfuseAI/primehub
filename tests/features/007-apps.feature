@@ -80,7 +80,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-mlf']"
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: Install Code Server
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
@@ -92,7 +92,7 @@ Feature: Apps
     And I go to the apps detail page with name "e2e-test-code-server"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression
+  @wip @regression
   Scenario: Launch Code Server
     And I "should" have "code-server" installed with name "e2e-test-code-server"
 
@@ -101,7 +101,7 @@ Feature: Apps
     And I switch to "console/apps/code-server" tab
     Then I "should" see element with xpath "//h1[contains(text(), 'code-server')]"
 
-  @regression
+  @wip @regression
   Scenario: A user can not see Code Server with default group access scope installed by other group
     When I choose "Logout" in top-right menu
     Then I am on login page
@@ -113,7 +113,7 @@ Feature: Apps
     Then I am on the PrimeHub console "Apps" page
     And I "should not" have "code-server" installed with name "e2e-test-code-server"
 
-  @regression
+  @wip @regression
   Scenario: Update access scope of Code Server to PhimeHub Users only and switch user to access
     And I "should" have "code-server" installed with name "e2e-test-code-server"
 
@@ -140,7 +140,7 @@ Feature: Apps
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: Remove Code Server
     And I "should" have "code-server" installed with name "e2e-test-code-server"
 
