@@ -4,7 +4,10 @@ Feature: Admin - Groups
   I want to change settings
 
   Background:
-    Given I am logged in as a admin
+    Given I am logged in as an admin
+    And I wait for 1 second
+    And I click refresh
+    And I wait for 1 second
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu

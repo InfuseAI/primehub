@@ -125,6 +125,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
       await this.takeScreenshot(`${menuitem}-page`);
       return;
     }
+    await this.takeScreenshot(`${menuitem}-page`);
     await this.page.waitForTimeout(2000);
   }
   throw new Error(`failed to go to ${menuitem} page`);
@@ -188,6 +189,7 @@ defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
   await this.input("password", password);
   const xpath = "//input[@id='kc-login']";
   await this.clickElementByXpath(xpath);
+  await this.takeScreenshot(`I-am-logged-in`);
 });
 
 defineStep("I click element with xpath {string}", async function(string) {

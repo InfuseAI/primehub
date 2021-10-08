@@ -6,6 +6,9 @@ Feature: Hub
 
   Background:
     Given I am logged in
+    And I wait for 1 second
+    And I click refresh
+    And I wait for 1 second
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
