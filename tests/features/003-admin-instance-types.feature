@@ -59,9 +59,9 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
@@ -135,9 +135,9 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
@@ -201,9 +201,9 @@ Feature: Admin - Instance Types
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I click element with xpath "//div[text()='Node Selector']"
     And I wait for 0.5 second
