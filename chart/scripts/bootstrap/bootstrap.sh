@@ -207,7 +207,7 @@ function create_default_resources() {
 
 function add_admission_labels() {
   print_section "Add labels for admission webhook..."
-  print_info "[label] 'admissino-webhook=enabled' on $PRIMEHUB_NAMESPACE namesapce"
+  print_info "[label] 'admission-webhook=enabled' on $PRIMEHUB_NAMESPACE namesapce"
   kubectl label ns $PRIMEHUB_NAMESPACE --overwrite primehub.io/admission-webhook=enabled
 }
 
