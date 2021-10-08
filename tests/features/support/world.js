@@ -21,8 +21,6 @@ class World {
     this.KC_REALM = process.env.KC_REALM;
     this.PRIMEHUB_SCHEME = process.env.PRIMEHUB_SCHEME;
     this.PRIMEHUB_DOMAIN = process.env.PRIMEHUB_DOMAIN;
-    this.USERNAME = process.env.PH_USERNAME;
-    this.PASSWORD = process.env.PH_PASSWORD;
     this.PH_ADMIN_USERNAME = process.env.PH_ADMIN_USERNAME;
     this.PH_ADMIN_PASSWORD = process.env.PH_ADMIN_PASSWORD;
     this.PH_USER_USERNAME = process.env.PH_USER_USERNAME;
