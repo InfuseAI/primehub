@@ -4,7 +4,7 @@ Feature: Admin - Datasets
   I want to change settings
   
   Background:
-    Given I am logged in as a admin
+    Given I am logged in as an admin
     Then I am on the PrimeHub console "Home" page
 
     When I choose "Admin Portal" in top-right menu
