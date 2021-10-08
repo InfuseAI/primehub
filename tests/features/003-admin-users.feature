@@ -152,9 +152,9 @@ Feature: Admin - Users
     And I wait for 3.0 seconds
     And I search "e2e-test-group" in test-id "text-filter"
     And I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I wait for 3.0 seconds
     And I click element with xpath "//button/span[text()='Update']"
@@ -204,9 +204,9 @@ Feature: Admin - Users
     And I wait for 3.0 seconds
     And I search "e2e-test-another-group" in test-id "text-filter"
     And I click element with xpath on the page
-    | xpath                                                      |
-    | //td[contains(text(), 'e2e-test-another-group')]/..//input |
-    | //button/span[text()='OK']                                 |
+    | xpath                                                                              |
+    | //td/a[contains(text(), 'e2e-test-another-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                         |
 
     And I wait for 3.0 seconds
     And I click element with xpath "//button/span[text()='Update']"

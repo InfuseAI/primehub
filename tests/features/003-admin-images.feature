@@ -54,10 +54,10 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     And I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
-
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
+ 
     And I wait for 1.0 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
@@ -102,9 +102,9 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I wait for 1.0 second
     And I click element with test-id "confirm-button"
@@ -150,9 +150,9 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     When I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I wait for 1.0 second
     And I click element with test-id "confirm-button"
@@ -223,9 +223,9 @@ Feature: Admin - Images
     Then I "should" see list-view table containing row with "e2e-test-group"
 
     And I click element with xpath on the page
-    | xpath                                              |
-    | //td[contains(text(), 'e2e-test-group')]/..//input |
-    | //button/span[text()='OK']                         |
+    | xpath                                                                      |
+    | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
+    | //button/span[text()='OK']                                                 |
 
     And I wait for 1.0 second
     And I click element with test-id "confirm-button"
