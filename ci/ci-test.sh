@@ -167,7 +167,7 @@ fi
 
 # e2e test
 # split the grep output of 'KC_REALM: ...' by space
-KC_REALM_DEPLOY="$(cut -d' ' -f2 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM))"
+KC_REALM_DEPLOY="$(cut -d' ' -f3 <<< $(kubectl describe deploy -n hub primehub-console | grep KC_REALM | tr -s ' '))"
 export KC_REALM=${KC_REALM:-$KC_REALM_DEPLOY}
 export E2E_SUFFIX=$(openssl rand -hex 6)
 source ~/.bashrc
@@ -203,6 +203,10 @@ case ${FEATURE} in
     ;;
   "apps")
 		feature="((@prep-data or @destroy-data) or (@feat-apps))"
+		echo $feature
+    ;;
+  "login")
+		feature="((@feat-login))"
 		echo $feature
     ;;
   *)
