@@ -4,7 +4,7 @@ PRIMEHUB_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd $PRIMEHUB_ROOT
 
 CLUSTER_NAME=${CLUSTER_NAME:-primehub}
-K8S_VERSION=${K8S_VERSION:-"v1.17.7-k3s1"}
+K8S_VERSION=${K8S_VERSION:-"v1.21.2-k3s1"}
 BIND_ADDRESS=${BIND_ADDRESS:-10.88.88.88}
 PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
 
@@ -28,7 +28,7 @@ k3d version
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
-k3d create cluster ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
+k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
 mkdir -p ~/.kube
 cp $(k3d get kubeconfig ${CLUSTER_NAME}) ~/.kube/config || true
 

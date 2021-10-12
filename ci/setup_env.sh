@@ -33,8 +33,10 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
-K3D_VERSION=3.0.0-rc.6
+K3D_VERSION=4.4.7
 HELM_VERSION=3.6.2
+NVM_VERSION=0.39.0
+NODEJS_VERSION=14.18.0
 
 # Install k3d
 curl -sLo k3d https://github.com/rancher/k3d/releases/download/v${K3D_VERSION}/k3d-linux-amd64 && \
@@ -62,4 +64,4 @@ curl -sLo yq https://github.com/mikefarah/yq/releases/download/v4.9.8/yq_linux_a
   sudo mv yq /usr/local/bin
 
 # Install node
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && bash -c 'source ~/.bashrc && nvm install v14.18.0 && npm install @cucumber/cucumber puppeteer chai cucumber-html-reporter'
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash && bash -c 'source ~/.bashrc && nvm install v'${NODEJS_VERSION}' && npm install @cucumber/cucumber puppeteer chai cucumber-html-reporter'
