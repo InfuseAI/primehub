@@ -6,7 +6,7 @@ defineStep("I go to the apps detail page with name {string}", async function(nam
   let cardActionXpath = `//div[@class='ant-card-body']//h2[text()='${name}']/../../following-sibling::ul[@class='ant-card-actions']//a[contains(., 'Manage')]`; 
   let titleXpath = `//span[@class='ant-breadcrumb-link']//span[text()='App: ${name}']`;
   let ele, ret;
-  for (retryCount=0; retryCount < 5; retryCount++) {
+  for (retryCount=0; retryCount < 10; retryCount++) {
     [ele] = await this.page.$x(cardActionXpath, {timeout: 5000});
     if (ele) ele.click();
     await this.checkElementExistByXPath('should exist', titleXpath).then(
