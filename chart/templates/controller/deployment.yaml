@@ -59,6 +59,8 @@ spec:
               secretKeyRef:
                 name: {{ include "primehub.name" . }}-graphql-shared-secret
                 key: sharedSecret
+          - name: PLATFORM_TYPE
+            value: {{ .Values.primehub.mode }}
           resources:
 {{ toYaml .Values.controller.resources | indent 12 }}
           volumeMounts:

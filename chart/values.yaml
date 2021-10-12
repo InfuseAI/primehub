@@ -373,10 +373,9 @@ watcher:
 
 # Admisson
 admission:
-  enabled: true
   image:
     repository: infuseai/primehub-admission
-    tag: "6162f37732"
+    tag: 18c8a84693
     pullPolicy: IfNotPresent
   podImageReplacing:
     imagePrefix: "primehub.airgap:5000/"
