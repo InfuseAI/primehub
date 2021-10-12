@@ -127,16 +127,16 @@ defineStep("I should see boolean input with test-id {string} having value {strin
 
 defineStep("I select option {string} in admin portal", async function(name) {
   const xpath = `//li[text()='${name}']`;
-  for (retryCount=0; retryCount < 3; retryCount++) {
-    await this.page.mouse.move(0, 0);
+  try {
     const hovers = await this.page.$x("//div[contains(@class, 'ant-select-selection--single')]");
     if (hovers.length > 0) {
       await hovers[0].click();
-      await this.page.waitForTimeout(500);
       await this.clickElementByXpath(xpath);
     }
-    else console.log("Cannot find dropdown menu");
     await this.takeScreenshot(`select-option-for-${name}-admin-portal`);
+  }
+  catch(e) {
+    throw new Error(`Select option ${name} failed`);
   }
 });
 
