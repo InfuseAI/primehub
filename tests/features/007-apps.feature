@@ -158,7 +158,7 @@ Feature: Apps
     When I click button to install "label-studio"
     And I type "e2e-test-label-studio" to "displayName" text field
     And I click "Create" button
-    And I wait for 1.0 second
+    And I wait for 3.0 seconds
     And I go to the apps detail page with name "e2e-test-label-studio"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
@@ -219,7 +219,7 @@ Feature: Apps
     When I click button to install "matlab"
     And I type "e2e-test-matlab" to "displayName" text field
     And I click "Create" button
-    And I wait for 1.0 second
+    And I wait for 3.0 seconds
     And I go to the apps detail page with name "e2e-test-matlab"
     # And I wait for 10.0 seconds
     # Then I wait for attribute "Message" with value "Deployment is ready"
@@ -284,7 +284,7 @@ Feature: Apps
     And I type "e2e-test-streamlit" to "displayName" text field
     And I type "https://raw.githubusercontent.com/streamlit/streamlit-example/master/streamlit_app.py" to element with xpath "//input[contains(@value, 'FILE_PATH')]/following-sibling::input"
     And I click "Create" button
-    And I wait for 1.0 second
+    And I wait for 3.0 second
     And I go to the apps detail page with name "e2e-test-streamlit"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
