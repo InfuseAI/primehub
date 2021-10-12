@@ -30,7 +30,7 @@ k3d version
 mkdir -p /tmp/k3d/kubelet/pods
 k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
 mkdir -p ~/.kube
-cp $(k3d get kubeconfig ${CLUSTER_NAME}) ~/.kube/config || true
+cp $(k3d kubeconfig get ${CLUSTER_NAME}) ~/.kube/config || true
 
 echo "waiting for nodes ready"
 until kubectl get nodes | grep ' Ready'
