@@ -216,13 +216,35 @@ workflows:
   version: 2
   release_builds:
     jobs:
+      - unit_test
+      - verify_image_list
       - e2e_test:
-          name: "e2e_regression_ee_user_apps_k3d"
-          machine_resource_class: "large"
+          name: "e2e_smoke_ce"
+          primehub_mode: "ce"
+          test_type: "smoke" 
+          notify: true
+          filters:
+            branches:
+              ignore:
+                - master
+      - e2e_test:
+          name: "e2e_smoke_ee"
           primehub_mode: "ee"
-          test_type: "regression" 
-          feature: "apps"
-          ticket: true
+          test_type: "smoke" 
+          notify: true
+          filters:
+            branches:
+              ignore:
+                - master
+      - e2e_test:
+          name: "e2e_sanity_ee"
+          primehub_mode: "ee"
+          test_type: "sanity" 
+          notify: true
+          filters:
+            branches:
+              only:
+                - master
       - build:
           filters:
             tags:
@@ -272,4 +294,11 @@ workflows:
           primehub_mode: "ee"
           test_type: "regression" 
           feature: "schedule"
+          ticket: true
+      - e2e_test:
+          name: "e2e_regression_ee_user_apps_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "ee"
+          test_type: "regression" 
+          feature: "apps"
           ticket: true
