@@ -221,10 +221,9 @@ Feature: Apps
     And I click "Create" button
     And I wait for 3.0 seconds
     And I go to the apps detail page with name "e2e-test-matlab"
-    # And I wait for 10.0 seconds
-    # Then I wait for attribute "Message" with value "Deployment is ready"
+    Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression
+  @wip @regression
   Scenario: Launch Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
@@ -265,7 +264,7 @@ Feature: Apps
     When I go to the apps detail page with name "e2e-test-matlab"
     Then I wait for attribute "Message" with value "exceeded cpu quota: 2, requesting 3.0"
 
-  @wip @regression
+  @regression
   Scenario: Remove Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
