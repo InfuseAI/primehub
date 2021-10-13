@@ -19,7 +19,7 @@ Feature: Hub
     And I go to the spawner page
     Then I can see advanced settings
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can start the JupyterLab server
     When I get the iframe object
     And I go to the spawner page
@@ -40,7 +40,7 @@ Feature: Hub
     Then I am on the PrimeHub console "Home" page
     #And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can stop the JupyterLab server
     When I get the iframe object
     And I click element with selector "#start" in hub
@@ -55,7 +55,7 @@ Feature: Hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can start the JupyterLab server with group image
     When I get the iframe object
     And I go to the spawner page
@@ -72,7 +72,7 @@ Feature: Hub
     And I should see "Granting jovyan sudo access and appending /opt/conda/bin to sudo PATH" in element "div" under active tab
     And I should see "--ip=0.0.0.0 --port=8888 --NotebookApp.default_url=/lab" in element "div" under active tab
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can stop the JupyterLab server with group image
     When I get the iframe object
     And I click element with selector "#start" in hub
