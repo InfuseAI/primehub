@@ -5,6 +5,11 @@
 
 - Admin could invite users by an invitation link.
 
+## 3.8.1
+### What's New
+
+- Patched serveral bugs.
+
 ## 3.8.0
 ### What's New
 
