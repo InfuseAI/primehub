@@ -11,7 +11,7 @@ Feature: Job Submission
     And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
 
-  @regression @sanity @smoke
+  @wip @regression @sanity @smoke
   Scenario: User can create job and save artifact
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
@@ -36,7 +36,7 @@ Feature: Job Submission
     When I click tab of "Logs"
     Then I should see "test" in element "div" under active tab
 
-  @regression @sanity
+  @wip @regression @sanity
   Scenario: User can create job with group image and save artifact
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
