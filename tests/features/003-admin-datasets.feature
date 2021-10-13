@@ -36,7 +36,7 @@ Feature: Admin - Datasets
     | dataset-active |
     | add-button     |
 
-  @regression @sanity @smoke
+  @regression
   Scenario: Search a dataset
     When I search "e2e-test-dataset" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-dataset"
