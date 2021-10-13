@@ -120,7 +120,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 
   await Promise.all([
     this.page.waitForXPath(xpathMap[menuitem]),
-    this.page.waitForNavigation(),
+    this.page.waitForNavigation({waitUntil: 'networkidle2'}),
   ]);
 
   for (retryCount=0; retryCount < 5; retryCount++) {
