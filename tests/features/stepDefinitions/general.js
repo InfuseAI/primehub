@@ -173,7 +173,7 @@ defineStep("I am on login page", async function() {
 });
 
 defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
-  let username, password;
+  let username, password, ret;
   if (role == null || role.includes('user')) {
     username = this.PH_USER_USERNAME;
     password = this.PH_USER_PASSWORD;
@@ -181,8 +181,20 @@ defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
     username = this.PH_ADMIN_USERNAME;
     password = this.PH_ADMIN_PASSWORD;
   }
-  await this.page.goto(this.HOME_URL);
-  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
+
+  for (retryCount=0; retryCount < 3; retryCount++) {
+    try {
+      await Promise.all([
+        this.page.goto(this.HOME_URL),
+        this.page.waitForNavigation(),
+      ]);
+    } catch (e) {}
+    await this.checkElementExistByXPath('should exist', `//title[text()='Log in to ${this.KC_REALM}']`).then(
+      function(result) { ret = result; }
+    );
+    if (ret) { break; }
+  }
+
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
   await this.input("username", username);
