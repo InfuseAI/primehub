@@ -1,4 +1,3 @@
-{{- if .Values.admission.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -53,4 +52,3 @@ spec:
         - name: certs
           secret:
             secretName: primehub-admission-webhook-certs
-{{- end }}
