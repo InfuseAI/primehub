@@ -28,9 +28,8 @@ k3d version
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
-k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait
-mkdir -p ~/.kube
-cp $(k3d kubeconfig get ${CLUSTER_NAME}) ~/.kube/config || true
+k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg '--disable-network-policy' --wait --kubeconfig-update-default
+kubectl config view
 
 echo "waiting for nodes ready"
 until kubectl get nodes | grep ' Ready'
@@ -58,7 +57,6 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
     --set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
     --set controller.updateStrategy.rollingUpdate.maxSurge=1 \
     --set defaultBackend.enabled=true
-
 
 kubectl apply -f k3d/nginx-config.yaml
 
