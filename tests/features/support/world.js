@@ -57,7 +57,6 @@ class World {
     });
     this.page = await this.browser.newPage();
     this.page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36');
-    this.page.setCacheEnabled(false);
     this.page.setDefaultTimeout(defaultTimeout);
     // suppress console.log unless DEBUG is true.
     if (this.DEBUG) {
