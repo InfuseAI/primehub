@@ -120,7 +120,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
 
   await this.page.waitForXPath(xpathMap[menuitem]);
 
-  for (retryCount=0; retryCount < 5; retryCount++) {
+  for (retryCount=0; retryCount < 15; retryCount++) {
     if (this.page.url().includes(urlMap[menuitem])) {
       await this.takeScreenshot(`${menuitem}-page`);
       return;
