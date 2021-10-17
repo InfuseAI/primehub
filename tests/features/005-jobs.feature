@@ -11,7 +11,7 @@ Feature: Job Submission
     And I choose "Jobs" in sidebar menu
     Then I am on the PrimeHub console "Jobs" page
 
-  @wip @regression @sanity @smoke
+  @regression @sanity @smoke
   Scenario: User can create job and save artifact
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
