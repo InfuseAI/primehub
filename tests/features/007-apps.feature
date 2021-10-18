@@ -211,7 +211,7 @@ Feature: Apps
     And I click "Yes" button
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-label-studio']"
 
-  @regression
+  @wip @regression
   Scenario: Install Matlab
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
@@ -223,7 +223,7 @@ Feature: Apps
     And I go to the apps detail page with name "e2e-test-matlab"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @wip @regression
+ @wip @wip @regression
   Scenario: Launch Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
@@ -249,7 +249,7 @@ Feature: Apps
     And I click "Yes" button
     Then I wait for attribute "Message" with value "Deployment is ready"
 
-  @regression @error-check
+  @wip @regression @error-check
   Scenario: Update Matlab with insufficient resource
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
@@ -264,7 +264,7 @@ Feature: Apps
     When I go to the apps detail page with name "e2e-test-matlab"
     Then I wait for attribute "Message" with value "exceeded cpu quota: 2, requesting 3.0"
 
-  @regression
+  @wip @regression
   Scenario: Remove Matlab
     And I "should" have "matlab" installed with name "e2e-test-matlab"
 
