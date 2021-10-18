@@ -219,8 +219,14 @@ Feature: Apps
     When I click button to install "matlab"
     And I type "e2e-test-matlab" to "displayName" text field
     And I click "Create" button
-    And I wait for 3.0 seconds
-    And I go to the apps detail page with name "e2e-test-matlab"
+    Then I am on the PrimeHub console "Apps" page
+    And I "should" have "matlab" installed with name "e2e-test-matlab"
+
+  @regression
+  Scenario: Check Matlab status
+    And I "should" have "matlab" installed with name "e2e-test-matlab"
+
+    When I go to the apps detail page with name "e2e-test-matlab"
     Then I wait for attribute "Message" with value "Deployment is ready"
 
   @wip @regression
