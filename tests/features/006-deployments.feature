@@ -67,9 +67,6 @@ Feature: Model Deployment
     Then I wait for attribute "Deployment Stopped" with value "False"
     And I click escape
 
-    When I choose "Home" in sidebar menu
-    And I should see group resource data with diff of CPU, memory & GPU: 0.5, 1.0, 0
-
   @regression @error-check
   Scenario: User can't set the invalid/empty/duplicate deployment ID
     When I click "Create Deployment" button
