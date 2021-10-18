@@ -15,8 +15,8 @@ Feature: Job Schedule
     When I click "New Schedule" button
     Then I am on the PrimeHub console "NewSchedule" page
 
-    When I choose radio button with name "e2e-test-instance-type"
-    And I choose radio button with name "e2e-test-image"
+    When I choose radio button with name "e2e-test-instance-type" and e2e suffix
+    And I choose radio button with name "e2e-test-image" and e2e suffix
     And I type "create-schedule-test" to "displayName" text field
     And I type "echo 'test'" to "command" text field
     And I click "Submit" button

@@ -338,8 +338,12 @@ defineStep("I wait for {float} second(s)", async function(float) {
   await this.page.waitForTimeout(float * 1000);
 });
 
-defineStep("I choose radio button with name {string}", async function(name) {
-  await this.clickElementByXpath(`//input[@value='${name}-${this.E2E_SUFFIX}']`);
+defineStep(/^I choose radio button with name (?:(.*))(?: and (.*))?$/, async function(name, suffix) {
+  let xpath = `//input[@value='${name}']`;
+  if (suffix != null) {
+    xpath = `//input[@value='${name}-${this.E2E_SUFFIX}']`;
+  }
+  await this.clickElementByXpath(xpath);
   await this.takeScreenshot(`choose-radio-button-${name}-${this.E2E_SUFFIX}`);
 });
 

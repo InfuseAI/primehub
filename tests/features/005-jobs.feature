@@ -16,8 +16,8 @@ Feature: Job Submission
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
 
-    When I choose radio button with name "e2e-test-instance-type"
-    And I choose radio button with name "e2e-test-image"
+    When I choose radio button with name "e2e-test-instance-type" and e2e suffix
+    And I choose radio button with name "e2e-test-image" and e2e suffix
     And I type "create-job-test" to "displayName" text field
     And I type "artifact test" to command text field
     And I click "Submit" button
@@ -41,7 +41,7 @@ Feature: Job Submission
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
 
-    When I choose radio button with name "e2e-test-instance-type"
+    When I choose radio button with name "e2e-test-instance-type" and e2e suffix
     And I click element with xpath "//div[@id='image']//input[contains(@value, 'e2e-test-group-image')]"
     And I type "e2e-test-group-image" to "displayName" text field
     And I type "artifact test" to command text field
@@ -108,8 +108,8 @@ Feature: Job Submission
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
 
-    When I choose radio button with name "e2e-test-instance-type"
-    And I choose radio button with name "e2e-test-image"
+    When I choose radio button with name "e2e-test-instance-type" and e2e suffix
+    And I choose radio button with name "e2e-test-image" and e2e suffix
     And I type "cancel-job-test" to "displayName" text field
     And I type "echo 'test'" to "command" text field
     And I click "Submit" button
@@ -134,8 +134,8 @@ Feature: Job Submission
     When I click "New Job" button
     Then I am on the PrimeHub console "NewJob" page
 
-    When I choose radio button with name "e2e-test-instance-type-gpu"
-    And I choose radio button with name "e2e-test-image-gpu"
+    When I choose radio button with name "e2e-test-instance-type-gpu" and e2e suffix
+    And I choose radio button with name "e2e-test-image-gpu" and e2e suffix
     And I type "gpu-job-test" to "displayName" text field
     And I type "gpu driver info" to command text field
     And I click "Submit" button
