@@ -1,5 +1,5 @@
 @feat-edition
-Feature: Features
+Feature: Features accessible for admin
   Available feature in different edition for different roles
 
   Background:
@@ -95,16 +95,16 @@ Feature: Features
     | image-active |
     | add-button  |
 
-  @wip @regression @ee @ce
+  @regression @ee @ce
   Scenario: Admin can access pages in Admin Portal - Datasets
     # Admin - Datasets
     When I click "Datasets" in admin portal
     Then I am on the admin portal "Datasets" page
     And I should see element with xpath on the page
-    | exist  | xpath                                                               |
-    | should | //div[@class='ant-table-column-sorters' and text()='Upload Server'] |
+    | exist  | xpath                                  |
+    | should | //input[@placeholder='Search Dataset'] |
 
-  @wip @regression @ee @ce @deploy
+  @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Secrets
     # Admin - Secrets - Add
     When I click "Secrets" in admin portal
@@ -122,7 +122,7 @@ Feature: Features
     And I click element with test-id "reset-button"
     Then I am on the admin portal "Secrets" page
 
-  @wip @regression @ee
+  @regression @ee
   Scenario: Admin can access pages in Admin Portal - Usage Reports
     # Admin - Usage Reports
     When I click "Usage Reports" in admin portal
@@ -146,38 +146,22 @@ Feature: Features
     | system-active |
 
   @regression @ee @ce @deploy
-  Scenario: User can access pages in User Portal
-    # User portal
+  Scenario: Admin can access pages in User Portal - Group Settings 
+    # User portal - group settings
     When I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
     Then I "should" see element with xpath "//h2[text()='User Guide']"
 
-    # Shared Files
-    When I choose "Shared Files" in sidebar menu
-    Then I "should" see element with xpath "//a[text()='Shared Files']"
+    When I choose "Settings" in sidebar menu
+    Then I am on the PrimeHub console "Settings" page
+    And I "should" see element with xpath "//div[text()='Information']"
+    And I "should" see element with xpath "//span[text()='These settings can be updated in Admin Portal']"
+    And I "should" see element with xpath "//div[text()='User Quota']"
+    And I "should" see element with xpath "//div[text()='Group Quota']"
 
-  @regression
-  Scenario: User can access items via the top right menu
-    # Top right menu 
-    When I choose "User Profile" in top-right menu
-    Then I "should" see element with xpath "//h2[text()='Edit Account']"
-    And I "should" see element with xpath "//label[text()='Username']"
+    When I click tab of "Members"
+    Then I "should" see element with xpath "//span[text()='These settings can be updated in Admin Portal']"
+    And I "should" see element with xpath "//span[text()='Username']"
 
-    When I click element with xpath "//li//a[@id='referrer']"
-    And I wait for 2 seconds
-    And I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
-    And I wait for 2 seconds
-    Then I "should" see element with xpath "//h2[text()='User Guide']"
-
-    # API Token
-    When I choose "API Token" in top-right menu
-    Then I "should" see element with xpath "//button//span[text()='Request API Token']"
-
-    # Change Password
-    When I choose "Change Password" in top-right menu
-    Then I "should" see element with xpath "//h2[text()='Change Password']"
-    And I "should" see element with xpath "//label[text()='Confirmation']"
-
-    When I click element with xpath "//li//a[@id='referrer']"
-    And I wait for 1 second
-    And I click on PrimeHub icon
-    Then I am on the PrimeHub console "Home" page
+    When I click tab of "Deployments"
+    Then I "should" see element with xpath "//span[text()='These settings can be updated in Admin Portal']"
+    And I "should" see element with xpath "//label[text()='Model Deployment']"

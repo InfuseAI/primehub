@@ -126,7 +126,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
       return;
     }
     await this.page.waitForTimeout(2000);
-    await this.takeScreenshot(`${menuitem}-page`);
+    console.log(retryCount, this.page.url());
   }
   throw new Error(`failed to go to ${menuitem} page`);
 });
@@ -360,6 +360,7 @@ defineStep("I type value to element with xpath on the page", async function(data
     await this.page.keyboard.press('KeyA');
     await this.page.keyboard.up('Control');
     await element.type(row[1]);
+    await this.takeScreenshot(`type-value-to-element`);
   }
 });
 
