@@ -189,8 +189,8 @@ case ${FEATURE} in
 		feature="((@prep-data or @destroy-data) or (@feat-hub))"
 		echo $feature
     ;;
-  "jobs.edition")
-		feature="((@prep-data or @destroy-data) or (@feat-jobs or @feat-edition))"
+  "jobs")
+		feature="((@prep-data or @destroy-data) or (@feat-jobs))"
 		echo $feature
     ;;
   "schedule")
@@ -203,6 +203,10 @@ case ${FEATURE} in
     ;;
   "apps")
 		feature="((@prep-data or @destroy-data) or (@feat-apps))"
+		echo $feature
+    ;;
+  "misc")
+	        feature="((@prep-data) or (@feat-misc or @feat-edition or @feat-group-settings))"
 		echo $feature
     ;;
   "login")
