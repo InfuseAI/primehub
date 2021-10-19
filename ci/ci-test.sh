@@ -206,7 +206,7 @@ case ${FEATURE} in
 		echo $feature
     ;;
   "misc")
-	        feature="((@prep-data) or (@feat-edition or @feat-group-settings))"
+	        feature="((@prep-data) or (@feat-misc or @feat-edition or @feat-group-settings))"
 		echo $feature
     ;;
   "login")
