@@ -6,7 +6,11 @@ const rimraf = require("rimraf");
 Before(async function(scenario) {
   console.log(`\nScenario: ${scenario.pickle.name}`);
   this.scenarioName = scenario.pickle.name.replace(/\/| |:|"|'|\.|_/g, '-');
-  await fs.mkdirSync(`e2e/screenshots/${this.scenarioName}`);
+  const dir = `e2e/screenshots/${this.scenarioName}`;
+  await fs.access(dir, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+    if (err)
+      fs.mkdirSync(dir);
+  });	  
   return await this.start();
 });
 
