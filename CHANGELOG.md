@@ -3,6 +3,11 @@
 ## Upcoming
 ### What's New
 
+## 3.8.2
+### What's New
+
+- [Bugfix] list_namespaced_pod hang issue.
+
 ## 3.8.1
 ### What's New
 
