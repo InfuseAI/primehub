@@ -376,7 +376,7 @@ admission:
   enabled: true
   image:
     repository: infuseai/primehub-admission
-    tag: "6162f37732"
+    tag: 6538e77302
     pullPolicy: IfNotPresent
   podImageReplacing:
     imagePrefix: "primehub.airgap:5000/"
