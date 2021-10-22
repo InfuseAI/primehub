@@ -181,6 +181,10 @@ spec:
             - name: JOB_DEFAULT_ACTIVE_DEADLINE_SEC
               value: {{ .Values.jobSubmission.defaultActiveDeadlineSeconds | quote }}
             {{- end }}
+            {{- if .Values.console.npsSurvey.enabled }}
+            - name: ENABLE_NPS_SURVEY
+              value: "true"
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}
