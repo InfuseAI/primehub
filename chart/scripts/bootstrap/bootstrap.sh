@@ -211,12 +211,18 @@ function add_admission_labels() {
   kubectl label ns $PRIMEHUB_NAMESPACE --overwrite primehub.io/admission-webhook=enabled
 }
 
+function restart_hub() {
+  print_section "Restart hub..."
+  kubectl -n $PRIMEHUB_NAMESPACE delete pod -l app=jupyterhub,component=hub
+}
+
 function main() {
   wait_for_keycloak
   kc_login
   update
   create_default_resources
   add_admission_labels
+  restart_hub
   echo ""
   echo "Complete"
 }
