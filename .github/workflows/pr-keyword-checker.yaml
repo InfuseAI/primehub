@@ -9,5 +9,5 @@ jobs:
       uses: JJ/github-pr-contains-action@releases/v2
       with:
         github-token: ${{github.token}}
-        bodyDoesNotContain: 'app.clubhouse.io'
+        bodyDoesNotContain: 'api.app.shortcut.com'
 
