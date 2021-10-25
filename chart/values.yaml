@@ -281,6 +281,8 @@ metacontroller:
 # Primehub console
 console:
   enableUserPortal: true
+  npsSurvey:
+    enabled: false
   replicas: 1
   reloaderImage:
     repository: busybox
