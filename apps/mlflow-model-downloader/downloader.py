@@ -3,6 +3,7 @@ import sys
 
 import mlflow
 from mlflow.tracking.artifact_utils import _download_artifact_from_uri
+from urllib.parse import unquote
 
 
 def get_tracking_uri():
@@ -39,9 +40,10 @@ def main(model_uri):
     output_path = get_output_path()
     print("set tracking uri: {}".format(tracking_uri))
     print("save to path: {}".format(output_path))
+    print("model uri: {}".format(unquote(model_uri)))
 
     mlflow.set_tracking_uri(tracking_uri)
-    _download_artifact_from_uri(artifact_uri=model_uri, output_path=output_path)
+    _download_artifact_from_uri(artifact_uri=unquote(model_uri), output_path=output_path)
 
     wait_for_exit()
 

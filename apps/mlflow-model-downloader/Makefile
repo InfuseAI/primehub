@@ -1,4 +1,4 @@
-VERSION := v0.1.0
+VERSION := v0.1.1
 IMAGE_NAME_BASE=mlflow-model-downloader
 IMAGE_BASE=infuseai/${IMAGE_NAME_BASE}
 
