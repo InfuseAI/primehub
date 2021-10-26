@@ -12,10 +12,10 @@ primehub-all:
   buildah: &buildah quay.io/buildah/stable:v1.19.8
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:v3.9-0d1c962f
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v3.9-0d1c962f
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v3.9-0d1c962f
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v3.9-0d1c962f
+  primehub-console: &primehub-console infuseai/primehub-console:v3.9-901680e2
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v3.9-901680e2
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v3.9-901680e2
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v3.9-901680e2
 
   # Metacontroller
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
