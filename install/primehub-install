@@ -3,6 +3,10 @@ set -eo pipefail
 IFS=$'\n\t '
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 export PATH=${PATH}:~/bin
 K9S_VERSION=v0.21.9
 KUBECTL_VERSION=v1.21.3
