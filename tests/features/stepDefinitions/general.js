@@ -130,7 +130,6 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
       return;
     }
     await this.page.waitForTimeout(2000);
-    console.log(retryCount, this.page.url());
   }
   throw new Error(`failed to go to ${menuitem} page`);
 });
@@ -489,11 +488,12 @@ defineStep("I should see user limits with CPU, Memory, GPU is {string}", async f
   }
 });
 
-defineStep("I should see group resource data with CPU {string}, Memory {string}, GPU {string}", async function(cpu, mem, gpu) {
+defineStep("I should see group resource data with CPU {string}, Memory {string}, GPU {string}, Deployments {string}", async function(cpu, mem, gpu, deployments) {
   const input = {
     'CPU': cpu.split(','),
     'Memory': mem.split(','),
-    'GPU': gpu.split(',')
+    'GPU': gpu.split(','),
+    'Deployments': deployments.split(',')
   };
   let row, text;
   for (retry = 0; retry < 5; retry++) {
