@@ -4,5 +4,5 @@
 	branch = feature/allow-kubernetes-1.10
 [submodule "chart/modules/awesome-primehub-apps"]
 	path = chart/modules/awesome-primehub-apps
-	url = git@github.com:InfuseAI/awesome-primehub-apps.git
+	url = https://github.com/InfuseAI/awesome-primehub-apps.git 
 	branch = main
