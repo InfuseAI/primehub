@@ -3,7 +3,103 @@
 ## Upcoming
 ### What's New
 
+## 3.9.0
+### What's New
+
 - Admin could invite users by an invitation link.
+
+### Available in CE
+
+#### UI/UX Improvement
+
+- Weird icons in Shared files + Weird action of adding new folder (ch19095)
+- Some dialogs can't be closed by tapping other areas (ch19100)
+- Inconsistent Action Button from Table (ch19099)
+- General searching function improvement (ch19096)
+- Handle overflow situations in UI (ch19098)
+
+#### PrimeHub CLI/SDK
+
+- Download API config file (ch20079)
+- CRUD for Datasets with PrimeHub SDK (ch21471)
+- Support App CRUD in SDK/CLI (ch21133)
+- Make the job stream follow print carriage return correctly (ch21679)
+- OAuth to SDK token UI (ch21397)
+- [Bugfix] User can't download artifact by SDK (ch21490)
+
+#### Extend PHFS file browser to support rendering notebooks
+
+- Share/unshare a notebook in primehub (ch20617)
+- Improve the UX of in-group notebook render page (ch20651)
+
+#### 1-click installer
+
+- 1-click ask for email and send credentials directly to the user (ch20755)
+- 1-click credential email content (ch20756)
+- Opt-in to subscribe to newsletter when setting up a 1-click (ch22011)
+- Improve 1-Click Setup - Authentication Experience (ch21678)
+- increase 1-click node group down scale timeout to 48hr (ch21154)
+- Convert Standalone App traffics to PrimeHub (ch21127)
+- Easier way for 1-click's first user to invite more people into the server (ch20765)
+- 1-click install FAQ in README.md (ch20556)
+- [Bugfix] invalid parameter: redirect_uri in notebook panel (ch20826)
+- [AWS-CDK] Modify the document of Setup AWS environment for PrimeHub on doc-site (ch18733)
+
+#### PrimeHub Applications
+
+- Extract PHApp related doc and spec to the community repo (ch20744)
+- Simplify the process of adding new apps to an existing primehub instance (ch20745)
+
+#### Drop Canner Dependencies
+
+- Migrate to new admin protal from legacy canner obj: Remove unnecessary code and configuration (ch16899)
+- Drop Canner: Image (ch16903)
+- Drop Old Canner Image Builder (ch20425)
+
+#### Contents for PrimeHub Application and ML Orchestration
+
+- Refine getting started doc (ch21210)
+- Update the document for storage mount points (ch19080)
+
+#### Miscellaneous
+
+- Users can know which instanceType/image they are using to start notebook (ch21280)
+- Check storage resource before installing microk8s by PrimeHub-install (ch20607)
+- Unable to disable telemetry popup in CE (ch21162)
+- Enable sanity, regression in primehub after UI change (ch18986)
+- [admin portal] the tip of global option is not consistent (ch21232)
+- Can't display Scalar with TF 2.3, 2.4, 2.5 Tensorboard (ch20817)
+- URL is missing in the The API Token example (ch20288)
+- Prevent the license install on different editions of primehub (ch21296)
+- [Bugfix] Unable to enable SharedVolume if not change the default capacity (ch22154)
+- [Bugfix] unable to clean up GPU URL (ch20895)
+- [Bugfix] Can not enable group share volume after the group created. (ch21283)
+- [Bugfix] Request 0.5 CPU in instance type, show 0.6 in usage (ch21096)
+- [Bugfix] primehub-install version don't work on Linux (ch21168)
+- [Bugfix] Error shown when removing app from ph (ch21871)
+- [Bugfix] System settings/smtp settings should be required field and only updated the modified fields (ch21659)
+- [Bugfix] User cannot update if the user is imported from LDAP (ch22041)
+- [Bugfix] "Check off" don't display correctly after page 10th (ch17606)
+- [Bugfix] Admin Group: Failed to update the shared volume (ch21923)
+
+### EE only
+
+####  Model Deployment
+
+- Allow user to know the limitation of model deployment (ch19510)
+- Ease effort for getting the model management (mlflow setup) to work (ch20238)
+
+#### Complete MLOps workflow within a single notebook
+
+- Demonstrate key values of PrimeHub within a single notebook with PrimeHub SDK (ch20748)
+- Reset demo cluster every 24hr (ch21395)
+- Create Demo PrimeHub Instance for notebook showcase (ch20749)
+- Revisit Tutorial notebook in PrimeHub to utilize SDK (ch21202)
+
+#### Miscellaneous
+
+- [Bugfix] Don't show model deployment information in group settings (ch20718)
+- [Bugfix] The "Build Custom Image" is not disabled if no registry is configured (ch19426)
 
 ## 3.8.2
 ### What's New
