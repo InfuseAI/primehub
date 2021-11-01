@@ -1,0 +1,32 @@
+---
+# This values yaml is for ee installation
+#
+# Usage:
+#   helm install primehub infuseai/primehub -f deploy-values.yaml -f user-override.yaml
+
+primehub:
+  mode: deploy
+
+customImage:
+  enabled: false
+
+store:
+  enabled: false
+  phfs:
+    enabled: false
+  logPersistence:
+    enabled: false
+
+jobSubmission:
+  enabled: false
+  artifact:
+    enabled: false
+
+usage:
+  enabled: false
+
+modelDeployment:
+  enabled: true
+
+adminNotebook:
+  enabled: false
