@@ -245,12 +245,6 @@ workflows:
             branches:
               only:
                 - master
-      - e2e_test:
-          name: "e2e_regression_deploy_admin_k3d"
-          machine_resource_class: "large"
-          primehub_mode: "deploy"
-          test_type: "regression"
-          feature: "admin"
       - build:
           filters:
             tags:
@@ -271,6 +265,13 @@ workflows:
           machine_resource_class: "large"
           primehub_mode: "ee"
           test_type: "regression" 
+          feature: "admin"
+          ticket: true
+      - e2e_test:
+          name: "e2e_regression_deploy_admin_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "deploy"
+          test_type: "regression"
           feature: "admin"
           ticket: true
       - e2e_test:
@@ -315,4 +316,3 @@ workflows:
           test_type: "regression" 
           feature: "misc"
           ticket: true
-
