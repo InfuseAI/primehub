@@ -30,7 +30,7 @@ primehub-all:
   primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:e1e29f10
 
   # Jupyterhub
-  pause: &pause gcr.io/google_containers/pause:3.0
+  pause: &pause gcr.io/google_containers/pause:3.2
   jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:0.10.6
   configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.2.2
   k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
