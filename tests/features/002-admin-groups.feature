@@ -1,4 +1,4 @@
-@admin-groups @ee @ce @deploy
+@admin-groups
 Feature: Admin - Groups
   In order to manage groups
   I want to change settings
@@ -17,7 +17,7 @@ Feature: Admin - Groups
     | group-active |
     | add-button   |
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce @deploy
   Scenario: Create a group
     When I click element with test-id "add-button"
     And I should see element with test-id on the page
@@ -51,7 +51,7 @@ Feature: Admin - Groups
     | group-active |
     | add-button   |
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce
   Scenario: Connect a group to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
     Then I "should" see list-view table containing row with "e2e-test-group"
@@ -80,7 +80,7 @@ Feature: Admin - Groups
     When I choose group with name "e2e-test-group-display-name"
     Then I should see user limits with CPU, Memory, GPU is "1,2,1"
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce @deploy
   Scenario: Check group resources of a new group as speficied upon creation
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
@@ -88,7 +88,7 @@ Feature: Admin - Groups
     When I choose group with name "e2e-test-group-display-name"
     Then I should see group resource data with CPU "0,2", Memory "0.0 GB,4 GB", GPU "0,2"
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce @deploy
   Scenario: Create another group
     When I click element with test-id "add-button"
     And I should see element with test-id on the page
@@ -122,7 +122,7 @@ Feature: Admin - Groups
     | group-active |
     | add-button   |
 
-  @regression @sanity @prep-data
+  @regression @sanity @prep-data @ee @ce @deploy
   Scenario: Assign group admin to an existing user
     When I search "e2e-test-group" in test-id "text-filter-name"
     And I click edit-button in row containing text "e2e-test-group"
@@ -134,4 +134,3 @@ Feature: Admin - Groups
     | test-id      |
     | group-active |
     | add-button   |
-

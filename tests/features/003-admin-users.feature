@@ -233,7 +233,6 @@ Feature: Admin - Users
     Then I should see element with xpath on the page 
     | exist  | xpath                                                                 |
     | should | //div[@class='ant-layout-sider-children']//span[text()='Home']        |
-    | should | //div[@class='ant-layout-sider-children']//span[text()='Notebooks']   |
 
     When I choose "User Profile" in top-right menu
     Then I "should" see element with xpath "//h2[text()='Edit Account']"
