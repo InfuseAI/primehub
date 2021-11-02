@@ -245,7 +245,7 @@ workflows:
             branches:
               only:
                 - master
-     - e2e_test:
+      - e2e_test:
           name: "e2e_regression_deploy_admin_k3d"
           machine_resource_class: "large"
           primehub_mode: "deploy"
