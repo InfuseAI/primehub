@@ -78,7 +78,7 @@ Feature: Admin - Groups
     Then I am on the PrimeHub console "Home" page
 
     When I choose group with name "e2e-test-group-display-name"
-    Then I should see user limits with CPU, Memory, GPU is "1,2,1"
+    #Then I should see user limits with CPU, Memory, GPU is "1,2,1"
 
   @regression @sanity @smoke @prep-data
   Scenario: Check group resources of a new group as speficied upon creation
@@ -134,4 +134,3 @@ Feature: Admin - Groups
     | test-id      |
     | group-active |
     | add-button   |
-

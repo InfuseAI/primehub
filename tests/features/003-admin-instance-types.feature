@@ -1,4 +1,4 @@
-@admin-instance-types @ee @ce @deploy
+@admin-instance-types
 Feature: Admin - Instance Types
   In order to manage instance types
   I want to change settings
@@ -17,7 +17,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce @deploy
   Scenario: Create an instance type
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
@@ -43,7 +43,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @sanity @smoke @prep-data
+  @regression @sanity @smoke @prep-data @ee @ce @deploy
   Scenario: Connect an instance type to an existing group
     When I search "e2e-test-instance-type" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type"
@@ -71,7 +71,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @prep-data
+  @regression @prep-data @ee @ce @deploy
   Scenario: Create an GPU instance type
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
@@ -92,7 +92,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @prep-data
+  @regression @prep-data @ee @ce @deploy
   Scenario: Update an GPU instance type
     When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     And I click edit-button in row containing text "e2e-test-instance-type-gpu"
@@ -119,7 +119,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @prep-data
+  @regression @prep-data @ee @ce @deploy
   Scenario: Connect an GPU instance type to an existing group
     When I search "e2e-test-instance-type-gpu" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type-gpu"
@@ -147,7 +147,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @prep-data
+  @regression @prep-data @ee @ce
   Scenario: Show an GPU instance type in spawner page
     When I click on PrimeHub icon
     Then I am on the PrimeHub console "Home" page
@@ -160,7 +160,7 @@ Feature: Admin - Instance Types
     And I go to the spawner page
     #Then I "should" see instance types block containing "e2e-test-instance-type-display-name-gpu" instanceType with "e2e-test-description-gpu" description and tooltip to show "CPU: 1 / Memory: 1G / GPU: 1"
 
-  @regression @prep-data @error-check
+  @regression @prep-data @error-check @ee @ce @deploy
   Scenario: Create an instance type that exceeds resource quota
     When I click element with test-id "add-button"
     Then I should see element with test-id on the page
@@ -185,7 +185,7 @@ Feature: Admin - Instance Types
     | instanceType-active |
     | add-button          |
 
-  @regression @prep-data @error-check
+  @regression @prep-data @error-check @ee @ce @deploy
   Scenario: Connect an instance type that exceeds resource quota to an existing group
     When I search "e2e-test-instance-type-large" in test-id "text-filter"
     Then I "should" see list-view table containing row with "e2e-test-instance-type-large"

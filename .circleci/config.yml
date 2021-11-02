@@ -268,6 +268,13 @@ workflows:
           feature: "admin"
           ticket: true
       - e2e_test:
+          name: "e2e_regression_deploy_admin_k3d"
+          machine_resource_class: "large"
+          primehub_mode: "deploy"
+          test_type: "regression"
+          feature: "admin"
+          ticket: true
+      - e2e_test:
           name: "e2e_regression_ee_user_hub_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"

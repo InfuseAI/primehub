@@ -51,7 +51,9 @@ adminNotebook:
 EOF
 
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
-  values_ee='--values k3d/ee-values.yaml'
+  values_mode='--values k3d/ee-values.yaml'
+elif [[ "${PRIMEHUB_MODE}" == "deploy" ]]; then
+  values_mode='--values k3d/deploy-values.yaml'
 fi
 
 helm upgrade \
@@ -59,7 +61,7 @@ helm upgrade \
   --install \
   --create-namespace \
   --namespace hub  \
-  $values_ee \
+  $values_mode \
   --timeout 30m \
   --values primehub-values.yaml \
   --values k3d/primehub-override.yaml \
