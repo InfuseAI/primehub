@@ -182,7 +182,7 @@ feature=""
 
 case ${FEATURE} in
   "admin")
-		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-datasets or @admin-secrets or @admin-notebooks-admin)"
+		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-volumes or @admin-secrets or @admin-notebooks-admin)"
 		echo $feature
     ;;
   "hub")

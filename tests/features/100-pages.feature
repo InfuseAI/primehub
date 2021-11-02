@@ -1,4 +1,4 @@
-@feat-edition
+feat-edition
 Feature: Features accessible for admin
   Available feature in different edition for different roles
 
@@ -96,13 +96,13 @@ Feature: Features accessible for admin
     | add-button  |
 
   @regression @ee @ce
-  Scenario: Admin can access pages in Admin Portal - Datasets
-    # Admin - Datasets
-    When I click "Datasets" in admin portal
-    Then I am on the admin portal "Datasets" page
+  Scenario: Admin can access pages in Admin Portal - Volumes 
+    # Admin - Volumes
+    When I click "Volumes" in admin portal
+    Then I am on the admin portal "Volumes" page
     And I should see element with xpath on the page
     | exist  | xpath                                  |
-    | should | //input[@placeholder='Search Dataset'] |
+    | should | //input[@placeholder='Search Volume'] |
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - Secrets
