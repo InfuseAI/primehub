@@ -130,7 +130,6 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
       return;
     }
     await this.page.waitForTimeout(2000);
-    console.log(retryCount, this.page.url());
   }
   throw new Error(`failed to go to ${menuitem} page`);
 });
