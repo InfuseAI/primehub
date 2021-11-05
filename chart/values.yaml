@@ -282,7 +282,7 @@ metacontroller:
 console:
   enableUserPortal: true
   npsSurvey:
-    enabled: false
+    enabled: true
   replicas: 1
   reloaderImage:
     repository: busybox
