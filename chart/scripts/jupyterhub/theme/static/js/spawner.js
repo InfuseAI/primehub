@@ -124,9 +124,9 @@
           $liTemplate.html(dataset.displayName);
           dsList.push($liTemplate);
         });
-        $('#dataset-list-ul').html(dsList);
+        $('#volume-list-ul').html(dsList);
       } else {
-        $('#dataset-list-ul').html($('<li>None</li>'));
+        $('#volume-list-ul').html($('<li>None</li>'));
       }
 
       for (var i = 0; i < currentGroup.instanceTypes.length; i++) {
