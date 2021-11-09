@@ -3,6 +3,12 @@
 ## Upcoming
 ### What's New
 
+## 3.9.1
+### What's New
+
+- Remove beta badge of PrimeHub Apps.
+- [Bugfix] Blank screen shown when switching between group while in group -> members page.
+
 ## 3.9.0
 ### What's New
 
