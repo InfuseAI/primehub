@@ -919,7 +919,7 @@ istio:
       port: 8080
 
 store:
-  enabled: false
+  enabled: true
   accessKey: "AKIAIOSFODNN7EXAMPLE"
   secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   bucket: "primehub"
