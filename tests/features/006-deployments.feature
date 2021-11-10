@@ -41,6 +41,7 @@ Feature: Model Deployment
   Scenario: User can create a deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
+    And I "should" see element with xpath "//h3[text()='Group Resource']//..//td[text()='Deployments']"
 
     When I type "create-deployment-test" to "name" text field
     And I wait for 1.0 second
@@ -87,6 +88,7 @@ Feature: Model Deployment
     When I go to the deployment detail page with name "create-deployment-test"
     And I click "Update" button
     Then I "should" see element with xpath "//input[@id='id' and @disabled]"
+    And I "should" see element with xpath "//h3[text()='Group Resource']//..//td[text()='Deployments']"
 
     When I type "infuseai/model-tensorflow2-mnist:v0.2.0" to "modelImage input" text field
     And I click "Confirm and Deploy" button
@@ -210,6 +212,7 @@ Feature: Model Deployment
   Scenario: Model URI: User can create deployment
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
+    And I "should" see element with xpath "//h3[text()='Group Resource']//..//td[text()='Deployments']"
 
     When I type "model-uri-test" to "name" text field
     And I choose radio button with name "e2e-test-instance-type"
@@ -328,6 +331,7 @@ Feature: Model Deployment
   Scenario: User can create deployment with GPU
     When I click "Create Deployment" button
     Then I am on the PrimeHub console "CreateDeployment" page
+    And I "should" see element with xpath "//h3[text()='Group Resource']//..//td[text()='Deployments']"
 
     When I type "create-deployment-test-gpu" to "name" text field
     And I choose radio button with name "e2e-test-instance-type-gpu"
