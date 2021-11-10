@@ -95,7 +95,7 @@ Feature: Admin - Volumes
 
     When I get the iframe object
     And I go to the spawner page
-    Then I "should" see element with xpath "//div[@id='dataset-list']//li[contains(text(), 'e2e-test-volume-display-name')]" in hub
+    Then I "should" see element with xpath "//div[@id='volume-list']//li[contains(text(), 'e2e-test-volume-display-name')]" in hub
 
   @regression
   Scenario: Delete a volume
