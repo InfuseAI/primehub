@@ -63,8 +63,6 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -111,8 +109,6 @@ Feature: Admin - Instance Types
     | xpath                                                           | value |
     | //label[contains(., 'GPU Limit')]/following-sibling::div//input | 1     |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -139,8 +135,6 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -177,8 +171,6 @@ Feature: Admin - Instance Types
     | xpath                                                           | value |
     | //label[contains(., 'CPU Limit')]/following-sibling::div//input | 3.0   |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
@@ -205,8 +197,6 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
