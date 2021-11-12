@@ -36,7 +36,7 @@ Feature: Recurring Jobs
     Examples:
     | role  |
     | admin |
-    #| user  |
+    | user  |
 
   @regression
   Scenario Outline: User can update recurring jobs
@@ -61,10 +61,6 @@ Feature: Recurring Jobs
     And I type "* * * * *" to element with xpath "//input[@placeholder='* * * * *']"
     And I click "Submit" button
     Then I am on the PrimeHub console "RecurringJob" page
-    # And I wait for 60.0 seconds
-
-    #When I choose "Jobs" in sidebar menu
-    #Then I am on the PrimeHub console "Jobs" page
 
     When I click tab of "Recurring Jobs"
     And I "run" the "update-recurring-job-test" in Jobs 
@@ -78,7 +74,7 @@ Feature: Recurring Jobs
     Examples:
     | role  |
     | admin |
-    #| user  |
+    | user  |
 
   @regression
   Scenario Outline: User can delete recurring jobs
@@ -98,4 +94,4 @@ Feature: Recurring Jobs
     Examples:
     | role  |
     | admin |
-    #| user  |
+    | user  |
