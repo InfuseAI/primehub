@@ -80,8 +80,6 @@ Feature: Admin - Instance Types
     | name                     | e2e-test-instance-type-gpu |
     | displayName              | e2e-test-instance-type-gpu |
 
-    And I click element with xpath "//div[text()='Node Selector']"
-    And I wait for 0.5 second
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id             |
