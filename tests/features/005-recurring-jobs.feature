@@ -21,7 +21,7 @@ Feature: Recurring Jobs
     And I type "echo 'test'" to "command" text field
     And I click element with xpath "//input[@value='schedule']"
     And I click "Submit" button
-    Then I am on the PrimeHub console "Jobs" page
+    Then I am on the PrimeHub console "RecurringJob" page
 
     When I wait for 1.0 second
     And I "run" the "create-recurring-job-test" in Jobs 
