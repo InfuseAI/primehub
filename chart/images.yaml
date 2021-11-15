@@ -27,7 +27,7 @@ primehub-all:
   keycloak: &keycloak jboss/keycloak:8.0.1
   bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:11.5.0-debian-9-r60
   minideb: &minideb bitnami/minideb:stretch
-  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:e1e29f10
+  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:857c1960
 
   # Jupyterhub
   pause: &pause gcr.io/google_containers/pause:3.2
