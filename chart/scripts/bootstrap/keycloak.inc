@@ -61,6 +61,16 @@ function kc_realm_set_ssl_required() {
   $KCADM update realms/$realm -s "sslRequired=$value"
 }
 
+function kc_terms_and_conditions() {
+  local realm=$1
+  local enabled=${2:-true}
+
+  $KCADM update "authentication/required-actions/terms_and_conditions" \
+    -r $realm \
+    -s "enabled=$enabled" \
+    -s "defaultAction=$enabled"
+}
+
 function kc_user_id() {
   local realm=$1
   local user=$2
@@ -96,6 +106,7 @@ function kc_user_create() {
   local password=$4
   local email=${5:-}
   local enforceUpdatePassword=${6:-false}
+  local enableEULA=${7:-false}
   local user_id
   local requiredActions=''
 
@@ -126,11 +137,28 @@ function kc_user_create() {
       --username $user \
       --new-password $password
 
-  if [ "$enforceUpdatePassword" != 'false' ]; then
+  local requiredActions=""
+  function append_required_actions() {
+    local requiredActions=$1
+    local action=$2
+    if [ "$requiredActions" != "" ]; then
+      requiredActions="$requiredActions,"
+    fi
+    requiredActions="$requiredActions\"$action\""
+
+    echo $requiredActions
+  }
+  if [ "$enforceUpdatePassword" == 'true' ]; then
+    requiredActions=$(append_required_actions "$requiredActions" "UPDATE_PASSWORD")
+  fi
+  if [ "$enableEULA" == 'true' ]; then
+    requiredActions=$(append_required_actions "$requiredActions" "terms_and_conditions")
+  fi
+  if [ "$requiredActions" != "" ]; then
     $KCADM update \
       users/$user_id \
       -r $realm \
-      -s "requiredActions=[\"UPDATE_PASSWORD\"]"
+      -s "requiredActions=[$requiredActions]"
   fi
 
   eval "${prefix}_USER_ID=$user_id"
@@ -517,4 +545,3 @@ function kc_theme_update() {
     -s "adminTheme=$theme" \
     -s "emailTheme=$theme" || true
 }
-
