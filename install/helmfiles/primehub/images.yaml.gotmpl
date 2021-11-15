@@ -132,7 +132,7 @@ keycloak:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jboss/keycloak
   theme:
-    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:e1e29f10
+    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:857c1960
   postgresql:
     image:
       registry: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" | trimSuffix "/" }}

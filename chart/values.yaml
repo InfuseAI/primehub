@@ -203,7 +203,7 @@ keycloak:
     custom: |
 
   theme:
-    image: infuseai/primehub-keycloak-theme:e1e29f10
+    image: infuseai/primehub-keycloak-theme:857c1960
     packages: []
   extraInitContainers: |
     - name: theme-provider
@@ -242,6 +242,9 @@ keycloak:
     - name: theme-{{ $package }}
       emptyDir: {}
     {{- end }}
+  eula:
+    enabled: false
+
 
 # Metacontroller
 metacontroller:
