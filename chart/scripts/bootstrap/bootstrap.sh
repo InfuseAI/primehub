@@ -62,6 +62,11 @@ function update_realm() {
     print_info "Update realm ssl_required: ${KC_SSL_REQUIRED}"
     $KCADM update realms/$KC_REALM -s "sslRequired=${KC_SSL_REQUIRED}"
   fi
+
+  if [[ ${KC_EULA_ENABLED:-false} == "true" ]]; then
+    print_info "Enable End-User License Agreement"
+    kc_terms_and_conditions $KC_REALM
+  fi
 }
 
 function update_group_everyone() {
@@ -161,11 +166,12 @@ function create_default_resources() {
   PH_PASSWORD=${PH_PASSWORD:-$(openssl rand -hex 12)}
   PH_USER_EMAIL=${PH_USER_EMAIL:-"$PH_USER@example.com"}
   PH_USER_ENFORCE_UPDATE_PASSWORD=${PH_USER_ENFORCE_UPDATE_PASSWORD:-false}
+  KC_EULA_ENABLED=${KC_EULA_ENABLED:-false}
 
   # Create user: phadmin
   print_info "Create user: $PH_USER email: $PH_USER_EMAIL"
   print_info "Enforce Update Password: $PH_USER_ENFORCE_UPDATE_PASSWORD"
-  kc_user_create PH_ADMIN $KC_REALM $PH_USER $PH_PASSWORD $PH_USER_EMAIL $PH_USER_ENFORCE_UPDATE_PASSWORD
+  kc_user_create PH_ADMIN $KC_REALM $PH_USER $PH_PASSWORD $PH_USER_EMAIL $PH_USER_ENFORCE_UPDATE_PASSWORD $KC_EULA_ENABLED
 
   # Create group: phusers
   print_info "Create group: $PH_GROUP"

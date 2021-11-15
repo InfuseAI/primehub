@@ -52,6 +52,10 @@ spec:
           - name: KC_SSL_REQUIRED
             value: "none"
           {{- end }}
+          {{- if .Values.keycloak.eula.enabled }}
+          - name: KC_EULA_ENABLED
+            value: "true"
+          {{- end }}
           - name: ADMIN_UI_CLIENT_ID
             value: {{ include "primehub.console.clientId" . }}
           - name: ADMIN_UI_CLIENT_SECRET
