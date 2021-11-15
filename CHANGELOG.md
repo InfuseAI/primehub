@@ -2,6 +2,11 @@
 
 ## Upcoming
 ### What's New
+- Introduce the new dataset v2.0.
+- The original 'dataset' is renamed as 'volume'.
+
+### Changes
+- Sinec v3.10, the PHFS is enabled by default.
 
 ## 3.9.0
 ### What's New
