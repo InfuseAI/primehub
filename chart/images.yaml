@@ -207,4 +207,4 @@ primehub-phapp-template-images:
   label-studio: heartexlabs/label-studio:1.1.0
   matlab: nvcr.io/partners/matlab:r2020b
   mlflow: larribas/mlflow:1.9.1
-  streamlit: infuseai/streamlit:v0.79.0
+  streamlit: infuseai/streamlit:v1.2.0
