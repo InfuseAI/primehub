@@ -1,4 +1,4 @@
-VERSION := v0.79.0
+VERSION := v1.2.0
 IMAGE_NAME_BASE=streamlit
 IMAGE_BASE=infuseai/${IMAGE_NAME_BASE}
 
