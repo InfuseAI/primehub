@@ -11,7 +11,13 @@ defineStep("I am on the admin portal {string} page", async function(string) {
 });
 
 defineStep("I click element with test-id {string}", async function(testId) {
+  await this.page.waitForSelector(testIdToSelector(testId));
   await this.clickElementBySelector(testIdToSelector(testId));
+});
+
+defineStep("I press-click element with test-id {string}", async function(testId) {
+  await this.page.waitForSelector(testIdToSelector(testId));
+  await this.pressClickElementBySelector(testIdToSelector(testId));
 });
 
 defineStep("I type {string} to element with test-id {string}", async function(string, testId) {

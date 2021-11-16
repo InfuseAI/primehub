@@ -48,7 +48,7 @@ Feature: Features accessible for admin
     | test-id                     |
     | reset-password-reset-button |
 
-  @regression @ee @ce @deploy
+  @regression @ee @ce @deploy @abc
   Scenario: Admin can access pages in Admin Portal - Instance Types
     # Admin - Instance Types
     When I click "Instance Types" in admin portal
@@ -77,7 +77,7 @@ Feature: Features accessible for admin
     | test-id          |
     | add-field-button |
 
-    When I click element with test-id "reset-button"
+    When I press-click element with test-id "reset-button"
     Then I am on the admin portal "Instance Types" page
 
     # Admin - Instance Types - Search

@@ -48,12 +48,13 @@ class World {
 
   async start() {
     this.browser = await puppeteer.launch({
+      headless: false,
       defaultViewport: {
         width: 1920,
         height: 1080
       },
       // setup proxy server to speed up puppeteer
-      args: ['--no-sandbox', '--disable-setuid-sandbox', "--proxy-server='direct://'", '--proxy-bypass-list=*']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', "--proxy-server='direct://'", '--proxy-bypass-list=*', '--window-size=1920,1080']
     });
     this.page = await this.browser.newPage();
     this.page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36');
@@ -121,6 +122,12 @@ class World {
   async clickElementBySelector(selector, context = this.page) {
     await context.waitForSelector(selector, {visible: true});
     await context.click(selector);
+  }
+
+  async pressClickElementBySelector(selector, context = this.page) {
+    await context.waitForSelector(selector, {visible: true});
+    await context.focus(selector);
+    await context.keyboard.type('\n');
   }
 
   async clickElementByXpath(xpath, context = this.page) {
