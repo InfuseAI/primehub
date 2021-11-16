@@ -35,7 +35,7 @@ Feature: Admin - Instance Types
     | xpath                                                           | value |
     | //label[contains(., 'CPU Limit')]/following-sibling::div//input | 0.5   |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -61,7 +61,7 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -80,7 +80,7 @@ Feature: Admin - Instance Types
     | name                     | e2e-test-instance-type-gpu |
     | displayName              | e2e-test-instance-type-gpu |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -105,7 +105,7 @@ Feature: Admin - Instance Types
     | xpath                                                           | value |
     | //label[contains(., 'GPU Limit')]/following-sibling::div//input | 1     |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -131,7 +131,7 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -167,7 +167,7 @@ Feature: Admin - Instance Types
     | xpath                                                           | value |
     | //label[contains(., 'CPU Limit')]/following-sibling::div//input | 3.0   |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
@@ -193,7 +193,7 @@ Feature: Admin - Instance Types
     | //td/a[contains(text(), 'e2e-test-group')]/../preceding-sibling::td//input |
     | //button/span[text()='OK']                                                 |
 
-    And I click element with test-id "confirm-button"
+    And I click element with test-id "confirm-button-basic"
     Then I should see element with test-id on the page
     | test-id             |
     | instanceType-active |
