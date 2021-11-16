@@ -41,7 +41,7 @@ Feature: Features accessible for admin
     And I should see element with test-id on the page
     | test-id      |
     | email-button |
-    
+
     # Admin - Users - Edit - Reset Password
     When I click tab of "Reset Password"
     And I should see element with test-id on the page
@@ -77,7 +77,7 @@ Feature: Features accessible for admin
     | test-id          |
     | add-field-button |
 
-    When I click element with test-id "reset-button"
+    When I click element with test-id "reset-button-node-selector"
     Then I am on the admin portal "Instance Types" page
 
     # Admin - Instance Types - Search
@@ -96,7 +96,7 @@ Feature: Features accessible for admin
     | add-button  |
 
   @regression @ee @ce
-  Scenario: Admin can access pages in Admin Portal - Volumes 
+  Scenario: Admin can access pages in Admin Portal - Volumes
     # Admin - Volumes
     When I click "Volumes" in admin portal
     Then I am on the admin portal "Volumes" page
@@ -134,7 +134,7 @@ Feature: Features accessible for admin
     And I should see element with xpath on the page
     | exist  | xpath                                 |
     | should | //div[contains(., 'Summary Report')]  |
-    | should | //div[contains(., 'Detailed Report')] | 
+    | should | //div[contains(., 'Detailed Report')] |
 
   @regression @ee @ce @deploy
   Scenario: Admin can access pages in Admin Portal - System Settings
@@ -146,7 +146,7 @@ Feature: Features accessible for admin
     | system-active |
 
   @regression @ee @ce @deploy
-  Scenario: Admin can access pages in User Portal - Group Settings 
+  Scenario: Group Admin can access pages in User Portal - Group Settings
     # User portal - group settings
     When I click element with xpath "//a[contains(text(), 'Back to User Portal')]"
     Then I "should" see element with xpath "//h2[text()='User Guide']"
