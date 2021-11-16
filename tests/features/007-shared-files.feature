@@ -1,4 +1,4 @@
-@wip @feat-sharedfiles @ee @ce @deploy
+@wip @feat @feat-sharedfiles @ee @ce @deploy
 Feature: Shared Files
   Basic tests
 

@@ -1,4 +1,4 @@
-@wip @feat-model @ee @deploy
+@wip @feat @feat-model @ee @deploy
 Feature: Model Management 
   Basic tests
 

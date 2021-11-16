@@ -1,4 +1,4 @@
-@admin-images @ee @ce
+@admin @admin-images @ee @ce
 Feature: Admin - Images
   In order to manage images
   I want to change settings

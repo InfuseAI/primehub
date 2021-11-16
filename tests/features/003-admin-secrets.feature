@@ -1,4 +1,4 @@
-@admin-secrets @ee @ce @deploy
+@admin @admin-secrets @ee @ce @deploy
 Feature: Admin - Secrets
   In order to manage users
   I want to change settings

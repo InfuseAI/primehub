@@ -1,4 +1,4 @@
-@wip @feat-group-images @ee @ce
+@wip @feat @feat-group-images @ee @ce
 Feature: Group Images
   Basic tests
 

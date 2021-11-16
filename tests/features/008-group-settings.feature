@@ -1,4 +1,4 @@
-@feat-group-settings @ee @ce @deploy
+@feat @feat-group-settings @ee @ce @deploy
 Feature: Group Settings
   Basic tests
 

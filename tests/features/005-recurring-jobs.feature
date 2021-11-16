@@ -1,4 +1,4 @@
-@feat-jobs @ee
+@feat @feat-jobs @ee
 Feature: Recurring Jobs 
   Basic tests
 

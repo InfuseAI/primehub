@@ -1,4 +1,4 @@
-@feat-deployment @ee @deploy
+@feat @feat-deployment @ee @deploy
 Feature: Model Deployment
   Basic tests
 

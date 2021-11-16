@@ -1,4 +1,4 @@
-@admin-volumes @ee @ce
+@admin @admin-volumes @ee @ce
 Feature: Admin - Volumes 
   In order to manage volumes
   I want to change settings

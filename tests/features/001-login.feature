@@ -1,4 +1,4 @@
-@feat-login @ee @ce @deploy
+@feat @feat-login @ee @ce @deploy
 Feature: Login
   In order to manage system
   As a user, I want to login
