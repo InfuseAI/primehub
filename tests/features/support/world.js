@@ -51,6 +51,7 @@ class World {
 
   async start() {
     this.browser = await puppeteer.launch({
+      headless: false,
       defaultViewport: {
         width: 1920,
         height: 1080,
@@ -222,6 +223,27 @@ class World {
       if (err) console.log(err);
       else console.log("Successfully export page content");
     });
+  }
+
+  async selectAllByHotKeys() {
+    if (process.platform === "darwin") {
+      // https://pptr.dev/#?product=Puppeteer&version=v11.0.0&show=api-class-keyboard
+      // NOTE On macOS, keyboard shortcuts like ⌘ A -> Select All does not work. See #1313
+      // https://github.com/puppeteer/puppeteer/issues/1313
+
+      // solution 1, but `execCommand` deprecated
+      // await this.page.evaluate( () => document.execCommand( 'selectall', false, null ) );
+
+      // solution 2: https://blog.typeart.cc/puppeteer-clear-input-box/
+      await this.page.keyboard.press("Home");
+      await this.page.keyboard.down("Shift");
+      await this.page.keyboard.press("End");
+      await this.page.keyboard.up("Shift");
+    } else {
+      await this.page.keyboard.down("Control");
+      await this.page.keyboard.press("KeyA");
+      await this.page.keyboard.up("Control");
+    }
   }
 }
 
