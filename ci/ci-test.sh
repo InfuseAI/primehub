@@ -182,7 +182,15 @@ feature=""
 
 case ${FEATURE} in
   "admin")
-		feature="(@admin-groups or @admin-users or @admin-instance-types or @admin-images or @admin-volumes or @admin-secrets or @admin-notebooks-admin)"
+		feature="(@admin)"
+		echo $feature
+    ;;
+  "feat")
+		feature="((@prep-data or @destroy-data) or (@feat))"
+		echo $feature
+    ;;
+  "psotflight")
+		feature="((@prep-data or @destroy-data) or (@admin or @feat))"
 		echo $feature
     ;;
   "hub")

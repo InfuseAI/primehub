@@ -1,4 +1,4 @@
-@feat-edition
+@feat @feat-edition
 Feature: Features accessible for admin
   Available feature in different edition for different roles
 

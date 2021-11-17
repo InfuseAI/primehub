@@ -1,4 +1,4 @@
-@feat-misc @ee @ce @deploy
+@feat @feat-misc @ee @ce @deploy
 Feature: misc
   Check API token
 

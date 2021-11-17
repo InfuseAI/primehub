@@ -1,4 +1,4 @@
-@feat-hub @ee @ce @deploy
+@feat @feat-hub @ee @ce @deploy
 Feature: Hub
   In order to do machine learning experiments,
   As a user,
