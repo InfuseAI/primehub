@@ -189,7 +189,7 @@ case ${FEATURE} in
 		feature="((@prep-data or @destroy-data) or (@feat))"
 		echo $feature
     ;;
-  "psotflight")
+  "postflight")
 		feature="((@prep-data or @destroy-data) or (@admin or @feat))"
 		echo $feature
     ;;
