@@ -20,6 +20,8 @@ keycloak:
       requests:
         cpu: 0m
 console:
+  npsSurvey:
+    enabled: false
   resources:
     requests:
       cpu: 0m
