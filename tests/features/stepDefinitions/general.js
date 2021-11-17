@@ -10,7 +10,7 @@ Before(async function(scenario) {
   await fs.access(dir, fs.constants.R_OK | fs.constants.W_OK, (err) => {
     if (err)
       fs.mkdirSync(dir);
-  });	  
+  });
   return await this.start();
 });
 
@@ -202,7 +202,7 @@ defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
   await this.input("password", password);
   const xpath = "//input[@id='kc-login']";
   await this.clickElementByXpath(xpath);
-  await this.takeScreenshot(`I-am-logged-in`);  	
+  await this.takeScreenshot(`I-am-logged-in`);
 });
 
 defineStep("I click element with xpath {string}", async function(string) {
@@ -347,9 +347,7 @@ defineStep("I choose radio button with name {string}", async function(name) {
 defineStep("I type {string} to element with xpath {string}", async function(string, xpath) {
   const [element] = await this.page.$x(xpath);
   await element.focus();
-  await this.page.keyboard.down('Control');
-  await this.page.keyboard.press('KeyA');
-  await this.page.keyboard.up('Control');
+  await this.selectAllByHotKeys();
   await element.type(string);
 });
 
@@ -357,9 +355,7 @@ defineStep("I type value to element with xpath on the page", async function(data
   for (const row of datatable.rows()) {
     const [element] = await this.page.$x(row[0]);
     await element.focus();
-    await this.page.keyboard.down('Control');
-    await this.page.keyboard.press('KeyA');
-    await this.page.keyboard.up('Control');
+    await this.selectAllByHotKeys();
     await element.type(row[1]);
     await this.takeScreenshot(`type-value-to-element`);
   }
@@ -371,8 +367,8 @@ defineStep("I change language to {string}", async function(lang) {
   return await this.clickByText(lang, "div[@class='kc-dropdown']/ul//");
 });
 
-/* 
-*  Action on elements, such as click, switch, input 
+/*
+*  Action on elements, such as click, switch, input
 */
 
 defineStep("I click tab of {string}", async function(title) {
@@ -452,7 +448,7 @@ defineStep("I should see {int}th column of {int}th item is {string} on list", as
     try {
       await this.page.waitForXPath(xpath, {timeout: 5 * 1000});
       console.log(`Found '${content[index]}'`);
-      await this.takeScreenshot(`${row}th-item-${col}th-col-with-${content[index]}`); 
+      await this.takeScreenshot(`${row}th-item-${col}th-col-with-${content[index]}`);
       return;
     }
     catch (e) {}
@@ -584,8 +580,8 @@ defineStep("I should see the property {string} of element with xpath {string} is
 defineStep(/^I should see (?:(.*)) in (?:(.*)) in API Token?$/, async function(item, tag) {
   let inputXpath, textareaXpath, text, ele, ret;
   if (item.includes('API Token')) {
-    try { 
-      inputXpath = `//input[@class='ant-input']`; 
+    try {
+      inputXpath = `//input[@class='ant-input']`;
       [ele] = await this.page.$x(inputXpath);
       text = await (await ele.getProperty('value')).jsonValue();
     } catch (e) {
@@ -600,9 +596,9 @@ defineStep(/^I should see (?:(.*)) in (?:(.*)) in API Token?$/, async function(i
         function(result) { ret = !result; } );
       if (ret) {
         await this.takeScreenshot(`I-should-see-${item}-in-${tag}`);
-	throw new Error(`API Token is missing or not matching in Example`);      
+	throw new Error(`API Token is missing or not matching in Example`);
       }
-    } 
+    }
   }
 
   if ((item.includes('URL')) && (tag.includes('textarea'))) {
@@ -614,7 +610,7 @@ defineStep(/^I should see (?:(.*)) in (?:(.*)) in API Token?$/, async function(i
         await this.takeScreenshot(`I-should-see-${item}-in-${tag}`);
 	throw new Error(`URL is missing from Example`);
       }
-    } 
+    }
 });
 
 // Helper functions
