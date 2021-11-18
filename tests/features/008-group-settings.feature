@@ -10,7 +10,7 @@ Feature: Group Settings
     And I choose "Settings" in sidebar menu
     Then I am on the PrimeHub console "Settings" page
 
-  @regression
+  @wip @regression
   Scenario: Group admin can change default timeout in group settings
     When I click tab of "Jobs"
     And I type value to element with xpath on the page
