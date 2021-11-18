@@ -41,6 +41,11 @@ class World {
     this.HOME_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/console/g`;
     this.KC_SERVER_URL = `${this.KC_SCHEME}://${this.KC_DOMAIN}${this.KC_PORT}/auth/realms`;
     this.API_URL = `${this.PRIMEHUB_SCHEME}://${this.PRIMEHUB_DOMAIN}${this.PRIMEHUB_PORT}/api/graphql`;
+    this.CI_BROWSER_VISIBLE = false;
+
+    if (process.env.CI_BROWSER_VISIBLE && process.env.CI_BROWSER_VISIBLE === "true") {
+      this.CI_BROWSER_VISIBLE = true;
+    }
 
     this.context = null;
     this.copyText = null;
@@ -51,7 +56,7 @@ class World {
 
   async start() {
     this.browser = await puppeteer.launch({
-      headless: false,
+      headless: this.CI_BROWSER_VISIBLE !== true,
       defaultViewport: {
         width: 1920,
         height: 1080,
