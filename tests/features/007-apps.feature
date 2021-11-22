@@ -1,6 +1,6 @@
-@feat @feat-apps @ee @ce
+@feat @feat-apps @ee @ce @wip
 Feature: Apps
-  I would like to set up apps, so I can use it in primehub 
+  I would like to set up apps, so I can use it in primehub
 
   Background:
     Given I am logged in
@@ -275,7 +275,7 @@ Feature: Apps
     Then I "should not" see element with xpath "//div[@class='ant-card-body']//h2[text()='e2e-test-matlab']"
 
   @wip @regression
-  Scenario: Install Streamlit 
+  Scenario: Install Streamlit
     When I click "Applications" button
     Then I am on the PrimeHub console "Store" page
 
