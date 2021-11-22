@@ -279,8 +279,8 @@ defineStep("I click {string} button", async function(string) {
 });
 
 defineStep("I click button to install {string}", async function(apps) {
-  const xpath = `//a[contains(@href, '/apps/create/${apps}')]`;
-  await this.clickElementByXpath(xpath);
+  const selector = `button[data-testid=${apps}]`;
+  await this.clickElementBySelector(selector);
 });
 
 defineStep("I click refresh", async function() {
