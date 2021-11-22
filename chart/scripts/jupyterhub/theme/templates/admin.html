@@ -60,23 +60,19 @@
       {%- endif -%}
       </td>
 
-      <td class="server-col col-sm-1 text-center">
+      <td class="admin-item">
         {%- if admin_access %}
         <a role="button" class="access-server btn btn-xs btn-primary{% if not spawner.active %} hidden{% endif %}" target="_blank">
         Access Server
         </a>
         {%- endif %}
-      </td>
-      <td class="server-col col-sm-2 text-center">
-        <a role="button" class="stop-server btn btn-xs btn-danger{% if not spawner.active %} hidden{% endif %}">
-        Stop server
-        </a>
-      </td>
-      <td class="edit-col col-sm-1 text-center">
+
+        <a role="button" class="stop-server btn btn-xs btn-danger{% if not spawner.active %} hidden{% endif %}">Stop server</a>
+
         {%- if spawner.name == '' -%}
         {#- user row -#}
           {%- if user.name != current_user.name -%}
-          <a role="button" class="delete-user btn btn-xs btn-danger">Remove From Instance</a>
+          <a role="button" class="delete-user btn btn-xs btn-danger {% if spawner.active %} hidden{% endif %}">Remove From Instance</a>
           {%- endif -%}
         {%- else -%}
           {#- named spawner row -#}

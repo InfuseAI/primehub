@@ -352,6 +352,13 @@ label.disabled {
   gap: 8px;
   justify-content: flex-end;
 }
+
 .admin-actions, #stop-all-servers {
-  color: #FE4A4D
+  color: #FE4A4D;
+}
+
+.admin-item {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
 }
