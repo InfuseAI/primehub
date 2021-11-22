@@ -19,6 +19,10 @@
 {% block main %}
 
 <div class="container">
+  <div class="admin-actions">
+    <button id="stop-all-servers" type="button" class="btn btn-default">Stop All Activities</button>
+    <button id="shutdown-hub" type="button" class="btn btn btn-danger">Shutdown Hub</button>
+  </div>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -31,14 +35,6 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="user-row add-user-row">
-        <td colspan="12">
-          <span class="col-xs-offset-4 col-xs-3">
-            <a id="stop-all-servers" role="button" class="btn btn-danger col-xs-10 col-xs-offset-1">Stop All</a>
-          </span>
-          <a id="shutdown-hub" role="button" class="col-xs-2 col-xs-offset-1 btn btn-danger">Shutdown Hub</a>
-        </td>
-      </tr>
       {% for user in users %}
       {% for spawner in user.all_spawners() %}
       <tr class="user-row server-row" id="user-{{user.name}}" data-user="{{ user.name }}" data-server-name="{{spawner.name}}" data-admin="{{user.admin}}">
@@ -64,23 +60,23 @@
       {%- endif -%}
       </td>
 
-      <td class="server-col col-sm-2 text-center">
-        <a role="button" class="stop-server btn btn-xs btn-danger{% if not spawner.active %} hidden{% endif %}">
-        stop server
-        </a>
-      </td>
       <td class="server-col col-sm-1 text-center">
         {%- if admin_access %}
         <a role="button" class="access-server btn btn-xs btn-primary{% if not spawner.active %} hidden{% endif %}" target="_blank">
-        access server
+        Access Server
         </a>
         {%- endif %}
+      </td>
+      <td class="server-col col-sm-2 text-center">
+        <a role="button" class="stop-server btn btn-xs btn-danger{% if not spawner.active %} hidden{% endif %}">
+        Stop server
+        </a>
       </td>
       <td class="edit-col col-sm-1 text-center">
         {%- if spawner.name == '' -%}
         {#- user row -#}
           {%- if user.name != current_user.name -%}
-          <a role="button" class="delete-user btn btn-xs btn-danger">delete user</a>
+          <a role="button" class="delete-user btn btn-xs btn-danger">Remove From Instance</a>
           {%- endif -%}
         {%- else -%}
           {#- named spawner row -#}
@@ -99,7 +95,7 @@
       <div class="pagination menu">{{ pagination.links|safe }}</div>
       {% endif %}
     </td>
-    <td colspan="2" class="pagination-page-info">
+    <td colspan="3" class="pagination-page-info">
     Displaying users {{ pagination.info.start|safe }} - {{ pagination.info.end|safe }} of {{ pagination.info.total|safe }}
     </td>
   </tr>
@@ -107,14 +103,44 @@
   </table>
 </div>
 
-{% call modal('Delete User', btn_class='btn-danger delete-button') %}
-  Are you sure you want to delete user <span class="delete-username">USER</span>?
-  This operation cannot be undone.
-{% endcall %}
+<!-- Remove the user from instance -->
+<div class="modal fade" id="delete-user-dialog" tabindex="-1" role="dialog" aria-labelledby="delete-user-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="delete-user-label">Remove User From Associated Notebook Instance</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove <b class="delete-username">USER</b> from Notebook Instance?</p>
+        <p>It doesn’t delete the user from PrimeHub, once the user launches a Notebook instance, the user account will be listed here again.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger delete-button" data-dismiss="modal" data-dismiss="modal">Yes, Remove User</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-{% call modal('Stop All Servers', btn_label='Stop All', btn_class='btn-danger stop-all-button') %}
-  Are you sure you want to stop all your users' servers? Kernels will be shutdown and unsaved data may be lost.
-{% endcall %}
+<!-- Stop all activities -->
+<div class="modal fade" id="stop-all-servers-dialog" tabindex="-1" role="dialog" aria-labelledby="stop-all-servers-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="stop-all-servers-label">Stop All Activities</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to stop all your users' notebook activities? Kernels will be shutdown and unsaved data may be lost.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger stop-all-button" data-dismiss="modal" data-dismiss="modal">Yes, Stop All</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% call modal('Start All Servers', btn_label='Start All', btn_class='btn-primary start-all-button') %}
   Are you sure you want to start all servers? This can slam your server resources.
