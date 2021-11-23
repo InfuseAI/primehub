@@ -9,6 +9,10 @@ body {
   padding-bottom: 2.5em;
 }
 
+.btn {
+  border-radius: 4px;
+}
+
 .btn-primary, .btn-jupyter {
   color: #fff;
   background-color: #365abd;
@@ -341,4 +345,20 @@ label.disabled {
     transform-origin: left;
     transform: scalex(0.3);
   }
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-actions, #stop-all-servers {
+  color: #FE4A4D;
+}
+
+.admin-item {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
 }
