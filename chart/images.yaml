@@ -106,6 +106,7 @@ primehub-ee:
   configurable-http-proxy: *configurable-http-proxy
   k8s-image-awaiter: *k8s-image-awaiter
   statsd-exporter: *statsd-exporter
+  primehub-examples: *primehub-examples
 
   # Dataset Uploader
   dataset-upload-web-front-end: *dataset-upload-web-front-end
