@@ -1,5 +1,5 @@
 @feat @feat-jobs @ee
-Feature: Recurring Jobs 
+Feature: Recurring Jobs
   Basic tests
 
   @regression
@@ -24,7 +24,7 @@ Feature: Recurring Jobs
     Then I am on the PrimeHub console "RecurringJob" page
 
     When I wait for 1.0 second
-    And I "run" the "create-recurring-job-test" in Jobs 
+    And I "run" the "create-recurring-job-test" in Jobs
     And I wait for 1.0 second
     And I click element with xpath "//a//u[contains(., 'view your job details here.')]"
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane
@@ -50,7 +50,7 @@ Feature: Recurring Jobs
 
     When I click tab of "Recurring Jobs"
     And I click element with xpath "//td[text()='create-recurring-job-test']//..//button[2]" and wait for navigation
-    Then I am on the PrimeHub console "UpdateJob" page    
+    Then I am on the PrimeHub console "UpdateJob" page
 
     When I type "update-recurring-job-test" to "displayName" text field
     And I type "echo 'update-test'" to "command" text field
@@ -63,7 +63,7 @@ Feature: Recurring Jobs
     Then I am on the PrimeHub console "RecurringJob" page
 
     When I click tab of "Recurring Jobs"
-    And I "run" the "update-recurring-job-test" in Jobs 
+    And I "run" the "update-recurring-job-test" in Jobs
     And I wait for 1.0 second
     And I click element with xpath "//a//u[contains(., 'view your job details here.')]"
     Then I wait for attribute "Status" with value "Succeeded" in job upper pane

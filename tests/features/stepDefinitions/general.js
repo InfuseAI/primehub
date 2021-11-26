@@ -105,7 +105,7 @@ defineStep("I am on the PrimeHub console {string} page", async function(menuitem
     'Notebooks': '/hub', // temporarily used
     'Jobs': `-${this.E2E_SUFFIX}/job`,
     'NewJob': `-${this.E2E_SUFFIX}/job/create`,
-    'UpdateJob': `-${this.E2E_SUFFIX}/recurringJob/schedule-`,
+    'UpdateJob': `-${this.E2E_SUFFIX}/recurringJob/recurrence-`,
     'RecurringJob': `-${this.E2E_SUFFIX}/recurringJob`,
     'Models': `-${this.E2E_SUFFIX}/models`,
     'Deployments': `-${this.E2E_SUFFIX}/deployments`,
