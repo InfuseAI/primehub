@@ -28,6 +28,7 @@ rules:
   resources:
   - phapptemplates
   verbs:
+  - create
   - get
   - watch
   - list
