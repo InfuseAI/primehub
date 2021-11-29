@@ -1263,7 +1263,9 @@ class PrimeHubSpawner(KubeSpawner):
         try:
             self.instance_type = formdata.get('instance_type_display_name')[0]
             self.launch_image = formdata.get('image_display_name')[0]
-            self.created_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            # it will be converted by a local time when the client rendering
+            self.created_time = int(time.time() * 1000)
         except:
             self.instance_type = '<unknown>'
             self.launch_image = '<unknown>'
