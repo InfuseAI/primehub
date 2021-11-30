@@ -456,6 +456,17 @@ function kc_apply_client() {
   fi
 }
 
+function kc_apply_client_baseurl() {
+  local realm=$1
+  local client=$2
+  local base_url=$3
+
+  client_id=$(kc_client_id $realm $client)
+  $KCADM update "clients/$client_id" \
+    -r $realm \
+    -s "baseUrl=$base_url"
+}
+
 function kc_apply_user_roles() {
   local realm=$1
   local username=$2

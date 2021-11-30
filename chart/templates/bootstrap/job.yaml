@@ -66,6 +66,8 @@ spec:
                 optional: true
           - name: ADMIN_UI_REDIRECT_URI
             value: {{ include "primehub.console.redirectUri" . }}
+          - name: ADMIN_UI_BASEURL
+            value: {{ include "primehub.console.url" . }}
           - name: JUPYTERHUB_CLIENT_ID
             value: {{ include "primehub.jupyterhub.clientId" . }}
           - name: JUPYTERHUB_REDIRECT_URI
