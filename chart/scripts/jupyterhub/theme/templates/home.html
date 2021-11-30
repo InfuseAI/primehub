@@ -47,7 +47,7 @@
         </div>
         <div class="resources">
           <span>Creation Time</span>
-          <span>{{ default_server.created_time }}</span>
+          <span id='created-time'></span>
         </div>
       </div>
 
@@ -173,6 +173,20 @@ require(["jquery"], function(
       $(this).data('status', 'close');
     }
   });
+
+  try {
+    // create_time might get "None" when the hub has restarted.
+    const created_time = parseInt('{{ default_server.created_time }}');
+    var local_datetime = moment(created_time).format('YYYY-MM-DD HH:mm:ss');
+    if (local_datetime === 'Invalid date') {
+      local_datetime = '';
+    }
+    $('#created-time').text(local_datetime);
+  } catch (e) {
+    $('#created-time').text('');
+    console.error(e);
+  }
+
 });
 </script>
 
