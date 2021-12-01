@@ -50,7 +50,7 @@ Feature: Hub
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
-    
+
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
@@ -82,7 +82,7 @@ Feature: Hub
 
     When I switch to "Notebooks" tab
     Then I am on the PrimeHub console "Notebooks" page
- 
+
     When I stop my server in hub
     And I get the iframe object
     Then I "should" see element with xpath "//div//a[@id='start']" in hub
