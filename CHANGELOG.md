@@ -4,13 +4,13 @@
 ## 3.10.0
 ### What's New
 - Introduce the new dataset v2.0.
-- Redesign the job page. Merfge jobs and schedules page.
+- Redesign the job page. Merge jobs and schedules pages.
 - Add more PrimeHub SDK/CLI commands
 
 ### Notable Changes
-- Sinec v3.10, the PHFS is enabled by default
-- The original 'dataset' is renamed as 'volume'
-- The original 'Schedule' is renamed as 'Recurring Job'
+- From v3.10, PHFS is enabled by default
+- The original 'dataset' is renamed to 'volume'
+- The original 'Schedule' is renamed to 'Recurring Job'
 
 ## Dataset 2.0
 - Add search file function in dataset and shared file (sc-22796)
@@ -20,11 +20,11 @@
 - Dataset 2.0 - Refinement (sc-23053)
 - Dataset v2.0 browser/upload (sc-22787)
 - Dataset v2.0 CRUD (sc-22788)
-- Doc Site - Rename old "Datasets" as "Volumes" (sc-22665)
-- Jupyterhub - Rename old "Datasets" as "Volumes" (sc-22747)
-- PrimeHub Console - Rename old "Datasets" as "Volumes" (sc-22421)
-- Rename old "Git" as "Git Sync" (sc-22871)
-- SDK/CLI - Rename old "Datasets" as "Volumes" (sc-22666)
+- Doc Site - Rename old "Datasets" to "Volumes" (sc-22665)
+- Jupyterhub - Rename old "Datasets" to "Volumes" (sc-22747)
+- PrimeHub Console - Rename old "Datasets" to "Volumes" (sc-22421)
+- Rename old "Git" to "Git Sync" (sc-22871)
+- SDK/CLI - Rename old "Datasets" to "Volumes" (sc-22666)
 - Upload Files to PHFS via SDK (sc-22600)
 - [Bugfix] Dataset 2.0 - Failed to upload file if the group name contains capital characters or underscore (sc-23352)
 - [Bugfix] Error listObjectsV2 shown in a newly created server, without PHFS enabled (sc-23273)
@@ -47,23 +47,23 @@
 - SDK enhancements: query result output should be json formatted (sc-23027)
 
 ## Complete MLOps workflow within a single notebook
-- log demo cluster everything in the demo cluster (sc-21396)
+- increase logging in the demo cluster (everything now logged) (sc-21396)
 - [showcase][PHApp][blog post] End-to-end ML with Open Source tools (sc-20758)
-- Allows PHApps to control PrimeHub Resources (sc-21117)
+- Allow PHApps to control PrimeHub Resources (sc-21117)
 
 ## UI/UX Improvement
-- [Admin][InstanceType] Add CTA button under every tabs (sc-22235)
+- [Admin][InstanceType] Add CTA button under every tab (sc-22235)
 - fix wording in create deployment tooltip (sc-22127)
 - Weird undo action in adding applications (sc-23354)
 - Cascading deletion for group related resources (sc-21284)
 - [Bugfix] Base Image URL is acting weird when multiple dropdown items contain the same image URL (sc-22691)
 - [Bugfix] Blank screen shown while logging in onto Demo (sc-22119)
 - [Bugfix] Dash to indicate unlimited in user resource at home page (sc-22353)
-- [Bugfix] Link in Group Settings -> Deployments does Not link to correct group (sc-22298)
+- [Bugfix] Link in Group Settings -> Deployments does not link to correct group (sc-22298)
 - [Bugfix] [FE] Duplicate download buttons appear in the menu (sc-22822)
 - [Bugfix] Blank screen shown when switching between group while in group -> members page (sc-21757)
 - [Bugfix] Show the deployment usage info on the create deployment page only (sc-22523)
-- [Bugfix] The default phadm's name is "null null" (sc-19035)
+- [Bugfix] The default phadmin user's name is "null null" (sc-19035)
 
 ## 1-Click Installation
 - Ask user to agree our EULA when using 1-click install (sc-22853)
@@ -81,7 +81,7 @@
 - mlflow broken caused by bodyParser (sc-22129)
 - No confirmation dialog was shown while deleting a group image (sc-22037)
 - Rewrite PrimeHub Quickstart (sc-21900)
-- Should not able to set User quota that larger than Group quota (sc-22038)
+- Should not be able to set User quota that larger than Group quota (sc-22038)
 - Show group usage data in license info (sc-21270)
 - Update `ce-metrics-fetcher` (sc-23281)
 - Upgrade of Streamlit App (sc-22790)
@@ -89,16 +89,16 @@
 - [Bugfix] Build custom image is not enabled in CE (sc-22334)
 - [Bugfix] Cannot import PHApp template from URL (sc-23135)
 - [Bugfix] Group settings: job default timeout should be taken by the new job (sc-23180)
-- [Bugfix] Hub wouldn't be restarted when primehub upgraded with primehub-configmap changed (sc-21590)
+- [Bugfix] Hub wouldn't be restarted when PrimeHub upgraded with primehub-configmap changed (sc-21590)
 - [Bugfix] If the MLFLow register model name contains space, it may cause deployments to mount folder error. (sc-21545)
 - [Bugfix] Invitation is not working in CE mode (sc-22332)
 - [Bugfix] Limit of Deployment is empty in Group resource (sc-22320)
 - [Bugfix] New AppCard incompatible with e2e tests (sc-23300)
 - [Bugfix] PrimeHub Airgap image tarball fix image pause:3.2 (sc-22772)
 - [Bugfix] primehub-examples doesn't contained in release image tarball (sc-22573)
-- [Bugfix] Should not show app settings in primehub deploy (sc-22329)
+- [Bugfix] Should not show app settings in PrimeHub deploy (sc-22329)
 - [Bugfix] Sorting in dataset list is not working (sc-23319)
-- [Bugfix] SSH hostname in SSH Server Instruction is not match (sc-22340)
+- [Bugfix] SSH hostname in SSH Server Instruction does not match (sc-22340)
 - [Bugfix] Still show group image page when user doesn't have permission to access (sc-21874)
 - [Bugfix] Tool tips not correct for Image in Admin portal (sc-22301)
 - [Bugfix] Unable to display second page of deployment list (sc-22346)
