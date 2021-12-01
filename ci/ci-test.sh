@@ -159,10 +159,10 @@ if [[ "$TARGET" != "demo.a" ]]; then
 
   # test
   for filename in tests/*.sh; do echo $filename; $filename; done
-else 
+else
   # get authenticated and able to connect to demo, get info from circleci: org settings: contexts: e2e-demo-a
   gcloud auth activate-service-account gitlab-ci@primehub-demo.iam.gserviceaccount.com --key-file=<(echo $GCP_SA_JSON_PRIMEHUB_DEMO)
-  gcloud container clusters get-credentials $CI_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID 
+  gcloud container clusters get-credentials $CI_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
 fi
 
 # e2e test
@@ -214,7 +214,7 @@ case ${FEATURE} in
 		echo $feature
     ;;
   "misc")
-	        feature="((@prep-data) or (@feat-misc or @feat-edition or @feat-group-settings))"
+	  feature="((@prep-data) or (@feat-misc or @feat-edition or @feat-group-settings))"
 		echo $feature
     ;;
   "login")
@@ -229,7 +229,7 @@ esac
 
 if [[ "$feature" == "" ]]; then
   tags="$test_type and $primehub_mode and $wip"
-else 
+else
   tags="$test_type and $primehub_mode and $feature and $wip"
 fi
 echo $tags

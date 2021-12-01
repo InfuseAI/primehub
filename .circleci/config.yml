@@ -32,7 +32,7 @@ commands:
   create_ticket:
     description: Create a shortcut ticket when test failed on master
     steps:
-      - run: 
+      - run:
           command: |
             curl -X POST -H "Content-Type:application/json" \
             -H "Shortcut-Token:${SHORTCUT_API_TOKEN}" \
@@ -138,7 +138,7 @@ jobs:
           environment:
             PRIMEHUB_MODE: << parameters.primehub_mode >>
             TEST_TYPE: << parameters.test_type >>
-            FEATURE: << parameters.feature >> 
+            FEATURE: << parameters.feature >>
             TARGET : << parameters.target >>
           command: |
             ./ci/ci-test.sh
@@ -146,12 +146,12 @@ jobs:
           path: ~/project/e2e
       - when:
           condition: << parameters.notify >>
-          steps: 
-            - notify_slack 
+          steps:
+            - notify_slack
       - when:
           condition: << parameters.ticket >>
-          steps: 
-            - create_ticket 
+          steps:
+            - create_ticket
 
   build:
     docker:
@@ -221,7 +221,7 @@ workflows:
       - e2e_test:
           name: "e2e_smoke_ce"
           primehub_mode: "ce"
-          test_type: "smoke" 
+          test_type: "smoke"
           notify: true
           filters:
             branches:
@@ -230,7 +230,7 @@ workflows:
       - e2e_test:
           name: "e2e_smoke_ee"
           primehub_mode: "ee"
-          test_type: "smoke" 
+          test_type: "smoke"
           notify: true
           filters:
             branches:
@@ -239,18 +239,24 @@ workflows:
       - e2e_test:
           name: "e2e_sanity_ee"
           primehub_mode: "ee"
-          test_type: "sanity" 
+          test_type: "sanity"
           notify: true
           filters:
             branches:
               only:
                 - master
+      - e2e_test:
+          name: "e2e_regression_ee_user_hub_k3d_yoyoyo"
+          primehub_mode: "ee"
+          test_type: "regression"
+          feature: "hub"
+          ticket: true
       - build:
           filters:
             tags:
               only: /v.*/
             branches:
-              ignore: /.*/            
+              ignore: /.*/
   daily_workflow:
     triggers:
       - schedule:
@@ -263,7 +269,7 @@ workflows:
       - e2e_test:
           name: "e2e_regression_ee_admin_k3d"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "admin"
           ticket: true
       - e2e_test:
@@ -275,38 +281,38 @@ workflows:
       - e2e_test:
           name: "e2e_regression_ee_user_hub_k3d"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "hub"
           ticket: true
       - e2e_test:
           name: "e2e_regression_ee_user_jobs_k3d"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "jobs"
           ticket: true
       - e2e_test:
           name: "e2e_regression_ee_user_deployment_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "deployment"
           ticket: true
       - e2e_test:
           name: "e2e_regression_ee_user_schedule_k3d"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "schedule"
           ticket: true
       - e2e_test:
           name: "e2e_regression_ee_user_apps_k3d"
           machine_resource_class: "large"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "apps"
           ticket: true
       - e2e_test:
           name: "e2e_regression_ee_user_misc_k3d"
           primehub_mode: "ee"
-          test_type: "regression" 
+          test_type: "regression"
           feature: "misc"
           ticket: true
