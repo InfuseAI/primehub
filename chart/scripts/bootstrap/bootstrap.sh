@@ -99,6 +99,8 @@ function update_client_admin_ui() {
     --from-literal=everyone_group_id=$PH_GROUP_EVERYONE_ID \
     --dry-run -oyaml | \
     kubectl apply -f -
+
+  kc_apply_client_baseurl $KC_REALM $client $ADMIN_UI_BASEURL
 }
 
 function update_client_jupyterhub() {
