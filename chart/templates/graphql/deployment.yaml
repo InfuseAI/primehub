@@ -176,7 +176,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "primehub.name" . }}-graphql
                   key: storeSecretKey
-            {{- if .Values.store.logPersistence.enabled }}
+            {{- if eq (include "primehub.feature.logPersistence.enabled" .) "true" }}
             - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
               value: "true"
             {{- end }}

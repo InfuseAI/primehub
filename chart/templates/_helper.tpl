@@ -161,7 +161,8 @@ Store
 {{- end -}}
 
 {{- define "primehub.feature.logPersistence.enabled" -}}
-  {{- if (and .Values.store.enabled .Values.store.logPersistence.enabled) -}}
+  {{/* log persistence is only used in job submission. Only avaiable in ee. */}}
+  {{- if (and (eq .Values.primehub.mode "ee") .Values.store.enabled .Values.store.logPersistence.enabled) -}}
     true
   {{- else -}}
     false

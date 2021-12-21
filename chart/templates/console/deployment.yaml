@@ -138,7 +138,7 @@ spec:
             {{- if .Values.store.enabled }}
             - name: PRIMEHUB_FEATURE_STORE
               value: "true"
-            {{- if .Values.store.logPersistence.enabled }}
+            {{- if eq (include "primehub.feature.logPersistence.enabled" .) "true" }}
             - name: PRIMEHUB_FEATURE_LOG_PERSISTENCE
               value: "true"
             {{- end }}
