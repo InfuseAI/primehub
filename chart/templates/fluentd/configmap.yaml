@@ -1,4 +1,4 @@
-{{- if eq (include "fluentd.enabled" .) "true" -}}
+{{- if eq (include "primehub.feature.logPersistence.enabled" .) "true" -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
