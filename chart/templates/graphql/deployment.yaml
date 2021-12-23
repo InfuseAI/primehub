@@ -128,6 +128,11 @@ spec:
                 secretKeyRef:
                   name: authoritative-secret
                   key: expired
+            - name: MAX_USER
+              valueFrom:
+                secretKeyRef:
+                  name: authoritative-secret
+                  key: max_user
             - name: MAX_GROUP
               valueFrom:
                 secretKeyRef:
