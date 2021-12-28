@@ -45,12 +45,12 @@ console:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console
   reloaderImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
 graphql:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console-graphql
   reloaderImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
 watcher:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-console-watcher
@@ -119,16 +119,16 @@ sshBastionServer:
 
 usage:
   initImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-usage
   dbImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}postgres
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/postgres
 
 keycloak:
   init:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}busybox
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jboss/keycloak
   theme:

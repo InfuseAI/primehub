@@ -4,6 +4,8 @@ set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 REGISTRY=primehub.airgap:5000
 REGISTRY_TYPE='docker-registry'
+CONTAINER_ENGINE='docker'
+CONTAINER_CLI='docker'
 USER=''
 PASSWORD=''
 
@@ -48,7 +50,7 @@ function create_project() {
 }" > /dev/null
 }
 
-while getopts "u:p:r:h" OPT; do
+while getopts "u:p:r:hc" OPT; do
   case $OPT in
     u)
       USER=$OPTARG
@@ -58,6 +60,10 @@ while getopts "u:p:r:h" OPT; do
       ;;
     r)
       REGISTRY=$OPTARG
+      ;;
+    c)
+      CONTAINER_ENGINE='containerd'
+      CONTAINER_CLI='nerdctl'
       ;;
     h)
       print_usage
@@ -87,6 +93,7 @@ echo "images.txt: $IMAGES_LIST"
 echo "images.tgz: $IMAGES_FILE"
 echo "registry:   $REGISTRY"
 echo "type:       $REGISTRY_TYPE"
+echo "engine:     $CONTAINER_ENGINE"
 echo "username:   $USER"
 echo
 
@@ -111,12 +118,12 @@ fi
 
 if [[ ${USER} != '' && ${PASSWORD} != '' ]]; then
   echo "login ${REGISTRY} ..."
-  echo ${PASSWORD} | docker login ${REGISTRY} -u ${USER} --password-stdin
+  echo ${PASSWORD} | $CONTAINER_CLI login ${REGISTRY} -u ${USER} --password-stdin
 fi
 
 # load to docker file
 echo "load images..."
-docker load -i $IMAGES_FILE
+$CONTAINER_CLI load -i $IMAGES_FILE
 
 echo "push images..."
 # push to registry
@@ -128,18 +135,19 @@ for image in `cat $IMAGES_LIST`; do
   if [[ "$(echo $image | cut -d':' -f1)" != *"/"* ]]; then
     project='library'
     push_image="library/${image}"
-
-    echo "push ${image} without library prefix"
-    docker tag ${image} ${REGISTRY}/${image}
-    docker push ${REGISTRY}/${image}
   fi
 
   if [[ ${REGISTRY_TYPE} == 'harbor' ]]; then
     echo "create project ${project}"
     create_project ${project}
+
+    echo "push ${push_image}"
+    $CONTAINER_CLI tag ${image} ${REGISTRY}/${push_image}
+    $CONTAINER_CLI push ${REGISTRY}/${push_image}
+  else
+    echo "push ${image} without library prefix"
+    $CONTAINER_CLI tag ${image} ${REGISTRY}/${image}
+    $CONTAINER_CLI push ${REGISTRY}/${image}
   fi
 
-  echo "push ${push_image}"
-  docker tag ${image} ${REGISTRY}/${push_image}
-  docker push ${REGISTRY}/${push_image}
 done
