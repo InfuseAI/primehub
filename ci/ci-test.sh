@@ -136,10 +136,20 @@ if [[ "$TARGET" != "demo.a" ]]; then
   ci/k3d/install-components.sh
 
   # apply dev license
-  DEV_LICENSE=${DEV_LICENSE:-false}
-  if [[ ( "$DEV_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" || "${PRIMEHUB_MODE}" == "deploy" ) ]]; then
+  DEV_EE_LICENSE=${DEV_EE_LICENSE:-false}
+  if [[ ( "$DEV_EE_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" ) ]]; then
     echo "Applying License for test."
-    echo "$DEV_LICENSE" | base64 -d | kubectl apply -n hub -f -
+    echo "$DEV_EE_LICENSE" | base64 -d | kubectl apply -n hub -f -
+    sleep 30
+    wait_for_pod "primehub-graphql"
+    wait_for_pod "primehub-console"
+  fi
+
+  # apply dev license
+  DEV_DEPLOY_LICENSE=${DEV_DEPLOY_LICENSE:-false}
+  if [[ ( "$DEV_DEPLOY_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" || "${PRIMEHUB_MODE}" == "deploy" ) ]]; then
+    echo "Applying License for test."
+    echo "$DEV_DEPLOY_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
     wait_for_pod "primehub-graphql"
     wait_for_pod "primehub-console"
@@ -159,10 +169,10 @@ if [[ "$TARGET" != "demo.a" ]]; then
 
   # test
   for filename in tests/*.sh; do echo $filename; $filename; done
-else 
+else
   # get authenticated and able to connect to demo, get info from circleci: org settings: contexts: e2e-demo-a
   gcloud auth activate-service-account gitlab-ci@primehub-demo.iam.gserviceaccount.com --key-file=<(echo $GCP_SA_JSON_PRIMEHUB_DEMO)
-  gcloud container clusters get-credentials $CI_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID 
+  gcloud container clusters get-credentials $CI_CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
 fi
 
 # e2e test
@@ -229,7 +239,7 @@ esac
 
 if [[ "$feature" == "" ]]; then
   tags="$test_type and $primehub_mode and $wip"
-else 
+else
   tags="$test_type and $primehub_mode and $feature and $wip"
 fi
 echo $tags
