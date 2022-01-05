@@ -147,7 +147,7 @@ if [[ "$TARGET" != "demo.a" ]]; then
 
   # apply dev license
   DEV_DEPLOY_LICENSE=${DEV_DEPLOY_LICENSE:-false}
-  if [[ ( "$DEV_DEPLOY_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" || "${PRIMEHUB_MODE}" == "deploy" ) ]]; then
+  if [[ ( "$DEV_DEPLOY_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "deploy" ) ]]; then
     echo "Applying License for test."
     echo "$DEV_DEPLOY_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
