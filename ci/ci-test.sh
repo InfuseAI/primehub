@@ -138,7 +138,7 @@ if [[ "$TARGET" != "demo.a" ]]; then
   # apply dev license
   DEV_EE_LICENSE=${DEV_EE_LICENSE:-false}
   if [[ ( "$DEV_EE_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "ee" ) ]]; then
-    echo "Applying License for test."
+    echo "Applying License [EE] for test."
     echo "$DEV_EE_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
     wait_for_pod "primehub-graphql"
@@ -148,7 +148,7 @@ if [[ "$TARGET" != "demo.a" ]]; then
   # apply dev license
   DEV_DEPLOY_LICENSE=${DEV_DEPLOY_LICENSE:-false}
   if [[ ( "$DEV_DEPLOY_LICENSE" != "false" ) && ( "${PRIMEHUB_MODE}" == "deploy" ) ]]; then
-    echo "Applying License for test."
+    echo "Applying License [DEPLOY] for test."
     echo "$DEV_DEPLOY_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
     wait_for_pod "primehub-graphql"
