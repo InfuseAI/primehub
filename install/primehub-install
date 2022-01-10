@@ -1329,7 +1329,7 @@ verify_minimal_resources() {
       elif echo $resource | grep memory > /dev/null; then
         memory=$(echo $resource | grep memory | sed 's/[^0-9]*//g')
       elif echo $resource | grep 'nvidia.com/gpu'> /dev/null; then
-        gpu=$(echo $resource | grep 'nvidia.com/gpu'; | sed 's/[^0-9]*//g')
+        gpu=$(echo $resource | grep 'nvidia.com/gpu' | sed 's/[^0-9]*//g')
       fi
     done
     node_count=$((node_count + 1))
