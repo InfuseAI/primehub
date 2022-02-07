@@ -64,6 +64,8 @@ spec:
           value: {{ .Values.fluentd.flushInterval | quote}}
         - name:  BUFFER_CHUNK_LIMIT_SIZE
           value: {{ .Values.fluentd.chunkLimitSize | quote}}
+        - name: FLUENT_CONTAINER_TAIL_EXCLUDE_PATH
+          value: {{ printf "/var/log/containers/%s-fluentd*" (include "primehub.name" .) }}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
