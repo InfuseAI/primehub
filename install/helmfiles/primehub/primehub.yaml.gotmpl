@@ -209,3 +209,9 @@ grafana:
 rclone:
   kubeletPath: /var/snap/microk8s/common/var/lib/kubelet
 {{- end }}
+
+{{if env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+controller:
+  airgap:
+    imagePrefix: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}
+{{end}}

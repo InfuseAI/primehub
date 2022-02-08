@@ -12,6 +12,7 @@ metadata:
 data:
   config.yaml: |-
     primehubUrl: {{ include "primehub.url" . }}
+    imagePrefix: {{ .Values.controller.airgap.imagePrefix }}
     phfsEnabled: {{ include "primehub.phfs.enabled" . }}
     phfsPVC: {{ include "primehub.store.pvcName" . }}
     ingress:
