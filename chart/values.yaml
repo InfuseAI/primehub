@@ -737,6 +737,9 @@ jupyterhub:
 controller:
   replicaCount: 1
 
+  airgap:
+    imagePrefix: ""
+
   image:
     repository: infuseai/primehub-controller
     tag: latest
