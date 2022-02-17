@@ -1,6 +1,76 @@
 # Changelog
 ## Upcoming
 
+# PrimeHub v3.11.0
+
+### Notable Changes
+
+- Group deletion will include Dataset and SharedFiles
+- Deployment and PhApps are airgap compatible
+
+Example:
+
+```yaml
+controller:
+  airgap:
+    imagePrefix: primehub.airgap:5000/
+```
+
+
+## Dataset 2.0
+
+- Updated tipsLink (tool tip link) on datasets page (sc-23508)
+- Datasets 2.0 Enhancement: Create/update a dataset from shared files (sc-23403)
+- Datasets/sharedFiles - the content of button will be updated accordingly (sc-19825)
+- Replace the uppy uploader (tusd) by ant uploader (rest) (sc-23401)
+- Update a dataset from shared files - able to add files into directory (sc-23940, sc-23500)
+- [Bugfix] Failed to create/update dataset from SharedFiles (sc-23982)
+
+
+## SDK
+
+- Add Dataset 2.0 support in PrimeHub SDK/CLI (sc-22605)
+- `files-upload` now mimics the behavior of `cp -R` (sc-23727)
+- Add Secrets support in PrimeHub SDK/CLI (sc-23691)
+- [bugfix] Files command now outputs valid JSON (sc-23681)
+
+## License
+- Support License by # of user (sc-23693)
+
+
+## PrimeHub Apps
+
+- Upgraded Streamlit to v1.2.0 (sc-24357)
+- PhApp already exists error when importing PhApp template (sc-23484)
+- [Bugfix] The Environment Variables reset icon/button now works as expected (sc-20463)
+- [Bugfix] Fixed bug that might crash API when updating a PHApplication (sc-23440)
+
+## Deployment
+
+- [Bugfix] An error page is now correctly displayed when trying to view a deleted deployment (sc-23539)
+- [Bugfix] Fixed bug that caused deployment card to not render time (sc-23538)
+
+## Notebook
+
+- [Bugfix] Can't ssh to Jupyter Notebook with SSH Bastion Server feature (MicroK8S) (sc-23405)
+- [Bugfix] Timestamp not consistent, Timestamp in dataset shown in local time, Timestamp in Notebook shown in GMT+0 (sc-23233)
+
+
+## Others
+
+- Enhance login process if users already logged in (sc-21292)
+- Cascading deletion for group related resources: Add integration test (sc-23385)
+- Should always disable fluentd and log persistence related feature in CE and Deploy (sc-23933)
+- Table rendering exceeds the boundary (sc-23563)
+- Cascading deletion for group related resources - Shared Files & Datasets (sc-24605)
+- PrimeHub airgap support for deployment and app (sc-24401)
+
+- [Bugfix] PrimeHub's FluentD is producing weird '\' log dramatically (sc-24510)
+- [Bugfix] The default value of 'launch group only' is now 'true' (sc-23407)
+- [Bugfix] Uploading large files no longer results in an error (sc-23977)
+
+
+
 ## 3.10.0
 ### What's New
 - Introduce the new dataset v2.0.
