@@ -94,6 +94,7 @@ usage (){
     local SELF=`basename $0`
     cat <<EOF
 USAGE:
+  $SELF prerequisite                             : Check the prerequisite of PrimeHub
   $SELF create  singlenode  [options]            : Create single-node k8s environment
   $SELF status  singlenode                       : Show the statuse of single-node k8s environment
   $SELF destroy singlenode                       : Destroy single-node k8s environment
@@ -1540,7 +1541,7 @@ main() {
           exit 1
         fi
       ;;
-      apply-license|license|diagnose|version|usage|required-bin)
+      apply-license|license|diagnose|version|usage|required-bin|prerequisite)
         if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
         cmd=${1};
       ;;
@@ -1640,6 +1641,33 @@ main() {
     esac
     shift || (usage; exit 1)
   done
+
+  case "$cmd" in
+    prerequisite)
+      local result=0
+      LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc' 'kubectl' 'helm' 'helmfile')
+
+      for val in ${LINUX_PACKAGES[@]}; do
+        if [[ "$(command -v $val)" == "" ]]; then
+          result=1
+          MISSING_PACKAGES+=(${val})
+        fi
+      done
+
+      if [[ "$(helm plugin list | grep diff)" == "" ]]; then
+          result=1
+          MISSING_PACKAGES+=('helm diff')
+      fi
+
+      if [ ${result} -gt 0 ]; then
+        warn "[Prerequisite Failed] Some Linux packages not installed: ${MISSING_PACKAGES}"
+      else
+        info "[Prerequisite] Passed checking: Linux packages"
+      fi
+
+      return
+      ;;
+  esac
 
   case "$cmd" in
     create | diff | upgrade)
