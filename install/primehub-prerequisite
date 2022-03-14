@@ -1,0 +1,169 @@
+#! /bin/bash
+set -eo pipefail
+IFS=$'\n\t '
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+info() {
+  echo -e "\033[0;32m$1\033[0m"
+}
+
+warn() {
+  echo -e "\033[0;93m$1\033[0m"
+}
+
+error() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+usage (){
+    local SELF=`basename $0`
+    cat <<EOF
+USAGE:
+  $SELF check linux-package    : check the Linux Package
+  $SELF check container        : check the Container runtime
+  $SELF check kubernetes       : check the Kubernetes
+  $SELF check ingress          : check Ingress
+  $SELF check gpu              : check GPU
+  $SELF check storageclass     : check StorageClass
+  $SELF -h,--help              : show this message
+
+EOF
+}
+
+check::linux-package() {
+  info "[Check] Linux-package"
+  local result=0
+  LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc' 'kubectl' 'helm' 'helmfile')
+
+  for val in ${LINUX_PACKAGES[@]}; do
+    if [[ "$(command -v $val)" == "" ]]; then
+      result=1
+      MISSING_PACKAGES+=(${val})
+    fi
+  done
+
+  if [[ "$(helm plugin list | grep diff)" == "" ]]; then
+      result=1
+      MISSING_PACKAGES+=('helm diff')
+  fi
+
+  if [ ${result} -gt 0 ]; then
+    warn "[Check] Failed checking: Some Linux packages not installed: ${MISSING_PACKAGES}"
+  else
+    info "[Check] Passed checking: Linux packages"
+  fi
+}
+
+check::container() {
+  info "[Check] Container Runtime"
+
+  if [[ "$(command -v docker)" == "" ]]; then
+    MISSING_PACKAGES+="docker"
+    warn "[Check] Failed checking: Container Runtime not installed: ${MISSING_PACKAGES}"
+  else
+    info "[Check] Passed checking: Container Runtime"
+  fi
+}
+
+check::kubernetes() {
+  info "[Check] Kubernetes"
+  if [[ "$(command -v kubectl)" == "" ]]; then
+    MISSING_PACKAGES+="kubectl"
+    warn "[Check] Failed checking: kubectl not installed: ${MISSING_PACKAGES}"
+  else
+    info "[Check] Passed checking: kubectl"
+  fi
+}
+
+search_helm_release() {
+  local release=$1
+  if [[ "$(helm ls -A -f "^${release}$" | grep -v NAME)" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+search_pod() {
+  local ns=$1
+  local pod_name=$2
+  if [[ "$(kubectl -n ${ns} get pods | grep "^${pod_name}")" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
+check::ingress() {
+  info "[Check] Ingress"
+  if ! search_helm_release nginx-ingress; then
+    warn "[Check] Failed checking: Ingress"
+  else
+    info "[Check] Passed checking: Ingress"
+  fi
+
+}
+
+check::gpu() {
+  info "[Check] GPU"
+  if [[ "$(command -v nvidia-smi)" == "" ]]; then
+    MISSING_PACKAGES+="nvidia-smi"
+    warn "[Check] Failed checking: GPU not installed: ${MISSING_PACKAGES}"
+  elif ! search_pod nvidia-gpu-device-plugin; then
+    warn "[Check] Failed checking: GPU: nvidia-gpu-device-plugin"
+  else
+    info "[Check] Passed checking: GPU"
+  fi
+}
+
+check::storageclass() {
+  info "[Check] Storage Class"
+  if [[ "$(kubectl get storageclass | grep default)" == "" ]]; then
+    warn "[Check] Failed checking: Storage Class"
+  else
+    info "[Check] Passed checking: Storage Class"
+  fi
+}
+
+main() {
+  local cmd=''
+  local target=''
+  local support_targets='linux-package kubernetes container ingress gpu storageclass'
+
+  while (( "$#" )); do
+    case "${1:-}" in
+      env)
+        cmd=${1}; shift
+        break
+      ;;
+      check | install)
+        if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
+        cmd=${1}; shift
+        for t in ${support_targets}; do
+          if [[ "${t}" == "${1}" ]]; then
+            target=${1}
+            break
+          fi
+        done
+        if [[ "${target}" == "" ]]; then
+          usage
+          exit 1
+        fi
+      ;;
+    esac
+    shift || (usage; exit 1)
+  done
+
+  case "$cmd" in
+    check)
+      check::${target}
+    ;;
+    *)
+      usage
+    ;;
+  esac
+}
+
+main "$@"
