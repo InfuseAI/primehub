@@ -10,8 +10,6 @@
 
 # PrimeHub Community Edition
 
-[![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.3/primehub-ce-starter-cloudformation.yaml)
-
 Welcome to the PrimeHub Community Edition repository, **PrimeHub** is an effortless infrastructure for machine learning built on the top of Kubernetes. It provides *cluster-computing*, *one-click research environments*, *easy dataset loading*, and *management of various resources* and *access-control*. All of these are designed from *a project/team-centric* concept.
 
 In terms of **PrimeHub CE**, it provides a few fundamental features from [Enterprise Edition↗](https://www.infuseai.io/primehub).
@@ -21,6 +19,13 @@ To IT leaders, PrimeHub gives flexibility and administration authority to config
 To Data scientists, PrimeHub provides Jupyter Notebook-ready environment which is just few-clicks away.
 
 This community repository contains a *Helm Chart* for PrimeHub CE and a guide on how to install PrimeHub CE with *Helm*.
+
+### AWS launch links
+
+| Edition | Launch link |
+| --- | --- |
+| Community Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.4/primehub-ce-starter-cloudformation.yaml) |
+| Enterprise Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.4/primehub-starter-cloudformation.yaml) |
 
 ## Fundamental Features
 
