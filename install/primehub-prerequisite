@@ -38,6 +38,7 @@ check::linux-package() {
   info "[Check] Linux-package"
   local result=0
   LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc' 'kubectl' 'helm' 'helmfile')
+  echo "[Check] Required: ${LINUX_PACKAGES[@]}"
 
   for val in ${LINUX_PACKAGES[@]}; do
     if [[ "$(command -v $val)" == "" ]]; then
