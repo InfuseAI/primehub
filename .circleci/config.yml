@@ -251,10 +251,10 @@ workflows:
               only: /v.*/
             branches:
               ignore: /.*/
-  daily_workflow:
+  scheduled_workflow:
     triggers:
       - schedule:
-          cron: "0 21 * * 1-6"
+          cron: "0 21 * * 1"
           filters:
             branches:
               only:
