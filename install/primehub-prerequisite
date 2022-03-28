@@ -7,6 +7,16 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
+export PATH=${PATH}:~/bin
+K9S_VERSION=v0.21.9
+KUBECTL_VERSION=v1.21.3
+HELM_VERSION=v3.6.2
+HELMDIFF_VERSION=v3.1.3
+HELMFILE_VERSION=v0.139.9
+JQ_VERSION=1.6
+YQ_VERSION=v4.9.8
+
+
 info() {
   echo -e "\033[0;32m$1\033[0m"
 }
@@ -23,19 +33,21 @@ usage (){
     local SELF=`basename $0`
     cat <<EOF
 USAGE:
-  $SELF check linux-package    : check the Linux Package
+  $SELF check linux_package    : check the Linux Package
   $SELF check container        : check the Container runtime
   $SELF check kubernetes       : check the Kubernetes
   $SELF check ingress          : check Ingress
   $SELF check gpu              : check GPU
   $SELF check storageclass     : check StorageClass
+
+  $SELF install linux_package  : check the Linux Package
   $SELF -h,--help              : show this message
 
 EOF
 }
 
-check::linux-package() {
-  info "[Check] Linux-package"
+check::linux_package() {
+  info "[Check] Linux_package"
   local result=0
   LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc' 'kubectl' 'helm' 'helmfile')
   echo "[Check] Required: ${LINUX_PACKAGES[@]}"
@@ -97,6 +109,17 @@ search_pod() {
   return -1
 }
 
+check_snap() {
+  local snap_package=$1
+  if ! command -v snap > /dev/null; then
+    return -1
+  fi
+  if [[ "$(snap list | grep ${snap_package})" != "" ]]; then
+    return 0
+  fi
+  return -1
+}
+
 check::ingress() {
   info "[Check] Ingress"
   if ! search_helm_release nginx-ingress; then
@@ -128,10 +151,189 @@ check::storageclass() {
   fi
 }
 
+install::linux_package() {
+  info "[Install] Linux package"
+
+  if ! check_snap microk8s; then
+    error "[Pre-check Failed] Not install microk8s"
+    exit 1
+  else
+    info "[Pre-check Passed] Passed checking: microk8s"
+  fi
+
+}
+
+install::kubectl() {
+  info "[Install] check kubectl..."
+
+  if [[ "$(command -v kubectl)" == "" ]]; then
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    info "[Download] kubectl ${KUBECTL_VERSION}"
+    curl -O -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${platform}/amd64/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
+  fi
+
+  info "[Install] kubectl installed."
+}
+
+install::yq() {
+  info "[Install] check yq..."
+
+  if [[ "$(command -v yq)" == "" ]]; then
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    info "[Download] yq ${YQ_VERSION}"
+    curl -o yq -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${platform}_amd64" && chmod +x ~/bin/yq
+  fi
+
+  info "[Install] yq installed."
+
+}
+
+install::jq() {
+  info "[Install] check jq..."
+
+  if [[ "$(command -v jq)" == "" ]]; then
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    info "[Download] jq ${JQ_VERSION}"
+    case "${platform}" in
+      'linux')
+        curl -o jq -L "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64" && chmod +x ~/bin/jq
+      ;;
+      'darwin')
+        curl -o jq -L "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-osx-amd64" && chmod +x ~/bin/jq
+      ;;
+    esac
+  fi
+
+
+  info "[Install] jq installed."
+
+}
+
+install::helm() {
+  info "[Install] check helm..."
+
+  if [[ "$(command -v helm)" == "" ]]; then
+    info "[Install] helm not installed yet"
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    info "[Download] helm ${HELM_VERSION}"
+    mkdir -p ~/bin/helm-${HELM_VERSION}
+    curl -O -L "https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz"
+    tar zxf helm-${HELM_VERSION}-${platform}-amd64.tar.gz -C ~/bin/helm-${HELM_VERSION}
+    mv ~/bin/helm-${HELM_VERSION}/${platform}-amd64/helm ~/bin/helm
+    rm -rf ~/bin/helm-${HELM_VERSION}
+    rm ~/bin/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
+  fi
+
+  info "[Install] helm installed."
+}
+
+install::helmdiff() {
+  info "[Install] check helm diff..."
+
+  if [[ "$(helm plugin list | grep diff)" == "" ]]; then
+    info "[Install] helm diff not installed yet"
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
+    info "[Download] helm-diff ${HELMDIFF_VERSION}"
+    case "${platform}" in
+      'linux')
+        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux.tgz"
+      ;;
+      'darwin')
+        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos.tgz"
+      ;;
+    esac
+    mkdir -p $helm_plugin_path
+    tar -C $helm_plugin_path -xf ~/bin/helm-diff-*.tgz
+    rm -f ~/bin/helm-diff-*.tgz
+
+  fi
+
+  info "[Install] helm diff installed."
+}
+
+install::helmfile() {
+  info "[Install] check helmfile..."
+
+  if [[ "$(command -v k9s)" == "" ]]; then
+    info "[Install] helmfile not installed yet"
+    local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    info "[Download] helmfile ${HELMFILE_VERSION}"
+    curl -o helmfile -L "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64" && chmod +x ~/bin/helmfile
+  fi
+
+  info "[Install] helmfile installed."
+}
+
+install::k9s() {
+  info "[Install] check k9s"
+
+  if [[ "$(command -v k9s)" == "" ]]; then
+    info "[Install] k9s not installed yet"
+    local platform=$(uname)
+    curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_x86_64.tar.gz"
+    mkdir -p ~/bin/k9s-${K9S_VERSION}
+    tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
+    mv ~/bin/k9s-${K9S_VERSION}/k9s ~/bin/k9s
+    rm -rf ~/bin/k9s-${K9S_VERSION}
+    rm -f ~/bin/k9s_${platform}_x86_64.tar.gz
+  fi
+
+  info "[Install] k9s installed."
+}
+
+install:nfs-common() {
+  info "[Install] check nfs-common"
+
+  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
+    info "[Install] nfs-common"
+    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  fi
+
+  info "[Install] nfs-common installed."
+}
+
+
+check::all() {
+  check::linux_package
+  check::container
+  check::kubernetes
+  check::ingress
+  check::gpu
+  check::storageclass
+}
+
+install::all() {
+  mkdir -p ~/bin
+  pushd ~/bin > /dev/null
+  if [[ "${PRIMEHUB_PATH}" == "" ]]; then
+    info "[Install] primehub required bin"
+    install::kubectl
+    install::yq
+    install::jq
+    install::helm
+    install::helmdiff
+    install::helmfile
+    install::k9s
+  else
+    info "[Install] primehub/bin"
+    cp -r ${PRIMEHUB_PATH}/bin/* ~/bin
+    mkdir -p $helm_plugin_path
+    tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
+  fi
+
+  # Check nfs-common
+  if command -v lsb_release > /dev/null; then
+    install:nfs-common
+  fi
+  popd > /dev/null
+
+}
+
 main() {
   local cmd=''
   local target=''
-  local support_targets='linux-package kubernetes container ingress gpu storageclass'
+  local support_targets='all linux_package kubernetes container ingress gpu storageclass'
 
   while (( "$#" )); do
     case "${1:-}" in
@@ -139,7 +341,7 @@ main() {
         cmd=${1}; shift
         break
       ;;
-      check | install)
+      check)
         if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
         cmd=${1}; shift
         for t in ${support_targets}; do
@@ -148,8 +350,16 @@ main() {
             break
           fi
         done
+
         if [[ "${target}" == "" ]]; then
-          usage
+          # usage
+          check::all
+          exit 1
+        fi
+      ;;
+      install)
+        if [[ "${target}" == "" ]]; then
+          install::all
           exit 1
         fi
       ;;
@@ -160,6 +370,9 @@ main() {
   case "$cmd" in
     check)
       check::${target}
+    ;;
+    install)
+      install::${target}
     ;;
     *)
       usage
