@@ -330,6 +330,11 @@ install::all() {
 
 }
 
+env::setpath() {
+  echo "export PATH=$HOME/bin:$PATH" >> ~/.bashrc
+  source ~/.bashrc
+}
+
 main() {
   local cmd=''
   local target=''
@@ -373,6 +378,7 @@ main() {
     ;;
     install)
       install::${target}
+      env::setpath
     ;;
     *)
       usage
