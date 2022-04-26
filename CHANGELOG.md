@@ -1,6 +1,11 @@
 # Changelog
 ## Upcoming
 
+# PrimeHub v3.11.1
+
+- [Bugfix] Fix failed to update resource group (sc-25392)
+
+
 # PrimeHub v3.11.0
 
 ### Notable Changes
