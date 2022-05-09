@@ -33,8 +33,13 @@ usage (){
     local SELF=`basename $0`
     cat <<EOF
 
-PURPOSE:
-  Check the following  1) linux_package 2) container 3) Kubernetes 4) ingress 5) gpu 6) storageclass
+PURPOSE: Check the following pre-requisites:
+    1) linux_package 
+    2) container 
+    3) Kubernetes 
+    4) ingress 
+    5) gpu 
+    6) storageclass
 
 USAGE:
   $SELF -h,--help              : show this message
