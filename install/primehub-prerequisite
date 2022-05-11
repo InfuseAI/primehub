@@ -32,16 +32,20 @@ error() {
 usage (){
     local SELF=`basename $0`
     cat <<EOF
-USAGE:
-  $SELF check linux_package    : check the Linux Package
-  $SELF check container        : check the Container runtime
-  $SELF check kubernetes       : check the Kubernetes
-  $SELF check ingress          : check Ingress
-  $SELF check gpu              : check GPU
-  $SELF check storageclass     : check StorageClass
 
-  $SELF install linux_package  : check the Linux Package
+PURPOSE: Check the following pre-requisites:
+    1) linux_package 
+    2) container 
+    3) Kubernetes 
+    4) ingress 
+    5) gpu 
+    6) storageclass
+
+USAGE:
   $SELF -h,--help              : show this message
+
+  $SELF install : check and install prerequisite if missing
+  $SELF check   : check only
 
 EOF
 }
