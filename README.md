@@ -44,12 +44,6 @@ Please see the [comparison](Comparison.md).
 
 Please see the [installation guide↗](https://docs.primehub.io/docs/getting_started/install_primehub_ce).
 
-### The scenario on Katacoda
-
-Prefer a trial run before getting into a real installation!?
-
-Please visit our [installation scenario on Katacoda↗](https://www.katacoda.com/infuseai) to feel it.
-
 ## Contributions
 
 We welcome contributions. See the [Set up dev environment](DEVELOP.md) and the [Contributing guildline](CONTRIBUTING.md) to get started.
