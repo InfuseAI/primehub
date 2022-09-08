@@ -722,7 +722,7 @@ apply_issuer() {
   local ISSUER_CONFIG="${CONFIG_PATH}/issuer.yml"
 
   cat << EOF > ${ISSUER_CONFIG}
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -762,17 +762,21 @@ install::ingress_nginx() {
     verify_minimal_resources
     info "[Install] Nginx Ingress"
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-    helm install nginx-ingress ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx \
-    --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
-    --set controller.admissionWebhooks.enabled=false \
-    --set controller.resources.limits.cpu=250m \
-    --set controller.resources.limits.memory=200Mi \
-    --set controller.resources.requests.cpu=100m \
-    --set controller.resources.requests.memory=100Mi \
-    --set defaultBackend.resources.limits.cpu=250m \
-    --set defaultBackend.resources.limits.memory=100Mi \
-    --set defaultBackend.resources.requests.cpu=100m \
-    --set defaultBackend.resources.requests.memory=64Mi
+    helm install \
+      nginx-ingress ingress-nginx/ingress-nginx \
+      --create-namespace \
+      --namespace ingress-nginx \
+      --version 4.2.5 \
+      --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
+      --set controller.admissionWebhooks.enabled=false \
+      --set controller.resources.limits.cpu=250m \
+      --set controller.resources.limits.memory=200Mi \
+      --set controller.resources.requests.cpu=100m \
+      --set controller.resources.requests.memory=100Mi \
+      --set defaultBackend.resources.limits.cpu=250m \
+      --set defaultBackend.resources.limits.memory=100Mi \
+      --set defaultBackend.resources.requests.cpu=100m \
+      --set defaultBackend.resources.requests.memory=64Mi
   else
     warn "[Skip] Nginx Ingress installed"
   fi
@@ -789,7 +793,7 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v0.15.0 \
+      --version v1.9.1 \
       --set installCRDs=true \
       --set ingressShim.defaultIssuerName=letsencrypt-prod \
       --set ingressShim.defaultIssuerKind=ClusterIssuer
