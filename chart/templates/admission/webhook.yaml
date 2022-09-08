@@ -1,5 +1,5 @@
 {{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: pod-image-mutating-webhook
@@ -22,7 +22,7 @@ webhooks:
       matchLabels:
         primehub.io/image-mutation-webhook: "enabled"
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: pvc-check-webhook
@@ -45,7 +45,7 @@ webhooks:
       matchLabels:
         primehub.io/admission-webhook: "enabled"
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: resources-validation-webhook
@@ -68,7 +68,7 @@ webhooks:
       matchLabels:
         primehub.io/admission-webhook: "enabled"
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   name: license-validating-webhook

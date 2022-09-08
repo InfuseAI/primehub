@@ -179,7 +179,7 @@ function(request) {
     else {},
 
   local ing = {
-    apiVersion: "networking.k8s.io/v1beta1",
+    apiVersion: "networking.k8s.io/v1",
     kind: "Ingress",
     metadata: {
       name: resource_name,
@@ -198,17 +198,27 @@ function(request) {
             paths: [
               {
                 backend: {
-                  serviceName: resource_name,
-                  servicePort: 80
+                  service: {
+                    name: resource_name,
+                    port: {
+                      number: 80,
+                    },
+                  },
                 },
-                path: front_end_path
+                pathType: "ImplementationSpecific",
+                path: front_end_path,
               },
               {
                 backend: {
-                  serviceName: resource_name,
-                  servicePort: 1080
+                  service: {
+                    name: resource_name,
+                    port: {
+                      number: 1080,
+                    },
+                  },
                 },
-                path: tusd_path
+                pathType: "ImplementationSpecific",
+                path: tusd_path,
               }
             ]
           }

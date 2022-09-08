@@ -1,7 +1,7 @@
 {{- if .Values.keycloak.deploy }}
 {{- $ingress := .Values.ingress -}}
 {{- if $ingress.enabled -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "keycloak.fullname" . }}
@@ -31,9 +31,12 @@ spec:
       http:
         paths:
           - path: /auth
+            pathType: ImplementationSpecific
             backend:
-              serviceName: {{ include "keycloak.fullname" $ }}-http
-              servicePort: http
+              service:
+                name: {{ include "keycloak.fullname" $ }}-http
+                port:
+                  name: http
   {{- end }}
 {{- end -}}
 {{- end }}
