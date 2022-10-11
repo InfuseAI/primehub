@@ -1,7 +1,5 @@
 #!/bin/bash
 # InfuseAI support data collection script
-# Author : Dennis Huang
-# Version : 2022/10/11 Version 1
 HOME=$HOME
 LOG_DIR=$HOME/infuseai_support_logs_$(date +'%Y%m%d%H%M')
 TIMESTAMP=$(date +%F-%H-%M-%S)
