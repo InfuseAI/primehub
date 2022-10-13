@@ -1,27 +1,58 @@
 #!/bin/bash
-# InfuseAI support data collection script
-# Author : Dennis Huang
-# Version : 2022/10/12 Version 2
-HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-ARCHIVE_DIR=$HOME/infuseai_support
-LOG_DIR=$HOME/infuseai_support/infuseai_support_logs_$(date +'%Y%m%d%H%M')
+# PrimeHub environmental data collection script
+# Version : 2022/10/13 Version 3
+set -o pipefail
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+ARCHIVE_DIR=$DIR/primehub_data
+LOG_DIR=$DIR/primehub_data/primehub_data_$(date +'%Y%m%d%H%M')
 TIMESTAMP=$(date +%F-%H-%M-%S)
 
-START() {
+OSTYPE=$(echo $OSTYPE)
+WSL_DETECT=$(grep -qi microsoft /proc/version ; echo $?)
+
+USER_UID=$(echo $UID)
+USER_NAME=$(echo $USER)
+SUDO=$(groups $USER_NAME | grep -qo sudo ; echo $?)
+
+TIME=$(date +%Y/%m/%d-%H:%M:%S)
+ANSIBLE_ENV_CHECK=$(command -v ansible)
+
+CHECK_KUBELET=$(systemctl -la | grep -o kubelet.service 1> /dev/null 2>&1 ; echo $?)
+CHECK_RKE=$(docker ps -a 2> /dev/null | grep -o kubelet 1> /dev/null 2>&1 ; echo $?)
+CHECK_KUBELET_SERVICE=$(systemctl is-active kubelet.service)
+CHECK_DOCKER_SERVICE=$(systemctl is-active docker.service)
+
+PVC_LIST=$(kubectl get pvc -A 2> /dev/null)
+PV_LIST=$(kubectl get pv -A 2> /dev/null)
+DEPLOY_LIST=$(kubectl get deploy -A 2> /dev/null)
+SVC_LIST=$(kubectl get svc -A 2> /dev/null)
+
+NOT_READY_NODE=$(kubectl get nodes 2> /dev/null | grep NotReady | awk {'print $1'})
+NOT_RUNNING_POD=$(kubectl get pod -o json --all-namespaces 2> /dev/null | jq -j '.items[] |  "\(.metadata.name), \(.metadata.namespace), \(.status.phase)\n"' 2> /dev/null | grep -v Running | grep -v Completed | grep -v Succeeded)
+NOT_READY_DEPLOY=$(kubectl get deploy -o json --all-namespaces 2> /dev/null | jq -j '.items[] | "\(.metadata.name), \(.metadata.namespace), \(.status.unavailableReplicas)\n"' 2> /dev/null | grep -v null)
+
+OSD_POOL_NAME=replicapool
+
+FILE_NAME="primehub-data-$(date +'%Y%m%d%H%M')"
+
+start_running() {
 echo ""
 printf "\E[5;30;47m#################################################################\E[0m\n"
 printf "\E[5;30;47m#                                                               #\E[0m\n"
-printf "\E[5;30;47m#    Start running InfuseAI support data collection script.     #\E[0m\n"
+printf "\E[5;30;47m#  Start running PrimeHub environmental data collection script. #\E[0m\n"
 printf "\E[5;30;47m#                                                               #\E[0m\n"
 printf "\E[5;30;47m#################################################################\E[0m\n"
 echo ""
 }
 
-END() {
+end_running() {
 echo ""
 printf "\E[0;90;102m#################################################################\E[0m\n"
 printf "\E[0;90;102m#                                                               #\E[0m\n"
-printf "\E[0;90;102m#  InfuseAI support data collection is completed successfully!  #\E[0m\n"
+printf "\E[0;90;102m#     PrimeHub environmental data collection is completed!      #\E[0m\n"
 printf "\E[0;90;102m#                                                               #\E[0m\n"
 printf "\E[0;90;102m#################################################################\E[0m\n"
 echo ""
@@ -34,20 +65,9 @@ if [ ! "$BASH_VERSION" ] ; then
     exit 1
 fi
 
-#=========================================================================#
-
-# Some bash options
-set -o pipefail
-# set -x
-# set -e
-
-#=========================================================================#
-
-START
+start_running
 
 # Check host type
-OSTYPE=$(echo $OSTYPE)
-WSL_DETECT=$(grep -qi microsoft /proc/version ; echo $?)
 echo "-------------------------------------------------------------------------"
 if [[ $OSTYPE == "linux-gnu" ]] && [[ $WSL_DETECT -eq 1 ]]; then
 	echo "This host is a native Linux Server."
@@ -60,9 +80,7 @@ fi
 echo ""
 
 # Check if this script run by root-like account
-USER_UID=$(echo $UID)
-USER_NAME=$(echo $USER)
-SUDO=$(groups $USER_NAME | grep -qo sudo ; echo $?)
+
 echo "Check whether current user has superuser privilege....."
 echo ""
 if [ $USER_UID != '0' ]; then
@@ -79,8 +97,6 @@ fi
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # Create Log folder
 echo "-------------------------------------------------------------------------"
 if [ ! -d $LOG_DIR ]; then
@@ -93,8 +109,6 @@ fi
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # System summary report
 printf "\E[0;95m=========================================================================\E[0m\n"
 echo "Hostname: $(hostname)" | tee -a $LOG_DIR/system_summary_$(hostname).log
@@ -105,15 +119,12 @@ echo "System manufacturer: $(sudo dmidecode -s system-manufacturer)" | tee -a $L
 printf "\E[0;95m=========================================================================\E[0m\n"
 echo ""
 
-#=========================================================================#
-
 # Check system date and time.
-TIME=$(date +%Y/%m/%d-%H:%M:%S)
-ANSIBLE_CHECK=$(command -v ansible)
+
 echo "-------------------------------------------------------------------------"
 echo "Check system date and time."
-if [[ $ANSIBLE_CHECK != "" ]]; then
-	read -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $HOME/.ansible/inventory.yaml) > " inventory_file
+if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
+	read -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $DIR/.ansible/inventory.yaml) > " inventory_file
 	if [[ -f $inventory_file ]]; then
 		ansible -i $inventory_file all -m shell -a 'date' -f99 &> $LOG_DIR/ansible_date_$TIMESTAMP.log
 		echo "System date log is now logged at $LOG_DIR/ansible_date_$TIMESTAMP.log"
@@ -129,10 +140,8 @@ echo $TIME
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # Check system resources usage and NVIDIA driver status
-SYS_CHECK() {
+sys_check() {
 echo "Log NVIDIA driver status to $LOG_DIR"
 if [[ "$(command -v nvidia-smi)" == "" ]]; then
 	echo "nvidia-smi command not found, skipping....."
@@ -183,8 +192,7 @@ echo "-------------------------------------------------------------------------"
 echo ""
 }
 
-ANS_SYS_CHECK() {
-
+ansible_sys_check() {
 echo "Log NVIDIA driver status to $LOG_DIR"
 if [[ "$(command -v nvidia-smi)" == "" ]]; then
 	echo "nvidia-smi command not found, skipping....."
@@ -238,30 +246,24 @@ echo ""
 
 echo "-------------------------------------------------------------------------"
 echo "Check system resources usage and NVIDIA driver status....."
-if [[ $ANSIBLE_CHECK != "" ]]; then
+if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
 	if [[ ! -f $inventory_file ]]; then
 		echo ""
 		echo "Will not run ansible command due to empty input or non-existent file."
 		echo ""
-		SYS_CHECK
+		sys_check
 	else
 		echo ""
-		ANS_SYS_CHECK
+		ansible_sys_check
 	fi
 else
 	echo "Ansible command not found, skipping....."
 	echo ""
-	SYS_CHECK
+	sys_check
 fi
 
-#=========================================================================#
-
 # Check system k8s service
-K8S() {
-CHECK_KUBELET=$(systemctl -la | grep -o kubelet.service 1> /dev/null 2>&1 ; echo $?)
-CHECK_RKE=$(docker ps -a 2> /dev/null | grep -o kubelet 1> /dev/null 2>&1 ; echo $?)
-CHECK_KUBELET_SERVICE=$(systemctl is-active kubelet.service)
-CHECK_DOCKER_SERVICE=$(systemctl is-active docker.service)
+k8s_check() {
 echo "-------------------------------------------------------------------------"
 if [[ "$(command -v docker)" != "" && $CHECK_DOCKER_SERVICE == "active" ]]; then
 	echo "Docker installed, moving to next step."
@@ -296,16 +298,10 @@ echo "-------------------------------------------------------------------------"
 echo ""
 }
 
-K8S
-
-#=========================================================================#
+k8s_check
 
 # Check Kubernetes service status
 echo "-------------------------------------------------------------------------"
-PVC_LIST=$(kubectl get pvc -A 2> /dev/null)
-PV_LIST=$(kubectl get pv -A 2> /dev/null)
-DEPLOY_LIST=$(kubectl get deploy -A 2> /dev/null)
-SVC_LIST=$(kubectl get svc -A 2> /dev/null)
 if [[ "$(command -v kubectl)" == "" ]]; then
 	echo "Kubectl command not found, skipping....."
 else
@@ -334,7 +330,7 @@ else
 fi
 echo ""
 
-NOT_READY_NODE=$(kubectl get nodes 2> /dev/null | grep NotReady | awk {'print $1'})
+
 if [[ $NOT_READY_NODE == "" ]]; then
 	echo "No node is in "not ready" status, skipping....."
 else
@@ -344,7 +340,6 @@ else
 fi
 echo ""
 
-NOT_RUNNING_POD=$(kubectl get pod -o json --all-namespaces 2> /dev/null | jq -j '.items[] |  "\(.metadata.name), \(.metadata.namespace), \(.status.phase)\n"' 2> /dev/null | grep -v Running | grep -v Completed | grep -v Succeeded)
 if [[ $NOT_RUNNING_POD == "" ]]; then
 	echo "No pod is in "not ready" status, skipping....."
 else
@@ -354,7 +349,6 @@ else
 fi
 echo ""
 
-NOT_READY_DEPLOY=$(kubectl get deploy -o json --all-namespaces 2> /dev/null | jq -j '.items[] | "\(.metadata.name), \(.metadata.namespace), \(.status.unavailableReplicas)\n"' 2> /dev/null | grep -v null)
 if [[ $NOT_READY_DEPLOY == "" ]]; then
 	echo "No deployment is unavailable, skipping....."
 else
@@ -365,10 +359,7 @@ fi
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # Check Ceph service status
-OSD_POOL_NAME=replicapool
 echo "-------------------------------------------------------------------------"
 if [[ "$(command -v kubectl-ceph)" == "" ]]; then
 	echo "Kubectl-ceph command not found, skipping....."
@@ -396,11 +387,8 @@ fi
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # Check PrimeHub service status
 echo "-------------------------------------------------------------------------"
-OSD_POOL_NAME=replicapool
 if [[ "$(command -v kubectl-primehub)" == "" ]]; then
 	echo "Kubectl-primehub command not found, skipping....."
 else
@@ -414,9 +402,10 @@ else
 	kubectl primehub system &> $LOG_DIR/primehub_system_$TIMESTAMP.log
 	echo "Collect PrimeHub diagnostic logs, please wait....."
 	cd $LOG_DIR
-	kubectl primehub diagnose --path $LOG_DIR
+	kubectl primehub diagnose --path $DIR
+	rm -rf $DIR/primehub-log-*
 	echo "Done."
-	cd $HOME
+	cd $DIR
 	echo ""
 	echo "PrimeHub version log is now logged at $LOG_DIR/primehub_version_$TIMESTAMP.log"
 	echo "PrimeHub notebook list is now logged at $LOG_DIR/primehub_notebook_$TIMESTAMP.log"
@@ -429,15 +418,12 @@ fi
 echo "-------------------------------------------------------------------------"
 echo ""
 
-#=========================================================================#
-
 # Summary
-FILE_NAME="infuseai-support-log-$(date +'%Y%m%d%H%M')"
 echo "-------------------------------------------------------------------------"
 echo "Compressing logs....."
 cd $LOG_DIR
 tar czf $ARCHIVE_DIR/$FILE_NAME.tgz * 1> /dev/null 2>&1
-cd $HOME
+cd $DIR
 echo "Done."
 echo "-------------------------------------------------------------------------"
 echo ""
@@ -445,9 +431,8 @@ echo ""
 echo "-------------------------------------------------------------------------"
 echo "Logs folder: $LOG_DIR"
 echo "Log archive: $(realpath $ARCHIVE_DIR/$FILE_NAME.tgz)"
-echo "Please send the log archive to support engineer for further analysis."
 echo "-------------------------------------------------------------------------"
 
-END
+end_running
 
 exit 0
