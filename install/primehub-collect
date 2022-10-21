@@ -1,6 +1,6 @@
 #!/bin/bash
 # PrimeHub environmental data collection script
-# Version : 2022/10/18 Version 4
+# Version : 2022/10/21 Version 5
 set -o pipefail
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
@@ -143,7 +143,7 @@ system_time_check() {
 echo "-------------------------------------------------------------------------"
 echo "Check system date and time."
 if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
-	timeout 15s read -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $DIR/.ansible/inventory.yaml) > " inventory_file
+	read -t 15 -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $DIR/.ansible/inventory.yaml) > " inventory_file
 	if [[ -f $inventory_file ]]; then
 		ansible -i $inventory_file all -m shell -a 'date' -f99 &> $LOG_DIR/ansible_date_$TIMESTAMP.log
 		echo "System date log is now logged at $LOG_DIR/ansible_date_$TIMESTAMP.log"
@@ -151,7 +151,7 @@ if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
 		echo "Will not run ansible command due to empty input or non-existent file."
 	fi
 else
-	echo "Ansible command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Ansible command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 fi
 echo ""
 echo "Current System time is:"
@@ -166,17 +166,19 @@ system_time_check
 local_system_check() {
 echo "Log NVIDIA driver status to $LOG_DIR"
 if [[ "$(command -v nvidia-smi)" == "" ]]; then
-	echo "nvidia-smi command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "nvidia-smi installed, moving to next step."
-	nvidia-smi &> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+	nvidia-smi &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+	echo "-------------------------------------------------------------------------" &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+	nvidia-smi -L &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
 	echo "System NVIDIA driver status is now logged at $LOG_DIR/nvidia_driver_$TIMESTAMP.log"
 fi
 echo ""
 
 echo "Log system resources usage to $LOG_DIR"
 if [[ "$(command -v mpstat)" == "" ]]; then
-	echo "mpstat command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "mpstat command installed, capture current system cpu usage."
 	mpstat -P ALL &> $LOG_DIR/cpu_usage_$TIMESTAMP.log
@@ -185,7 +187,7 @@ fi
 echo ""
 
 if [[ "$(command -v free)" == "" ]]; then
-	echo "free command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "free command installed, capture current system memory usage."
 	free -g &> $LOG_DIR/mem_usage_$TIMESTAMP.log
@@ -195,7 +197,7 @@ echo ""
 
 echo "Log system disk usage to $LOG_DIR"
 if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
-	echo "df and lsblk command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "df and lsblk command installed, capture current system disk usage and partition table."
 	df -h &> $LOG_DIR/disk_usage_$TIMESTAMP.log
@@ -217,17 +219,19 @@ echo ""
 ansible_system_check() {
 echo "Log NVIDIA driver status to $LOG_DIR"
 if [[ "$(command -v nvidia-smi)" == "" ]]; then
-	echo "nvidia-smi command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "nvidia-smi command installed, capture nvidia device status on all ansible inventory hosts."
-	ansible -i $inventory_file all -m shell -a 'nvidia-smi' -f99 &> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+	ansible -i $inventory_file all -m shell -a 'nvidia-smi' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+	echo "-------------------------------------------------------------------------" &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+	ansible -i $inventory_file all -m shell -a 'nvidia-smi -L' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
 	echo "System NVIDIA driver status is now logged at $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log"
 fi
 echo ""
 
 echo "Log system cpu usage usage to $LOG_DIR"
 if [[ "$(command -v mpstat)" == "" ]]; then
-	echo "mpstat command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "mpstat command installed, capture system cpu usage on all ansible inventory hosts."
 	ansible -i $inventory_file all -m shell -a 'mpstat -P ALL' -f99 &> $LOG_DIR/ansible_cpu_$TIMESTAMP.log
@@ -237,7 +241,7 @@ echo ""
 
 echo "Log system memory usage usage to $LOG_DIR"
 if [[ "$(command -v free)" == "" ]]; then
-	echo "free command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "free command installed, capture system memory usage on all ansible inventory hosts."
 	ansible -i $inventory_file all -m shell -a 'free -g' -f99 &> $LOG_DIR/ansible_mem_$TIMESTAMP.log
@@ -247,7 +251,7 @@ echo ""
 
 echo "Log system disk usage to $LOG_DIR"
 if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
-	echo "df and lsblk command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "df and lsblk command installed, capture system disk usage and partition table on all ansible inventory hosts."
 	ansible -i $inventory_file all -m shell -a 'df -h' -f99 &> $LOG_DIR/ansible_disk_$TIMESTAMP.log
@@ -304,7 +308,7 @@ if [[ "$(command -v docker)" != "" && $CHECK_DOCKER_SERVICE == "active" ]]; then
 		exit 1
 	fi
 else
-	echo "Docker command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Docker command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 fi
 
 if [[ $K8S_TYPE == "RKE" ]]; then
@@ -330,7 +334,7 @@ k8s_service_check
 k8s_status_check() {
 echo "-------------------------------------------------------------------------"
 if [[ "$(command -v kubectl)" == "" ]]; then
-	echo "Kubectl command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Kubectl command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "Kubectl installed, Check Kubernetes cluster status."
 	kubectl get nodes -o wide &> $LOG_DIR/kubernetes_node_$TIMESTAMP.log
@@ -349,7 +353,7 @@ fi
 echo ""
 
 if [[ "$(command -v helm)" == "" ]]; then
-	echo "Helm command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Helm command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "Helm installed, list releases of charts."
 	helm ls -Aa &> $LOG_DIR/helm_$TIMESTAMP.log
@@ -359,28 +363,28 @@ echo ""
 
 
 if [[ $NOT_READY_NODE == "" ]]; then
-	echo "No node is in "not ready" status." | tee -a $LOG_DIR/k8s_status_$TIMESTAMP.log
+	echo "The status of all nodes is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
 else
-	echo "Not ready node found, list node status."
+	echo "Not ready node found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
 	kubectl get nodes | grep NotReady | awk {'print $1'} | xargs kubectl describe node &> $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log
 	echo "Kubernetes NotReady node status log is now logged at $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log"
 fi
 echo ""
 
 if [[ $NOT_RUNNING_POD == "" ]]; then
-	echo "No pod is in "not ready" status." | tee -a $LOG_DIR/k8s_status_$TIMESTAMP.log
+	echo "The status of all pods is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
 else
-	echo "Not ready pod found, list pod status."
-	echo $NOT_RUNNING_POD &> $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log
+	echo "Not ready pod found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+	echo "$NOT_RUNNING_POD" &> $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log
 	echo "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log"
 fi
 echo ""
 
 if [[ $NOT_READY_DEPLOY == "" ]]; then
-	echo "No deployment is unavailable." | tee -a $LOG_DIR/k8s_status_$TIMESTAMP.log
+	echo "The status of all deployments is available." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
 else
-	echo "Unavailable deployment found, list deployment status."
-	echo $NOT_READY_DEPLOY &> $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log
+	echo "Unavailable deployment found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+	echo "$NOT_READY_DEPLOY" &> $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log
 	echo "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log"
 fi
 echo "-------------------------------------------------------------------------"
@@ -393,7 +397,7 @@ k8s_status_check
 ceph_status_check() {
 echo "-------------------------------------------------------------------------"
 if [[ "$(command -v kubectl-ceph)" == "" ]]; then
-	echo "Kubectl-ceph command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Kubectl-ceph command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "Kubectl-ceph installed, Check Ceph cluster status."
 	kubectl ceph status &> $LOG_DIR/ceph_status_$TIMESTAMP.log
@@ -425,7 +429,7 @@ ceph_status_check
 primehub_status_check() {
 echo "-------------------------------------------------------------------------"
 if [[ "$(command -v kubectl-primehub)" == "" ]]; then
-	echo "Kubectl-primehub command not found." | tee -a $LOG_DIR/not_installed_command.log
+	echo "Kubectl-primehub command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
 else
 	echo "Kubectl-primehub installed, Check PrimeHub status."
 	kubectl primehub version &> $LOG_DIR/primehub_version_$TIMESTAMP.log
