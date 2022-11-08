@@ -1042,8 +1042,8 @@ rclone:
 
   nodeDriverRegistrar:
     image:
-      repository: quay.io/k8scsi/csi-node-driver-registrar
-      tag: v1.1.0
+      repository: k8s.gcr.io/sig-storage/csi-node-driver-registrar
+      tag: v2.4.0
       pullPolicy: IfNotPresent
     resources:
       limits:
@@ -1069,21 +1069,8 @@ rclone:
 
   csiAttacher:
     image:
-      repository: quay.io/k8scsi/csi-attacher
-      tag: v1.1.1
-      pullPolicy: IfNotPresent
-    resources:
-      limits:
-        cpu: 100m
-        memory: 256Mi
-      requests:
-        cpu: 50m
-        memory: 16Mi
-
-  csiClusterDriverRegistrar:
-    image:
-      repository: quay.io/k8scsi/csi-cluster-driver-registrar
-      tag: v1.0.1
+      repository: k8s.gcr.io/sig-storage/csi-attacher
+      tag: v3.4.0
       pullPolicy: IfNotPresent
     resources:
       limits:
