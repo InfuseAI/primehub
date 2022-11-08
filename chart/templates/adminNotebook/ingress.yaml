@@ -34,9 +34,12 @@ spec:
       http:
         paths:
           - path: /maintenance
+            pathType: ImplementationSpecific
             backend:
-              serviceName: {{ $name }}-admin-notebook
-              servicePort: http
+              service:
+                name: {{ $name }}-admin-notebook
+                port:
+                  name: http
   {{- end }}
 {{- end }}
 {{- end }}
