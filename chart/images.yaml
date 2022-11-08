@@ -57,9 +57,8 @@ primehub-all:
   # PrimeHub Store
   minio: &minio minio/minio:RELEASE.2021-03-04T00-53-13Z
   mc: &mc minio/mc:RELEASE.2021-03-12T03-36-59Z
-  csi-attacher: &csi-attacher quay.io/k8scsi/csi-attacher:v1.1.1
-  csi-cluster-driver-registrar: &csi-cluster-driver-registrar quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
-  csi-node-driver-registrar: &csi-node-driver-registrar quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
+  csi-attacher: &csi-attacher k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+  csi-node-driver-registrar: &csi-node-driver-registrar k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.4.0
   csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-13-g9b79578
 
   # Log Collector
@@ -130,7 +129,6 @@ primehub-ee:
   minio: *minio
   mc: *mc
   csi-attacher: *csi-attacher
-  csi-cluster-driver-registrar: *csi-cluster-driver-registrar
   csi-node-driver-registrar: *csi-node-driver-registrar
   csi-rclone: *csi-rclone
 

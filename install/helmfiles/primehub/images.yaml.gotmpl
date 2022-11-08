@@ -99,16 +99,13 @@ minio:
 rclone:
   nodeDriverRegistrar:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-node-driver-registrar
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-node-driver-registrar
   rclone:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/csi-rclone
   csiAttacher:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-attacher
-  csiClusterDriverRegistrar:
-    image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-cluster-driver-registrar
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-attacher
 
 sshBastionServer:
   image:
