@@ -1,0 +1,135 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.9.2
+  creationTimestamp: null
+  name: phschedules.primehub.io
+spec:
+  group: primehub.io
+  names:
+    kind: PhSchedule
+    listKind: PhScheduleList
+    plural: phschedules
+    singular: phschedule
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.jobTemplate.spec.userName
+      name: User
+      type: string
+    - jsonPath: .spec.jobTemplate.spec.groupName
+      name: Group
+      type: string
+    - jsonPath: .status.invalid
+      name: Invalid
+      type: boolean
+    - jsonPath: .status.nextRunTime
+      name: NextRun
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: PhSchedule is the Schema for the phschedules API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: PhScheduleSpec defines the desired state of PhSchedule
+            properties:
+              jobTemplate:
+                properties:
+                  metadata:
+                    type: object
+                  spec:
+                    description: PhJobSpec defines the desired state of PhJob
+                    properties:
+                      activeDeadlineSeconds:
+                        format: int64
+                        type: integer
+                      cancel:
+                        type: boolean
+                      command:
+                        type: string
+                      displayName:
+                        description: 'INSERT ADDITIONAL SPEC FIELDS - desired state
+                          of cluster Important: Run "make" to regenerate code after
+                          modifying this file'
+                        type: string
+                      groupId:
+                        type: string
+                      groupName:
+                        type: string
+                      image:
+                        type: string
+                      instanceType:
+                        type: string
+                      requeueLimit:
+                        format: int32
+                        type: integer
+                      ttlSecondsAfterFinished:
+                        format: int32
+                        type: integer
+                      userId:
+                        type: string
+                      userName:
+                        type: string
+                    required:
+                    - command
+                    - displayName
+                    - groupId
+                    - groupName
+                    - image
+                    - instanceType
+                    - userId
+                    type: object
+                type: object
+              recurrence:
+                properties:
+                  cron:
+                    type: string
+                  type:
+                    enum:
+                    - inactive
+                    - daily
+                    - weekly
+                    - monthly
+                    - custom
+                    type: string
+                required:
+                - type
+                type: object
+            required:
+            - jobTemplate
+            - recurrence
+            type: object
+          status:
+            description: PhScheduleStatus defines the observed state of PhSchedule
+            properties:
+              invalid:
+                type: boolean
+              message:
+                type: string
+              nextRunTime:
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
