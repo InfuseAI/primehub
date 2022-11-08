@@ -34,7 +34,7 @@ spec:
           - containerPort: 8443
             name: https
         - args:
-          - --metrics-addr=127.0.0.1:8080
+          - --metrics-bind-address=127.0.0.1:8080
           - --enable-leader-election
           command:
           - /manager
