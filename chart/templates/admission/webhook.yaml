@@ -5,6 +5,7 @@ metadata:
   name: pod-image-mutating-webhook
 webhooks:
   - name: pod-image-mutating-webhook.primehub.io
+    admissionReviewVersions: ["v1"]
     sideEffects: None
     clientConfig:
       service:
@@ -51,6 +52,7 @@ metadata:
   name: resources-validation-webhook
 webhooks:
   - name: resources-validation-webhook.primehub.io
+    admissionReviewVersions: ["v1"]
     sideEffects: None
     clientConfig:
       service:
@@ -74,6 +76,7 @@ metadata:
   name: license-validating-webhook
 webhooks:
   - name: license-validating-webhook.primehub.io
+    admissionReviewVersions: ["v1"]
     sideEffects: None
     clientConfig:
       service:
