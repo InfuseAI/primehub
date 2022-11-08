@@ -6,7 +6,7 @@ metadata:
   name: {{ include "primehub.name" . }}-fluentd
 
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "primehub.name" . }}-fluentd
@@ -23,7 +23,7 @@ rules:
 
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ include "primehub.name" . }}-fluentd
 roleRef:
