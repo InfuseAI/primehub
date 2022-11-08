@@ -31,12 +31,18 @@ spec:
       http:
         paths:
           - path: /hub
+            pathType: ImplementationSpecific
             backend:
-              serviceName: proxy-public
-              servicePort: 80
+              service:
+                name: proxy-public
+                port:
+                  number: 80
           - path: /user
+            pathType: ImplementationSpecific
             backend:
-              serviceName: proxy-public
-              servicePort: 80
+              service:
+                name: proxy-public
+                port:
+                  number: 80
   {{- end }}
 {{- end }}
