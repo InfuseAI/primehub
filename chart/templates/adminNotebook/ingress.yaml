@@ -3,7 +3,7 @@
 {{- if eq .Values.istio.enabled false}}
 {{- if .Values.adminNotebook.enabled -}}
 {{- $name := include "primehub.name" . -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $name }}-admin-notebook
