@@ -741,10 +741,8 @@ controller:
     imagePrefix: ""
 
   image:
-    # repository: infuseai/primehub-controller
-    # tag: latest
-    repository: qrtt1/primehub-controller
-    tag: "1109"
+    repository: infuseai/primehub-controller
+    tag: latest
     # pullPolicy: IfNotPresent
 
   proxy:
