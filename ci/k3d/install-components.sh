@@ -56,6 +56,9 @@ elif [[ "${PRIMEHUB_MODE}" == "deploy" ]]; then
   values_mode='--values k3d/deploy-values.yaml'
 fi
 
+# install primehub-controller crds
+kubectl apply -f ../primehub-controller-crds
+
 helm upgrade \
   primehub ../chart \
   --install \
