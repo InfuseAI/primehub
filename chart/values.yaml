@@ -579,7 +579,7 @@ jupyterhub:
       readOnly: true
     image:
       name: jupyterhub/k8s-hub
-      tag: '0.10.6'
+      tag: '1.2.0'
     networkPolicy:
       enabled: true
     extraConfig:
@@ -614,18 +614,20 @@ jupyterhub:
         requests:
           cpu: 200m
           memory: 512Mi
-  auth:
-    state:
-      enabled: true
-    type: custom
-    custom:
-      className: OIDCAuthenticator
+
+    config:
+      JupyterHub:
+        admin_access: true
+        authenticator_class: OIDCAuthenticator
 
   singleuser:
     uid: 0
     fsGid: null
     cloudMetadata:
-      enabled: true
+      # block set to true will append a privileged initContainer using the
+      # iptables to block the sensitive metadata server at the provided ip.
+      blockWithIptables: true
+      ip: 169.254.169.254
     events: true
     networkPolicy:
       enabled: true

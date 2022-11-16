@@ -350,6 +350,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
     login_handler = OIDCLoginHandler
     logout_handler = OIDCLogoutHandler
 
+    # the flag introduced at 0.8, we need it to make jupyterhub to save the auth_state, otherwise it would become None
+    enable_auth_state = True
+
     @default("authorize_url")
     def _authorize_url_default(self):
         return '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
@@ -1397,7 +1400,8 @@ class PrimeHubHomeHandler(BaseHandler):
             group=group,
             # can't use user.spawners because the stop method of User pops named servers from user.spawners when they're stopped
             spawners=user.orm_user._orm_spawners,
-            default_server=user.spawner
+            default_server=user.spawner,
+            sync=True
         )
         self.finish(html)
 
