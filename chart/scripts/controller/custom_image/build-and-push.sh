@@ -17,6 +17,15 @@ function init() {
   echo
 }
 
+function insert_docker_io() {
+  local name=$1
+  local registry=$(echo $name | cut -d'/' -f1)
+  if [[ $registry != *"."* ]]; then
+    name="docker.io/$name"
+  fi
+  echo $name
+}
+
 function build() {
   local -a AUTHFILE_FLAGS
   echo "[Step: build]"
@@ -66,6 +75,8 @@ function completed() {
   echo
 }
 
+BASE_IMAGE=$(insert_docker_io $BASE_IMAGE)
+TARGET_IMAGE=$(insert_docker_io $TARGET_IMAGE)
 init
 build
 push
