@@ -9,7 +9,7 @@ primehub-all:
   primehub-controller: &primehub-controller infuseai/primehub-controller:latest
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:latest
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
-  buildah: &buildah quay.io/buildah/stable:v1.19.8
+  buildah: &buildah quay.io/buildah/stable:v1.28.0
 
   # Primehub Console
   primehub-console: &primehub-console infuseai/primehub-console:latest
