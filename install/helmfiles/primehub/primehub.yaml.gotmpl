@@ -95,15 +95,15 @@ jupyterhub:
     db:
       pvc:
         storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
+    config:
+      CryptKeeper:
+        keys:
+        - {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
   primehub:
     kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
 
   proxy:
     secretToken: {{ env "HUB_PROXY_SECRET_TOKEN" }}
-
-  auth:
-    state:
-      cryptoKey: {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
 
   singleuser:
     storage:
