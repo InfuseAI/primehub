@@ -1055,9 +1055,9 @@ progress_primehub() {
 
 apply_crds() {
   info "[Install] Apply PrimeHub CRDs"
-  local CRD_PATH=${DIR}/../crds
-  kubectl apply -f ${CRD_PATH}/crds.yaml
-  kubectl apply -f ${CRD_PATH}/metacontroller/crds.yaml
+  local CRD_PATH=$(dirname $DIR)/crds
+  kubectl apply -f ${CRD_PATH}/crd.yaml
+  kubectl apply -f ${CRD_PATH}/metacontroller/crd.yaml
   kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_images.yaml
   kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecjobs.yaml
   kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecs.yaml
