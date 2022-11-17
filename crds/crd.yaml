@@ -118,9 +118,110 @@ spec:
               url:
                 type: string
               variables:
+                x-kubernetes-preserve-unknown-fields: true
                 type: object
               volumeName:
                 type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: images.primehub.io
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  conversion:
+    strategy: None
+  group: primehub.io
+  names:
+    kind: Image
+    listKind: ImageList
+    plural: images
+    singular: image
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: type of current image
+      jsonPath: .spec.type
+      name: Type
+      type: string
+    - description: group of current image
+      jsonPath: .spec.groupName
+      name: Group
+      type: string
+    - description: phase of current image
+      jsonPath: .status.jobCondition.phase
+      name: Status
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        x-kubernetes-preserve-unknown-fields: true
+        properties:
+          metadata:
+            type: object
+          spec:
+            properties:
+              description:
+                type: string
+              displayName:
+                type: string
+              imageSpec:
+                properties:
+                  baseImage:
+                    type: string
+                  cancel:
+                    type: boolean
+                  packages:
+                    properties:
+                      apt:
+                        items:
+                          type: string
+                        type: array
+                      conda:
+                        items:
+                          type: string
+                        type: array
+                      pip:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                  pullSecret:
+                    type: string
+                  updateTime:
+                    format: date-time
+                    type: string
+                required:
+                - baseImage
+                type: object
+              pullSecret:
+                type: string
+              type:
+                type: string
+              url:
+                type: string
+              urlForGpu:
+                type: string
+            type: object
+          status:
+            properties:
+              jobCondition:
+                properties:
+                  image:
+                    type: string
+                  jobName:
+                    type: string
+                  phase:
+                    type: string
+                type: object
             type: object
         type: object
     served: true

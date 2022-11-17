@@ -23,3 +23,17 @@ usage:
 
 #sshBastionServer:
 #  enabled: true
+
+# TODO: Only for testing primehub v4 alpha. REMOVE THIS!
+controller:
+  image:
+    tag: sc-28495-880435a
+console:
+  image:
+    tag: sc28494-56040dd9
+graphql:
+  image:
+    tag: sc28494-56040dd9
+watcher:
+  image:
+    tag: sc28494-56040dd9

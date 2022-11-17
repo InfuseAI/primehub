@@ -1053,6 +1053,21 @@ progress_primehub() {
   info "[Progress] wait for helm install completed"
 }
 
+apply_crds() {
+  info "[Install] Apply PrimeHub CRDs"
+  local CRD_PATH=$(dirname $DIR)/crds
+  kubectl apply -f ${CRD_PATH}/crd.yaml
+  kubectl apply -f ${CRD_PATH}/metacontroller/crd.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_images.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecjobs.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecs.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_licenses.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phapplications.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phapptemplates.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phdeployments.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phjobs.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phschedules.yaml
+}
 
 install::primehub() {
   local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
@@ -1095,6 +1110,7 @@ install::primehub() {
   progress_primehub &
   BGPID=$!
 
+  apply_crds
   helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
