@@ -1111,6 +1111,7 @@ install::primehub() {
   BGPID=$!
 
   apply_crds
+  set -a; source $(primehub_config_path)/.env; set +a
   helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
