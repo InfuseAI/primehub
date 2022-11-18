@@ -24,7 +24,7 @@ check-jq:
 		exit 1; \
 	fi
 
-primehub-controller-update: primehub-controller-update-scripts primehub-controller-update-crds
+primehub-controller-update: primehub-controller-update-scripts
 
 primehub-controller-update-scripts: check-yq check-jq
 	@echo "Updating scripts for controller..."
@@ -40,6 +40,7 @@ primehub-controller-update-scripts: check-yq check-jq
 		chmod +x ./*.sh
 	@echo "Done"
 
+# TODO: Now crds are not included under chart root. Should move this target to somewhere else.
 primehub-controller-update-crds: check-yq check-jq
 	@echo "Updating crds for controller..."
 	# We skip image CRD because we place images,instancetypes,datasets CRDs in templates/crd.yaml
