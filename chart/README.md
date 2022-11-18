@@ -228,10 +228,10 @@ Parameter | Description | Default
 `keycloakGateway.image.tag` | The keycloak gateway image tag | Please see [values.yaml](values.yaml)
 
 # Developer Notes
-## Update Scripts and CRDs
+## Update Scripts
 
-If the image tag is changed, the scripts and crds also needs to be updated. Run the following commands to update.
-This command will sync scripts folder and crd yaml files from [Primehub Controller](https://github.com/InfuseAI/primehub-controller).
+If the image tag is changed, the scripts also needs to be updated. Run the following commands to update.
+This command will sync scripts folder from [Primehub Controller](https://github.com/InfuseAI/primehub-controller).
 
 ```
 make primehub-controller-update
