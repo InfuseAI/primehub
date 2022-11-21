@@ -21,5 +21,10 @@ jobSubmission:
 usage:
   enabled: true
 
+admission:
+  image:
+    repository: infuseai/primehub-admission
+    tag: db8a8ba960
+
 #sshBastionServer:
 #  enabled: true
