@@ -1,0 +1,18 @@
+{{- if .Values.keycloak.deploy }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.names.name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+spec:
+  type: ClusterIP
+  clusterIP: ""
+  ports:
+    - name: tcp-postgresql
+      port: {{ .Values.postgresql.service.port }}
+      targetPort: tcp-postgresql
+  selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+{{- end }}

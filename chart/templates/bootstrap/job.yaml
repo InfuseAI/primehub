@@ -40,8 +40,8 @@ spec:
             valueFrom:
               secretKeyRef:
             {{- if .Values.keycloak.deploy }}
-                name: {{ include "keycloak.fullname" . }}-http
-                key: {{ include "keycloak.passwordKey" . }}
+                name: {{ include "keycloak.name" . }}-admin-creds
+                key: password
             {{- else }}
                 name: "primehub-bootstrap"
                 key: kcpassword
