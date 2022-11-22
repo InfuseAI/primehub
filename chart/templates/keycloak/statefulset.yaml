@@ -1,119 +1,130 @@
 {{- if .Values.keycloak.deploy }}
-{{- $highAvailability := gt (int .Values.keycloak.replicas) 1 -}}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "keycloak.fullname" . }}
+  name: {{ include "keycloak.name" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "keycloak.commonLabels" . | nindent 4 }}
+    {{- include "keycloak.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
       {{- include "keycloak.selectorLabels" . | nindent 6 }}
   replicas: {{ .Values.keycloak.replicas }}
-  serviceName: {{ include "keycloak.fullname" . }}-headless
+  serviceName: {{ include "keycloak.name" . }}-headless
   podManagementPolicy: {{ .Values.keycloak.podManagementPolicy }}
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        checksum/secrets: {{ tpl (toYaml .Values.keycloak.password) . | sha256sum }}
       labels:
         {{- include "keycloak.selectorLabels" . | nindent 8 }}
-        {{- with .Values.keycloak.podLabels }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-      annotations:
-        checksum/config-sh: {{ include (print .Template.BasePath "/keycloak/configmap-sh.yaml") . | sha256sum }}
-        checksum/config-startup: {{ include (print .Template.BasePath "/keycloak/configmap-startup.yaml") . | sha256sum }}
-        {{- with .Values.keycloak.podAnnotations }}
-        {{- range $key, $value := . }}
-        {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 8 }}
-        {{- end }}
-        {{- end }}
     spec:
-      {{- with .Values.keycloak.hostAliases }}
-      hostAliases:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.keycloak.enableServiceLinks }}
-      enableServiceLinks: {{ .Values.keycloak.enableServiceLinks }}
-      {{- end }}
-      restartPolicy: {{ .Values.keycloak.restartPolicy }}
-      serviceAccountName: {{ include "keycloak.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.keycloak.securityContext | nindent 8 }}
-    {{- with .Values.keycloak.image.pullSecrets }}
-      imagePullSecrets:
-      {{- range . }}
-        - name: {{ . }}
-      {{- end }}
-    {{- end }}
-    {{- if or .Values.keycloak.persistence.deployPostgres .Values.keycloak.extraInitContainers }}
+      {{- if or .Values.keycloak.dbchecker.enabled .Values.keycloak.extraInitContainers }}
       initContainers:
-      {{- if .Values.keycloak.persistence.deployPostgres }}
-        - name: wait-for-postgresql
-          image: "{{ .Values.keycloak.init.image.repository }}:{{ .Values.keycloak.init.image.tag }}"
-          imagePullPolicy: {{ .Values.keycloak.init.image.pullPolicy }}
+        {{- if and .Values.keycloak.dbchecker.enabled }}
+        - name: dbchecker
+          image: "{{ .Values.keycloak.dbchecker.image.repository }}:{{ .Values.keycloak.dbchecker.image.tag }}"
+          imagePullPolicy: {{ .Values.keycloak.dbchecker.image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.keycloak.containerSecurityContext | nindent 12 }}
+            {{- toYaml .Values.keycloak.dbchecker.securityContext | nindent 12 }}
           command:
             - sh
             - -c
             - |
-              until printf "." && nc -z -w 2 {{ include "keycloak.postgresql.fullname" . }} {{ .Values.keycloak.postgresql.service.port }}; do
+              echo 'Waiting for Database to become ready...'
+
+              until printf "." && nc -z -w 2 {{ required ".Values.keycloak.database.hostname is required if dbchecker is enabled!" .Values.keycloak.database.hostname }} {{ required ".Values.keycloak.database.port is required if dbchecker is enabled!" .Values.keycloak.database.port }}; do
                   sleep 2;
               done;
 
-              echo 'PostgreSQL OK ✓'
+              echo 'Database OK ✓'
           resources:
-            {{- toYaml .Values.keycloak.init.resources | nindent 12 }}
-      {{- end }}
-      {{- with .Values.keycloak.extraInitContainers }}
+            {{- toYaml .Values.keycloak.dbchecker.resources | nindent 12 }}
+        {{- end }}
+        {{- with .Values.keycloak.extraInitContainers }}
         {{- tpl . $ | nindent 8 }}
+        {{- end }}
       {{- end }}
-    {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: keycloak
+          securityContext:
+            {{- toYaml .Values.keycloak.securityContext | nindent 12 }}
           image: "{{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag }}"
           imagePullPolicy: {{ .Values.keycloak.image.pullPolicy }}
-          securityContext:
-            {{- toYaml .Values.keycloak.containerSecurityContext | nindent 12 }}
           command:
-            - /scripts/keycloak.sh
-          {{- with .Values.keycloak.lifecycleHooks }}
-          lifecycle:
-            {{- tpl . $ | nindent 12 }}
-          {{- end }}
+            - "/opt/keycloak/bin/kc.sh"
+            - "--verbose"
+            - "start"
+            - "--http-enabled=true"
+            - "--http-port=8080"
+            - "--hostname-strict=false"
+            - "--hostname-strict-https=false"
+            - "--spi-events-listener-jboss-logging-success-level=info"
+            - "--spi-events-listener-jboss-logging-error-level=warn"
           env:
-            - name: KEYCLOAK_USER
-              value: {{ .Values.keycloak.username }}
-            - name: KEYCLOAK_PASSWORD_FILE
-              value: /secrets/{{ include "keycloak.passwordKey" . }}
-          {{- if $highAvailability }}
-            - name: JGROUPS_DISCOVERY_PROTOCOL
-              value: {{ .Values.keycloak.jgroups.discoveryProtocol }}
-            - name: JGROUPS_DISCOVERY_PROPERTIES
-              value: {{ tpl .Values.keycloak.jgroups.discoveryProperties . }}
-            - name: KEYCLOAK_SERVICE_DNS_NAME
-              value: "{{ include "keycloak.serviceDnsName" . }}"
-          {{- end }}
-            {{- include "keycloak.dbEnvVars" . | nindent 12 }}
-          {{- with .Values.keycloak.extraEnv }}
-            {{- tpl . $ | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: sh
-              mountPath: /scripts
-              readOnly: true
-            - name: secrets
-              mountPath: /secrets
-              readOnly: true
-            {{- if or .Values.keycloak.cli.enabled .Values.keycloak.startupScripts }}
-            - name: startup
-              mountPath: /opt/jboss/startup-scripts
-              readOnly: true
+            - name: KC_HTTP_RELATIVE_PATH
+              value: /auth
+            - name: KC_CACHE
+              value: "ispn"
+            - name: KC_CACHE_STACK
+              value: "kubernetes"
+            - name: KC_PROXY
+              value: "edge"
+            {{- if .Values.keycloak.database.vendor }}
+            - name: KC_DB
+              value: {{ .Values.keycloak.database.vendor }}
             {{- end }}
-            {{- with .Values.keycloak.extraVolumeMounts }}
+            {{- if .Values.keycloak.database.hostname }}
+            - name: KC_DB_URL_HOST
+              value: {{ .Values.keycloak.database.hostname }}
+            {{- end }}
+            {{- if .Values.keycloak.database.port }}
+            - name: KC_DB_URL_PORT
+              value: {{ .Values.keycloak.database.port | quote }}
+            {{- end }}
+            {{- if .Values.keycloak.database.database }}
+            - name: KC_DB_URL_DATABASE
+              value: {{ .Values.keycloak.database.database }}
+            {{- end }}
+            {{- if .Values.keycloak.database.username }}
+            - name: KC_DB_USERNAME
+              value: {{ .Values.keycloak.database.username }}
+            {{- end }}
+            {{- if .Values.keycloak.database.password }}
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: {{ include "keycloak.name" . }}-database
+            {{- end }}
+            {{- if .Values.keycloak.metrics.enabled }}
+            - name: KC_METRICS_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.keycloak.health.enabled }}
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            {{- end }}
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "keycloak.name" . }}-admin-creds
+                  key: user
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "keycloak.name" . }}-admin-creds
+                  key: password
+            - name: JAVA_OPTS_APPEND
+              value: >-
+                -XX:+UseContainerSupport
+                -XX:MaxRAMPercentage=50.0
+                -Djava.awt.headless=true
+                -Djgroups.dns.query={{ include "keycloak.name" . }}-headless
+            {{- with .Values.keycloak.extraEnv }}
             {{- tpl . $ | nindent 12 }}
             {{- end }}
           ports:
@@ -123,58 +134,70 @@ spec:
             - name: https
               containerPort: 8443
               protocol: TCP
-          {{- if $highAvailability }}
-            - name: jgroups
-              containerPort: 7600
-              protocol: TCP
-          {{- end }}
-          {{- with .Values.keycloak.extraPorts }}
-            {{- tpl . $ | nindent 12 }}
-          {{- end }}
+          {{- if .Values.keycloak.health.enabled }}
           {{- with .Values.keycloak.livenessProbe }}
           livenessProbe:
             {{- tpl . $ | nindent 12 }}
           {{- end }}
+          {{- if .Values.keycloak.metrics.enabled }}
           {{- with .Values.keycloak.readinessProbe }}
           readinessProbe:
             {{- tpl . $ | nindent 12 }}
           {{- end }}
+          {{- end}}
+          {{- with .Values.keycloak.startupProbe }}
+          startupProbe:
+            {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          {{- end }}
           resources:
             {{- toYaml .Values.keycloak.resources | nindent 12 }}
-      {{- with .Values.keycloak.extraContainers }}
+          volumeMounts:
+            {{- with .Values.keycloak.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+        {{- with .Values.keycloak.extraContainers }}
         {{- tpl . $ | nindent 8 }}
-      {{- end }}
-      {{- with .Values.keycloak.affinity }}
-      affinity:
-        {{- tpl . $ | nindent 8 }}
-      {{- end }}
+        {{- end }}
+      securityContext:
+        {{- toYaml .Values.keycloak.podSecurityContext | nindent 8 }}
+      enableServiceLinks: {{ .Values.keycloak.enableServiceLinks }}
+      restartPolicy: {{ .Values.keycloak.restartPolicy }}
       {{- with .Values.keycloak.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  {{- include "keycloak.selectorLabels" . | nindent 18 }}
+                matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: NotIn
+                    values:
+                      - test
+              topologyKey: kubernetes.io/hostname
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    {{- include "keycloak.selectorLabels" . | nindent 20 }}
+                  matchExpressions:
+                    - key: app.kubernetes.io/component
+                      operator: NotIn
+                      values:
+                        - test
+                topologyKey: topology.kubernetes.io/zone
       {{- with .Values.keycloak.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.keycloak.priorityClassName }}
-      priorityClassName: {{ . }}
-      {{- end }}
       terminationGracePeriodSeconds: {{ .Values.keycloak.terminationGracePeriodSeconds }}
       volumes:
-        - name: sh
-          configMap:
-            name: {{ include "keycloak.fullname" . }}-sh
-            defaultMode: 0555
-        - name: secrets
-          secret:
-            secretName: {{ include "keycloak.secret" . }}
-      {{- if or .Values.keycloak.cli.enabled .Values.keycloak.startupScripts }}
-        - name: startup
-          configMap:
-            name: {{ include "keycloak.fullname" . }}-startup
-            defaultMode: 0555
-      {{- end }}
-      {{- with .Values.keycloak.extraVolumes }}
+        {{- with .Values.keycloak.extraVolumes }}
         {{- tpl . $ | nindent 8 }}
-      {{- end }}
+        {{- end }}
 {{- end }}
