@@ -24,8 +24,8 @@ This community repository contains a *Helm Chart* for PrimeHub CE and a guide on
 
 | Edition | Launch link |
 | --- | --- |
-| Community Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.4/primehub-ce-starter-cloudformation.yaml) |
-| Enterprise Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.4/primehub-starter-cloudformation.yaml) |
+| Community Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.5/primehub-ce-starter-cloudformation.yaml) |
+| Enterprise Edition | [![Launch Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=primehub-starter&templateURL=https://primehub.s3.amazonaws.com/cloudformation/v1.1.5/primehub-starter-cloudformation.yaml) |
 
 ## Fundamental Features
 
