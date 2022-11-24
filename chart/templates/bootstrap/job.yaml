@@ -32,6 +32,8 @@ spec:
           env:
           - name: PRIMEHUB_NAMESPACE
             value: {{ .Release.Namespace }}
+          - name: KC_APP_URL
+            value: {{ include "primehub.keycloak.appUrl" . }}
           - name: KC_URL
             value: {{ include "primehub.keycloak.url" . }}
           - name: KC_USER
