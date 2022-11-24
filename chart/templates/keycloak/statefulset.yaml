@@ -64,6 +64,7 @@ spec:
             - "--hostname-strict-https=false"
             - "--spi-events-listener-jboss-logging-success-level=info"
             - "--spi-events-listener-jboss-logging-error-level=warn"
+            - "--spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true"
           env:
             - name: KC_HTTP_RELATIVE_PATH
               value: /auth
