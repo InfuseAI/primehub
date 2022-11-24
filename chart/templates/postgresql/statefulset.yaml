@@ -71,24 +71,15 @@ spec:
               value: {{ .Values.postgresql.persistence.dataDir | quote }}
             {{- end }}
             # Authentication
-          {{- if .Values.postgresql.auth.username }}
             - name: POSTGRES_USER
               value: {{ .Values.postgresql.auth.username | quote }}
-            - name: POSTGRES_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common.names.name" . }}
-                  key: postgres-password
-          {{- end }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "common.names.name" . }}
                   key: password
-            {{- if .Values.postgresql.auth.database }}
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.auth.database | quote }}
-            {{- end }}
             # LDAP
             - name: POSTGRESQL_ENABLE_LDAP
               value: "no"
