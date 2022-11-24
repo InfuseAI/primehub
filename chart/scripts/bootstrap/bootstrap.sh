@@ -58,6 +58,9 @@ function update_realm() {
       -s enabled=true
   fi
 
+  print_info "Update realm frontend URL: ${KC_APP_URL}"
+  $KCADM update realms/$KC_REALM -s "attributes.frontendUrl=${KC_APP_URL}"
+
   if [[ -n ${KC_SSL_REQUIRED:-""} ]]; then
     print_info "Update realm ssl_required: ${KC_SSL_REQUIRED}"
     $KCADM update realms/$KC_REALM -s "sslRequired=${KC_SSL_REQUIRED}"
