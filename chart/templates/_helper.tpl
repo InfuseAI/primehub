@@ -242,3 +242,31 @@ primehub deployment
     false
   {{- end -}}
 {{- end -}}
+
+{{/*
+primehub admission
+*/}}
+{{- define "primehub-admission.webhook-certs.manage" -}}
+{{- $data := (dict "cert" "" "key" "" "test" "") }}
+{{- $secretData := (lookup "v1" "Secret" .Release.Namespace "primehub-admission-webhook-certs").data -}}
+{{- if $secretData }}
+  {{- if hasKey $secretData "cert.pem" }}
+    {{- $_ := set $data "cert" (index $secretData "cert.pem" | quote) }}
+  {{- end -}}
+  {{- if hasKey $secretData "key.pem" }}
+    {{- $_ := set $data "key" (index $secretData "key.pem" | quote) }}
+  {{- end -}}
+  {{- $_ := set $data "test" "from secret" }}
+{{- else }}
+  {{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
+  {{- $cn := "primehub-admission" }}
+  {{- $altName1 := printf "%s.%s" $cn .Release.Namespace }}
+  {{- $altName2 := printf "%s.%s.svc" $cn .Release.Namespace }}
+  {{- $altNames := (list $altName1 $altName2) }}
+  {{- $cert := genSignedCert $cn nil $altNames 3650 $ca }}
+  {{- $_ := set $data "cert" ($ca.Cert | b64enc | quote) }}
+  {{- $_ := set $data "key" ($ca.Key | b64enc | quote) }}
+  {{- $_ := set $data "test" "gen ca" }}
+{{- end -}}
+{{- $data | toYaml -}}
+{{- end -}}
