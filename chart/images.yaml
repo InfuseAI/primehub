@@ -59,7 +59,7 @@ primehub-all:
   mc: &mc minio/mc:RELEASE.2021-03-12T03-36-59Z
   csi-attacher: &csi-attacher k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
   csi-node-driver-registrar: &csi-node-driver-registrar k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.4.0
-  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-13-g9b79578
+  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-16-g998c499
 
   # Log Collector
   fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
