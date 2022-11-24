@@ -73,33 +73,21 @@ spec:
               value: "kubernetes"
             - name: KC_PROXY
               value: "edge"
-            {{- if .Values.keycloak.database.vendor }}
             - name: KC_DB
               value: {{ .Values.keycloak.database.vendor }}
-            {{- end }}
-            {{- if .Values.keycloak.database.hostname }}
             - name: KC_DB_URL_HOST
               value: {{ .Values.keycloak.database.hostname }}
-            {{- end }}
-            {{- if .Values.keycloak.database.port }}
             - name: KC_DB_URL_PORT
               value: {{ .Values.keycloak.database.port | quote }}
-            {{- end }}
-            {{- if .Values.keycloak.database.database }}
             - name: KC_DB_URL_DATABASE
               value: {{ .Values.keycloak.database.database }}
-            {{- end }}
-            {{- if .Values.keycloak.database.username }}
             - name: KC_DB_USERNAME
               value: {{ .Values.keycloak.database.username }}
-            {{- end }}
-            {{- if .Values.keycloak.database.password }}
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: password
-                  name: {{ include "keycloak.name" . }}-database
-            {{- end }}
+                  name: {{ include "common.names.name" . }}
             {{- if .Values.keycloak.metrics.enabled }}
             - name: KC_METRICS_ENABLED
               value: "true"
