@@ -100,6 +100,7 @@ jupyterhub:
       CryptKeeper:
         keys:
         - {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
+    cookieSecret: {{ env "HUB_COOKIE_SECRET" }}
   primehub:
     kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
 
