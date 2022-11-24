@@ -24,6 +24,10 @@ usage:
 #sshBastionServer:
 #  enabled: true
 
+#postgresql:
+#  auth:
+#    password: ""
+
 # TODO: Only for testing primehub v4 alpha. REMOVE THIS!
 controller:
   image:

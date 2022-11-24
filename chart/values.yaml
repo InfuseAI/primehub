@@ -138,7 +138,6 @@ postgresql:
     database: keycloak
     username: keycloak
     password: ""
-    postgresPassword: ""
   service:
     port: 5432
   containerPort: 5432
