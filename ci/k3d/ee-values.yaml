@@ -30,7 +30,3 @@ modelDeployment:
 
 adminNotebook:
   enabled: false
-
-controller:
-  image:
-    tag: sc-28495-290ef5

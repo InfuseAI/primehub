@@ -27,13 +27,13 @@ usage:
 # TODO: Only for testing primehub v4 alpha. REMOVE THIS!
 controller:
   image:
-    tag: sc-28495-b31176e
+    tag: sc-28495-e1b97b
 console:
   image:
-    tag: sc28494-56040dd9
+    tag: sc28494-7bed6205
 graphql:
   image:
-    tag: sc28494-56040dd9
+    tag: sc28494-7bed6205
 watcher:
   image:
-    tag: sc28494-56040dd9
+    tag: sc28494-7bed6205
