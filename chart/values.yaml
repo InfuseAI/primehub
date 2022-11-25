@@ -130,7 +130,7 @@ keycloak:
     - name: theme-primehub
       emptyDir: {}
   eula:
-    enabled: true
+    enabled: false
 
 # Keycloak Database - PostgreSQL
 postgresql:
@@ -230,7 +230,7 @@ console:
   reloaderImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
   image:
     repository: infuseai/primehub-console
     tag: latest
@@ -267,7 +267,7 @@ graphql:
   reloaderImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
   image:
     repository: infuseai/primehub-console-graphql
     tag: latest
@@ -1059,7 +1059,7 @@ usage:
   initImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
 
   image:
     repository: infuseai/primehub-usage

@@ -1,6 +1,6 @@
 primehub-all:
   # Core
-  busybox: &busybox busybox:1.31
+  busybox: &busybox busybox:1.32
   primehub-admission: &primehub-admission infuseai/primehub-admission:db8a8ba960
   primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
@@ -24,10 +24,9 @@ primehub-all:
   volume-nfs: &volume-nfs k8s.gcr.io/volume-nfs:0.8
 
   # Keycloak
-  keycloak: &keycloak jboss/keycloak:8.0.1
-  bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:11.5.0-debian-9-r60
-  minideb: &minideb bitnami/minideb:stretch
-  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:857c1960
+  keycloak: &keycloak quay.io/keycloak/keycloak:19.0.3
+  bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:14.5.0-debian-11-r35
+  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:846cbfc3
 
   # Jupyterhub
   pause: &pause gcr.io/google_containers/pause:3.2
@@ -35,6 +34,7 @@ primehub-all:
   configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.2.2
   k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
   statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
+  busybox-1-28: &busybox-1-28 busybox:1.28
 
   # Dataset Uploader
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
@@ -106,6 +106,7 @@ primehub-ee:
   k8s-image-awaiter: *k8s-image-awaiter
   statsd-exporter: *statsd-exporter
   primehub-examples: *primehub-examples
+  busybox-1-28: *busybox-1-28
 
   # Dataset Uploader
   dataset-upload-web-front-end: *dataset-upload-web-front-end
