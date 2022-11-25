@@ -1,42 +1,46 @@
-{{- if .Values.keycloak.deploy }}
+{{- if and .Values.keycloak.deploy .Values.ingress.enabled }}
 {{- $ingress := .Values.ingress -}}
-{{- if $ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "keycloak.fullname" . }}
+  name: {{ include "keycloak.name" . }}
+  namespace: {{ .Release.Namespace }}
   {{- with $ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- range $key, $value := . }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 8m
   {{- end }}
   labels:
-    {{- include "keycloak.commonLabels" . | nindent 4 }}
-    {{- with $ingress.labels }}
-    {{- toYaml . | nindent 4 }}
+    {{- include "keycloak.labels" . | nindent 4 }}
+    {{- range $key, $value := $ingress.labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
     {{- end }}
 spec:
 {{- if $ingress.tls }}
   tls:
-  {{- range $ingress.tls }}
+    {{- range $ingress.tls }}
     - hosts:
       {{- range .hosts }}
-        - {{ . | quote }}
+        - {{ tpl . $ | quote }}
       {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
+      {{- with .secretName }}
+      secretName: {{ tpl . $ }}
+      {{- end }}
+    {{- end }}
 {{- end }}
   rules:
-  {{- range $ingress.hosts }}
-    - host: {{ . }}
+    {{- range $ingress.hosts }}
+    - host: {{ . | quote }}
       http:
         paths:
           - path: /auth
             pathType: ImplementationSpecific
             backend:
               service:
-                name: {{ include "keycloak.fullname" $ }}-http
+                name: {{ include "keycloak.name" $ }}-http
                 port:
                   name: http
-  {{- end }}
+    {{- end }}
 {{- end -}}
-{{- end }}

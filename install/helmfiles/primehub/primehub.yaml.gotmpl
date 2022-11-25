@@ -61,12 +61,13 @@ keycloak:
   {{- end }}
   {{- if eq $KEYCLOAK_DEPLOY "true" }}
   password: {{ requiredEnv "KC_PASSWORD" | quote }}
-  postgresql:
-    persistence:
-      storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
   {{- else }}
   deploy: false
   {{- end }}
+
+postgresql:
+  persistence:
+    storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
 
 {{/* If we install metacontroller separately */}}
 {{- if ne $METACONTROLLER_DEPLOY "true" }}
@@ -99,6 +100,7 @@ jupyterhub:
       CryptKeeper:
         keys:
         - {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
+    cookieSecret: {{ env "HUB_COOKIE_SECRET" }}
   primehub:
     kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
 

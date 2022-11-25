@@ -32,182 +32,86 @@ ingress:
 # Keycloak
 keycloak:
   deploy: true
-  image:
-    repository: jboss/keycloak
-    tag: 8.0.1
-    pullPolicy: IfNotPresent
-  persistence:
-    deployPostgres: true
-    dbVendor: postgres
-    dbName: keycloak
-    dbHost: mykeycloak
-    dbPort: 5432
-    existingSecret: ""
-    existingSecretPasswordKey: ""  # read keycloak db password from existingSecret under this Key
-    existingSecretUsernameKey: ""  # read keycloak db user from existingSecret under this Key
-    dbUser: keycloak
-    dbPassword:
-  postgresql:
-    image:
-      registry: docker.io
-      repository: bitnami/postgresql
-      tag: 11.5.0-debian-9-r60
-      pullPolicy: IfNotPresent
-      debug: false
-    service:
-      type: ClusterIP
-      port: 5432
-      annotations: {}
-    postgresqlUsername: postgres
-    master:
-      nodeSelector: {}
-      affinity: {}
-      tolerations: []
-      podLabels: {}
-      podAnnotations: {}
-      extraVolumeMounts: []
-      extraVolumes: []
-    updateStrategy:
-      type: RollingUpdate
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 10
-      timeoutSeconds: 5
-      failureThreshold: 6
-      successThreshold: 1
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 512Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
-    metrics:
-      enabled: false
-    securityContext:
-      enabled: true
-      fsGroup: 1001
-      runAsUser: 1001
-    serviceAccount:
-      enabled: false
-    volumePermissions:
-      enabled: true
-      image:
-        registry: docker.io
-        repository: bitnami/minideb
-        tag: stretch
-      securityContext:
-        runAsUser: 0
-    persistence:
-      enabled: true
-      mountPath: /bitnami/postgresql
-      subPath: ""
-      accessModes:
-        - ReadWriteOnce
-      size: 8Gi
-      annotations: {}
-  service:
-    annotations: {}
-    labels: {}
-    type: ClusterIP
-    httpPort: 80
-    httpNodePort: ""
-    httpsPort: 8443
-    httpsNodePort: ""
-    jgroupsPort: 7600
-  existingSecretKey: password
-  jgroups:
-    discoveryProtocol: dns.DNS_PING
-    discoveryProperties: >
-      "dns_query={{ template "keycloak.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.keycloak.clusterDomain }}"
-  extraEnv: |
-    - name: PROXY_ADDRESS_FORWARDING
-      value: "true"
-  livenessProbe: |
-    httpGet:
-      path: {{ if ne .Values.keycloak.basepath "" }}/{{ .Values.keycloak.basepath }}{{ end }}/
-      port: http
-    initialDelaySeconds: 300
-    timeoutSeconds: 5
-  readinessProbe: |
-    httpGet:
-      path: {{ if ne .Values.keycloak.basepath "" }}/{{ .Values.keycloak.basepath }}{{ end }}/realms/master
-      port: http
-    initialDelaySeconds: 30
-    timeoutSeconds: 1
-  restartPolicy: Always
-  podManagementPolicy: Parallel
-
-  prometheus:
-    operator:
-      enabled: false
-      serviceMonitor:
-        namespace: ""
-        selector:
-          release: prometheus
-        interval: 10s
-        scrapeTimeout: 10s
-        path: /auth/realms/master/metrics
-      prometheusRules:
-        enabled: false
-        selector:
-          app: prometheus-operator
-          release: prometheus
-        rules: {}
-  clusterDomain: cluster.local
-  init:
-    image:
-      repository: busybox
-      tag: 1.31
-      pullPolicy: IfNotPresent
-    resources: {}
   username: keycloak
-  password:
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 50m
-      memory: 64Mi
-  serviceAccount:
-    create: false
+  password: ""
+  database:
+    vendor: postgres
+    hostname: keycloak-postgres
+    database: keycloak
+    port: 5432
+    username: keycloak
+    password: ""
+  dbchecker:
+    enabled: true
+    image:
+      repository: docker.io/busybox
+      tag: 1.32
+      pullPolicy: IfNotPresent
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: "20m"
+        memory: "32Mi"
+      limits:
+        cpu: "20m"
+        memory: "32Mi"
   securityContext:
-    fsGroup: 1000
-  containerSecurityContext:
     runAsUser: 1000
     runAsNonRoot: true
-  basepath: auth
-  cli:
+  service:
+    type: ClusterIP
+    httpPort: 80
+    httpsPort: 8443
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: "19.0.3"
+    pullPolicy: IfNotPresent
+  replicas: 1
+  metrics:
     enabled: true
-    nodeIdentifier: |
-      {{ .Files.Get "scripts/keycloak/node-identifier.cli" }}
-
-    logging: |
-      {{ .Files.Get "scripts/keycloak/logging.cli" }}
-
-    ha: |
-      {{ .Files.Get "scripts/keycloak/ha.cli" }}
-
-    datasource: |
-      {{ .Files.Get "scripts/keycloak/datasource.cli" }}
-
-    custom: |
-
-  theme:
-    image: infuseai/primehub-keycloak-theme:857c1960
-    packages: []
+  health:
+    enabled: true
+  # Liveness probe configuration
+  livenessProbe: |
+    httpGet:
+      path: /auth/health/live
+      port: http
+    initialDelaySeconds: 0
+    timeoutSeconds: 5
+  # Readiness probe configuration
+  readinessProbe: |
+    httpGet:
+      path: /auth/health/ready
+      port: http
+    initialDelaySeconds: 10
+    timeoutSeconds: 1
+  # Startup probe configuration
+  startupProbe: |
+    httpGet:
+      path: /auth/health
+      port: http
+    initialDelaySeconds: 15
+    timeoutSeconds: 1
+    failureThreshold: 60
+    periodSeconds: 5
+  resources: {}
+  podManagementPolicy: OrderedReady
+  extraVolumeMounts: ""
+  extraContainers: ""
+  podSecurityContext:
+    fsGroup: 1000
+  enableServiceLinks: true
+  restartPolicy: Always
+  nodeSelector: {}
+  tolerations: []
+  terminationGracePeriodSeconds: 60
   extraInitContainers: |
     - name: theme-provider
-      image: {{ .Values.keycloak.theme.image }}
+      image: infuseai/primehub-keycloak-theme:846cbfc3
       imagePullPolicy: IfNotPresent
       command:
         - sh
@@ -216,35 +120,71 @@ keycloak:
         - |
           echo "Copying theme..."
           cp -R /primehub/* /theme-primehub/
-          {{- range $package := .Values.keycloak.theme.packages }}
-          cp -R /{{ $package }}/* /theme-{{ $package }}/
-          {{- end }}
       volumeMounts:
         - name: theme-primehub
           mountPath: /theme-primehub
-        {{- range $package := .Values.keycloak.theme.packages }}
-        - name: theme-{{ $package }}
-          mountPath: /theme-{{ $package }}
-        {{- end }}
-
   extraVolumeMounts: |
     - name: theme-primehub
-      mountPath: /opt/jboss/keycloak/themes/primehub
-    {{- range $package := .Values.keycloak.theme.packages }}
-    - name: theme-{{ $package }}
-      mountPath: /opt/jboss/keycloak/themes/{{ $package }}
-    {{- end }}
-
+      mountPath: /opt/keycloak/themes/primehub
   extraVolumes: |
     - name: theme-primehub
       emptyDir: {}
-    {{- range $package := .Values.keycloak.theme.packages }}
-    - name: theme-{{ $package }}
-      emptyDir: {}
-    {{- end }}
   eula:
     enabled: false
 
+# Keycloak Database - PostgreSQL
+postgresql:
+  auth:
+    database: keycloak
+    username: keycloak
+    password: ""
+  service:
+    port: 5432
+  containerPort: 5432
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: {}
+  nodeSelector: {}
+  tolerations: []
+  terminationGracePeriodSeconds: ""
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  initContainers: []
+  image:
+    repository: bitnami/postgresql
+    tag: 14.5.0-debian-11-r35
+  persistence:
+    enabled: true
+    mountPath: /bitnami/postgresql
+    dataDir: /bitnami/postgresql/data
+    size: 8Gi
+    #storageClassName: ""
+  resources:
+    limits: {}
+    requests:
+      memory: 256Mi
+      cpu: 250m
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  shmVolume:
+    enabled: true
+    sizeLimit: ""
 
 # Metacontroller
 metacontroller:
@@ -290,7 +230,7 @@ console:
   reloaderImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
   image:
     repository: infuseai/primehub-console
     tag: latest
@@ -327,7 +267,7 @@ graphql:
   reloaderImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
   image:
     repository: infuseai/primehub-console-graphql
     tag: latest
@@ -1119,7 +1059,7 @@ usage:
   initImage:
     repository: busybox
     pullPolicy: IfNotPresent
-    tag: 1.31
+    tag: 1.32
 
   image:
     repository: infuseai/primehub-usage

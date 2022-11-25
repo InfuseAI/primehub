@@ -12,6 +12,7 @@ export STORAGE_CLASS=local-path
 export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
 export HUB_AUTH_STATE_CRYPTO_KEY=$(openssl rand -hex 32)
 export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
+export HUB_COOKIE_SECRET=$(openssl rand -hex 32)
 
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
@@ -40,6 +41,7 @@ jupyterhub:
     db:
       pvc:
         storageClassName: ${STORAGE_CLASS}
+    cookieSecret: ${HUB_COOKIE_SECRET}
   proxy:
     secretToken: ${HUB_PROXY_SECRET_TOKEN}
   singleuser:
