@@ -973,7 +973,7 @@ minio:
   ##
   image:
     repository: minio/minio
-    tag: RELEASE.2021-03-04T00-53-13Z
+    tag: RELEASE.2022-04-16T04-26-02Z
     pullPolicy: IfNotPresent
 
   ## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
@@ -981,7 +981,7 @@ minio:
   ##
   mcImage:
     repository: minio/mc
-    tag: RELEASE.2021-03-12T03-36-59Z
+    tag: RELEASE.2022-11-07T23-47-39Z
     pullPolicy: IfNotPresent
 
   ## Additional arguments to pass to minio binary
