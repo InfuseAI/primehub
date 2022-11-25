@@ -34,13 +34,14 @@ ingress:
   hosts:
   - ${PRIMEHUB_DOMAIN}
 jupyterhub:
-  auth:
-    state:
-      cryptoKey: ${GRAPHQL_SECRET_KEY}
   hub:
     db:
       pvc:
         storageClassName: ${STORAGE_CLASS}
+    config:
+      CryptKeeper:
+        keys:
+        - ${HUB_AUTH_STATE_CRYPTO_KEY}
     cookieSecret: ${HUB_COOKIE_SECRET}
   proxy:
     secretToken: ${HUB_PROXY_SECRET_TOKEN}
@@ -58,8 +59,10 @@ elif [[ "${PRIMEHUB_MODE}" == "deploy" ]]; then
   values_mode='--values k3d/deploy-values.yaml'
 fi
 
-# install primehub-controller crds
-kubectl apply -f ../primehub-controller-crds
+# install crds
+kubectl apply -f ../crds/crd.yaml
+kubectl apply -f ../crds/metacontroller/crd.yaml
+kubectl apply -f ../crds/primehub-controller
 
 helm upgrade \
   primehub ../chart \
