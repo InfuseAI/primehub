@@ -54,11 +54,11 @@ keycloak:
       runAsNonRoot: true
     resources:
       requests:
-        cpu: "20m"
-        memory: "32Mi"
+        cpu: 20m
+        memory: 32Mi
       limits:
-        cpu: "20m"
-        memory: "32Mi"
+        cpu: 20m
+        memory: 32Mi
   securityContext:
     runAsUser: 1000
     runAsNonRoot: true
@@ -98,7 +98,13 @@ keycloak:
     timeoutSeconds: 1
     failureThreshold: 60
     periodSeconds: 5
-  resources: {}
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
   podManagementPolicy: OrderedReady
   extraVolumeMounts: ""
   extraContainers: ""
@@ -164,10 +170,12 @@ postgresql:
     size: 8Gi
     #storageClassName: ""
   resources:
-    limits: {}
+    limits:
+      cpu: 1000m
+      memory: 512Mi
     requests:
-      memory: 256Mi
-      cpu: 250m
+      cpu: 50m
+      memory: 64Mi
   livenessProbe:
     enabled: true
     initialDelaySeconds: 30

@@ -35,6 +35,7 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/
 
 K3D_VERSION=4.4.7
 HELM_VERSION=3.6.2
+HELMFILE_VERSION=v0.144.0
 NVM_VERSION=0.39.0
 NODEJS_VERSION=14.18.0
 
@@ -49,7 +50,7 @@ curl -ssL https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar -xz
   sudo mv helm /usr/local/bin
 
 # Install helmfile
-curl -sLo helmfile https://github.com/roboll/helmfile/releases/download/v0.40.3/helmfile_linux_amd64 && \
+curl -sLo helmfile https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64 && \
   chmod +x helmfile && \
   sudo mv helmfile /usr/local/bin
 

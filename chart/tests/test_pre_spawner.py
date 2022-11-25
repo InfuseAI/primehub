@@ -166,7 +166,7 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.authenticator.datasets = self.builder.get_datasets()
 
     def get_ln_command(self):
-        ln_command = self.spawner.singleuser_lifecycle_hooks['postStart']['exec']['command']
+        ln_command = self.spawner.lifecycle_hooks['postStart']['exec']['command']
         ln_command = [x.strip() for x in ln_command[-1].split(';')]
         return ln_command
 
