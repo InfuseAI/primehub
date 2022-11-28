@@ -25,7 +25,6 @@ from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
 from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
 from jupyterhub.handlers.pages import SpawnHandler
 from jupyterhub.utils import url_path_join
-from kubernetes.client.rest import ApiException
 from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
 from jinja2 import Environment, FileSystemLoader
 from kubespawner.reflector import NamespacedResourceReflector
@@ -734,7 +733,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             primehub_datasets = {
                 item['metadata']['name']: item for item in self.get_custom_resources(
                     namespace, 'datasets')}
-        except ApiException as e:
+        except BaseException as e:
             print(
                 "Exception when calling CustomObjectsApi->get_namespaced_custom_object: %s\n" %
                 e)
