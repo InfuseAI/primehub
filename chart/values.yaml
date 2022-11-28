@@ -527,7 +527,7 @@ jupyterhub:
       readOnly: true
     image:
       name: jupyterhub/k8s-hub
-      tag: '1.2.0'
+      tag: '2.0.0'
     networkPolicy:
       enabled: true
     extraConfig:
