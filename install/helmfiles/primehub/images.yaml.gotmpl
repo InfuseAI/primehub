@@ -127,7 +127,7 @@ keycloak:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
   image:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jboss/keycloak
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/keycloak/keycloak
   theme:
     image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:857c1960
   postgresql:

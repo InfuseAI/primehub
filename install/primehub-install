@@ -810,7 +810,7 @@ install::cert_manager() {
 
 generate::keycloak_grafana_client() {
   local ns='hub'
-  local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/jboss/keycloak/bin/kcadm.sh"
+  local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/keycloak/bin/kcadm.sh"
   local client_name=grafana-proxy
   local redirect_uri="${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana/*"
 
@@ -997,13 +997,13 @@ disable_keycloak_ssl_required() {
   local namespace=${PRIMEHUB_NAMESPACE}
   info "[Config] Keycloak to support external access by HTTP"
   kubectl -n ${namespace} exec -it keycloak-0 -- \
-  /opt/jboss/keycloak/bin/kcadm.sh config credentials \
+  /opt/keycloak/bin/kcadm.sh config credentials \
   --server http://localhost:8080/auth \
   --realm master \
   --user ${KC_USER} \
   --password=${KC_PASSWORD}
   kubectl -n ${namespace} exec -it keycloak-0 -- \
-  /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s "sslRequired=none"
+  /opt/keycloak/bin/kcadm.sh update realms/master -s "sslRequired=none"
 }
 
 config::singlenode() {
