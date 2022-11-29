@@ -42,153 +42,9 @@ def monkey_patched_set_login_cookie(self, user):
 
 jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.BaseHandler.set_login_cookie
 jupyterhub.handlers.BaseHandler.set_login_cookie = monkey_patched_set_login_cookie
-print("apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
+print(
+    "apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
 # MONKEY-PATCH :: BaseHandler [END]
-
-# MONKEY-PATCH :: SpawnHandler [START]
-async def monkey_patched_wrap_spawn_single_user(
-    self, user, server_name, spawner, pending_url, options=None
-):
-    # Explicit spawn request: clear _spawn_future
-    # which may have been saved to prevent implicit spawns
-    # after a failure.
-    if spawner._spawn_future and spawner._spawn_future.done():
-        spawner._spawn_future = None
-    # not running, no form. Trigger spawn and redirect back to /user/:name
-    f = asyncio.ensure_future(
-        self.spawn_single_user(user, server_name, options=options)
-    )
-    done, pending = await asyncio.wait([f], timeout=1)
-    # If spawn_single_user throws an exception, raise a 500 error
-    # otherwise it may cause a redirect loop
-    if f.done() and f.exception():
-        exc = f.exception()
-
-        if exc.status == 410 and exc.body:
-            try:
-                message = json.loads(exc.body)['message']
-            except Exception as e:
-                self.log.error("Parse body error: %s" % str(e))
-            if message.startswith("admission webhook"):
-                raise ValueError(message)
-
-        raise web.HTTPError(
-            500,
-            "Error in Authenticator.pre_spawn_start: %s %s"
-            % (type(exc).__name__, str(exc)),
-        )
-    return self.redirect(pending_url)
-
-jupyterhub.handlers.pages.SpawnHandler.original_wrap_spawn_single_user = jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user
-jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user = monkey_patched_wrap_spawn_single_user
-print("apply monkey-patch to jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user => %s" % jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user)
-# MONKEY-PATCH :: SpawnHandler [END]
-
-# MONKEY-PATCH :: CurlAsyncHTTPClient [START]
-import tornado.curl_httpclient
-def curl_create_http_1_1(self) -> pycurl.Curl:
-    curl = self._origin_curl_create()
-    curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_1_1)
-    return curl
-
-tornado.curl_httpclient.CurlAsyncHTTPClient._origin_curl_create = tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create
-tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create = curl_create_http_1_1
-print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create => %s (use http1.1)" % curl_create_http_1_1)
-# MONKEY-PATCH :: CurlAsyncHTTPClient [END]
-
-# MONKEY-PATCH :: OAuth-state-mismatch [START]
-class OAuthStateStore(object):
-    PURGE_INTERVAL = 1
-    _store = OrderedDict()
-    _purge_time = time.time()
-
-    def __init__(self):
-        pass
-
-    def add_state(self, username, state):
-        self._store[(username, state)] = time.time()
-
-    def validate(self, username, state):
-        self.purge()
-        t = self._store.get((username, state))
-        if not t:
-            return False
-        if time.time() - t < 1:
-            return True
-        return False
-
-    def purge(self):
-        if time.time() - self._purge_time < self.PURGE_INTERVAL:
-            return
-        self._purge_time = time.time()
-
-        removed = []
-        t = time.time()
-        for k, v in self._store.items():
-            if t - v > 1:
-                removed.append(k)
-            else:
-                break
-        for k in removed:
-            del self._store[k]
-
-
-import oauthenticator.oauth2
-
-oauth_state_store = OAuthStateStore()
-
-
-def OAuthLoginHandler_get(self):
-    redirect_uri = self.authenticator.get_callback_url(self)
-    extra_params = self.authenticator.extra_authorize_params.copy()
-    self.log.info('OAuth redirect: %r', redirect_uri)
-    state = self.get_state()
-    self.set_state_cookie(state)
-    extra_params['state'] = state
-
-    user = self.get_current_user_cookie()
-    if user and user.name:
-        oauth_state_store.add_state(user.name, state)
-
-    self.authorize_redirect(
-        redirect_uri=redirect_uri,
-        client_id=self.authenticator.client_id,
-        scope=self.authenticator.scope,
-        extra_params=extra_params,
-        response_type='code',
-    )
-
-
-def OAuthCallbackHandler_check_state(self):
-    """Verify OAuth state
-
-    compare value in cookie with redirect url param
-    """
-    cookie_state = self.get_state_cookie()
-    url_state = self.get_state_url()
-
-    if not cookie_state:
-        raise web.HTTPError(400, "OAuth state missing from cookies")
-    if not url_state:
-        raise web.HTTPError(400, "OAuth state missing from URL")
-    if cookie_state != url_state:
-        user = self.get_current_user_cookie()
-        if user and user.name:
-            if oauth_state_store.validate(user.name, cookie_state) and oauth_state_store.validate(user.name, url_state):
-                self.log.warning("Bypass-oauth-mismatch from state cache [user: %s]", user.name)
-                return
-
-        self.log.warning("OAuth state mismatch: %s != %s", cookie_state, url_state)
-        raise web.HTTPError(400, "OAuth state mismatch")
-
-
-oauthenticator.oauth2.OAuthLoginHandler.get = OAuthLoginHandler_get
-oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
-
-print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
-print("patch %s" % oauthenticator.oauth2.OAuthCallbackHandler.check_state)
-# MONKEY-PATCH :: OAuth-state-mismatch [END]
-
 
 
 try:
@@ -283,6 +139,7 @@ def fetch_context(user_id):
         return result['data']
     return {}
 
+
 @gen.coroutine
 def send_telemetry(traits):
     if not enable_telemetry:
@@ -305,12 +162,15 @@ def send_telemetry(traits):
 
     return
 
+
 class PrimehubOidcMixin(OAuth2Mixin):
     _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
     _OAUTH_ACCESS_TOKEN_URL = '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
+
 class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
     pass
+
 
 class OIDCLogoutHandler(LogoutHandler):
     kc_logout_url = '%s/realms/%s/protocol/openid-connect/logout' % (
@@ -375,8 +235,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         try:
             response = yield self.client.fetch(self.userdata_url,
-                                        method='GET',
-                                        headers=headers)
+                                               method='GET',
+                                               headers=headers)
             if response.code == 200:
                 return True
             else:
@@ -564,6 +424,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def get_global_datasets(self, groups):
         global_datasets = {}
+
         def _append_dataset(dataset):
             global_datasets[dataset['name']] = dataset
 
@@ -579,7 +440,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'dataset.primehub.io/launchGroupOnly', 'false') == 'true'
         is_global = name in global_datasets.keys()
 
-        self.log.debug('Datasets in launch group [%s]: %s' % (spawner.user_options['group']['name'], datasets_in_launch_group))
+        self.log.debug(
+            'Datasets in launch group [%s]: %s' % (spawner.user_options['group']['name'], datasets_in_launch_group))
 
         # Check if dataset should mount.
         if not is_global and (launch_group_only and name not in datasets_in_launch_group):
@@ -685,8 +547,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         return True
 
-    @gen.coroutine
-    def pre_spawn_start(self, user, spawner):
+    async def pre_spawn_start(self, user, spawner):
         """Pass upstream_token to spawner via environment variable"""
         auth_state = yield user.get_auth_state()
 
@@ -726,12 +587,13 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 {'mountPath': '/usr/local/bin/start-notebook.d', 'name': 'start-notebook-d'})
 
         self.chown_extra = []
+        primehub_datasets = {}
 
         try:
             self.log.info("oauth_user %s" % auth_state['oauth_user'])
             namespace = os.environ.get('POD_NAMESPACE', 'hub')
             primehub_datasets = {
-                item['metadata']['name']: item for item in self.get_custom_resources(
+                item['metadata']['name']: item for item in await self.get_custom_resources(
                     namespace, 'datasets')}
         except BaseException as e:
             print(
@@ -749,11 +611,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
         for name, dataset in primehub_datasets.items():
             if ('%sds:%s' % (role_prefix, name) not in roles) and ('%sds:rw:%s' % (role_prefix, name) not in roles):
                 self.log.debug('[skip-info] :: roles: [%s], role_prefix: [%s], name: [%s]' % (roles, role_prefix, name))
-                self.log.debug('[skip-info] :: (%s, %s)' % ('%sds:%s' % (role_prefix, name), '%sds:rw:%s' % (role_prefix, name)))
+                self.log.debug(
+                    '[skip-info] :: (%s, %s)' % ('%sds:%s' % (role_prefix, name), '%sds:rw:%s' % (role_prefix, name)))
                 continue
             mounted = self.mount_dataset(spawner, global_datasets, datasets_in_launch_group, name, dataset)
             self.log.debug(
-                    "  %s dataset %s (type %s)", ('mounting' if mounted else 'skipped'), name, type)
+                "  %s dataset %s (type %s)", ('mounting' if mounted else 'skipped'), name, type)
 
         launch_group = spawner.user_options['group']['name']
         groups = auth_state['launch_context']['groups']
@@ -761,7 +624,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
         mlflow_envs = self.get_mlflow_environment_variables(launch_group, auth_state)
         if mlflow_envs:
             spawner.environment.update(mlflow_envs)
-
 
         for group in groups:
             if not group.get('enabledSharedVolume', False):
@@ -786,7 +648,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         if phfs_enabled:
             spawner.volumes.append({'name': 'phfs',
-                                'persistentVolumeClaim': {'claimName': phfs_pvc}})
+                                    'persistentVolumeClaim': {'claimName': phfs_pvc}})
             spawner.volume_mounts.append(
                 {'mountPath': '/phfs', 'name': 'phfs', 'subPath': 'groups/' + re.sub('_', '-', launch_group).lower()})
             self.chown_extra.append('/phfs')
@@ -809,19 +671,23 @@ class OIDCAuthenticator(GenericOAuthenticator):
         # use preStop hook to ensure jupyter's metadata owner back to the jovyan user
         spawner.lifecycle_hooks = {
             'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}},
-            'preStop': {'exec': {'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
+            'preStop': {'exec': {
+                'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
         }
 
         # add labels for resource validation
         spawner.extra_labels['primehub.io/user'] = escape_to_primehub_label(spawner.user.name)
-        spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(spawner.user_options.get('group', {}).get('name', ''))
+        spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(
+            spawner.user_options.get('group', {}).get('name', ''))
 
         self.attach_usage_annoations(spawner)
         self.mount_primehub_scripts(spawner)
 
         origin_args = spawner.get_args()
+
         def empty_list():
             return []
+
         spawner.get_args = empty_list
         spawner.cmd = ['/opt/primehub-start-notebook/primehub-entrypoint.sh'] + origin_args
 
@@ -929,6 +795,7 @@ class PrimeHubPodReflector(NamespacedResourceReflector):
     def pods(self):
         return self.resources
 
+
 class PrimeHubSpawner(KubeSpawner):
     enable_kernel_gateway = None
     enable_safe_mode = False
@@ -1003,7 +870,6 @@ class PrimeHubSpawner(KubeSpawner):
                 'mem_guarantee': spec.get('requests.memory', '0G'),
                 'extra_resource_limits': extra_resource_limits
             }
-
 
         # pod spec override
         override_fields = [
@@ -1143,24 +1009,28 @@ class PrimeHubSpawner(KubeSpawner):
             return self.render_html('spawn_block.html', block_msg='Backend API unavailable. Please contact admin.')
 
         if not context:
-            return self.render_html('spawn_block.html', block_msg='Sorry, but you need to relogin to continue', href='/hub/logout')
+            return self.render_html('spawn_block.html', block_msg='Sorry, but you need to relogin to continue',
+                                    href='/hub/logout')
 
         try:
             groups = self._groups_from_ctx(context)
             self._groups = groups
         except Exception:
             self.log.error('Failed to fetch groups', exc_info=True)
-            return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
+            return self.render_html('spawn_block.html',
+                                    block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        self.user.spawner.ssh_config['host'] = get_primehub_config('sshServer.customHostname', get_primehub_config('host', ''))
-        self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub'))
+        self.user.spawner.ssh_config['host'] = get_primehub_config('sshServer.customHostname',
+                                                                   get_primehub_config('host', ''))
+        self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name,
+                                                                  os.environ.get('POD_NAMESPACE', 'hub'))
         self.user.spawner.ssh_config['port'] = get_primehub_config('sshServer.servicePort', '2222')
 
         return self.render_html('groups.html',
                                 groups=groups,
                                 default_image=self.user.spawner.default_image,
-                                default_instance_type = self.user.spawner.default_instance_type,
-                                autolaunch = self.user.spawner.autolaunch,
+                                default_instance_type=self.user.spawner.default_instance_type,
+                                autolaunch=self.user.spawner.autolaunch,
                                 active_group=self.active_group,
                                 enable_kernel_gateway=enable_feature_kernel_gateway,
                                 enable_ssh_server=enable_feature_ssh_server,
@@ -1182,7 +1052,7 @@ class PrimeHubSpawner(KubeSpawner):
             labels = pod.get('metadata', {}).get('labels', None)
             phase = pod.get('status', {}).get('phase', None)
             if labels and labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) \
-                    and (phase == "Pending" or phase == "Running"):
+                and (phase == "Pending" or phase == "Running"):
                 existing += pod.get('spec', {}).get('containers', {})
 
         def limit_of(container, name):
@@ -1199,7 +1069,7 @@ class PrimeHubSpawner(KubeSpawner):
                    for container in existing if has_limit(container)])
         mem = sum([int(convert_mem_resource_to_bytes(limit_of(container, 'memory')))
                    for container in existing if has_limit(container)])
-        mem = round(float(mem / GiB()), 1) # convert to GB
+        mem = round(float(mem / GiB()), 1)  # convert to GB
 
         return {'cpu': cpu, 'gpu': gpu, 'memory': mem}
 
@@ -1222,7 +1092,8 @@ class PrimeHubSpawner(KubeSpawner):
                 'Not enough resource limit in your groups, please contact admin.')
 
         def map_group(group):
-            if group.get('displayName', None) is None or group.get('displayName', None) is '': group['displayName'] = group.get('name', '')
+            if group.get('displayName', None) is None or group.get('displayName', None) is '': group[
+                'displayName'] = group.get('name', '')
             return group
 
         groups = list(map(map_group, groups))
@@ -1327,6 +1198,7 @@ class StopSpawningHandler(BaseHandler):
 
         self.redirect(url_path_join(self.hub.base_url, 'spawn', user.escaped_name))
 
+
 class ResourceUsageHandler(BaseHandler):
     @web.authenticated
     async def get(self, for_user=None):
@@ -1350,6 +1222,7 @@ class ResourceUsageHandler(BaseHandler):
         groups = spawner._groups_from_ctx(auth_state['launch_context'])
         # Tornado will response json when give chuck as a dictionary.
         self.finish(dict(groups=groups))
+
 
 class PrimeHubHomeHandler(BaseHandler):
     """Render the user's home page."""
@@ -1388,7 +1261,6 @@ class PrimeHubHomeHandler(BaseHandler):
                 self.redirect(url)
                 return
 
-
         html = self.render_template(
             'home.html',
             user=user,
@@ -1406,7 +1278,6 @@ class PrimeHubHomeHandler(BaseHandler):
 
 
 def mutate_pod_spec_for_kernel_gateway(spawner):
-
     # patch it
     spawner.extra_pod_config = {
         "shareProcessNamespace": True
@@ -1465,23 +1336,23 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
     c.JupyterHub.authenticator_class = OIDCAuthenticator
     c.JupyterHub.spawner_class = PrimeHubSpawner
     c.JupyterHub.tornado_settings = {
-      'slow_spawn_timeout': 3,
-      'slow_stop_timeout': 30
+        'slow_spawn_timeout': 3,
+        'slow_stop_timeout': 30
     }
 
     c.JupyterHub.extra_handlers = [
-            (r"/api/primehub/groups", ResourceUsageHandler),
-            (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
-            (r"/api/primehub/users/([^/]+)/stop-spawning", StopSpawningHandler),
-            (r"/primehub/home", PrimeHubHomeHandler),
-            ]
+        (r"/api/primehub/groups", ResourceUsageHandler),
+        (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
+        (r"/api/primehub/users/([^/]+)/stop-spawning", StopSpawningHandler),
+        (r"/primehub/home", PrimeHubHomeHandler),
+    ]
 
     c.JupyterHub.template_paths = [jupyterhub_template_path]
     c.JupyterHub.statsd_host = 'localhost'
     c.JupyterHub.statsd_port = 9125
     c.JupyterHub.statsd_prefix = 'jupyterhub'
     c.JupyterHub.authenticate_prometheus = False
-    c.JupyterHub.template_vars = { 'primehub_version': primehub_version }
+    c.JupyterHub.template_vars = {'primehub_version': primehub_version}
     c.JupyterHub.logo_file = '/usr/local/share/jupyterhub/static/images/PrimeHub.png'
     c.PrimeHubSpawner.start_timeout = get_primehub_config('spawnerStartTimeout', 300)
     c.PrimeHubSpawner.http_timeout = get_primehub_config('spawnerHttpTimeout', 30)
