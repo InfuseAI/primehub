@@ -1,33 +1,23 @@
-import base64
-import logging
-from collections import OrderedDict
-
-import asyncio
-import pycurl
-from kubespawner.clients import shared_client
-from kubespawner import KubeSpawner
 import json
-import urllib
-import uuid
 import os
-import tornado.ioloop
 import time
+import urllib
 from datetime import datetime
-import jupyterhub.handlers
-from tornado.httpclient import HTTPRequest, AsyncHTTPClient
-from tornado.httputil import url_concat
 
-from z2jh import get_config
-from tornado import gen, httpclient, web
-from tornado.auth import OAuth2Mixin
+import jupyterhub.handlers
+from jinja2 import Environment, FileSystemLoader
+from jupyterhub.handlers import BaseHandler, LoginHandler, LogoutHandler
+from jupyterhub.utils import url_path_join
+from kubespawner import KubeSpawner
+from kubespawner.clients import shared_client
+from kubespawner.reflector import NamespacedResourceReflector
 from oauthenticator.generic import GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
-from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
-from jupyterhub.handlers.pages import SpawnHandler
-from jupyterhub.utils import url_path_join
-from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
-from jinja2 import Environment, FileSystemLoader
-from kubespawner.reflector import NamespacedResourceReflector
+from tornado import gen, httpclient, web
+from tornado.auth import OAuth2Mixin
+from traitlets import default
+
+from z2jh import get_config
 
 
 # MONKEY-PATCH :: BaseHandler [START]
@@ -118,14 +108,13 @@ GRAPHQL_SEND_TELEMETRY_MUTATION = '''mutation ($data: NotebookNotifyEventInput!)
                 }'''
 
 
-@gen.coroutine
-def fetch_context(user_id):
+async def fetch_context(user_id):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_LAUNCH_CONTEXT_QUERY,
             'variables': {'id': user_id}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
-    response = yield client.fetch(graphql_endpoint,
+    response = await client.fetch(graphql_endpoint,
                                   method='POST',
                                   headers=headers,
                                   body=json.dumps(data))
@@ -140,8 +129,7 @@ def fetch_context(user_id):
     return {}
 
 
-@gen.coroutine
-def send_telemetry(traits):
+async def send_telemetry(traits):
     if not enable_telemetry:
         return
 
@@ -150,7 +138,7 @@ def send_telemetry(traits):
     data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
             'variables': {'data': traits}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
-    response = yield client.fetch(graphql_endpoint,
+    response = await client.fetch(graphql_endpoint,
                                   method='POST',
                                   headers=headers,
                                   body=json.dumps(data))
@@ -190,7 +178,7 @@ class OIDCLogoutHandler(LogoutHandler):
             await super().get()
 
 
-class OIDCAuthenticator(GenericOAuthenticator):
+class PrimeHubOIDCAuthenticator(GenericOAuthenticator):
     client_id = 'jupyterhub'
     client_secret = oidc_client_secret
     token_url = '%s/realms/%s/protocol/openid-connect/token' % (
@@ -220,9 +208,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
     def _token_url_default(self):
         return '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
-    @gen.coroutine
-    def verify_access_token(self, user):
-        auth_state = yield user.get_auth_state()
+    async def verify_access_token(self, user):
+        auth_state = await user.get_auth_state()
         access_token = auth_state['access_token']
         token_type = 'Bearer'
 
@@ -234,7 +221,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
         }
 
         try:
-            response = yield self.client.fetch(self.userdata_url,
+            response = await self.client.fetch(self.userdata_url,
                                                method='GET',
                                                headers=headers)
             if response.code == 200:
@@ -244,27 +231,26 @@ class OIDCAuthenticator(GenericOAuthenticator):
         except Exception as e:
             return False
 
-    @gen.coroutine
-    def refresh_user(self, user, handler=None):
+    async def refresh_user(self, user, handler=None):
         # prevent multiple graphql calls
         if isinstance(handler, (LoginHandler, OAuthCallbackHandler)):
             self.log.debug('skip refresh user in handler: %s', handler)
             return False
 
         self.log.debug('refresh user: %s', user)
-        auth_state = yield user.get_auth_state()
+        auth_state = await user.get_auth_state()
         user_id = auth_state['oauth_user'].get('sub', None)
         if not user_id:
             self.log.debug('user id not found')
             return False
 
-        is_valid_token = yield self.verify_access_token(user)
+        is_valid_token = await self.verify_access_token(user)
         if is_valid_token == False:
             self.log.debug('Expire access token: %s', user.name)
             return False
 
         try:
-            updated_ctx = yield fetch_context(user_id)
+            updated_ctx = await fetch_context(user_id)
         except:
             return True
         unchanged = True
@@ -283,14 +269,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
             auth_state['system'] = updated_ctx['system']
             return dict(auth_state=auth_state)
 
-    @gen.coroutine
-    def is_admin(self, handler, authentication):
+    async def is_admin(self, handler, authentication):
         return authentication['auth_state']['launch_context'].get(
             'isAdmin', False)
 
-    @gen.coroutine
-    def authenticate(self, handler, data=None):
-        user = yield super().authenticate(handler, data)
+    async def authenticate(self, handler, data=None):
+        user = await super().authenticate(handler, data)
         if not user:
             return
         self.log.debug("auth: %s", user['auth_state'])
@@ -302,7 +286,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             return
 
         try:
-            ctx = yield fetch_context(user_id)
+            ctx = await fetch_context(user_id)
             user['auth_state']['launch_context'] = ctx.get('user', {})
             user['auth_state']['system'] = ctx.get('system', {})
         except Exception as e:
@@ -316,21 +300,22 @@ class OIDCAuthenticator(GenericOAuthenticator):
     def get_handlers(self, app):
         return super().get_handlers(app) + [(r'/logout', self.logout_handler)]
 
-    @gen.coroutine
     def attach_project_pvc(self, spawner, project, group, size):
         spawner.volumes.append({'name': 'project-' + project,
                                 'persistentVolumeClaim': {'claimName': 'project-' + project}})
         spawner.volume_mounts.append(
             {'mountPath': '/project/' + project, 'name': 'project-' + project})
 
-    @gen.coroutine
-    def post_spawn_stop(self, user, spawner):
-        started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+    async def post_spawn_stop(self, user, spawner):
+        started_at = None
+        duration = None
+        if spawner.started_at is not None:
+            started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+            duration = int(time.time() - spawner.started_at)
         gpu_enabled = spawner.extra_resource_limits.get('nvidia.com/gpu', 0) > 0
         status = 'Success'
         if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
             status = 'Failed'
-        duration = int(time.time() - spawner.started_at)
 
         traits = {
             'notebookStartedAt': started_at,
@@ -549,7 +534,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     async def pre_spawn_start(self, user, spawner):
         """Pass upstream_token to spawner via environment variable"""
-        auth_state = yield user.get_auth_state()
+        auth_state = await user.get_auth_state()
 
         if not auth_state:
             raise Exception('auth state must be enabled')
@@ -641,7 +626,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 name = re.sub('_', '-', group['name']).lower()
                 # Append Gi to end of shared volume capacity string
                 size = '%sGi' % str(shared_volume_capacity)
-                yield self.attach_project_pvc(spawner, name, name, size)
+                self.attach_project_pvc(spawner, name, name, size)
                 self.chown_extra.append('/project/' + name)
                 if home_symlink:
                     self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
@@ -691,10 +676,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
         spawner.get_args = empty_list
         spawner.cmd = ['/opt/primehub-start-notebook/primehub-entrypoint.sh'] + origin_args
 
-        if spawner.enable_kernel_gateway:
-            self.log.warning('enable kernel gateway')
-            mutate_pod_spec_for_kernel_gateway(spawner)
-
         if spawner.enable_safe_mode:
             spawner.environment['PRIMEHUB_SAFE_MODE_ENABLED'] = "true"
             self.log.warning('enable safe mode')
@@ -706,6 +687,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         spawner.set_launch_group(launch_group)
         spawner.started_at = time.time()
+        self.log.warning(spawner.init_containers)
+        spawner.environment['PRE_SPAWN_START_FINISHED'] = 'finished'
 
     def setup_admission_not_found_init_container(self, spawner):
         # In order to check it passed the admission, set a bad initcontainer and admission will remove this initcontainer.
@@ -996,10 +979,9 @@ class PrimeHubSpawner(KubeSpawner):
         self._launch_group = None
         self.log.info("clear_state: %s" % self._launch_group)
 
-    @gen.coroutine
-    def _render_options_form_dynamically(self, current_spawner):
+    async def _render_options_form_dynamically(self, current_spawner):
         self.log.debug("render_options for %s", self._log_name)
-        auth_state = yield self.user.get_auth_state()
+        auth_state = await self.user.get_auth_state()
         if not auth_state:
             raise Exception('no auth state')
         context = auth_state.get('launch_context', None)
@@ -1179,12 +1161,12 @@ class StopSpawningHandler(BaseHandler):
         spawner = user.spawner
         if not spawner.active:
             self.log.debug('Spawner is not active')
-            self.finish()
+            await self.finish()
             return
         auth_state = await user.get_auth_state()
         error = auth_state.get('error', None)
         if error == BACKEND_API_UNAVAILABLE:
-            self.finish(dict(error=error))
+            await self.finish(dict(error=error))
 
         def _remove_spawner():
             self.log.info("Deleting spawner %s", spawner._log_name)
@@ -1277,63 +1259,16 @@ class PrimeHubHomeHandler(BaseHandler):
         self.finish(html)
 
 
-def mutate_pod_spec_for_kernel_gateway(spawner):
-    # patch it
-    spawner.extra_pod_config = {
-        "shareProcessNamespace": True
-    }
-
-    spawner.init_containers = [{
-        "name": "chown",
-        "image": "busybox",
-        "imagePullPolicy": "IfNotPresent",
-        "securityContext": {"runAsUser": 0},
-        "volumeMounts": [
-            {'mountPath': '/home/jovyan', 'name': 'volume-{username}'}
-        ],
-        "command": ["sh"],
-        "args": ["-c", "chown 1000 /home/jovyan"]
-    }]
-
-    # overwrite default image
-    user_launch_image = spawner.image
-    spawner.extra_annotations['auditing.image'] = user_launch_image
-    spawner.image = spawner.get_default_image()
-    kernel_gateway_env = [{'name': 'JUPYTER_GATEWAY_ENV_WHITELIST', 'value': 'HOME'},
-                          {'name': 'HOME', 'value': '/home/jovyan'}]
-
-    if spawner.kernel_container_resources['limits'].get('nvidia.com/gpu', 0) == 0:
-        kernel_gateway_env.append({'name': 'NVIDIA_VISIBLE_DEVICES', 'value': 'none'})
-
-    spawner.extra_containers = [{
-        "name": "kernel",
-        "image": user_launch_image,
-        "imagePullPolicy": "IfNotPresent",
-        "securityContext": {"runAsUser": 0},
-        "volumeMounts": spawner.volume_mounts,
-        "lifecycle": spawner.lifecycle_hooks,
-        "env": kernel_gateway_env,
-        "command": ["/opt/primehub-start-notebook/kernel_gateway.sh"],
-        "resources": spawner.kernel_container_resources
-    }]
-
-    spawner.environment['JUPYTER_GATEWAY_URL'] = 'http://127.0.0.1:8889'
-    spawner.environment['JUPYTER_GATEWAY_VALIDATE_CERT'] = 'no'
-    spawner.environment['LOG_LEVEL'] = 'DEBUG'
-    spawner.environment['JUPYTER_GATEWAY_REQUEST_TIMEOUT'] = '40'
-    spawner.environment['JUPYTER_GATEWAY_CONNECT_TIMEOUT'] = '40'
-    spawner.environment['KERNEL_IMAGE'] = user_launch_image
-
-
 if locals().get('c') and not os.environ.get('TEST_FLAG'):
 
     c = locals().get('c')
 
     if c.JupyterHub.log_level != 'DEBUG':
         c.JupyterHub.log_level = 'WARN'
+    c.JupyterHub.log_level = 'INFO'
 
     c.JupyterHub.log_format = "%(color)s[%(levelname)s %(asctime)s.%(msecs).03d %(name)s %(module)s:%(lineno)d]%(end_color)s %(message)s"
-    c.JupyterHub.authenticator_class = OIDCAuthenticator
+    c.JupyterHub.authenticator_class = PrimeHubOIDCAuthenticator
     c.JupyterHub.spawner_class = PrimeHubSpawner
     c.JupyterHub.tornado_settings = {
         'slow_spawn_timeout': 3,
