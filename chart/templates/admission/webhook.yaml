@@ -108,3 +108,4 @@ type: Opaque
 data:
   cert.pem: {{ get $data "cert" }}
   key.pem: {{ get $data "key" }}
+  cacert.pem: {{ get $data "cacert" }}

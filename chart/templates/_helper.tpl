@@ -256,6 +256,9 @@ primehub admission
   {{- if hasKey $secretData "key.pem" }}
     {{- $_ := set $data "key" (index $secretData "key.pem" | quote) }}
   {{- end -}}
+  {{- if hasKey $secretData "cacert.pem" }}
+    {{- $_ := set $data "cacert" (index $secretData "cacert.pem" | quote) }}
+  {{- end -}}
 {{- else }}
   {{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
   {{- $_ := set $data "cacert" ($ca.Cert | b64enc | quote) }}
