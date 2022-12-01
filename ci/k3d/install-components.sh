@@ -54,7 +54,7 @@ adminNotebook:
 
 controller:
   image:
-    tag: sc-28495-e1b97b
+    tag: sc-28495-4fd561
 EOF
 
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
