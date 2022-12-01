@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: jupyter-primehub-graphql
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: singleuser-primehub-graphql-api
+spec:
+  podSelector:
+    matchLabels:
+      app: jupyterhub
+      component: singleuser-server
+      release: {{ .Release.Name }}
+  # singleuser-server --> primehub-graphql
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ include "primehub.name" . }}-graphql
+  policyTypes:
+  - Egress
