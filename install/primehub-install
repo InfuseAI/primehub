@@ -1097,8 +1097,18 @@ is_yq_v4() {
 }
 
 install::primehub() {
-  local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
+  local config_path=$(primehub_config_path)
+  local PRIMEHUB_CONFIG=${config_path}/helm_override/primehub.yaml
   local HELMFIEL_PATH=${DIR}/helmfiles
+
+  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
+    sed -i 's/^PRIMEHUB_SCHEME=http$/PRIMEHUB_SCHEME=https/g' ${config_path}/.env
+    sed -i 's/^KC_SCHEME=http$/KC_SCHEME=https/g' ${config_path}/.env
+
+    info "[Check] Cert Manager"
+    install::cert_manager
+  fi
+
   info "[Check] primehub.yaml"
 
   infuseai_repo_update
@@ -1175,11 +1185,6 @@ create::primehub() {
   verify_minimal_resources
 
   prepare_primehub_env
-
-  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
-    info "[Check] Cert Manager"
-    install::cert_manager
-  fi
 
   info "[Install] PrimeHub"
   install::primehub
