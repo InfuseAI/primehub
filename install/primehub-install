@@ -1067,15 +1067,7 @@ apply_crds() {
   local CRD_PATH=$(dirname $DIR)/crds
   kubectl apply -f ${CRD_PATH}/crd.yaml
   kubectl apply -f ${CRD_PATH}/metacontroller/crd.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_images.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecjobs.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_imagespecs.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_licenses.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phapplications.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phapptemplates.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phdeployments.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phjobs.yaml
-  kubectl apply -f ${CRD_PATH}/primehub-controller/primehub.io_phschedules.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller
 }
 
 is_yq_v4() {
