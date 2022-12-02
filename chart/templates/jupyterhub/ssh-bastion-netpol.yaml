@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: ssh-bastion-server
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  name: ssh-bastion-server
+spec:
+  podSelector:
+    matchLabels:
+      app: jupyterhub
+      component: singleuser-server
+      release: {{ .Release.Name }}
+  # ssh-bastion-server --> netbook
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ include "ssh-bastion-server.name" . }}
+    ports:
+    - port: 22
+      protocol: TCP
+  policyTypes:
+  - Ingress
