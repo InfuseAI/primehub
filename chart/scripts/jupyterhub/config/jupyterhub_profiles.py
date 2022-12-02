@@ -1321,3 +1321,6 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
 
     # XXX: to be removed once kubespawner#251 is merged
     c.PrimeHubSpawner.extra_pod_config.update({'restartPolicy': 'OnFailure'})
+
+    # override the security-context setting for GRANT_SUDO
+    c.PrimeHubSpawner.allow_privilege_escalation = True
