@@ -96,7 +96,6 @@ primehub-ee:
   # Keycloak
   keycloak: *keycloak
   bitnami-postgresql: *bitnami-postgresql
-  minideb: *minideb
   primehub-keycloak-theme: *primehub-keycloak-theme
 
   # Jupyterhub
@@ -166,7 +165,6 @@ primehub-deploy:
   # Keycloak
   keycloak: *keycloak
   bitnami-postgresql: *bitnami-postgresql
-  minideb: *minideb
   primehub-keycloak-theme: *primehub-keycloak-theme
 
   # Model deployment
