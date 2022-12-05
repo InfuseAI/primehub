@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import time
@@ -209,7 +210,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
         return '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
     async def verify_access_token(self, user):
-        auth_state = await user.get_auth_state()
+        auth_state = user.get_auth_state()
+        while asyncio.iscoroutine(auth_state) or asyncio.isfuture(auth_state):
+            auth_state = await auth_state
+
         access_token = auth_state['access_token']
         token_type = 'Bearer'
 
@@ -238,7 +242,10 @@ class OIDCAuthenticator(GenericOAuthenticator):
             return False
 
         self.log.debug('refresh user: %s', user)
-        auth_state = await user.get_auth_state()
+        auth_state = user.get_auth_state()
+        if asyncio.iscoroutine(auth_state):
+            auth_state = await auth_state
+
         user_id = auth_state['oauth_user'].get('sub', None)
         if not user_id:
             self.log.debug('user id not found')
@@ -251,6 +258,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         try:
             updated_ctx = await fetch_context(user_id)
+            if asyncio.iscoroutine(updated_ctx):
+                updated_ctx = await updated_ctx
         except:
             return True
         unchanged = True
