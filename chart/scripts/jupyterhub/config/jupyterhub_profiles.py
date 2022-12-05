@@ -178,7 +178,7 @@ class OIDCLogoutHandler(LogoutHandler):
             await super().get()
 
 
-class PrimeHubOIDCAuthenticator(GenericOAuthenticator):
+class OIDCAuthenticator(GenericOAuthenticator):
     client_id = 'jupyterhub'
     client_secret = oidc_client_secret
     token_url = '%s/realms/%s/protocol/openid-connect/token' % (
@@ -1268,7 +1268,7 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
     c.JupyterHub.log_level = 'INFO'
 
     c.JupyterHub.log_format = "%(color)s[%(levelname)s %(asctime)s.%(msecs).03d %(name)s %(module)s:%(lineno)d]%(end_color)s %(message)s"
-    c.JupyterHub.authenticator_class = PrimeHubOIDCAuthenticator
+    c.JupyterHub.authenticator_class = OIDCAuthenticator
     c.JupyterHub.spawner_class = PrimeHubSpawner
     c.JupyterHub.tornado_settings = {
         'slow_spawn_timeout': 3,
