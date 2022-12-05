@@ -1,7 +1,6 @@
 import re
 import escapism
 import string
-from collections import Mapping
 from functools import lru_cache
 import os
 import yaml
