@@ -1,15 +1,25 @@
+import asyncio
+import copy
 import unittest
 from unittest import mock
-import copy
-from tornado import gen
-from tornado import testing
 
-from jupyterhub_profiles import PrimeHubSpawner, OIDCAuthenticator
-import jupyterhub
+from tornado import gen, testing
+
+from jupyterhub_profiles import OIDCAuthenticator, PrimeHubSpawner
 
 
-def mock_spawner():
-    return PrimeHubSpawner(_mock=True)
+def mock_spawner(builder: "AuthStateBuilder"):
+    async def create():
+        spawner = PrimeHubSpawner(_mock=True)
+
+        # user select phusers group
+        spawner.user_options['group'] = dict(name='phusers')
+        spawner.user.get_auth_state = mock.Mock()
+        spawner.user.get_auth_state.return_value = builder.get_auth_state()
+
+        return spawner
+
+    return asyncio.run(create())
 
 
 class AuthStateBuilder(object):
@@ -22,7 +32,7 @@ class AuthStateBuilder(object):
                              "uma_authorization",
                              "img:base-notebook",
                              "it:cpu-only"
-        ], email_verified=True, preferred_username="tester")
+                         ], email_verified=True, preferred_username="tester")
         self.data['quota'] = dict(gpu=0)
         self.data['project-quota'] = dict(gpu=0)
         self.launch_context = dict(groups=[])
@@ -149,19 +159,11 @@ class FakeAuthenticator(OIDCAuthenticator):
         return self.datasets
 
 
-class TestPreSpawner(testing.AsyncTestCase):
+class TestPreSpawner(unittest.TestCase):
 
     def setUp(self):
-        testing.AsyncTestCase.setUp(self)
-        self.spawner = mock_spawner()
-
-        # user select phusers group
-        self.spawner.user_options['group'] = dict(name='phusers')
-
         self.builder = AuthStateBuilder()
-        self.spawner.user.get_auth_state = mock.Mock()
-        self.spawner.user.get_auth_state.return_value = self.builder.get_auth_state()
-
+        self.spawner = mock_spawner(self.builder)
         self.authenticator = FakeAuthenticator()
         self.authenticator.datasets = self.builder.get_datasets()
 
@@ -170,21 +172,19 @@ class TestPreSpawner(testing.AsyncTestCase):
         ln_command = [x.strip() for x in ln_command[-1].split(';')]
         return ln_command
 
-    @testing.gen_test
     async def test_group_share_volume_mount(self):
-        self.builder.add_group('i_have_a_volume', enabledSharedVolume=True, sharedVolumeCapacity=100, launchGroupOnly=False)
+        self.builder.add_group('i_have_a_volume', enabledSharedVolume=True, sharedVolumeCapacity=100,
+                               launchGroupOnly=False)
         self.authenticator.attach_project_pvc = mock.Mock(return_value=None)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         self.assertIn("/project/i-have-a-volume", self.authenticator.chown_extra)
 
-    @testing.gen_test
     async def test_spawan_without_global_dataset(self):
         del self.builder.launch_context['groups'][0]['datasets']
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         self.assertEqual([{'configMap': {'defaultMode': 511, 'name': 'primehub-start-notebook'},
                            'name': 'primehub-start-notebook'}], self.spawner.volumes)
 
-    @testing.gen_test
     async def test_git_mount_without_annotations(self):
         """
         gitSyncHostRoot :  None => /home/dataset/
@@ -206,7 +206,6 @@ class TestPreSpawner(testing.AsyncTestCase):
                       self.get_ln_command())
         self.assertNotIn("ln -sf /gitsync/foo/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_git_mount_with_annotations_and_not_ending_slash(self):
         """
         gitSyncHostRoot :  /home/dataset
@@ -230,7 +229,6 @@ class TestPreSpawner(testing.AsyncTestCase):
                       self.get_ln_command())
         self.assertNotIn("ln -sf /gitsync/foo/foo .", self.get_ln_command())
 
-    @testing.gen_test
     async def test_pv_mount_without_annotations(self):
         """
         mountRoot       :  None => /datasets/
@@ -252,7 +250,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
         self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_pv_mount_with_annotations_enable_home_symlink_and_without_ending_slash(self):
         """
         mountRoot       :  /datasets
@@ -274,7 +271,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
         self.assertIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_dataset_not_in_launch_context_groups_bind_and_not_global(self):
         """
         mountRoot       :  /datasets
@@ -284,12 +280,12 @@ class TestPreSpawner(testing.AsyncTestCase):
         annotations = dict(mountRoot='/datasets',
                            launchGroupOnly='false',
                            homeSymlink='true', volumeName='foo')
-        self.builder.add_dataset_role(group_name='others', name='ds_other', dataset_type='pv', writable=False, dataset_global=False, **annotations)
+        self.builder.add_dataset_role(group_name='others', name='ds_other', dataset_type='pv', writable=False,
+                                      dataset_global=False, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         # Shouldn't mount if dataset is not in users' group set and not global
         self.assertEqual(1, len(self.spawner.volumes))
 
-    @testing.gen_test
     async def test_dataset_without_group_bind_but_global_and_launchGroupOnly(self):
         """
         mountRoot       :  /datasets
@@ -299,13 +295,13 @@ class TestPreSpawner(testing.AsyncTestCase):
         annotations = dict(mountRoot='/datasets',
                            launchGroupOnly='true',
                            homeSymlink='true', volumeName='foo')
-        self.builder.add_dataset_role(group_name='everyone', name='ds_global', dataset_type='pv', writable=False, dataset_global=True, **annotations)
+        self.builder.add_dataset_role(group_name='everyone', name='ds_global', dataset_type='pv', writable=False,
+                                      dataset_global=True, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         # Shouldn't mount if dataset is not in users' group set and not global
         self.assertEqual(2, len(self.spawner.volumes))
         self.assertEqual(True, self.spawner.volumes[0]['persistentVolumeClaim']['readOnly'])
 
-    @testing.gen_test
     async def test_dataset_global_not_in_launch_group(self):
         """
         global=true
@@ -318,10 +314,13 @@ class TestPreSpawner(testing.AsyncTestCase):
         annotations = dict(mountRoot='/datasets',
                            launchGroupOnly='false',
                            homeSymlink='true', volumeName='foo')
-        self.builder.add_dataset_role(group_name='everyone', name='ds_global', dataset_type='pv', writable=True, dataset_global=True, **annotations)
-        self.builder.add_dataset_role(group_name='everyone', name='ds_global_readonly', dataset_type='pv', writable=False, dataset_global=True, **annotations)
+        self.builder.add_dataset_role(group_name='everyone', name='ds_global', dataset_type='pv', writable=True,
+                                      dataset_global=True, **annotations)
+        self.builder.add_dataset_role(group_name='everyone', name='ds_global_readonly', dataset_type='pv',
+                                      writable=False, dataset_global=True, **annotations)
         # This one shouldn't mount.
-        self.builder.add_dataset_role(group_name='other', name='other_ds', dataset_type='pv', writable=False, dataset_global=True, **annotations)
+        self.builder.add_dataset_role(group_name='other', name='other_ds', dataset_type='pv', writable=False,
+                                      dataset_global=True, **annotations)
         await self.authenticator.pre_spawn_start(self.spawner.user, self.spawner)
         self.assertEqual(3, len(self.spawner.volumes))
 
@@ -333,7 +332,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertEqual('dataset-ds_global_readonly', self.spawner.volumes[1]['name'])
         self.assertEqual(True, self.spawner.volumes[1]['persistentVolumeClaim']['readOnly'])
 
-    @testing.gen_test
     async def test_hostpath_mount_without_annotations(self):
         """
         mountRoot       :  None => /datasets/
@@ -355,7 +353,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
         self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_hostpath_mount_with_annotations_enable_home_symlink(self):
         """
         mountRoot       :  None => /datasets/
@@ -378,7 +375,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
         self.assertIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_nfs_mount_without_annotations(self):
         """
         mountRoot       :  None => /datasets/
@@ -402,7 +398,6 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.assertIn("ln -sf /datasets /home/jovyan/", self.get_ln_command())
         self.assertNotIn("ln -sf /datasets/foo /home/jovyan/", self.get_ln_command())
 
-    @testing.gen_test
     async def test_nfs_mount_with_annotations_enable_home_symlink(self):
         """
         mountRoot       :  None => /datasets/
@@ -436,12 +431,14 @@ class TestPreSpawner(testing.AsyncTestCase):
             oauth_user=self.builder.data
         )
         self.builder.add_dataset_role(
-            group_name='fake_group', name='fake_project', dataset_type='env', dataset_global=False, writable=True, **options)
+            group_name='fake_group', name='fake_project', dataset_type='env', dataset_global=False, writable=True,
+            **options)
         global_datasets = self.authenticator.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.authenticator.get_datasets_in_launch_group(
             launch_group_name='fake_group', auth_state=auth_state)
 
-        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group, 'fake_project', self.builder.get_datasets()[0])
+        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group,
+                                                  'fake_project', self.builder.get_datasets()[0])
         self.assertEqual(result, True)
         self.assertEqual(self.spawner.environment.get('FAKE_PROJECT_FOO'), 'bar')
 
@@ -456,13 +453,15 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.authenticator.symlinks = []
         self.authenticator.chown_extra = []
         self.builder.add_dataset_role(
-            group_name='fake_group', name='fake_project', dataset_type='git', dataset_global=False, writable=True, **annotations)
+            group_name='fake_group', name='fake_project', dataset_type='git', dataset_global=False, writable=True,
+            **annotations)
 
         global_datasets = self.authenticator.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.authenticator.get_datasets_in_launch_group(
             launch_group_name='phusers', auth_state=auth_state)
 
-        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group, 'fake_project', self.builder.get_datasets()[0])
+        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group,
+                                                  'fake_project', self.builder.get_datasets()[0])
 
         self.assertEqual(result, False)
 
@@ -477,13 +476,15 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.authenticator.symlinks = []
         self.authenticator.chown_extra = []
         self.builder.add_dataset_role(
-            group_name='phusers', name='fake_project', dataset_type='git', dataset_global=False, writable=True, **annotations)
+            group_name='phusers', name='fake_project', dataset_type='git', dataset_global=False, writable=True,
+            **annotations)
 
         global_datasets = self.authenticator.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.authenticator.get_datasets_in_launch_group(
             launch_group_name='phusers', auth_state=auth_state)
 
-        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group, 'fake_project', self.builder.get_datasets()[0])
+        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group,
+                                                  'fake_project', self.builder.get_datasets()[0])
 
         self.assertEqual(result, True)
 
@@ -497,13 +498,15 @@ class TestPreSpawner(testing.AsyncTestCase):
         self.authenticator.symlinks = []
         self.authenticator.chown_extra = []
         self.builder.add_dataset_role(
-            group_name='everyone', name='fake_global', dataset_type='git', dataset_global=True, writable=True, **annotations)
+            group_name='everyone', name='fake_global', dataset_type='git', dataset_global=True, writable=True,
+            **annotations)
 
         global_datasets = self.authenticator.get_global_datasets(auth_state['launch_context']['groups'])
         datasets_in_launch_group = self.authenticator.get_datasets_in_launch_group(
             launch_group_name='read_only_group', auth_state=auth_state)
 
-        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group, 'fake_global', self.builder.get_datasets()[0])
+        result = self.authenticator.mount_dataset(self.spawner, global_datasets, datasets_in_launch_group,
+                                                  'fake_global', self.builder.get_datasets()[0])
 
         self.assertEqual(result, True)
 
@@ -530,28 +533,33 @@ class TestPreSpawner(testing.AsyncTestCase):
                            launchGroupOnly='false',
                            homeSymlink='true', volumeName='foo')
         self.builder.add_dataset_role(
-            group_name='read_only_group', name='foo-test', dataset_type='pv', dataset_global=True, writable=True, **annotations)
+            group_name='read_only_group', name='foo-test', dataset_type='pv', dataset_global=True, writable=True,
+            **annotations)
         datasets_in_launch_group = self.authenticator.get_datasets_in_launch_group(
             launch_group_name='read_only_group', auth_state=auth_state)
         self.assertEqual({}, datasets_in_launch_group)
-
 
     def test_get_global_datasets(self):
         self.builder.add_group('read_only_group')
         annotations = dict(mountRoot='/datasets',
                            homeSymlink='true', volumeName='foo')
         self.builder.add_dataset_role(
-            group_name='read_only_group', name='foo_global', dataset_type='pv', writable=True, dataset_global=True, **annotations)
+            group_name='read_only_group', name='foo_global', dataset_type='pv', writable=True, dataset_global=True,
+            **annotations)
         self.builder.add_dataset_role(
-            group_name='read_only_group', name='foo_private', dataset_type='pv', writable=True, dataset_global=False, **annotations)
+            group_name='read_only_group', name='foo_private', dataset_type='pv', writable=True, dataset_global=False,
+            **annotations)
         auth_state = dict(
             launch_context=self.builder.launch_context,
             oauth_user=self.builder.data
         )
-        self.assertNotEqual(self.authenticator.get_global_datasets(auth_state['launch_context']['groups']).get('foo_global', None), None)
-        self.assertEqual(self.authenticator.get_global_datasets(auth_state['launch_context']['groups']).get('foo_private', None), None)
+        self.assertNotEqual(
+            self.authenticator.get_global_datasets(auth_state['launch_context']['groups']).get('foo_global', None),
+            None)
+        self.assertEqual(
+            self.authenticator.get_global_datasets(auth_state['launch_context']['groups']).get('foo_private', None),
+            None)
 
-    @testing.gen_test
     async def test_safe_mode_feature(self):
         # verify default behavior: safe_mode=False
         self.spawner.volume_mounts.append({'mountPath': '/home/jovyan'})

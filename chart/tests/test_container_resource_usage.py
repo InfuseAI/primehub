@@ -1,13 +1,15 @@
+import asyncio
 import unittest
 from unittest import mock
 
-from kubernetes.client import V1Container, V1ResourceRequirements, V1PodStatus
+from kubernetes_asyncio.client.models import V1Container, V1ResourceRequirements, V1PodStatus
 from kubespawner.objects import make_pod
 
 from jupyterhub_profiles import PrimeHubSpawner
 from primehub_utils import *
 
 _TEST_GROUP = "test-group"
+
 
 def pod(containers):
     p = make_pod(name='test',
@@ -51,29 +53,37 @@ class Fake(object):
     def values(self):
         return self.pod_list
 
+
 class TestContainerResourceUsage(unittest.TestCase):
 
     def setUp(self):
-        self.spawner = PrimeHubSpawner(_mock=True)
+        async def create():
+            return PrimeHubSpawner(_mock=True)
+
+        self.spawner = asyncio.run(create())
         self.pods = Fake()
         self.spawner.reflectors['primehub_pods'] = self.pods
 
     def test_resource_none_resources_container(self):
         pods = [pod([none_resource_container()])]
         self.pods.pod_list = pods
-        self.assertEqual({'cpu': 0, 'gpu': 0, 'memory': 0.0}, self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
+        self.assertEqual({'cpu': 0, 'gpu': 0, 'memory': 0.0},
+                         self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
 
     def test_resource_normal_container(self):
         pods = [pod([resource_container(1, 0, 1024 ** 3)])]
         self.pods.pod_list = pods
-        self.assertEqual({'cpu': 1.0, 'gpu': 0, 'memory': 1.0}, self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
+        self.assertEqual({'cpu': 1.0, 'gpu': 0, 'memory': 1.0},
+                         self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
 
     def test_resource_normal_with_kernel_gateway_container(self):
         pods = [pod([none_resource_container(), resource_container(1, 1, 1024 ** 3)])]
         self.pods.pod_list = pods
-        self.assertEqual({'cpu': 1.0, 'gpu': 1, 'memory': 1.0}, self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
+        self.assertEqual({'cpu': 1.0, 'gpu': 1, 'memory': 1.0},
+                         self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
 
     def test_resource_with_literal(self):
         pods = [pod([none_resource_container(), resource_container('1000m', 1, '2G')])]
         self.pods.pod_list = pods
-        self.assertEqual({'cpu': 1.0, 'gpu': 1, 'memory': 2.0}, self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
+        self.assertEqual({'cpu': 1.0, 'gpu': 1, 'memory': 2.0},
+                         self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
