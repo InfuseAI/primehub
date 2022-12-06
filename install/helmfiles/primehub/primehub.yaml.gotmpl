@@ -12,7 +12,6 @@
 {{ $PRIMEHUB_STORAGE_CLASS:= (requiredEnv "PRIMEHUB_STORAGE_CLASS")}}
 {{ $GROUP_VOLUME_STORAGE_CLASS := (env "GROUP_VOLUME_STORAGE_CLASS" | default "")}}
 
-{{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY:= (env "PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY" | default "false")}}
 {{ $PRIMEHUB_FEATURE_CUSTOM_IMAGE := (env "PRIMEHUB_FEATURE_CUSTOM_IMAGE" | default "false")}}
 {{ $PRIMEHUB_BOOTSTRAP_ENABLED := (env "PRIMEHUB_BOOTSTRAP_ENABLED" | default "true")}}
 {{ $PRIMEHUB_FEATURE_USAGE := (env "PRIMEHUB_FEATURE_USAGE" | default "true")}}
@@ -101,8 +100,6 @@ jupyterhub:
         keys:
         - {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
     cookieSecret: {{ env "HUB_COOKIE_SECRET" }}
-  primehub:
-    kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
 
   proxy:
     secretToken: {{ env "HUB_PROXY_SECRET_TOKEN" }}
@@ -118,12 +115,6 @@ jupyterhub:
           matchExpressions:
           - key: scheduled-maintenance
             operator: DoesNotExist
-{{- if eq $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY "true" }}
-    image:
-      name: jupyter/base-notebook
-      tag: notebook-6.0.0
-      pullPolicy: IfNotPresent
-{{- end }}
     extraPodConfig:
       enableServiceLinks: false
 

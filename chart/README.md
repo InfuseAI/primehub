@@ -147,7 +147,6 @@ Parameter | Description | Default
 `jupyterhub.primehub.scopeRequired` | The keycloak scope is required to use jupyterhub |  `""`
 `jupyterhub.primehub.startnotebook` | A map to inject the start notebook scripts. The key is the filename, the value is the script content | `{}`
 `jupyterhub.primehub.startNotebookConfigMap` | The configmap name for start notebook scripts| `start-notebook-d`
-`jupyterhub.primehub.kernelGateway` | If kerenel gateway enabled | `false`
 `jupyterhub.primehub.authRefreshAge` | The authentication refresh rate. | `-1`
 `jupyterhub.primehub.node-affinity-preferred`| The affinity setting for jupyter notebook | `[]`
 `jupyterhub.primehub.node-affinity-required` | The affinity setting for jupyter notebook  | `[]`
