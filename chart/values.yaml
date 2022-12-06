@@ -464,7 +464,7 @@ tusd:
   replicas: 1
   image:
     repository: tusproject/tusd
-    tag: v1.4.0
+    tag: v1.10.0
     pullPolicy: IfNotPresent
   resources:
     limits:
