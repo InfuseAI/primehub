@@ -119,6 +119,9 @@ spec:
               type:
                 pattern: ^(env|git|pv|hostPath|nfs)$
                 type: string
+              enableUploadServer:
+                pattern: ^(true|false)$
+                type: string
               url:
                 type: string
               variables:
