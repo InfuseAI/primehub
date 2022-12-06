@@ -5,6 +5,20 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 KCADM=kcadm
 source ${DIR}/keycloak.inc
 
+KUBECTL_DRY_RUN_FLAG='--dry-run=client'
+
+############################################################
+# Prepare
+function prepare() {
+  print_section "Kubectl version"
+  kubectl version --client=true -o yaml
+  kubectl_version=$(kubectl version --client -o json | jq -r '.clientVersion | .major +"."+ .minor')
+  if [[ $kubectl_version < '1.18' ]]; then
+    KUBECTL_DRY_RUN_FLAG='--dry-run'
+  fi
+}
+
+
 ############################################################
 # Wait for keycloak
 function wait_for_url() {
@@ -100,7 +114,7 @@ function update_client_admin_ui() {
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
     --from-literal=everyone_group_id=$PH_GROUP_EVERYONE_ID \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 
   kc_apply_client_baseurl $KC_REALM $client $ADMIN_UI_BASEURL
@@ -117,7 +131,7 @@ function update_client_jupyterhub() {
   kubectl -n "$PRIMEHUB_NAMESPACE" create secret generic $secret_name \
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 }
 
@@ -145,7 +159,7 @@ function update_client_maintenance_proxy() {
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
     --from-literal=proxy_encrypted_key=$proxy_encrypted_key \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 }
 
@@ -228,6 +242,7 @@ function restart_hub() {
 }
 
 function main() {
+  prepare
   wait_for_keycloak
   kc_login
   update
