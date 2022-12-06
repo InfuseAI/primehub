@@ -1091,9 +1091,9 @@ usage:
       memory: 128Mi
 
   dbImage:
-    repository: postgres
+    repository: bitnami/postgresql
+    tag: 14.5.0-debian-11-r35
     pullPolicy: IfNotPresent
-    tag: 12
 
   dbResources:
     limits:

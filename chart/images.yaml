@@ -52,7 +52,6 @@ primehub-all:
 
   # Usage
   primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.1
-  postgres: &postgres postgres:12
 
   # PrimeHub Store
   minio: &minio minio/minio:RELEASE.2022-04-16T04-26-02Z
@@ -123,7 +122,6 @@ primehub-ee:
 
   # Usage
   primehub-usage: *primehub-usage
-  postgres: *postgres
 
   # PrimeHub Store
   minio: *minio
@@ -177,7 +175,6 @@ primehub-deploy:
 
   # Usage
   primehub-usage: *primehub-usage
-  postgres: *postgres
 
   # GPU Node Exporter
   nvidia_gpu_prometheus_exporter: *nvidia_gpu_prometheus_exporter
