@@ -1,0 +1,14 @@
+# https://charts.jetstack.io
+# name: cert-manager
+# chart version: v1.9.1
+cert-manager:
+  cert-manager-cainjector: quay.io/jetstack/cert-manager-cainjector:v1.9.1
+  cert-manager-controller: quay.io/jetstack/cert-manager-controller:v1.9.1
+  cert-manager-webhook: quay.io/jetstack/cert-manager-webhook:v1.9.1
+
+# https://kubernetes.github.io/ingress-nginx
+# name: ingress-nginx
+# chart version: 4.2.5
+nginx-ingress:
+  defaultbackend: registry.k8s.io/defaultbackend-amd64:1.5
+  controller: registry.k8s.io/ingress-nginx/controller:v1.3.1
