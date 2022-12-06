@@ -27,4 +27,4 @@ usage:
 # TODO: Only for testing primehub v4 alpha. REMOVE THIS!
 controller:
   image:
-    tag: sc-28495-4fd561
+    tag: sc-28495-fd5ed1
