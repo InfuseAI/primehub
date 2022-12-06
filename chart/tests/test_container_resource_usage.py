@@ -76,12 +76,6 @@ class TestContainerResourceUsage(unittest.TestCase):
         self.assertEqual({'cpu': 1.0, 'gpu': 0, 'memory': 1.0},
                          self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
 
-    def test_resource_normal_with_kernel_gateway_container(self):
-        pods = [pod([none_resource_container(), resource_container(1, 1, 1024 ** 3)])]
-        self.pods.pod_list = pods
-        self.assertEqual({'cpu': 1.0, 'gpu': 1, 'memory': 1.0},
-                         self.spawner.get_container_resource_usage(dict(name=_TEST_GROUP)))
-
     def test_resource_with_literal(self):
         pods = [pod([none_resource_container(), resource_container('1000m', 1, '2G')])]
         self.pods.pod_list = pods
