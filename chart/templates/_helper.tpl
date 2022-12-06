@@ -24,6 +24,11 @@ Global
 {{- end -}}
 
 {{- define "primehub.url" -}}
+{{- if not .Values.primehub.domain }}
+  {{- $errorString := "\nPRIMEHUB DOMAIN ERROR: You must provide an IP address or domain when installing the release." -}}
+  {{- $errorString = print $errorString "\n                       Set \"primehub.domain\" in your value file, or add \"--set primehub.domain=<your_ip_or_domain>\"." -}}
+  {{- printf "%s" $errorString | fail -}}
+{{- end -}}
 {{- if .Values.primehub.port -}}
 {{- printf "%s://%s:%v" .Values.primehub.scheme .Values.primehub.domain .Values.primehub.port }}
 {{- else -}}
