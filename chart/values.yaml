@@ -482,12 +482,12 @@ jupyterhub:
     # Maximum number of consecutive failures to allow before shutting down JupyterHub.
     consecutiveFailureLimit: 0
     extraEnv:
-      - name: KC_CLIENT_SECRET
+      KC_CLIENT_SECRET:
         valueFrom:
           secretKeyRef:
             name: primehub-client-jupyterhub
             key: client_secret
-      - name: GRAPHQL_SHARED_SECRET
+      GRAPHQL_SHARED_SECRET:
         valueFrom:
           secretKeyRef:
             name: primehub-graphql-shared-secret
