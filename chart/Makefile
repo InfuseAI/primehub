@@ -67,5 +67,6 @@ install-dev-requirements:
 		PYCURL_SSL_LIBRARY=openssl \
 		pip3 install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
 
+# add fake-k8s-config to avoid k8s client doing in-cluster checking and raise exceptions
 test:
-	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml:coverage.xml --cov-report html
+	KUBECONFIG=fake-k8s-config TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml:coverage.xml --cov-report html
