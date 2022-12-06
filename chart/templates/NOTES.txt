@@ -1,7 +1,5 @@
 PrimeHub is installed at:
-{{- range .Values.jupyterhub.ingress.hosts }}
-  http{{ if $.Values.jupyterhub.ingress.tls }}s{{ end }}://{{ . }}
-{{- end }}
+{{ include "primehub.url" . }}
 
 To get the login account, please enter the following commands:
   echo "username: {{ .Values.bootstrap.username }}"
