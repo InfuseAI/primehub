@@ -65,7 +65,7 @@ primehub-all:
   fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 
   # Tusd Uploader
-  tusd: &tusd tusproject/tusd:v1.4.0
+  tusd: &tusd tusproject/tusd:v1.10.0
 
   # Nvidia GPU Node Exporter
   nvidia_gpu_prometheus_exporter: &nvidia_gpu_prometheus_exporter infuseai/nvidia_gpu_prometheus_exporter:0.4
