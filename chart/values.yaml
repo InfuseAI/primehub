@@ -353,7 +353,7 @@ bootstrap:
   enabled: true
   image:
     repository: infuseai/primehub-bootstrap
-    tag: "20191022"
+    tag: "20221125"
     pullPolicy: IfNotPresent
   resources:
     limits:
