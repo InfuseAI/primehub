@@ -595,7 +595,7 @@ jupyterhub:
     networkTools:
       image:
         name: jupyterhub/k8s-network-tools
-        tag: '0.10.6'
+        tag: '2.0.0'
         pullPolicy: ''
         pullSecrets: []
     initContainers: []

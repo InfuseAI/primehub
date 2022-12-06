@@ -30,8 +30,9 @@ primehub-all:
 
   # Jupyterhub
   pause: &pause gcr.io/google_containers/pause:3.2
-  jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:0.10.6
-  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.2.2
+  jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:2.0.0
+  jupyterhub-k8s-network-tools: &jupyterhub-k8s-network-tools jupyterhub/k8s-network-tools:2.0.0
+  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.5.3
   k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
   statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
   busybox-1-28: &busybox-1-28 busybox:1.28
@@ -100,6 +101,7 @@ primehub-ee:
   # Jupyterhub
   pause: *pause
   jupyterhub-k8s: *jupyterhub-k8s
+  jupyterhub-k8s-network-tools: *jupyterhub-k8s-network-tools
   configurable-http-proxy: *configurable-http-proxy
   k8s-image-awaiter: *k8s-image-awaiter
   statsd-exporter: *statsd-exporter
