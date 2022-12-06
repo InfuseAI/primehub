@@ -55,7 +55,6 @@ if not oidc_client_secret:
 scope_required = get_primehub_config('scopeRequired')
 role_prefix = get_primehub_config('keycloak.rolePrefix', "")
 base_url = get_primehub_config('baseUrl', "/")
-enable_feature_kernel_gateway = get_primehub_config('kernelGateway', "")
 enable_feature_ssh_server = get_primehub_config('sshServer.enabled', False)
 enable_telemetry = get_primehub_config('telemetry.enabled', False)
 jupyterhub_template_path = '/etc/jupyterhub/templates'
@@ -568,7 +567,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             }
         )
 
-        if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0 and not spawner.enable_kernel_gateway:
+        if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
         if spawner.ssh_config['enabled']:
             spawner.environment.update({'PRIMEHUB_START_SSH': 'true'})
@@ -789,7 +788,6 @@ class PrimeHubPodReflector(NamespacedResourceReflector):
 
 
 class PrimeHubSpawner(KubeSpawner):
-    enable_kernel_gateway = None
     enable_safe_mode = False
     ssh_config = dict(enabled=False)
     _launch_group = None
@@ -829,39 +827,13 @@ class PrimeHubSpawner(KubeSpawner):
         # .Values.singleuser.memory.limit
         # .Values.singleuser.extraResource.guarantees
         # .Values.singleuser.extraResource.limit
-        result = {}
-
-        # when kernel container is enabled,
-        # resource settings should be set on the kernel container not the notebook container
-        if self.enable_kernel_gateway:
-            resources = dict(
-                limits=dict(cpu=float(spec.get('limits.cpu', 1)), memory=spec.get('limits.memory', '1G')),
-                requests=dict(cpu=float(spec.get('requests.cpu', 0)), memory=spec.get('requests.memory', '0G'))
-            )
-            if extra_resource_limits:
-                resources['limits']['nvidia.com/gpu'] = gpu
-
-            # FIXME instance_type_to_override shouldn't modify caller(spawner) directly
-            # it is designed to return a partial state that can update to spawner
-            self.kernel_container_resources = resources
-
-            # when we enable the kernel container,
-            # we wouldn't set up resources at notebook
-            result = {
-                'cpu_guarantee': None,
-                'cpu_limit': None,
-                'mem_limit': None,
-                'mem_guarantee': None,
-                'extra_resource_limits': {}
-            }
-        else:
-            result = {
-                'cpu_guarantee': float(spec.get('requests.cpu', 0)),
-                'cpu_limit': float(spec.get('limits.cpu', 1)),
-                'mem_limit': spec.get('limits.memory', '1G'),
-                'mem_guarantee': spec.get('requests.memory', '0G'),
-                'extra_resource_limits': extra_resource_limits
-            }
+        result = {
+            'cpu_guarantee': float(spec.get('requests.cpu', 0)),
+            'cpu_limit': float(spec.get('limits.cpu', 1)),
+            'mem_limit': spec.get('limits.memory', '1G'),
+            'mem_guarantee': spec.get('requests.memory', '0G'),
+            'extra_resource_limits': extra_resource_limits
+        }
 
         # pod spec override
         override_fields = [
@@ -1023,7 +995,6 @@ class PrimeHubSpawner(KubeSpawner):
                                 default_instance_type=self.user.spawner.default_instance_type,
                                 autolaunch=self.user.spawner.autolaunch,
                                 active_group=self.active_group,
-                                enable_kernel_gateway=enable_feature_kernel_gateway,
                                 enable_ssh_server=enable_feature_ssh_server,
                                 ssh_config=self.user.spawner.ssh_config)
 
@@ -1094,8 +1065,6 @@ class PrimeHubSpawner(KubeSpawner):
         return self.config.get('KubeSpawner', {}).get('image', '')
 
     def options_from_form(self, formdata):
-        if enable_feature_kernel_gateway:
-            self.enable_kernel_gateway = formdata.get('kernel_gateway', ['off']) == ['on']
         if enable_feature_ssh_server:
             self.ssh_config['enabled'] = formdata.get('ssh_server', ['off']) == ['on']
         self.enable_safe_mode = formdata.get('safe_mode', ['off']) == ['on']
