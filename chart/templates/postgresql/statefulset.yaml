@@ -61,7 +61,7 @@ spec:
           {{- end }}
           env:
             - name: BITNAMI_DEBUG
-              value: false"
+              value: "false"
             - name: POSTGRESQL_PORT_NUMBER
               value: {{ .Values.postgresql.containerPort | quote }}
             - name: POSTGRESQL_VOLUME_DIR
