@@ -51,10 +51,6 @@ jupyterhub:
         storageClass: ${STORAGE_CLASS}
 adminNotebook:
   enabled: false
-
-controller:
-  image:
-    tag: sc-28495-fd5ed1
 EOF
 
 if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
