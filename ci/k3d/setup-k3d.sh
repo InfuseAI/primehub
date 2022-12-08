@@ -24,8 +24,8 @@ if [ ! command -v helm &> /dev/null ]; then
 fi
 
 k3d version
-echo "Try 1.24"
-K8S_VERSION=v1.24.8-k3s1
+echo "k8s_version: $K8S_VERSION"
+
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
