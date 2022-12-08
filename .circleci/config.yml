@@ -125,7 +125,7 @@ jobs:
         type: boolean
       k8s_version:
         description: "the image tag for k3d"
-        default: null
+        default: "v1.25.3-k3s1"
         type: string
 
     machine:
