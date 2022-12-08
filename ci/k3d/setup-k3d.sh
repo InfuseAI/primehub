@@ -51,7 +51,6 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install nginx-ingress ingress-nginx/ingress-nginx \
     --create-namespace \
     --namespace nginx-ingress \
-    --version=3.15.2 \
     --set controller.hostNetwork=true \
     --set controller.admissionWebhooks.enabled=false \
     --set controller.updateStrategy.type=RollingUpdate \
