@@ -123,6 +123,10 @@ jobs:
         description: "create ticket on shorcut"
         default: false
         type: boolean
+      k8s_version:
+        description: "the image tag for k3d"
+        default: null
+        type: string
 
     machine:
       image: ubuntu-2004:202107-02
