@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 import time
+import traceback
 import urllib
 from datetime import datetime
 
@@ -337,12 +338,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
         self.log.debug("post spawn stop for %s", user)
         user.spawners.pop('')
 
-    def get_custom_resources(self, namespace, plural):
+    async def get_custom_resources(self, namespace, plural):
         api_instance = shared_client('CustomObjectsApi')
         group = 'primehub.io'
         version = 'v1alpha1'
 
-        api_response = api_instance.list_namespaced_custom_object(
+        api_response = await api_instance.list_namespaced_custom_object(
             group, version, namespace, plural)
         return api_response['items']
 
@@ -586,12 +587,13 @@ class OIDCAuthenticator(GenericOAuthenticator):
             self.log.info("oauth_user %s" % auth_state['oauth_user'])
             namespace = os.environ.get('POD_NAMESPACE', 'hub')
             primehub_datasets = {
-                item['metadata']['name']: item for item in await self.get_custom_resources(
-                    namespace, 'datasets')}
+                item['metadata']['name']: item for item in (await self.get_custom_resources(
+                    namespace, 'datasets'))}
         except BaseException as e:
             print(
                 "Exception when calling CustomObjectsApi->get_namespaced_custom_object: %s\n" %
                 e)
+            traceback.print_tb()
 
         self.symlinks = ["ln -sf /datasets /home/jovyan/"]
         global_datasets = self.get_global_datasets(auth_state['launch_context']['groups'])
