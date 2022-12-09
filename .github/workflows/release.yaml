@@ -10,6 +10,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Stop when see :latest
+        run: |
+          # check images.yaml
+          count="$(grep -c :latest ./chart/images.yaml || true)"
+          if [ "0" != $count ]; then
+            echo ":latest tag cannot be used for release"
+            grep -A3 -B3 :latest ./chart/images.yaml
+            false
+          fi
+
+          # check values.yaml
+          count="$(grep -c latest ./chart/values.yaml || true)"
+          if [ "0" != $count ]; then
+            echo ":latest tag cannot be used for release"
+            grep -A3 -B3 latest ./chart/values.yaml
+            false
+          fi
+
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.2.2

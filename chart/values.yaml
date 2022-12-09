@@ -639,7 +639,7 @@ jupyterhub:
       component: singleuser-server
     image:
       name: registry.gitlab.com/aiacademy/docker-stacks/aia-notebook
-      tag: latest-cpu
+      tag: no-existing-tag
       pullPolicy: IfNotPresent
     cmd: null
     networkTools:
