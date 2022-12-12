@@ -6,16 +6,16 @@ primehub-all:
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
-  primehub-controller: &primehub-controller infuseai/primehub-controller:latest
-  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:latest
+  primehub-controller: &primehub-controller infuseai/primehub-controller:v4.0-6c5467e2
+  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
   buildah: &buildah quay.io/buildah/stable:v1.28.0
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:latest
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:latest
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:latest
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:latest
+  primehub-console: &primehub-console infuseai/primehub-console:v4.0-1fd15a2a
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v4.0-1fd15a2a
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v4.0-1fd15a2a
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v4.0-1fd15a2a
 
   # Metacontroller
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
