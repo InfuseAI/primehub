@@ -638,8 +638,8 @@ jupyterhub:
     nodeSelector:
       component: singleuser-server
     image:
-      name: registry.gitlab.com/aiacademy/docker-stacks/aia-notebook
-      tag: no-existing-tag
+      name: infuseai/docker-stacks
+      tag: base-notebook-1eb85fe1
       pullPolicy: IfNotPresent
     cmd: null
     networkTools:
