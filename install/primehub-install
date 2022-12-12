@@ -590,7 +590,11 @@ preflight_check() {
     warn "[Skip] Domain Name Check: ${primehub_url}"
   fi
 
-  kubectl get sc > /dev/null || (error '[Pre-check Failed] Storage Class is not configurated'; exit 1)
+  default_sc=$(kubectl get sc 2>&1 | grep -e ' (default)' | cut -d' ' -f1 || echo 'NO_DEFAULT_SC')
+  if [[ $default_sc == 'NO_DEFAULT_SC' ]]; then
+    error '[Pre-check Failed] Default Storage Class is not configurated'
+    exit 1;
+  fi
 
   info "[Preflight Check] Pass"
 }
@@ -680,7 +684,7 @@ verify_primehub_domain() {
 prepare_primehub_env() {
   local CONFIG_PATH="$(primehub_config_path)"
   local HELM_OVERRIDE_PATH="$CONFIG_PATH/helm_override"
-  PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
+  PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep -e ' (default)' | cut -d' ' -f1)"
 
   if [ ! -f ${CONFIG_PATH}/.env ]; then
     info "[Prepare] PrimeHub require values"
