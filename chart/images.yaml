@@ -1,6 +1,6 @@
 primehub-all:
   # Core
-  busybox: &busybox busybox:1.32
+  busybox: &busybox library/busybox:1.32
   primehub-admission: &primehub-admission infuseai/primehub-admission:db8a8ba960
   primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20221125
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
@@ -29,13 +29,15 @@ primehub-all:
   primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:846cbfc3
 
   # Jupyterhub
-  pause: &pause gcr.io/google_containers/pause:3.2
+  pause: &pause k8s.gcr.io/pause:3.8
   jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:2.0.0
+  jupyterhub-k8s-secret-sync: &jupyterhub-k8s-secret-sync jupyterhub/k8s-secret-sync:2.0.0
   jupyterhub-k8s-network-tools: &jupyterhub-k8s-network-tools jupyterhub/k8s-network-tools:2.0.0
+  jupyterhub-kube-scheduler: &jupyterhub-kube-scheduler k8s.gcr.io/kube-scheduler:v1.23.10
   configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.5.3
-  k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
-  statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
-  busybox-1-28: &busybox-1-28 busybox:1.28
+  k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:2.0.0
+  traefik: &traefik library/traefik:v2.8.4
+  busybox-1-28: &busybox-1-28 library/busybox:1.28
 
   # Dataset Uploader
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
@@ -101,10 +103,12 @@ primehub-ee:
   # Jupyterhub
   pause: *pause
   jupyterhub-k8s: *jupyterhub-k8s
+  jupyterhub-k8s-secret-sync: *jupyterhub-k8s-secret-sync
   jupyterhub-k8s-network-tools: *jupyterhub-k8s-network-tools
+  jupyterhub-kube-scheduler: *jupyterhub-kube-scheduler
   configurable-http-proxy: *configurable-http-proxy
   k8s-image-awaiter: *k8s-image-awaiter
-  statsd-exporter: *statsd-exporter
+  traefik: *traefik
   primehub-examples: *primehub-examples
   busybox-1-28: *busybox-1-28
 

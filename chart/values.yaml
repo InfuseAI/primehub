@@ -44,7 +44,7 @@ keycloak:
   dbchecker:
     enabled: true
     image:
-      repository: docker.io/busybox
+      repository: library/busybox
       tag: 1.32
       pullPolicy: IfNotPresent
     securityContext:
@@ -115,9 +115,11 @@ keycloak:
   nodeSelector: {}
   tolerations: []
   terminationGracePeriodSeconds: 60
+  theme:
+    image: infuseai/primehub-keycloak-theme:846cbfc3
   extraInitContainers: |
     - name: theme-provider
-      image: infuseai/primehub-keycloak-theme:846cbfc3
+      image: {{ .Values.keycloak.theme.image }}
       imagePullPolicy: IfNotPresent
       command:
         - sh
@@ -236,7 +238,7 @@ console:
     enabled: true
   replicas: 1
   reloaderImage:
-    repository: busybox
+    repository: library/busybox
     pullPolicy: IfNotPresent
     tag: 1.32
   image:
@@ -273,7 +275,7 @@ console:
 graphql:
   replicas: 1
   reloaderImage:
-    repository: busybox
+    repository: library/busybox
     pullPolicy: IfNotPresent
     tag: 1.32
   image:
@@ -1065,7 +1067,7 @@ usage:
   dbPassword: mysecretpassword
 
   initImage:
-    repository: busybox
+    repository: library/busybox
     pullPolicy: IfNotPresent
     tag: 1.32
 
