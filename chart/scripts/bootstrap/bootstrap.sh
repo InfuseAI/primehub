@@ -5,6 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 KCADM=kcadm
 source ${DIR}/keycloak.inc
 
+KCADM_CONFIG=$HOME/.keycloak/kcadm.config
 KUBECTL_DRY_RUN_FLAG='--dry-run=client'
 
 ############################################################
@@ -72,8 +73,15 @@ function update_realm() {
       -s enabled=true
   fi
 
-  print_info "Update realm frontend URL: ${KC_APP_URL}"
-  $KCADM update realms/$KC_REALM -s "attributes.frontendUrl=${KC_APP_URL}"
+  frontendUrl=$($KCADM get realms/$KC_REALM | jq -r ".attributes.frontendUrl")
+  if [[ $frontendUrl != ${KC_APP_URL} ]]; then
+    print_info "Update realm frontend URL: ${KC_APP_URL}"
+    $KCADM update realms/$KC_REALM -s "attributes.frontendUrl=${KC_APP_URL}"
+    if [[ -f $KCADM_CONFIG && $(jq -r ".realm" $KCADM_CONFIG) != "master" ]]; then
+      print_info "Frontend URL changed by service account. Login again"
+      kc_login
+    fi
+  fi
 
   if [[ -n ${KC_SSL_REQUIRED:-""} ]]; then
     print_info "Update realm ssl_required: ${KC_SSL_REQUIRED}"
