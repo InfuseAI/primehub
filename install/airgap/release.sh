@@ -4,6 +4,7 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 PRIMEHUB_VERSION=${PRIMEHUB_VERSION:-LOCAL}
 GCP_SA_JSON_FILE=${GCP_SA_JSON_FILE:-gcp-sa.json}
+INDIVIDUAL=${INDIVIDUAL:-false}
 
 check_env() {
   command -v lsb_release > /dev/null || (echo "Is it Ubuntu or Debian?"; exit 1;)
@@ -65,28 +66,39 @@ install_google_cloud_sdk
 
 gcloud auth activate-service-account gitlab-ci@infuseai-dev.iam.gserviceaccount.com --key-file=<(cat $GCP_SA_JSON_FILE)
 
-mkdir -p $DIR/build
+if [[ $INDIVIDUAL != "only" ]]; then
+  mkdir -p $DIR/build
 
-echo
-echo "[Build] primehub images"
-echo
-$DIR/image-save.sh -f $DIR/../../chart/images.yaml -o $DIR/build/primehub-images-ee-$PRIMEHUB_VERSION primehub-ee
-$DIR/image-save.sh -f $DIR/../../chart/images.yaml -o $DIR/build/primehub-images-deploy-$PRIMEHUB_VERSION primehub-deploy
-echo
-echo "[Build] cert-manager images"
-echo
-$DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/cert-manager-images cert-manager
-echo
-echo "[Build] nginx-ingress images"
-echo
-$DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/nginx-images-images nginx-ingress
+  echo
+  echo "[Build] primehub images"
+  echo
+  $DIR/image-save.sh -f $DIR/../../chart/images.yaml -o $DIR/build/primehub-images-ee-$PRIMEHUB_VERSION primehub-ee
+  $DIR/image-save.sh -f $DIR/../../chart/images.yaml -o $DIR/build/primehub-images-deploy-$PRIMEHUB_VERSION primehub-deploy
+  echo
+  echo "[Build] cert-manager images"
+  echo
+  $DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/cert-manager-images cert-manager
+  echo
+  echo "[Build] nginx-ingress images"
+  echo
+  $DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/nginx-images-images nginx-ingress
 
-echo
-echo "[Upload] images"
-for file in $(ls -1 $DIR/build/*); do
-  echo "upload $file"
-  gsutil cp $file gs://primehub-release/$PRIMEHUB_VERSION/
-done
+  echo
+  echo "[Upload] images"
+  for file in $(ls -1 $DIR/build/*); do
+    echo "upload $file"
+    gsutil cp $file gs://primehub-release/$PRIMEHUB_VERSION/
+  done
+fi
+
+if [[ $INDIVIDUAL != "false" ]]; then
+  python3 $DIR/image-cache.py \
+    --gs-cache-prefix gs://primehub-release/image-cache \
+    --gs-release-prefix gs://primehub-release/$PRIMEHUB_VERSION \
+    --copy-groups primehub-jupyter-images,primehub-model-images,primehub-phapp-template-images \
+    --copy-tarballs \
+    $DIR/../../chart/images.yaml
+fi
 
 echo
 echo "[Done]"
