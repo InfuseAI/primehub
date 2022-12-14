@@ -37,7 +37,6 @@ primehub-all:
   configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.5.3
   k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:2.0.0
   traefik: &traefik library/traefik:v2.8.4
-  busybox-1-28: &busybox-1-28 library/busybox:1.28
 
   # Dataset Uploader
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
@@ -110,7 +109,6 @@ primehub-ee:
   k8s-image-awaiter: *k8s-image-awaiter
   traefik: *traefik
   primehub-examples: *primehub-examples
-  busybox-1-28: *busybox-1-28
 
   # Dataset Uploader
   dataset-upload-web-front-end: *dataset-upload-web-front-end
