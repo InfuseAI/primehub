@@ -81,7 +81,7 @@ if [[ $INDIVIDUAL != "only" ]]; then
   echo
   echo "[Build] nginx-ingress images"
   echo
-  $DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/nginx-images-images nginx-ingress
+  $DIR/image-save.sh -f $DIR/images.yaml -o $DIR/build/nginx-ingress-images nginx-ingress
 
   echo
   echo "[Upload] images"
