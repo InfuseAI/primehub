@@ -48,6 +48,8 @@ spec:
     ports:
     - port: 53
       protocol: UDP
+    - port: 16443 # for microk8s dev
+      protocol: TCP
     - port: {{ .Values.sshBastionServer.netpol.kubeApiPort }}
       protocol: TCP
   podSelector:

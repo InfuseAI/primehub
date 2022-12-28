@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 import os
 from unittest import mock
@@ -5,19 +6,26 @@ from kubespawner.objects import make_pod
 from kubespawner.spawner import PodReflector
 from jupyterhub_profiles import PrimeHubSpawner
 from jinja2 import Environment, FileSystemLoader
+
 template_loader = Environment(loader=FileSystemLoader(['tests/fixtures', 'fixtures']))
 
 
 def mock_spawner():
-    spawner = PrimeHubSpawner(_mock=True)
-    def mock_render_html(template_name, local_vars):
-        template = template_loader.get_template(template_name)
-        return template.render(local_vars)
-    def mock_resource_usage(group):
-        return {'cpu': 0, 'memory': 0, 'gpu': 0}
-    spawner.render_html = mock_render_html
-    spawner.get_container_resource_usage = mock_resource_usage
-    return spawner
+    async def create():
+        spawner = PrimeHubSpawner(_mock=True)
+
+        def mock_render_html(template_name, local_vars):
+            template = template_loader.get_template(template_name)
+            return template.render(local_vars)
+
+        def mock_resource_usage(group):
+            return {'cpu': 0, 'memory': 0, 'gpu': 0}
+
+        spawner.render_html = mock_render_html
+        spawner.get_container_resource_usage = mock_resource_usage
+        return spawner
+
+    return asyncio.run(create())
 
 
 class TestGroupsFromCtx(unittest.TestCase):
@@ -230,7 +238,9 @@ class TestGroupsFromCtx(unittest.TestCase):
         raised = False
         msg = ''
         try:
-            mock_spawner().render_html('groups.html', {'groups': groups, 'ssh_config': {'enabled': False}, 'default_image': '', 'default_instance_type': '', 'autolaunch': ''})
+            mock_spawner().render_html('groups.html',
+                                       {'groups': groups, 'ssh_config': {'enabled': False}, 'default_image': '',
+                                        'default_instance_type': '', 'autolaunch': ''})
         except Exception as e:
             raised = True
             msg = e
@@ -336,11 +346,11 @@ class TestImageToOverride(unittest.TestCase):
         }
         self.spawner.apply_kubespawner_override(self.spawner.image_to_override(image, 0))
         pod = make_pod(name='test',
-            image=self.spawner.image,
-            cmd=['jupyterhub-singleuser'],
-            port=8888,
-            image_pull_policy='IfNotPresent'
-        )
+                       image=self.spawner.image,
+                       cmd=['jupyterhub-singleuser'],
+                       port=8888,
+                       image_pull_policy='IfNotPresent'
+                       )
         self.assertEqual(pod.spec.containers[0].image, 'jupyter/test-notebook')
         self.assertIsNone(pod.spec.image_pull_secrets)
 
@@ -353,11 +363,11 @@ class TestImageToOverride(unittest.TestCase):
         }
         self.spawner.apply_kubespawner_override(self.spawner.image_to_override(image, 1))
         pod = make_pod(name='test',
-            image=self.spawner.image,
-            cmd=['jupyterhub-singleuser'],
-            port=8888,
-            image_pull_policy='IfNotPresent'
-        )
+                       image=self.spawner.image,
+                       cmd=['jupyterhub-singleuser'],
+                       port=8888,
+                       image_pull_policy='IfNotPresent'
+                       )
         self.assertEqual(pod.spec.containers[0].image, 'jupyter/test-notebook-gpu')
 
     def test_override_image_url_for_gpu_without_url_for_gpu(self):
@@ -368,11 +378,11 @@ class TestImageToOverride(unittest.TestCase):
         }
         self.spawner.apply_kubespawner_override(self.spawner.image_to_override(image, 1))
         pod = make_pod(name='test',
-            image=self.spawner.image,
-            cmd=['jupyterhub-singleuser'],
-            port=8888,
-            image_pull_policy='IfNotPresent'
-        )
+                       image=self.spawner.image,
+                       cmd=['jupyterhub-singleuser'],
+                       port=8888,
+                       image_pull_policy='IfNotPresent'
+                       )
         self.assertEqual(pod.spec.containers[0].image, 'jupyter/test-notebook-cpu')
 
     def test_override_image_pull_secret(self):
@@ -385,10 +395,10 @@ class TestImageToOverride(unittest.TestCase):
         self.spawner.apply_kubespawner_override(self.spawner.image_to_override(image, 0))
 
         pod_def = dict(name='test',
-            image='jupyter/singleuser:latest',
-            cmd=['jupyterhub-singleuser'],
-            port=8888,
-            image_pull_policy='IfNotPresent')
+                       image='jupyter/singleuser:latest',
+                       cmd=['jupyterhub-singleuser'],
+                       port=8888,
+                       image_pull_policy='IfNotPresent')
 
         try:
             pod = make_pod(image_pull_secret=self.spawner.image_pull_secrets, **pod_def)
@@ -396,6 +406,7 @@ class TestImageToOverride(unittest.TestCase):
             pod = make_pod(image_pull_secrets=self.spawner.image_pull_secrets, **pod_def)
 
         self.assertEqual(pod.spec.image_pull_secrets[0].name, 'image-test')
+
 
 def mock_for_options_from_form(spawner):
     # fake something i don't really care about it

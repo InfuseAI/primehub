@@ -1,34 +1,26 @@
-import base64
-import logging
-from collections import OrderedDict
-
 import asyncio
-import pycurl
-from kubespawner.clients import shared_client
-from kubespawner import KubeSpawner
 import json
-import urllib
-import uuid
 import os
-import tornado.ioloop
 import time
+import traceback
+import urllib
 from datetime import datetime
-import jupyterhub.handlers
-from tornado.httpclient import HTTPRequest, AsyncHTTPClient
-from tornado.httputil import url_concat
 
-from z2jh import get_config
-from tornado import gen, httpclient, web
-from tornado.auth import OAuth2Mixin
+import jupyterhub.handlers
+from jinja2 import Environment, FileSystemLoader
+from jupyterhub.handlers import BaseHandler, LoginHandler, LogoutHandler
+from jupyterhub.scopes import needs_scope
+from jupyterhub.utils import url_path_join
+from kubespawner import KubeSpawner
+from kubespawner.clients import shared_client
+from kubespawner.reflector import NamespacedResourceReflector
 from oauthenticator.generic import GenericOAuthenticator
 from oauthenticator.oauth2 import OAuthCallbackHandler, OAuthLoginHandler
-from jupyterhub.handlers import LoginHandler, LogoutHandler, BaseHandler
-from jupyterhub.handlers.pages import SpawnHandler
-from jupyterhub.utils import url_path_join
-from kubernetes.client.rest import ApiException
-from traitlets import Any, Unicode, List, Integer, Union, Dict, Bool, Any, validate, default
-from jinja2 import Environment, FileSystemLoader
-from kubespawner.reflector import NamespacedResourceReflector
+from tornado import gen, httpclient, web
+from tornado.auth import OAuth2Mixin
+from traitlets import default
+
+from z2jh import get_config
 
 
 # MONKEY-PATCH :: BaseHandler [START]
@@ -43,154 +35,318 @@ def monkey_patched_set_login_cookie(self, user):
 
 jupyterhub.handlers.BaseHandler.original_set_login_cookie = jupyterhub.handlers.BaseHandler.set_login_cookie
 jupyterhub.handlers.BaseHandler.set_login_cookie = monkey_patched_set_login_cookie
-print("apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie => %s" % jupyterhub.handlers.BaseHandler.set_login_cookie)
+print(f"apply monkey-patch to jupyterhub.handlers.BaseHandler.set_login_cookie "
+      f"=> {jupyterhub.handlers.BaseHandler.set_login_cookie}")
 # MONKEY-PATCH :: BaseHandler [END]
 
-# MONKEY-PATCH :: SpawnHandler [START]
-async def monkey_patched_wrap_spawn_single_user(
-    self, user, server_name, spawner, pending_url, options=None
-):
-    # Explicit spawn request: clear _spawn_future
-    # which may have been saved to prevent implicit spawns
-    # after a failure.
-    if spawner._spawn_future and spawner._spawn_future.done():
-        spawner._spawn_future = None
-    # not running, no form. Trigger spawn and redirect back to /user/:name
-    f = asyncio.ensure_future(
-        self.spawn_single_user(user, server_name, options=options)
+# MONKEY-PATCH :: MyAdminHandler [START]
+import jupyterhub.handlers.pages
+
+"""Basic class to manage pagination utils."""
+# Copyright (c) Jupyter Development Team.
+# Distributed under the terms of the Modified BSD License.
+from traitlets import default
+from traitlets import Integer
+from traitlets import observe
+from traitlets import Unicode
+from traitlets import validate
+from traitlets.config import Configurable
+
+
+class Pagination(Configurable):
+
+    # configurable options
+    default_per_page = Integer(
+        100,
+        config=True,
+        help="Default number of entries per page for paginated results.",
     )
-    done, pending = await asyncio.wait([f], timeout=1)
-    # If spawn_single_user throws an exception, raise a 500 error
-    # otherwise it may cause a redirect loop
-    if f.done() and f.exception():
-        exc = f.exception()
 
-        if exc.status == 410 and exc.body:
-            try:
-                message = json.loads(exc.body)['message']
-            except Exception as e:
-                self.log.error("Parse body error: %s" % str(e))
-            if message.startswith("admission webhook"):
-                raise ValueError(message)
+    max_per_page = Integer(
+        250,
+        config=True,
+        help="Maximum number of entries per page for paginated results.",
+    )
 
-        raise web.HTTPError(
-            500,
-            "Error in Authenticator.pre_spawn_start: %s %s"
-            % (type(exc).__name__, str(exc)),
-        )
-    return self.redirect(pending_url)
+    # state variables
+    url = Unicode("")
+    page = Integer(1)
+    per_page = Integer(1, min=1)
 
-jupyterhub.handlers.pages.SpawnHandler.original_wrap_spawn_single_user = jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user
-jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user = monkey_patched_wrap_spawn_single_user
-print("apply monkey-patch to jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user => %s" % jupyterhub.handlers.pages.SpawnHandler._wrap_spawn_single_user)
-# MONKEY-PATCH :: SpawnHandler [END]
+    @default("per_page")
+    def _default_per_page(self):
+        return self.default_per_page
 
-# MONKEY-PATCH :: CurlAsyncHTTPClient [START]
-import tornado.curl_httpclient
-def curl_create_http_1_1(self) -> pycurl.Curl:
-    curl = self._origin_curl_create()
-    curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_1_1)
-    return curl
+    @validate("per_page")
+    def _limit_per_page(self, proposal):
+        if self.max_per_page and proposal.value > self.max_per_page:
+            return self.max_per_page
+        if proposal.value <= 1:
+            return 1
+        return proposal.value
 
-tornado.curl_httpclient.CurlAsyncHTTPClient._origin_curl_create = tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create
-tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create = curl_create_http_1_1
-print("apply monkey-patch to tornado.curl_httpclient.CurlAsyncHTTPClient._curl_create => %s (use http1.1)" % curl_create_http_1_1)
-# MONKEY-PATCH :: CurlAsyncHTTPClient [END]
+    @observe("max_per_page")
+    def _apply_max(self, change):
+        if change.new:
+            self.per_page = min(change.new, self.per_page)
 
-# MONKEY-PATCH :: OAuth-state-mismatch [START]
-class OAuthStateStore(object):
-    PURGE_INTERVAL = 1
-    _store = OrderedDict()
-    _purge_time = time.time()
+    total = Integer(0)
 
-    def __init__(self):
-        pass
+    total_pages = Integer(0)
 
-    def add_state(self, username, state):
-        self._store[(username, state)] = time.time()
+    @default("total_pages")
+    def _calculate_total_pages(self):
+        total_pages = self.total // self.per_page
+        if self.total % self.per_page:
+            # there's a remainder, add 1
+            total_pages += 1
+        return total_pages
 
-    def validate(self, username, state):
-        self.purge()
-        t = self._store.get((username, state))
-        if not t:
-            return False
-        if time.time() - t < 1:
-            return True
-        return False
+    @observe("per_page", "total")
+    def _update_total_pages(self, change):
+        """Update total_pages when per_page or total is changed"""
+        self.total_pages = self._calculate_total_pages()
 
-    def purge(self):
-        if time.time() - self._purge_time < self.PURGE_INTERVAL:
-            return
-        self._purge_time = time.time()
+    separator = Unicode("...")
 
-        removed = []
-        t = time.time()
-        for k, v in self._store.items():
-            if t - v > 1:
-                removed.append(k)
+    def get_page_args(self, handler):
+        """
+        This method gets the arguments used in the webpage to configurate the pagination
+        In case of no arguments, it uses the default values from this class
+
+        Returns:
+          - page: The page requested for paginating or the default value (1)
+          - per_page: The number of items to return in this page. No more than max_per_page
+          - offset: The offset to consider when managing pagination via the ORM
+        """
+        page = handler.get_argument("page", 1)
+        per_page = handler.get_argument("per_page", self.default_per_page)
+        try:
+            self.per_page = int(per_page)
+        except Exception:
+            self.per_page = self.default_per_page
+
+        try:
+            self.page = int(page)
+            if self.page < 1:
+                self.page = 1
+        except Exception:
+            self.page = 1
+
+        return self.page, self.per_page, self.per_page * (self.page - 1)
+
+    @property
+    def info(self):
+        """Get the pagination information."""
+        start = 1 + (self.page - 1) * self.per_page
+        end = start + self.per_page - 1
+        if end > self.total:
+            end = self.total
+
+        if start > self.total:
+            start = self.total
+
+        return {'total': self.total, 'start': start, 'end': end}
+
+    def calculate_pages_window(self):
+        """Calculates the set of pages to render later in links() method.
+        It returns the list of pages to render via links for the pagination
+        By default, as we've observed in other applications, we're going to render
+        only a finite and predefined number of pages, avoiding visual fatigue related
+        to a long list of pages. By default, we render 7 pages plus some inactive links with the characters '...'
+        to point out that there are other pages that aren't explicitly rendered.
+        The primary way of work is to provide current webpage and 5 next pages, the last 2 ones
+        (in case the current page + 5 does not overflow the total lenght of pages) and the first one for reference.
+        """
+
+        before_page = 2
+        after_page = 2
+        window_size = before_page + after_page + 1
+
+        # Add 1 to total_pages since our starting page is 1 and not 0
+        last_page = self.total_pages
+
+        pages = []
+
+        # will default window + start, end fit without truncation?
+        if self.total_pages > window_size + 2:
+            if self.page - before_page > 1:
+                # before_page will not reach page 1
+                pages.append(1)
+                if self.page - before_page > 2:
+                    # before_page will not reach page 2, need separator
+                    pages.append(self.separator)
+
+            pages.extend(range(max(1, self.page - before_page), self.page))
+            # we now have up to but not including self.page
+
+            if self.page + after_page + 1 >= last_page:
+                # after_page gets us to the end
+                pages.extend(range(self.page, last_page + 1))
             else:
-                break
-        for k in removed:
-            del self._store[k]
+                # add full after_page entries
+                pages.extend(range(self.page, self.page + after_page + 1))
+                # add separator *if* this doesn't get to last page - 1
+                if self.page + after_page < last_page - 1:
+                    pages.append(self.separator)
+                pages.append(last_page)
+
+            return pages
+
+        else:
+            # everything will fit, nothing to think about
+            # always return at least one page
+            return list(range(1, last_page + 1)) or [1]
+
+    @property
+    def links(self):
+        """Get the links for the pagination.
+        Getting the input from calculate_pages_window(), generates the HTML code
+        for the pages to render, plus the arrows to go onwards and backwards (if needed).
+        """
+        if self.total_pages == 1:
+            return []
+
+        pages_to_render = self.calculate_pages_window()
+
+        links = ['<nav>']
+        links.append('<ul class="pagination">')
+
+        if self.page > 1:
+            prev_page = self.page - 1
+            links.append(
+                '<li><a href="?page={prev_page}">«</a></li>'.format(prev_page=prev_page)
+            )
+        else:
+            links.append(
+                '<li class="disabled"><span><span aria-hidden="true">«</span></span></li>'
+            )
+
+        for page in list(pages_to_render):
+            if page == self.page:
+                links.append(
+                    '<li class="active"><span>{page}<span class="sr-only">(current)</span></span></li>'.format(
+                        page=page
+                    )
+                )
+            elif page == self.separator:
+                links.append(
+                    '<li class="disabled"><span> <span aria-hidden="true">{separator}</span></span></li>'.format(
+                        separator=self.separator
+                    )
+                )
+            else:
+                links.append(
+                    '<li><a href="?page={page}">{page}</a></li>'.format(page=page)
+                )
+
+        if self.page >= 1 and self.page < self.total_pages:
+            next_page = self.page + 1
+            links.append(
+                '<li><a href="?page={next_page}">»</a></li>'.format(next_page=next_page)
+            )
+        else:
+            links.append(
+                '<li class="disabled"><span><span aria-hidden="true">»</span></span></li>'
+            )
+
+        links.append('</ul>')
+        links.append('</nav>')
+
+        return ''.join(links)
+
+class MyAdminHandler(BaseHandler):
+    """Render the admin page."""
+
+    @web.authenticated
+    # stacked decorators: all scopes must be present
+    # note: keep in sync with admin link condition in page.html
+    @needs_scope('admin-ui')
+    async def get(self):
+        from jupyterhub import orm
+        pagination = Pagination(url=self.request.uri, config=self.config)
+        page, per_page, offset = pagination.get_page_args(self)
+
+        available = {'name', 'admin', 'running', 'last_activity'}
+        default_sort = ['admin', 'name']
+        mapping = {'running': orm.Spawner.server_id}
+        for name in available:
+            if name not in mapping:
+                table = orm.User if name != "last_activity" else orm.Spawner
+                mapping[name] = getattr(table, name)
+
+        default_order = {
+            'name': 'asc',
+            'last_activity': 'desc',
+            'admin': 'desc',
+            'running': 'desc',
+        }
+
+        sorts = self.get_arguments('sort') or default_sort
+        orders = self.get_arguments('order')
+
+        for bad in set(sorts).difference(available):
+            self.log.warning("ignoring invalid sort: %r", bad)
+            sorts.remove(bad)
+        for bad in set(orders).difference({'asc', 'desc'}):
+            self.log.warning("ignoring invalid order: %r", bad)
+            orders.remove(bad)
+
+        # add default sort as secondary
+        for s in default_sort:
+            if s not in sorts:
+                sorts.append(s)
+        if len(orders) < len(sorts):
+            for col in sorts[len(orders) :]:
+                orders.append(default_order[col])
+        else:
+            orders = orders[: len(sorts)]
+
+        # this could be one incomprehensible nested list comprehension
+        # get User columns
+        cols = [mapping[c] for c in sorts]
+        # get User.col.desc() order objects
+        ordered = [getattr(c, o)() for c, o in zip(cols, orders)]
+
+        query = self.db.query(orm.User).outerjoin(orm.Spawner).distinct(orm.User.id)
+        subquery = query.subquery("users")
+        users = (
+            self.db.query(orm.User)
+            .select_entity_from(subquery)
+            .outerjoin(orm.Spawner)
+            .order_by(*ordered)
+            .limit(per_page)
+            .offset(offset)
+        )
+
+        users = [self._user_from_orm(u) for u in users]
+
+        running = []
+        for u in users:
+            running.extend(s for s in u.spawners.values() if s.active)
+
+        pagination.total = query.count()
+
+        auth_state = await self.current_user.get_auth_state()
+        html = await self.render_template(
+            'admin.html',
+            current_user=self.current_user,
+            auth_state=auth_state,
+            admin_access=self.settings.get('admin_access', False),
+            users=users,
+            running=running,
+            sort={s: o for s, o in zip(sorts, orders)},
+            allow_named_servers=self.allow_named_servers,
+            named_server_limit_per_user=self.named_server_limit_per_user,
+            server_version='{} {}'.format(jupyterhub.__version__, self.version_hash),
+            pagination=pagination,
+        )
+        self.finish(html)
 
 
-import oauthenticator.oauth2
-
-oauth_state_store = OAuthStateStore()
-
-
-def OAuthLoginHandler_get(self):
-    redirect_uri = self.authenticator.get_callback_url(self)
-    extra_params = self.authenticator.extra_authorize_params.copy()
-    self.log.info('OAuth redirect: %r', redirect_uri)
-    state = self.get_state()
-    self.set_state_cookie(state)
-    extra_params['state'] = state
-
-    user = self.get_current_user_cookie()
-    if user and user.name:
-        oauth_state_store.add_state(user.name, state)
-
-    self.authorize_redirect(
-        redirect_uri=redirect_uri,
-        client_id=self.authenticator.client_id,
-        scope=self.authenticator.scope,
-        extra_params=extra_params,
-        response_type='code',
-    )
-
-
-def OAuthCallbackHandler_check_state(self):
-    """Verify OAuth state
-
-    compare value in cookie with redirect url param
-    """
-    cookie_state = self.get_state_cookie()
-    url_state = self.get_state_url()
-
-    if not cookie_state:
-        raise web.HTTPError(400, "OAuth state missing from cookies")
-    if not url_state:
-        raise web.HTTPError(400, "OAuth state missing from URL")
-    if cookie_state != url_state:
-        user = self.get_current_user_cookie()
-        if user and user.name:
-            if oauth_state_store.validate(user.name, cookie_state) and oauth_state_store.validate(user.name, url_state):
-                self.log.warning("Bypass-oauth-mismatch from state cache [user: %s]", user.name)
-                return
-
-        self.log.warning("OAuth state mismatch: %s != %s", cookie_state, url_state)
-        raise web.HTTPError(400, "OAuth state mismatch")
-
-
-oauthenticator.oauth2.OAuthLoginHandler.get = OAuthLoginHandler_get
-oauthenticator.oauth2.OAuthCallbackHandler.check_state = OAuthCallbackHandler_check_state
-
-print("patch %s" % oauthenticator.oauth2.OAuthLoginHandler.get)
-print("patch %s" % oauthenticator.oauth2.OAuthCallbackHandler.check_state)
-# MONKEY-PATCH :: OAuth-state-mismatch [END]
-
-
+jupyterhub.handlers.pages.AdminHandler.get = MyAdminHandler.get
+print(f"apply monkey-patch to jupyterhub.handlers.pages.AdminHandler.get")
+# MONKEY-PATCH :: MyAdminHandler [END]
 
 try:
     # it is for local development
@@ -209,7 +365,6 @@ if not oidc_client_secret:
 scope_required = get_primehub_config('scopeRequired')
 role_prefix = get_primehub_config('keycloak.rolePrefix', "")
 base_url = get_primehub_config('baseUrl', "/")
-enable_feature_kernel_gateway = get_primehub_config('kernelGateway', "")
 enable_feature_ssh_server = get_primehub_config('sshServer.enabled', False)
 enable_telemetry = get_primehub_config('telemetry.enabled', False)
 jupyterhub_template_path = '/etc/jupyterhub/templates'
@@ -263,14 +418,13 @@ GRAPHQL_SEND_TELEMETRY_MUTATION = '''mutation ($data: NotebookNotifyEventInput!)
                 }'''
 
 
-@gen.coroutine
-def fetch_context(user_id):
+async def fetch_context(user_id):
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_LAUNCH_CONTEXT_QUERY,
             'variables': {'id': user_id}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
-    response = yield client.fetch(graphql_endpoint,
+    response = await client.fetch(graphql_endpoint,
                                   method='POST',
                                   headers=headers,
                                   body=json.dumps(data))
@@ -284,8 +438,8 @@ def fetch_context(user_id):
         return result['data']
     return {}
 
-@gen.coroutine
-def send_telemetry(traits):
+
+async def send_telemetry(traits):
     if not enable_telemetry:
         return
 
@@ -294,7 +448,7 @@ def send_telemetry(traits):
     data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
             'variables': {'data': traits}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
-    response = yield client.fetch(graphql_endpoint,
+    response = await client.fetch(graphql_endpoint,
                                   method='POST',
                                   headers=headers,
                                   body=json.dumps(data))
@@ -306,12 +460,15 @@ def send_telemetry(traits):
 
     return
 
+
 class PrimehubOidcMixin(OAuth2Mixin):
     _OAUTH_AUTHORIZE_URL = '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
     _OAUTH_ACCESS_TOKEN_URL = '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
+
 class OIDCLoginHandler(OAuthLoginHandler, PrimehubOidcMixin):
     pass
+
 
 class OIDCLogoutHandler(LogoutHandler):
     kc_logout_url = '%s/realms/%s/protocol/openid-connect/logout' % (
@@ -350,6 +507,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
     login_handler = OIDCLoginHandler
     logout_handler = OIDCLogoutHandler
 
+    # the flag introduced at 0.8, we need it to make jupyterhub to save the auth_state, otherwise it would become None
+    enable_auth_state = True
+
     @default("authorize_url")
     def _authorize_url_default(self):
         return '%s/realms/%s/protocol/openid-connect/auth' % (keycloak_app_url, realm)
@@ -358,9 +518,11 @@ class OIDCAuthenticator(GenericOAuthenticator):
     def _token_url_default(self):
         return '%s/realms/%s/protocol/openid-connect/token' % (keycloak_url, realm)
 
-    @gen.coroutine
-    def verify_access_token(self, user):
-        auth_state = yield user.get_auth_state()
+    async def verify_access_token(self, user):
+        auth_state = user.get_auth_state()
+        while asyncio.iscoroutine(auth_state) or asyncio.isfuture(auth_state):
+            auth_state = await auth_state
+
         access_token = auth_state['access_token']
         token_type = 'Bearer'
 
@@ -372,9 +534,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
         }
 
         try:
-            response = yield self.client.fetch(self.userdata_url,
-                                        method='GET',
-                                        headers=headers)
+            response = await self.client.fetch(self.userdata_url,
+                                               method='GET',
+                                               headers=headers)
             if response.code == 200:
                 return True
             else:
@@ -382,27 +544,31 @@ class OIDCAuthenticator(GenericOAuthenticator):
         except Exception as e:
             return False
 
-    @gen.coroutine
-    def refresh_user(self, user, handler=None):
+    async def refresh_user(self, user, handler=None):
         # prevent multiple graphql calls
         if isinstance(handler, (LoginHandler, OAuthCallbackHandler)):
             self.log.debug('skip refresh user in handler: %s', handler)
             return False
 
         self.log.debug('refresh user: %s', user)
-        auth_state = yield user.get_auth_state()
+        auth_state = user.get_auth_state()
+        if asyncio.iscoroutine(auth_state):
+            auth_state = await auth_state
+
         user_id = auth_state['oauth_user'].get('sub', None)
         if not user_id:
             self.log.debug('user id not found')
             return False
 
-        is_valid_token = yield self.verify_access_token(user)
+        is_valid_token = await self.verify_access_token(user)
         if is_valid_token == False:
             self.log.debug('Expire access token: %s', user.name)
             return False
 
         try:
-            updated_ctx = yield fetch_context(user_id)
+            updated_ctx = await fetch_context(user_id)
+            if asyncio.iscoroutine(updated_ctx):
+                updated_ctx = await updated_ctx
         except:
             return True
         unchanged = True
@@ -421,14 +587,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
             auth_state['system'] = updated_ctx['system']
             return dict(auth_state=auth_state)
 
-    @gen.coroutine
-    def is_admin(self, handler, authentication):
+    async def is_admin(self, handler, authentication):
         return authentication['auth_state']['launch_context'].get(
             'isAdmin', False)
 
-    @gen.coroutine
-    def authenticate(self, handler, data=None):
-        user = yield super().authenticate(handler, data)
+    async def authenticate(self, handler, data=None):
+        user = await super().authenticate(handler, data)
         if not user:
             return
         self.log.debug("auth: %s", user['auth_state'])
@@ -440,7 +604,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             return
 
         try:
-            ctx = yield fetch_context(user_id)
+            ctx = await fetch_context(user_id)
             user['auth_state']['launch_context'] = ctx.get('user', {})
             user['auth_state']['system'] = ctx.get('system', {})
         except Exception as e:
@@ -454,21 +618,22 @@ class OIDCAuthenticator(GenericOAuthenticator):
     def get_handlers(self, app):
         return super().get_handlers(app) + [(r'/logout', self.logout_handler)]
 
-    @gen.coroutine
     def attach_project_pvc(self, spawner, project, group, size):
         spawner.volumes.append({'name': 'project-' + project,
                                 'persistentVolumeClaim': {'claimName': 'project-' + project}})
         spawner.volume_mounts.append(
             {'mountPath': '/project/' + project, 'name': 'project-' + project})
 
-    @gen.coroutine
-    def post_spawn_stop(self, user, spawner):
-        started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+    async def post_spawn_stop(self, user, spawner):
+        started_at = None
+        duration = None
+        if spawner.started_at is not None:
+            started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
+            duration = int(time.time() - spawner.started_at)
         gpu_enabled = spawner.extra_resource_limits.get('nvidia.com/gpu', 0) > 0
         status = 'Success'
         if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
             status = 'Failed'
-        duration = int(time.time() - spawner.started_at)
 
         traits = {
             'notebookStartedAt': started_at,
@@ -482,12 +647,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
         self.log.debug("post spawn stop for %s", user)
         user.spawners.pop('')
 
-    def get_custom_resources(self, namespace, plural):
+    async def get_custom_resources(self, namespace, plural):
         api_instance = shared_client('CustomObjectsApi')
         group = 'primehub.io'
         version = 'v1alpha1'
 
-        api_response = api_instance.list_namespaced_custom_object(
+        api_response = await api_instance.list_namespaced_custom_object(
             group, version, namespace, plural)
         return api_response['items']
 
@@ -562,6 +727,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
     def get_global_datasets(self, groups):
         global_datasets = {}
+
         def _append_dataset(dataset):
             global_datasets[dataset['name']] = dataset
 
@@ -577,7 +743,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
             'dataset.primehub.io/launchGroupOnly', 'false') == 'true'
         is_global = name in global_datasets.keys()
 
-        self.log.debug('Datasets in launch group [%s]: %s' % (spawner.user_options['group']['name'], datasets_in_launch_group))
+        self.log.debug(
+            'Datasets in launch group [%s]: %s' % (spawner.user_options['group']['name'], datasets_in_launch_group))
 
         # Check if dataset should mount.
         if not is_global and (launch_group_only and name not in datasets_in_launch_group):
@@ -683,10 +850,9 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         return True
 
-    @gen.coroutine
-    def pre_spawn_start(self, user, spawner):
+    async def pre_spawn_start(self, user, spawner):
         """Pass upstream_token to spawner via environment variable"""
-        auth_state = yield user.get_auth_state()
+        auth_state = await user.get_auth_state()
 
         if not auth_state:
             raise Exception('auth state must be enabled')
@@ -711,7 +877,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
             }
         )
 
-        if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0 and not spawner.enable_kernel_gateway:
+        if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
         if spawner.ssh_config['enabled']:
             spawner.environment.update({'PRIMEHUB_START_SSH': 'true'})
@@ -724,17 +890,19 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 {'mountPath': '/usr/local/bin/start-notebook.d', 'name': 'start-notebook-d'})
 
         self.chown_extra = []
+        primehub_datasets = {}
 
         try:
             self.log.info("oauth_user %s" % auth_state['oauth_user'])
             namespace = os.environ.get('POD_NAMESPACE', 'hub')
             primehub_datasets = {
-                item['metadata']['name']: item for item in self.get_custom_resources(
-                    namespace, 'datasets')}
-        except ApiException as e:
+                item['metadata']['name']: item for item in (await self.get_custom_resources(
+                    namespace, 'datasets'))}
+        except BaseException as e:
             print(
                 "Exception when calling CustomObjectsApi->get_namespaced_custom_object: %s\n" %
                 e)
+            traceback.print_tb()
 
         self.symlinks = ["ln -sf /datasets /home/jovyan/"]
         global_datasets = self.get_global_datasets(auth_state['launch_context']['groups'])
@@ -747,11 +915,12 @@ class OIDCAuthenticator(GenericOAuthenticator):
         for name, dataset in primehub_datasets.items():
             if ('%sds:%s' % (role_prefix, name) not in roles) and ('%sds:rw:%s' % (role_prefix, name) not in roles):
                 self.log.debug('[skip-info] :: roles: [%s], role_prefix: [%s], name: [%s]' % (roles, role_prefix, name))
-                self.log.debug('[skip-info] :: (%s, %s)' % ('%sds:%s' % (role_prefix, name), '%sds:rw:%s' % (role_prefix, name)))
+                self.log.debug(
+                    '[skip-info] :: (%s, %s)' % ('%sds:%s' % (role_prefix, name), '%sds:rw:%s' % (role_prefix, name)))
                 continue
             mounted = self.mount_dataset(spawner, global_datasets, datasets_in_launch_group, name, dataset)
             self.log.debug(
-                    "  %s dataset %s (type %s)", ('mounting' if mounted else 'skipped'), name, type)
+                "  %s dataset %s (type %s)", ('mounting' if mounted else 'skipped'), name, type)
 
         launch_group = spawner.user_options['group']['name']
         groups = auth_state['launch_context']['groups']
@@ -759,7 +928,6 @@ class OIDCAuthenticator(GenericOAuthenticator):
         mlflow_envs = self.get_mlflow_environment_variables(launch_group, auth_state)
         if mlflow_envs:
             spawner.environment.update(mlflow_envs)
-
 
         for group in groups:
             if not group.get('enabledSharedVolume', False):
@@ -777,14 +945,14 @@ class OIDCAuthenticator(GenericOAuthenticator):
                 name = re.sub('_', '-', group['name']).lower()
                 # Append Gi to end of shared volume capacity string
                 size = '%sGi' % str(shared_volume_capacity)
-                yield self.attach_project_pvc(spawner, name, name, size)
+                self.attach_project_pvc(spawner, name, name, size)
                 self.chown_extra.append('/project/' + name)
                 if home_symlink:
                     self.symlinks.append('ln -sf /project/%s /home/jovyan/' % name)
 
         if phfs_enabled:
             spawner.volumes.append({'name': 'phfs',
-                                'persistentVolumeClaim': {'claimName': phfs_pvc}})
+                                    'persistentVolumeClaim': {'claimName': phfs_pvc}})
             spawner.volume_mounts.append(
                 {'mountPath': '/phfs', 'name': 'phfs', 'subPath': 'groups/' + re.sub('_', '-', launch_group).lower()})
             self.chown_extra.append('/phfs')
@@ -807,25 +975,25 @@ class OIDCAuthenticator(GenericOAuthenticator):
         # use preStop hook to ensure jupyter's metadata owner back to the jovyan user
         spawner.lifecycle_hooks = {
             'postStart': {'exec': {'command': ['bash', '-c', ';'.join(self.symlinks)]}},
-            'preStop': {'exec': {'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
+            'preStop': {'exec': {
+                'command': ['bash', '-c', ';'.join(["chown -R 1000:100 /home/jovyan/.local/share/jupyter || true"])]}}
         }
 
         # add labels for resource validation
         spawner.extra_labels['primehub.io/user'] = escape_to_primehub_label(spawner.user.name)
-        spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(spawner.user_options.get('group', {}).get('name', ''))
+        spawner.extra_labels['primehub.io/group'] = escape_to_primehub_label(
+            spawner.user_options.get('group', {}).get('name', ''))
 
         self.attach_usage_annoations(spawner)
         self.mount_primehub_scripts(spawner)
 
         origin_args = spawner.get_args()
+
         def empty_list():
             return []
+
         spawner.get_args = empty_list
         spawner.cmd = ['/opt/primehub-start-notebook/primehub-entrypoint.sh'] + origin_args
-
-        if spawner.enable_kernel_gateway:
-            self.log.warning('enable kernel gateway')
-            mutate_pod_spec_for_kernel_gateway(spawner)
 
         if spawner.enable_safe_mode:
             spawner.environment['PRIMEHUB_SAFE_MODE_ENABLED'] = "true"
@@ -838,6 +1006,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         spawner.set_launch_group(launch_group)
         spawner.started_at = time.time()
+        self.log.warning(spawner.init_containers)
+        spawner.environment['PRE_SPAWN_START_FINISHED'] = 'finished'
 
     def setup_admission_not_found_init_container(self, spawner):
         # In order to check it passed the admission, set a bad initcontainer and admission will remove this initcontainer.
@@ -927,8 +1097,8 @@ class PrimeHubPodReflector(NamespacedResourceReflector):
     def pods(self):
         return self.resources
 
+
 class PrimeHubSpawner(KubeSpawner):
-    enable_kernel_gateway = None
     enable_safe_mode = False
     ssh_config = dict(enabled=False)
     _launch_group = None
@@ -968,40 +1138,13 @@ class PrimeHubSpawner(KubeSpawner):
         # .Values.singleuser.memory.limit
         # .Values.singleuser.extraResource.guarantees
         # .Values.singleuser.extraResource.limit
-        result = {}
-
-        # when kernel container is enabled,
-        # resource settings should be set on the kernel container not the notebook container
-        if self.enable_kernel_gateway:
-            resources = dict(
-                limits=dict(cpu=float(spec.get('limits.cpu', 1)), memory=spec.get('limits.memory', '1G')),
-                requests=dict(cpu=float(spec.get('requests.cpu', 0)), memory=spec.get('requests.memory', '0G'))
-            )
-            if extra_resource_limits:
-                resources['limits']['nvidia.com/gpu'] = gpu
-
-            # FIXME instance_type_to_override shouldn't modify caller(spawner) directly
-            # it is designed to return a partial state that can update to spawner
-            self.kernel_container_resources = resources
-
-            # when we enable the kernel container,
-            # we wouldn't set up resources at notebook
-            result = {
-                'cpu_guarantee': None,
-                'cpu_limit': None,
-                'mem_limit': None,
-                'mem_guarantee': None,
-                'extra_resource_limits': {}
-            }
-        else:
-            result = {
-                'cpu_guarantee': float(spec.get('requests.cpu', 0)),
-                'cpu_limit': float(spec.get('limits.cpu', 1)),
-                'mem_limit': spec.get('limits.memory', '1G'),
-                'mem_guarantee': spec.get('requests.memory', '0G'),
-                'extra_resource_limits': extra_resource_limits
-            }
-
+        result = {
+            'cpu_guarantee': float(spec.get('requests.cpu', 0)),
+            'cpu_limit': float(spec.get('limits.cpu', 1)),
+            'mem_limit': spec.get('limits.memory', '1G'),
+            'mem_guarantee': spec.get('requests.memory', '0G'),
+            'extra_resource_limits': extra_resource_limits
+        }
 
         # pod spec override
         override_fields = [
@@ -1128,10 +1271,9 @@ class PrimeHubSpawner(KubeSpawner):
         self._launch_group = None
         self.log.info("clear_state: %s" % self._launch_group)
 
-    @gen.coroutine
-    def _render_options_form_dynamically(self, current_spawner):
+    async def _render_options_form_dynamically(self, current_spawner):
         self.log.debug("render_options for %s", self._log_name)
-        auth_state = yield self.user.get_auth_state()
+        auth_state = await self.user.get_auth_state()
         if not auth_state:
             raise Exception('no auth state')
         context = auth_state.get('launch_context', None)
@@ -1141,26 +1283,29 @@ class PrimeHubSpawner(KubeSpawner):
             return self.render_html('spawn_block.html', block_msg='Backend API unavailable. Please contact admin.')
 
         if not context:
-            return self.render_html('spawn_block.html', block_msg='Sorry, but you need to relogin to continue', href='/hub/logout')
+            return self.render_html('spawn_block.html', block_msg='Sorry, but you need to relogin to continue',
+                                    href='/hub/logout')
 
         try:
             groups = self._groups_from_ctx(context)
             self._groups = groups
         except Exception:
             self.log.error('Failed to fetch groups', exc_info=True)
-            return self.render_html('spawn_block.html', block_msg='No group is configured for you to launch a server. Please contact admin.')
+            return self.render_html('spawn_block.html',
+                                    block_msg='No group is configured for you to launch a server. Please contact admin.')
 
-        self.user.spawner.ssh_config['host'] = get_primehub_config('sshServer.customHostname', get_primehub_config('host', ''))
-        self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name, os.environ.get('POD_NAMESPACE', 'hub'))
+        self.user.spawner.ssh_config['host'] = get_primehub_config('sshServer.customHostname',
+                                                                   get_primehub_config('host', ''))
+        self.user.spawner.ssh_config['hostname'] = '{}.{}'.format(self.user.spawner.pod_name,
+                                                                  os.environ.get('POD_NAMESPACE', 'hub'))
         self.user.spawner.ssh_config['port'] = get_primehub_config('sshServer.servicePort', '2222')
 
         return self.render_html('groups.html',
                                 groups=groups,
                                 default_image=self.user.spawner.default_image,
-                                default_instance_type = self.user.spawner.default_instance_type,
-                                autolaunch = self.user.spawner.autolaunch,
+                                default_instance_type=self.user.spawner.default_instance_type,
+                                autolaunch=self.user.spawner.autolaunch,
                                 active_group=self.active_group,
-                                enable_kernel_gateway=enable_feature_kernel_gateway,
                                 enable_ssh_server=enable_feature_ssh_server,
                                 ssh_config=self.user.spawner.ssh_config)
 
@@ -1180,7 +1325,7 @@ class PrimeHubSpawner(KubeSpawner):
             labels = pod.get('metadata', {}).get('labels', None)
             phase = pod.get('status', {}).get('phase', None)
             if labels and labels.get("primehub.io/group", "") == escape_to_primehub_label(group["name"]) \
-                    and (phase == "Pending" or phase == "Running"):
+                and (phase == "Pending" or phase == "Running"):
                 existing += pod.get('spec', {}).get('containers', {})
 
         def limit_of(container, name):
@@ -1197,7 +1342,7 @@ class PrimeHubSpawner(KubeSpawner):
                    for container in existing if has_limit(container)])
         mem = sum([int(convert_mem_resource_to_bytes(limit_of(container, 'memory')))
                    for container in existing if has_limit(container)])
-        mem = round(float(mem / GiB()), 1) # convert to GB
+        mem = round(float(mem / GiB()), 1)  # convert to GB
 
         return {'cpu': cpu, 'gpu': gpu, 'memory': mem}
 
@@ -1220,7 +1365,8 @@ class PrimeHubSpawner(KubeSpawner):
                 'Not enough resource limit in your groups, please contact admin.')
 
         def map_group(group):
-            if group.get('displayName', None) is None or group.get('displayName', None) is '': group['displayName'] = group.get('name', '')
+            if group.get('displayName', None) is None or group.get('displayName', None) is '': group[
+                'displayName'] = group.get('name', '')
             return group
 
         groups = list(map(map_group, groups))
@@ -1230,8 +1376,6 @@ class PrimeHubSpawner(KubeSpawner):
         return self.config.get('KubeSpawner', {}).get('image', '')
 
     def options_from_form(self, formdata):
-        if enable_feature_kernel_gateway:
-            self.enable_kernel_gateway = formdata.get('kernel_gateway', ['off']) == ['on']
         if enable_feature_ssh_server:
             self.ssh_config['enabled'] = formdata.get('ssh_server', ['off']) == ['on']
         self.enable_safe_mode = formdata.get('safe_mode', ['off']) == ['on']
@@ -1306,12 +1450,12 @@ class StopSpawningHandler(BaseHandler):
         spawner = user.spawner
         if not spawner.active:
             self.log.debug('Spawner is not active')
-            self.finish()
+            await self.finish()
             return
         auth_state = await user.get_auth_state()
         error = auth_state.get('error', None)
         if error == BACKEND_API_UNAVAILABLE:
-            self.finish(dict(error=error))
+            await self.finish(dict(error=error))
 
         def _remove_spawner():
             self.log.info("Deleting spawner %s", spawner._log_name)
@@ -1324,6 +1468,7 @@ class StopSpawningHandler(BaseHandler):
             _remove_spawner()
 
         self.redirect(url_path_join(self.hub.base_url, 'spawn', user.escaped_name))
+
 
 class ResourceUsageHandler(BaseHandler):
     @web.authenticated
@@ -1348,6 +1493,7 @@ class ResourceUsageHandler(BaseHandler):
         groups = spawner._groups_from_ctx(auth_state['launch_context'])
         # Tornado will response json when give chuck as a dictionary.
         self.finish(dict(groups=groups))
+
 
 class PrimeHubHomeHandler(BaseHandler):
     """Render the user's home page."""
@@ -1386,7 +1532,6 @@ class PrimeHubHomeHandler(BaseHandler):
                 self.redirect(url)
                 return
 
-
         html = self.render_template(
             'home.html',
             user=user,
@@ -1397,58 +1542,10 @@ class PrimeHubHomeHandler(BaseHandler):
             group=group,
             # can't use user.spawners because the stop method of User pops named servers from user.spawners when they're stopped
             spawners=user.orm_user._orm_spawners,
-            default_server=user.spawner
+            default_server=user.spawner,
+            sync=True
         )
         self.finish(html)
-
-
-def mutate_pod_spec_for_kernel_gateway(spawner):
-
-    # patch it
-    spawner.extra_pod_config = {
-        "shareProcessNamespace": True
-    }
-
-    spawner.init_containers = [{
-        "name": "chown",
-        "image": "busybox",
-        "imagePullPolicy": "IfNotPresent",
-        "securityContext": {"runAsUser": 0},
-        "volumeMounts": [
-            {'mountPath': '/home/jovyan', 'name': 'volume-{username}'}
-        ],
-        "command": ["sh"],
-        "args": ["-c", "chown 1000 /home/jovyan"]
-    }]
-
-    # overwrite default image
-    user_launch_image = spawner.image
-    spawner.extra_annotations['auditing.image'] = user_launch_image
-    spawner.image = spawner.get_default_image()
-    kernel_gateway_env = [{'name': 'JUPYTER_GATEWAY_ENV_WHITELIST', 'value': 'HOME'},
-                          {'name': 'HOME', 'value': '/home/jovyan'}]
-
-    if spawner.kernel_container_resources['limits'].get('nvidia.com/gpu', 0) == 0:
-        kernel_gateway_env.append({'name': 'NVIDIA_VISIBLE_DEVICES', 'value': 'none'})
-
-    spawner.extra_containers = [{
-        "name": "kernel",
-        "image": user_launch_image,
-        "imagePullPolicy": "IfNotPresent",
-        "securityContext": {"runAsUser": 0},
-        "volumeMounts": spawner.volume_mounts,
-        "lifecycle": spawner.lifecycle_hooks,
-        "env": kernel_gateway_env,
-        "command": ["/opt/primehub-start-notebook/kernel_gateway.sh"],
-        "resources": spawner.kernel_container_resources
-    }]
-
-    spawner.environment['JUPYTER_GATEWAY_URL'] = 'http://127.0.0.1:8889'
-    spawner.environment['JUPYTER_GATEWAY_VALIDATE_CERT'] = 'no'
-    spawner.environment['LOG_LEVEL'] = 'DEBUG'
-    spawner.environment['JUPYTER_GATEWAY_REQUEST_TIMEOUT'] = '40'
-    spawner.environment['JUPYTER_GATEWAY_CONNECT_TIMEOUT'] = '40'
-    spawner.environment['KERNEL_IMAGE'] = user_launch_image
 
 
 if locals().get('c') and not os.environ.get('TEST_FLAG'):
@@ -1457,28 +1554,29 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
 
     if c.JupyterHub.log_level != 'DEBUG':
         c.JupyterHub.log_level = 'WARN'
+    c.JupyterHub.log_level = 'INFO'
 
     c.JupyterHub.log_format = "%(color)s[%(levelname)s %(asctime)s.%(msecs).03d %(name)s %(module)s:%(lineno)d]%(end_color)s %(message)s"
     c.JupyterHub.authenticator_class = OIDCAuthenticator
     c.JupyterHub.spawner_class = PrimeHubSpawner
     c.JupyterHub.tornado_settings = {
-      'slow_spawn_timeout': 3,
-      'slow_stop_timeout': 30
+        'slow_spawn_timeout': 3,
+        'slow_stop_timeout': 30
     }
 
     c.JupyterHub.extra_handlers = [
-            (r"/api/primehub/groups", ResourceUsageHandler),
-            (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
-            (r"/api/primehub/users/([^/]+)/stop-spawning", StopSpawningHandler),
-            (r"/primehub/home", PrimeHubHomeHandler),
-            ]
+        (r"/api/primehub/groups", ResourceUsageHandler),
+        (r"/api/primehub/groups/([^/]+)", ResourceUsageHandler),
+        (r"/api/primehub/users/([^/]+)/stop-spawning", StopSpawningHandler),
+        (r"/primehub/home", PrimeHubHomeHandler),
+    ]
 
     c.JupyterHub.template_paths = [jupyterhub_template_path]
     c.JupyterHub.statsd_host = 'localhost'
     c.JupyterHub.statsd_port = 9125
     c.JupyterHub.statsd_prefix = 'jupyterhub'
     c.JupyterHub.authenticate_prometheus = False
-    c.JupyterHub.template_vars = { 'primehub_version': primehub_version }
+    c.JupyterHub.template_vars = {'primehub_version': primehub_version}
     c.JupyterHub.logo_file = '/usr/local/share/jupyterhub/static/images/PrimeHub.png'
     c.PrimeHubSpawner.start_timeout = get_primehub_config('spawnerStartTimeout', 300)
     c.PrimeHubSpawner.http_timeout = get_primehub_config('spawnerHttpTimeout', 30)
@@ -1512,3 +1610,6 @@ if locals().get('c') and not os.environ.get('TEST_FLAG'):
 
     # XXX: to be removed once kubespawner#251 is merged
     c.PrimeHubSpawner.extra_pod_config.update({'restartPolicy': 'OnFailure'})
+
+    # override the security-context setting for GRANT_SUDO
+    c.PrimeHubSpawner.allow_privilege_escalation = True

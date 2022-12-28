@@ -24,7 +24,7 @@ check-jq:
 		exit 1; \
 	fi
 
-primehub-controller-update: primehub-controller-update-scripts primehub-controller-update-crds
+primehub-controller-update: primehub-controller-update-scripts
 
 primehub-controller-update-scripts: check-yq check-jq
 	@echo "Updating scripts for controller..."
@@ -40,6 +40,7 @@ primehub-controller-update-scripts: check-yq check-jq
 		chmod +x ./*.sh
 	@echo "Done"
 
+# TODO: Now crds are not included under chart root. Should move this target to somewhere else.
 primehub-controller-update-crds: check-yq check-jq
 	@echo "Updating crds for controller..."
 	# We skip image CRD because we place images,instancetypes,datasets CRDs in templates/crd.yaml
@@ -66,5 +67,6 @@ install-dev-requirements:
 		PYCURL_SSL_LIBRARY=openssl \
 		pip3 install -r ../vendor/zero-to-jupyterhub-k8s/images/hub/requirements.txt --upgrade
 
+# add fake-k8s-config to avoid k8s client doing in-cluster checking and raise exceptions
 test:
-	TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml:coverage.xml --cov-report html
+	KUBECONFIG=fake-k8s-config TEST_FLAG=true PYTHONPATH=../vendor/zero-to-jupyterhub-k8s/jupyterhub/files/hub:scripts/jupyterhub/config/:../../../modules/primehub-admission/src/ py.test --cov=./ tests/test*.py --cov-report xml:coverage.xml --cov-report html

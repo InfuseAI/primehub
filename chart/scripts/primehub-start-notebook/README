@@ -28,6 +28,3 @@ index da6905be..f28a9ef8 100755
          # User is not attempting to override user/group via environment
 ```
 
-## kernel_gateway.sh
-
-It is used in `kernel gateway` mode.

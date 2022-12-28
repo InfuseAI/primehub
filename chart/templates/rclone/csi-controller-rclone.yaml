@@ -36,23 +36,6 @@ spec:
           resources:
             {{ .Values.rclone.csiAttacher.resources | toYaml | indent 12 | trim }}
           {{- end }}
-        - name: csi-cluster-driver-registrar
-          image: "{{ .Values.rclone.csiClusterDriverRegistrar.image.repository }}:{{ .Values.rclone.csiClusterDriverRegistrar.image.tag }}"
-          args:
-            - "--v=5"
-            - "--pod-info-mount-version=\"v1\""
-            - "--csi-address=$(ADDRESS)"
-          env:
-            - name: ADDRESS
-              value: /csi/csi.sock
-          volumeMounts:
-            - name: socket-dir
-              mountPath: /csi
-          imagePullPolicy: "{{ .Values.rclone.csiClusterDriverRegistrar.image.pullPolicy }}"
-          {{- if .Values.rclone.csiClusterDriverRegistrar.resources }}
-          resources:
-            {{ .Values.rclone.csiClusterDriverRegistrar.resources | toYaml | indent 12 | trim }}
-          {{- end }}
         - name: rclone
           image: "{{ .Values.rclone.rclone.image.repository }}:{{ .Values.rclone.rclone.image.tag }}"
           args :
@@ -75,5 +58,5 @@ spec:
           {{- end }}
       volumes:
         - name: socket-dir
-          emptyDir:
+          emptyDir: {}
 {{- end }}

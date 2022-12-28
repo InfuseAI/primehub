@@ -1,21 +1,21 @@
 primehub-all:
   # Core
-  busybox: &busybox busybox:1.31
+  busybox: &busybox library/busybox:1.32
   primehub-admission: &primehub-admission infuseai/primehub-admission:db8a8ba960
-  primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20191022
+  primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20221125
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
-  primehub-controller: &primehub-controller infuseai/primehub-controller:latest
-  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:latest
+  primehub-controller: &primehub-controller infuseai/primehub-controller:v4.0-6c5467e2
+  primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
-  buildah: &buildah quay.io/buildah/stable:v1.19.8
+  buildah: &buildah quay.io/buildah/stable:v1.28.0
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:latest
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:latest
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:latest
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:latest
+  primehub-console: &primehub-console infuseai/primehub-console:v4.0-b29fee78
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v4.0-b29fee78
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v4.0-b29fee78
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v4.0-b29fee78
 
   # Metacontroller
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
@@ -24,17 +24,19 @@ primehub-all:
   volume-nfs: &volume-nfs k8s.gcr.io/volume-nfs:0.8
 
   # Keycloak
-  keycloak: &keycloak jboss/keycloak:8.0.1
-  bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:11.5.0-debian-9-r60
-  minideb: &minideb bitnami/minideb:stretch
-  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:857c1960
+  keycloak: &keycloak quay.io/keycloak/keycloak:19.0.3
+  bitnami-postgresql: &bitnami-postgresql bitnami/postgresql:14.5.0-debian-11-r35
+  primehub-keycloak-theme: &primehub-keycloak-theme infuseai/primehub-keycloak-theme:846cbfc3
 
   # Jupyterhub
-  pause: &pause gcr.io/google_containers/pause:3.2
-  jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:0.10.6
-  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.2.2
-  k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:0.9-b51ffeb
-  statsd-exporter: &statsd-exporter prom/statsd-exporter:v0.9.0
+  pause: &pause k8s.gcr.io/pause:3.8
+  jupyterhub-k8s: &jupyterhub-k8s jupyterhub/k8s-hub:2.0.0
+  jupyterhub-k8s-secret-sync: &jupyterhub-k8s-secret-sync jupyterhub/k8s-secret-sync:2.0.0
+  jupyterhub-k8s-network-tools: &jupyterhub-k8s-network-tools jupyterhub/k8s-network-tools:2.0.0
+  jupyterhub-kube-scheduler: &jupyterhub-kube-scheduler k8s.gcr.io/kube-scheduler:v1.23.10
+  configurable-http-proxy: &configurable-http-proxy jupyterhub/configurable-http-proxy:4.5.3
+  k8s-image-awaiter: &k8s-image-awaiter jupyterhub/k8s-image-awaiter:2.0.0
+  traefik: &traefik library/traefik:v2.8.4
 
   # Dataset Uploader
   dataset-upload-web-front-end: &dataset-upload-web-front-end infuseai/dataset-upload-web-front-end:d744507a5e
@@ -52,21 +54,19 @@ primehub-all:
 
   # Usage
   primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.1
-  postgres: &postgres postgres:12
 
   # PrimeHub Store
-  minio: &minio minio/minio:RELEASE.2021-03-04T00-53-13Z
-  mc: &mc minio/mc:RELEASE.2021-03-12T03-36-59Z
-  csi-attacher: &csi-attacher quay.io/k8scsi/csi-attacher:v1.1.1
-  csi-cluster-driver-registrar: &csi-cluster-driver-registrar quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1
-  csi-node-driver-registrar: &csi-node-driver-registrar quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
-  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-13-g9b79578
+  minio: &minio minio/minio:RELEASE.2022-04-16T04-26-02Z
+  mc: &mc minio/mc:RELEASE.2022-11-07T23-47-39Z
+  csi-attacher: &csi-attacher k8s.gcr.io/sig-storage/csi-attacher:v3.4.0
+  csi-node-driver-registrar: &csi-node-driver-registrar k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.4.0
+  csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-16-g998c499
 
   # Log Collector
   fluentd-kubernetes-daemonset: &fluentd-kubernetes-daemonset fluent/fluentd-kubernetes-daemonset:v1.11-debian-s3-1
 
   # Tusd Uploader
-  tusd: &tusd tusproject/tusd:v1.4.0
+  tusd: &tusd tusproject/tusd:v1.10.0
 
   # Nvidia GPU Node Exporter
   nvidia_gpu_prometheus_exporter: &nvidia_gpu_prometheus_exporter infuseai/nvidia_gpu_prometheus_exporter:0.4
@@ -97,15 +97,17 @@ primehub-ee:
   # Keycloak
   keycloak: *keycloak
   bitnami-postgresql: *bitnami-postgresql
-  minideb: *minideb
   primehub-keycloak-theme: *primehub-keycloak-theme
 
   # Jupyterhub
   pause: *pause
   jupyterhub-k8s: *jupyterhub-k8s
+  jupyterhub-k8s-secret-sync: *jupyterhub-k8s-secret-sync
+  jupyterhub-k8s-network-tools: *jupyterhub-k8s-network-tools
+  jupyterhub-kube-scheduler: *jupyterhub-kube-scheduler
   configurable-http-proxy: *configurable-http-proxy
   k8s-image-awaiter: *k8s-image-awaiter
-  statsd-exporter: *statsd-exporter
+  traefik: *traefik
   primehub-examples: *primehub-examples
 
   # Dataset Uploader
@@ -124,13 +126,11 @@ primehub-ee:
 
   # Usage
   primehub-usage: *primehub-usage
-  postgres: *postgres
 
   # PrimeHub Store
   minio: *minio
   mc: *mc
   csi-attacher: *csi-attacher
-  csi-cluster-driver-registrar: *csi-cluster-driver-registrar
   csi-node-driver-registrar: *csi-node-driver-registrar
   csi-rclone: *csi-rclone
 
@@ -167,7 +167,6 @@ primehub-deploy:
   # Keycloak
   keycloak: *keycloak
   bitnami-postgresql: *bitnami-postgresql
-  minideb: *minideb
   primehub-keycloak-theme: *primehub-keycloak-theme
 
   # Model deployment
@@ -180,7 +179,6 @@ primehub-deploy:
 
   # Usage
   primehub-usage: *primehub-usage
-  postgres: *postgres
 
   # GPU Node Exporter
   nvidia_gpu_prometheus_exporter: *nvidia_gpu_prometheus_exporter

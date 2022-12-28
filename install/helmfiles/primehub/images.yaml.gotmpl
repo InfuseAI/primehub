@@ -23,20 +23,33 @@ jupyterhub:
     chp:
       image:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/configurable-http-proxy
-    nginx:
+    traefik:
       image:
-        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/kubernetes-ingress-controller/nginx-ingress-controller
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/traefik
+    secretSync:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-secret-sync
+  singleuser:
+    networkTools:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-network-tools
   prePuller:
     hook:
-      enabled: false
       image:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-image-awaiter
     pause:
       image:
-        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}gcr.io/google_containers/pause
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/pause
     podCuller:
       image:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-pod-culler
+  scheduling:
+    userScheduler:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/kube-scheduler
+    userPlaceholder:
+      image:
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/pause
   primehub:
     primehub-examples:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-examples
@@ -99,16 +112,13 @@ minio:
 rclone:
   nodeDriverRegistrar:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-node-driver-registrar
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-node-driver-registrar
   rclone:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/csi-rclone
   csiAttacher:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-attacher
-  csiClusterDriverRegistrar:
-    image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/k8scsi/csi-cluster-driver-registrar
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-attacher
 
 sshBastionServer:
   image:
@@ -123,22 +133,20 @@ usage:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-usage
   dbImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/postgres
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}bitnami/postgresql
 
 keycloak:
-  init:
+  dbchecker:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}library/busybox
   image:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jboss/keycloak
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/keycloak/keycloak
   theme:
-    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:857c1960
-  postgresql:
-    image:
-      registry: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" | trimSuffix "/" }}
-    volumePermissions:
-      image:
-        registry: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" | trimSuffix "/" }}
+    image: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-keycloak-theme:846cbfc3
+
+postgresql:
+  image:
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}bitnami/postgresql
 
 metacontroller:
   image:

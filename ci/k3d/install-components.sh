@@ -12,6 +12,7 @@ export STORAGE_CLASS=local-path
 export GRAPHQL_SECRET_KEY=$(openssl rand -hex 32)
 export HUB_AUTH_STATE_CRYPTO_KEY=$(openssl rand -hex 32)
 export HUB_PROXY_SECRET_TOKEN=$(openssl rand -hex 32)
+export HUB_COOKIE_SECRET=$(openssl rand -hex 32)
 
 echo "install primehub chart"
 cat <<EOF > primehub-values.yaml
@@ -33,13 +34,15 @@ ingress:
   hosts:
   - ${PRIMEHUB_DOMAIN}
 jupyterhub:
-  auth:
-    state:
-      cryptoKey: ${GRAPHQL_SECRET_KEY}
   hub:
     db:
       pvc:
         storageClassName: ${STORAGE_CLASS}
+    config:
+      CryptKeeper:
+        keys:
+        - ${HUB_AUTH_STATE_CRYPTO_KEY}
+    cookieSecret: ${HUB_COOKIE_SECRET}
   proxy:
     secretToken: ${HUB_PROXY_SECRET_TOKEN}
   singleuser:
@@ -55,6 +58,11 @@ if [[ "${PRIMEHUB_MODE}" == "ee" ]]; then
 elif [[ "${PRIMEHUB_MODE}" == "deploy" ]]; then
   values_mode='--values k3d/deploy-values.yaml'
 fi
+
+# install crds
+kubectl apply -f ../crds/crd.yaml
+kubectl apply -f ../crds/metacontroller/crd.yaml
+kubectl apply -f ../crds/primehub-controller
 
 helm upgrade \
   primehub ../chart \

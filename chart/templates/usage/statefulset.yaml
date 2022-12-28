@@ -17,34 +17,60 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: database
-        command:
-        - bash
-        - -c
-        - |
-          echo "Start PostgreSQL ..."
-          source /usr/local/bin/docker-entrypoint.sh
-          export POSTGRES_USER=$(cat /etc/credentials/username)
-          export POSTGRES_PASSWORD=$(cat /etc/credentials/password)
-          _main postgres
         image: {{.Values.usage.dbImage.repository}}:{{.Values.usage.dbImage.tag}}
         imagePullPolicy: {{.Values.usage.dbImage.pullPolicy}}
+        env:
+          - name: BITNAMI_DEBUG
+            value: "false"
+          - name: POSTGRESQL_PORT_NUMBER
+            value: "5432"
+          - name: POSTGRESQL_VOLUME_DIR
+            value: /bitnami/postgresql
+          - name: PGDATA
+            value: /bitnami/postgresql/data
+          # Authentication
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "primehub-usage.name" . }}-db
+                key: username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "primehub-usage.name" . }}-db
+                key: password
+          - name: POSTGRES_DB
+            value: postgres
+          # LDAP
+          - name: POSTGRESQL_ENABLE_LDAP
+            value: "no"
+          # TLS
+          - name: POSTGRESQL_ENABLE_TLS
+            value: "no"
+          # Audit
+          - name: POSTGRESQL_LOG_HOSTNAME
+            value: "false"
+          - name: POSTGRESQL_LOG_CONNECTIONS
+            value: "false"
+          - name: POSTGRESQL_LOG_DISCONNECTIONS
+            value: "false"
+          - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+            value: "off"
+          # Others
+          - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+            value: error
+          - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+            value: pgaudit
         ports:
         - containerPort: 5432
           name: db
         volumeMounts:
-        - name: {{ include "primehub-usage.name" . }}-data
-          mountPath: /var/lib/postgresql/data
-          subPath: data
-        - name: credentials
-          mountPath: /etc/credentials
+        - mountPath: /bitnami/postgresql
+          name: {{ include "primehub-usage.name" . }}-data
         {{- if .Values.usage.dbResources }}
         resources:
           {{ .Values.usage.dbResources | toYaml | indent 10 | trim }}
         {{- end }}
-      volumes:
-      - name: credentials
-        secret:
-          secretName: {{ include "primehub-usage.name" . }}-db
   volumeClaimTemplates:
   - metadata:
       name: {{ include "primehub-usage.name" . }}-data

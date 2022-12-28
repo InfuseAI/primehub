@@ -8,11 +8,11 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 export PATH=${PATH}:~/bin
-K9S_VERSION=v0.21.9
-KUBECTL_VERSION=v1.21.3
-HELM_VERSION=v3.6.2
-HELMDIFF_VERSION=v3.1.3
-HELMFILE_VERSION=v0.139.9
+K9S_VERSION=v0.26.7
+KUBECTL_VERSION=v1.24.8
+HELM_VERSION=v3.10.2
+HELMDIFF_VERSION=v3.6.0
+HELMFILE_VERSION=v0.144.0
 JQ_VERSION=1.6
 YQ_VERSION=v4.9.8
 
@@ -20,8 +20,8 @@ INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
 
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
-SUPPORT_K8S_VERSION="1.15 1.16 1.17 1.18 1.19 1.20 1.21"
-K8S_VERSION=1.21
+SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24"
+K8S_VERSION=1.24
 PRIMEHUB_VERSION=
 PRIMEHUB_NAMESPACE=hub
 PRIMEHUB_SCHEME='http'
@@ -62,6 +62,21 @@ warn() {
 
 error() {
   echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+get_arch() {
+  local machine=$(uname -m | tr '[:upper:]' '[:lower:]')
+  case "${machine}" in
+    'x86_64')
+      echo 'amd64'
+    ;;
+    'arm64')
+      echo 'arm64'
+    ;;
+    *)
+      echo 'amd64'
+    ;;
+  esac
 }
 
 primehub_config_path() {
@@ -271,19 +286,21 @@ check::primehub::required_bin() {
 
 install::kubectl() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local arch=$(get_arch)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] kubectl ${KUBECTL_VERSION}"
-  curl -O -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${platform}/amd64/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
+  curl -O -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${platform}/${arch}/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
   popd > /dev/null
 }
 
 install::yq() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local arch=$(get_arch)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] yq ${YQ_VERSION}"
-  curl -o yq -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${platform}_amd64" && chmod +x ~/bin/yq
+  curl -o yq -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${platform}_${arch}" && chmod +x ~/bin/yq
   popd > /dev/null
 }
 
@@ -305,30 +322,32 @@ install::jq() {
 
 install::helm() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local arch=$(get_arch)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] helm ${HELM_VERSION}"
   mkdir -p ~/bin/helm-${HELM_VERSION}
-  curl -O -L "https://get.helm.sh/helm-${HELM_VERSION}-${platform}-amd64.tar.gz"
-  tar zxf helm-${HELM_VERSION}-${platform}-amd64.tar.gz -C ~/bin/helm-${HELM_VERSION}
-  mv ~/bin/helm-${HELM_VERSION}/${platform}-amd64/helm ~/bin/helm
+  curl -O -L "https://get.helm.sh/helm-${HELM_VERSION}-${platform}-${arch}.tar.gz"
+  tar zxf helm-${HELM_VERSION}-${platform}-${arch}.tar.gz -C ~/bin/helm-${HELM_VERSION}
+  mv ~/bin/helm-${HELM_VERSION}/${platform}-${arch}/helm ~/bin/helm
   rm -rf ~/bin/helm-${HELM_VERSION}
-  rm ~/bin/helm-${HELM_VERSION}-${platform}-amd64.tar.gz
+  rm ~/bin/helm-${HELM_VERSION}-${platform}-${arch}.tar.gz
   popd > /dev/null
 }
 
 install::helmdiff() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local arch=$(get_arch)
   local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] helm-diff ${HELMDIFF_VERSION}"
   case "${platform}" in
     'linux')
-      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux.tgz"
+      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux-${arch}.tgz"
     ;;
     'darwin')
-      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos.tgz"
+      curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos-${arch}.tgz"
     ;;
   esac
   mkdir -p $helm_plugin_path
@@ -339,18 +358,20 @@ install::helmdiff() {
 
 install::helmfile() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
+  local arch=$(get_arch)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] helmfile ${HELMFILE_VERSION}"
-  curl -o helmfile -L "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_amd64" && chmod +x ~/bin/helmfile
+  curl -o helmfile -L "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_${arch}" && chmod +x ~/bin/helmfile
   popd > /dev/null
 }
 
 install::k9s() {
   local platform=$(uname)
+  local arch=$(uname -m)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
-  curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_x86_64.tar.gz"
+  curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_${arch}.tar.gz"
   mkdir -p ~/bin/k9s-${K9S_VERSION}
   tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
   mv ~/bin/k9s-${K9S_VERSION}/k9s ~/bin/k9s
@@ -569,7 +590,11 @@ preflight_check() {
     warn "[Skip] Domain Name Check: ${primehub_url}"
   fi
 
-  kubectl get sc > /dev/null || (error '[Pre-check Failed] Storage Class is not configurated'; exit 1)
+  default_sc=$(kubectl get sc 2>&1 | grep -e ' (default)' | cut -d' ' -f1 || echo 'NO_DEFAULT_SC')
+  if [[ $default_sc == 'NO_DEFAULT_SC' ]]; then
+    error '[Pre-check Failed] Default Storage Class is not configurated'
+    exit 1;
+  fi
 
   info "[Preflight Check] Pass"
 }
@@ -588,6 +613,7 @@ init_env() {
   ADMIN_UI_GRAPHQL_SECRET_KEY=${ADMIN_UI_GRAPHQL_SECRET_KEY:-$(openssl rand -hex 32)}
   HUB_AUTH_STATE_CRYPTO_KEY=${HUB_AUTH_STATE_CRYPTO_KEY:-$(openssl rand -hex 32)}
   HUB_PROXY_SECRET_TOKEN=${HUB_PROXY_SECRET_TOKEN:-$(openssl rand -hex 32)}
+  HUB_COOKIE_SECRET=${HUB_COOKIE_SECRET:-$(openssl rand -hex 32)}
   PH_PASSWORD=${PH_PASSWORD:-$(openssl rand -hex 12)}
 
   PRIMEHUB_NAMESPACE=${PRIMEHUB_NAMESPACE:-hub}
@@ -613,6 +639,7 @@ init_env() {
 
     HUB_AUTH_STATE_CRYPTO_KEY
     HUB_PROXY_SECRET_TOKEN
+    HUB_COOKIE_SECRET
 
     PH_PASSWORD
 
@@ -657,7 +684,7 @@ verify_primehub_domain() {
 prepare_primehub_env() {
   local CONFIG_PATH="$(primehub_config_path)"
   local HELM_OVERRIDE_PATH="$CONFIG_PATH/helm_override"
-  PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep 'default' | cut -d ' ' -f 1)"
+  PRIMEHUB_STORAGE_CLASS="$(kubectl get sc | grep -e ' (default)' | cut -d' ' -f1)"
 
   if [ ! -f ${CONFIG_PATH}/.env ]; then
     info "[Prepare] PrimeHub require values"
@@ -722,7 +749,7 @@ apply_issuer() {
   local ISSUER_CONFIG="${CONFIG_PATH}/issuer.yml"
 
   cat << EOF > ${ISSUER_CONFIG}
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
@@ -762,17 +789,21 @@ install::ingress_nginx() {
     verify_minimal_resources
     info "[Install] Nginx Ingress"
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-    helm install nginx-ingress ingress-nginx/ingress-nginx --create-namespace --namespace ingress-nginx \
-    --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
-    --set controller.admissionWebhooks.enabled=false \
-    --set controller.resources.limits.cpu=250m \
-    --set controller.resources.limits.memory=200Mi \
-    --set controller.resources.requests.cpu=100m \
-    --set controller.resources.requests.memory=100Mi \
-    --set defaultBackend.resources.limits.cpu=250m \
-    --set defaultBackend.resources.limits.memory=100Mi \
-    --set defaultBackend.resources.requests.cpu=100m \
-    --set defaultBackend.resources.requests.memory=64Mi
+    helm install \
+      nginx-ingress ingress-nginx/ingress-nginx \
+      --create-namespace \
+      --namespace ingress-nginx \
+      --version 4.2.5 \
+      --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
+      --set controller.admissionWebhooks.enabled=false \
+      --set controller.resources.limits.cpu=250m \
+      --set controller.resources.limits.memory=200Mi \
+      --set controller.resources.requests.cpu=100m \
+      --set controller.resources.requests.memory=100Mi \
+      --set defaultBackend.resources.limits.cpu=250m \
+      --set defaultBackend.resources.limits.memory=100Mi \
+      --set defaultBackend.resources.requests.cpu=100m \
+      --set defaultBackend.resources.requests.memory=64Mi
   else
     warn "[Skip] Nginx Ingress installed"
   fi
@@ -789,7 +820,7 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v0.15.0 \
+      --version v1.9.1 \
       --set installCRDs=true \
       --set ingressShim.defaultIssuerName=letsencrypt-prod \
       --set ingressShim.defaultIssuerKind=ClusterIssuer
@@ -804,7 +835,7 @@ install::cert_manager() {
 
 generate::keycloak_grafana_client() {
   local ns='hub'
-  local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/jboss/keycloak/bin/kcadm.sh"
+  local KCADM="kubectl -n ${ns} exec -it keycloak-0 -- /opt/keycloak/bin/kcadm.sh"
   local client_name=grafana-proxy
   local redirect_uri="${PRIMEHUB_SCHEME}://${PRIMEHUB_DOMAIN}/grafana/*"
 
@@ -991,13 +1022,13 @@ disable_keycloak_ssl_required() {
   local namespace=${PRIMEHUB_NAMESPACE}
   info "[Config] Keycloak to support external access by HTTP"
   kubectl -n ${namespace} exec -it keycloak-0 -- \
-  /opt/jboss/keycloak/bin/kcadm.sh config credentials \
+  /opt/keycloak/bin/kcadm.sh config credentials \
   --server http://localhost:8080/auth \
   --realm master \
   --user ${KC_USER} \
   --password=${KC_PASSWORD}
   kubectl -n ${namespace} exec -it keycloak-0 -- \
-  /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s "sslRequired=none"
+  /opt/keycloak/bin/kcadm.sh update realms/master -s "sslRequired=none"
 }
 
 config::singlenode() {
@@ -1021,7 +1052,14 @@ diff::primehub() {
   else
     export CHART_VERSION=${PRIMEHUB_VERSION}
   fi
-  helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --args '--disable-validation'
+  local helmfile_version=$(helmfile -v | grep -o -e 'v\d\+\.\d\+\.\d\+' | sed 's/v//g')
+  local major=$(echo $helmfile_version | cut -d'.' -f1)
+  local minor=$(echo $helmfile_version | cut -d'.' -f2)
+  if [[ $major -eq 0 ]] && [[ $minor -ge 144 ]]; then
+    helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --suppress MutatingWebhookConfiguration --suppress ValidatingWebhookConfiguration --args '--disable-validation'
+  else
+    helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --args '--disable-validation'
+  fi
 }
 
 error_log_primehub() {
@@ -1049,10 +1087,32 @@ progress_primehub() {
   info "[Progress] wait for helm install completed"
 }
 
+apply_crds() {
+  info "[Install] Apply PrimeHub CRDs"
+  local CRD_PATH=$(dirname $DIR)/crds
+  kubectl apply -f ${CRD_PATH}/crd.yaml
+  kubectl apply -f ${CRD_PATH}/metacontroller/crd.yaml
+  kubectl apply -f ${CRD_PATH}/primehub-controller
+}
+
+is_yq_v4() {
+  local yq_version=$(yq --version | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
+  [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]] && echo true
+}
 
 install::primehub() {
-  local PRIMEHUB_CONFIG=$(primehub_config_path)/helm_override/primehub.yaml
+  local config_path=$(primehub_config_path)
+  local PRIMEHUB_CONFIG=${config_path}/helm_override/primehub.yaml
   local HELMFIEL_PATH=${DIR}/helmfiles
+
+  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
+    sed -i 's/^PRIMEHUB_SCHEME=http$/PRIMEHUB_SCHEME=https/g' ${config_path}/.env
+    sed -i 's/^KC_SCHEME=http$/KC_SCHEME=https/g' ${config_path}/.env
+
+    info "[Check] Cert Manager"
+    install::cert_manager
+  fi
+
   info "[Check] primehub.yaml"
 
   infuseai_repo_update
@@ -1067,8 +1127,7 @@ install::primehub() {
     # if kube-apiserver is not running on 6443, override corresponding values in primehub.yaml
     local kube_api_port=$(kubectl get services kubernetes -o json | jq -r '.spec.ports[0].targetPort')
     if [[ "$kube_api_port" != "" ]] && [[ "$kube_api_port" != "6443" ]]; then
-      local yq_version=$(yq --version | egrep -o "([0-9]{1,}\.)+[0-9]{1,}")
-      if [[ "$yq_version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
+      if [[ $(is_yq_v4) ]]; then
         yq -i e ".sshBastionServer.netpol.kubeApiPort = $kube_api_port" $PRIMEHUB_CONFIG
       else
         yq w -i $PRIMEHUB_CONFIG 'sshBastionServer.netpol.kubeApiPort' "$kube_api_port"
@@ -1091,6 +1150,8 @@ install::primehub() {
   progress_primehub &
   BGPID=$!
 
+  apply_crds
+  load_env_variables
   helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
@@ -1099,6 +1160,17 @@ install::primehub() {
   if [[ "$PRIMEHUB_SCHEME" == 'http' ]]; then
     info "[Progress] Disable Keycloak SSL required"
     disable_keycloak_ssl_required
+  fi
+
+  # Check if keycloak db password exists and append to helm_override/primehub.yaml
+  if [[ $(kubectl -n $PRIMEHUB_NAMESPACE get secret | grep -e '^keycloak-postgres ') ]]; then
+    info "[Progress] Add postgresql.auth.passwrod to $PRIMEHUB_CONFIG"
+    local db_password=$(kubectl -n $PRIMEHUB_NAMESPACE get secret keycloak-postgres -o jsonpath='{.data.password}' | base64 -d)
+    if [[ $(is_yq_v4) ]]; then
+      yq -i e ".postgresql.auth.password = \"$db_password\"" $PRIMEHUB_CONFIG || true
+    else
+      yq w -i $PRIMEHUB_CONFIG 'postgresql.auth.password' "$db_password" || true
+    fi
   fi
 
   info "[Completed] Install PrimeHub"
@@ -1117,11 +1189,6 @@ create::primehub() {
   verify_minimal_resources
 
   prepare_primehub_env
-
-  if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
-    info "[Check] Cert Manager"
-    install::cert_manager
-  fi
 
   info "[Install] PrimeHub"
   install::primehub

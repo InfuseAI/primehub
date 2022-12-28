@@ -32,6 +32,8 @@ spec:
           env:
           - name: PRIMEHUB_NAMESPACE
             value: {{ .Release.Namespace }}
+          - name: KC_APP_URL
+            value: {{ include "primehub.keycloak.appUrl" . }}
           - name: KC_URL
             value: {{ include "primehub.keycloak.url" . }}
           - name: KC_USER
@@ -40,8 +42,8 @@ spec:
             valueFrom:
               secretKeyRef:
             {{- if .Values.keycloak.deploy }}
-                name: {{ include "keycloak.fullname" . }}-http
-                key: {{ include "keycloak.passwordKey" . }}
+                name: {{ include "keycloak.name" . }}-admin-creds
+                key: password
             {{- else }}
                 name: "primehub-bootstrap"
                 key: kcpassword

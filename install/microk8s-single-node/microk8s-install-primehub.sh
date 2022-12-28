@@ -34,7 +34,7 @@ function utils-install {
 
     # Install helmfile
     echo -e "${GREEN} [Install] helmfile (6/8) ${NC}"
-    curl -Lo helmfile https://github.com/roboll/helmfile/releases/download/v0.138.7/helmfile_linux_amd64
+    curl -Lo helmfile https://github.com/roboll/helmfile/releases/download/v0.144.0/helmfile_linux_amd64
     install helmfile ~/bin
 
     echo -e "${GREEN} [Install] kubectl (7/8) ${KUBECTL_VERSION} ${NC}"

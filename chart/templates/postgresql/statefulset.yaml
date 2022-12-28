@@ -1,0 +1,160 @@
+{{- if .Values.keycloak.deploy }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.names.name" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: postgresql
+spec:
+  replicas: 1
+  serviceName: {{ include "common.names.name" . }}-headless
+  {{- if .Values.postgresql.updateStrategy }}
+  updateStrategy: {{- toYaml .Values.postgresql.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: postgresql
+  template:
+    metadata:
+      name: {{ include "common.names.name" . }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: postgresql
+    spec:
+      serviceAccountName: default
+      {{- if .Values.postgresql.affinity }}
+      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.postgresql.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels: {{- (include "common.labels.matchLabels" .) | nindent 20 }}
+                    app.kubernetes.io/component: postgresql
+                namespaces:
+                  - {{ .Release.Namespace | quote }}
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      {{- end }}
+      {{- if .Values.postgresql.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.postgresql.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.postgresql.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.postgresql.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if .Values.postgresql.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.postgresql.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.initContainers }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.postgresql.initContainers "context" $ ) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: postgresql
+          image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+          {{- if .Values.postgresql.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.postgresql.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: {{ .Values.postgresql.containerPort | quote }}
+            - name: POSTGRESQL_VOLUME_DIR
+              value: {{ .Values.postgresql.persistence.mountPath | quote }}
+            {{- if .Values.postgresql.persistence.mountPath }}
+            - name: PGDATA
+              value: {{ .Values.postgresql.persistence.dataDir | quote }}
+            {{- end }}
+            # Authentication
+            - name: POSTGRES_USER
+              value: {{ .Values.postgresql.auth.username | quote }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.name" . }}
+                  key: password
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresql.auth.database | quote }}
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: error
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: pgaudit
+          ports:
+            - name: tcp-postgresql
+              containerPort: {{ .Values.postgresql.containerPort }}
+          {{- if .Values.postgresql.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.postgresql.livenessProbe "enabled") "context" $) | nindent 12 }}
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U {{ .Values.postgresql.auth.username | quote }} -d "dbname={{ .Values.postgresql.auth.database }}" -h 127.0.0.1 -p {{ .Values.postgresql.containerPort }}
+          {{- end }}
+          {{- if .Values.postgresql.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.postgresql.readinessProbe "enabled") "context" $) | nindent 12 }}
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U {{ .Values.postgresql.auth.username | quote }} -d "dbname={{ .Values.postgresql.auth.database }}" -h 127.0.0.1 -p {{ .Values.postgresql.containerPort }}
+                  {{- if contains "bitnami/" .Values.postgresql.image.repository }}
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+                  {{- end -}}
+          {{- end }}
+          {{- if .Values.postgresql.resources }}
+          resources: {{- toYaml .Values.postgresql.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.postgresql.shmVolume.enabled }}
+            - name: dshm
+              mountPath: /dev/shm
+            {{- end }}
+            {{- if .Values.postgresql.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.postgresql.persistence.mountPath }}
+            {{- end }}
+      volumes:
+        {{- if .Values.postgresql.shmVolume.enabled }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            {{- if .Values.postgresql.shmVolume.sizeLimit }}
+            sizeLimit: {{ .Values.postgresql.shmVolume.sizeLimit }}
+            {{- end }}
+        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.postgresql.persistence.size | quote }}
+        {{- if .Values.postgresql.persistence.storageClassName }}
+        storageClassName: {{ .Values.postgresql.persistence.storageClassName | quote }}
+        {{- end }}
+{{- end }}

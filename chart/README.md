@@ -147,7 +147,6 @@ Parameter | Description | Default
 `jupyterhub.primehub.scopeRequired` | The keycloak scope is required to use jupyterhub |  `""`
 `jupyterhub.primehub.startnotebook` | A map to inject the start notebook scripts. The key is the filename, the value is the script content | `{}`
 `jupyterhub.primehub.startNotebookConfigMap` | The configmap name for start notebook scripts| `start-notebook-d`
-`jupyterhub.primehub.kernelGateway` | If kerenel gateway enabled | `false`
 `jupyterhub.primehub.authRefreshAge` | The authentication refresh rate. | `-1`
 `jupyterhub.primehub.node-affinity-preferred`| The affinity setting for jupyter notebook | `[]`
 `jupyterhub.primehub.node-affinity-required` | The affinity setting for jupyter notebook  | `[]`
@@ -228,10 +227,10 @@ Parameter | Description | Default
 `keycloakGateway.image.tag` | The keycloak gateway image tag | Please see [values.yaml](values.yaml)
 
 # Developer Notes
-## Update Scripts and CRDs
+## Update Scripts
 
-If the image tag is changed, the scripts and crds also needs to be updated. Run the following commands to update.
-This command will sync scripts folder and crd yaml files from [Primehub Controller](https://github.com/InfuseAI/primehub-controller).
+If the image tag is changed, the scripts also needs to be updated. Run the following commands to update.
+This command will sync scripts folder from [Primehub Controller](https://github.com/InfuseAI/primehub-controller).
 
 ```
 make primehub-controller-update

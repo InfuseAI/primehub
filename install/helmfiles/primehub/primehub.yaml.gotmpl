@@ -12,7 +12,6 @@
 {{ $PRIMEHUB_STORAGE_CLASS:= (requiredEnv "PRIMEHUB_STORAGE_CLASS")}}
 {{ $GROUP_VOLUME_STORAGE_CLASS := (env "GROUP_VOLUME_STORAGE_CLASS" | default "")}}
 
-{{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY:= (env "PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY" | default "false")}}
 {{ $PRIMEHUB_FEATURE_CUSTOM_IMAGE := (env "PRIMEHUB_FEATURE_CUSTOM_IMAGE" | default "false")}}
 {{ $PRIMEHUB_BOOTSTRAP_ENABLED := (env "PRIMEHUB_BOOTSTRAP_ENABLED" | default "true")}}
 {{ $PRIMEHUB_FEATURE_USAGE := (env "PRIMEHUB_FEATURE_USAGE" | default "true")}}
@@ -61,12 +60,13 @@ keycloak:
   {{- end }}
   {{- if eq $KEYCLOAK_DEPLOY "true" }}
   password: {{ requiredEnv "KC_PASSWORD" | quote }}
-  postgresql:
-    persistence:
-      storageClass: {{ $PRIMEHUB_STORAGE_CLASS }}
   {{- else }}
   deploy: false
   {{- end }}
+
+postgresql:
+  persistence:
+    storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
 
 {{/* If we install metacontroller separately */}}
 {{- if ne $METACONTROLLER_DEPLOY "true" }}
@@ -95,15 +95,14 @@ jupyterhub:
     db:
       pvc:
         storageClassName: {{ $PRIMEHUB_STORAGE_CLASS }}
-  primehub:
-    kernelGateway: {{ $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY }}
+    config:
+      CryptKeeper:
+        keys:
+        - {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
+    cookieSecret: {{ env "HUB_COOKIE_SECRET" }}
 
   proxy:
     secretToken: {{ env "HUB_PROXY_SECRET_TOKEN" }}
-
-  auth:
-    state:
-      cryptoKey: {{ env "HUB_AUTH_STATE_CRYPTO_KEY" }}
 
   singleuser:
     storage:
@@ -116,12 +115,6 @@ jupyterhub:
           matchExpressions:
           - key: scheduled-maintenance
             operator: DoesNotExist
-{{- if eq $PRIMEHUB_FEATURE_ENABLE_KERNEL_GATEWAY "true" }}
-    image:
-      name: jupyter/base-notebook
-      tag: notebook-6.0.0
-      pullPolicy: IfNotPresent
-{{- end }}
     extraPodConfig:
       enableServiceLinks: false
 
@@ -147,6 +140,13 @@ ingress:
     - {{ $PRIMEHUB_DOMAIN }}
     secretName: hub-tls
   {{ end }}
+
+# When PRIMEHUB_MODE in ['ee', 'deploy'], disable NPS survey
+{{- if ne $PRIMEHUB_MODE "ce" }}
+console:
+  npsSurvey:
+    enabled: false
+{{- end }}
 
 graphql:
   sharedGraphqlSecret: {{ env "ADMIN_UI_GRAPHQL_SECRET_KEY" }}

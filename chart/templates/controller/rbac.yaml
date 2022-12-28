@@ -1,18 +1,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  labels:
-    app.kubernetes.io/name: {{ include "primehub.name" . }}-controller
-    helm.sh/chart: {{ include "primehub.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-  name: {{ include "primehub.fullname" . }}-controller
-  namespace: {{ .Release.Namaspece }}
+  name: {{ include "primehub.fullname" . }}-controller-manager
+  namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-leader-election-role
+  name: {{ include "primehub.fullname" . }}-leader-election-role
+  namespace: {{ .Release.Namespace }}
 rules:
 - apiGroups:
   - ""
@@ -27,24 +23,30 @@ rules:
   - patch
   - delete
 - apiGroups:
-  - ""
+  - coordination.k8s.io
   resources:
-  - configmaps/status
+  - leases
   verbs:
   - get
+  - list
+  - watch
+  - create
   - update
   - patch
+  - delete
 - apiGroups:
   - ""
   resources:
   - events
   verbs:
   - create
+  - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-manager-role
+  creationTimestamp: null
+  name: {{ include "primehub.fullname" . }}-manager-role
 rules:
 - apiGroups:
   - ""
@@ -55,6 +57,7 @@ rules:
   - delete
   - get
   - list
+  - patch
   - update
   - watch
 - apiGroups:
@@ -63,17 +66,14 @@ rules:
   - secrets
   verbs:
   - create
-  - delete
   - get
   - list
-  - patch
   - update
   - watch
 - apiGroups:
-  - "extensions"
-  - "networking.k8s.io"
+  - ""
   resources:
-  - ingresses
+  - services
   verbs:
   - create
   - delete
@@ -83,8 +83,8 @@ rules:
   - update
   - watch
 - apiGroups:
-  - "extensions"
-  - "apps"
+  - apps
+  - extensions
   resources:
   - deployments
   verbs:
@@ -96,21 +96,12 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ""
+  - networking.k8s.io
   resources:
-  - namespaces
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - services
+  - ingresses
   verbs:
   - create
-  - delete
-  - get
   - list
-  - patch
   - update
   - watch
 - apiGroups:
@@ -128,8 +119,7 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - imagespecjobs
-  - imagespecjobs/finalizers
+  - images
   verbs:
   - create
   - delete
@@ -138,6 +128,38 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - images/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - primehub.io
+  resources:
+  - images/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - primehub.io
+  resources:
+  - imagespecjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - imagespecjobs/finalizers
+  verbs:
+  - update
 - apiGroups:
   - primehub.io
   resources:
@@ -150,7 +172,6 @@ rules:
   - primehub.io
   resources:
   - imagespecs
-  - imagespecs/finalizers
   verbs:
   - create
   - delete
@@ -159,6 +180,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - imagespecs/finalizers
+  verbs:
+  - update
 - apiGroups:
   - primehub.io
   resources:
@@ -170,8 +197,7 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images
-  - images/finalizers
+  - licenses
   verbs:
   - create
   - delete
@@ -183,7 +209,13 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
-  - images/status
+  - licenses/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - primehub.io
+  resources:
+  - licenses/status
   verbs:
   - get
   - patch
@@ -203,17 +235,21 @@ rules:
 - apiGroups:
   - primehub.io
   resources:
+  - phapplications/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - primehub.io
+  resources:
   - phapplications/status
   verbs:
   - get
   - patch
   - update
-{{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
 - apiGroups:
   - primehub.io
   resources:
   - phdeployments
-  - phdeployments/finalizers
   verbs:
   - create
   - delete
@@ -222,6 +258,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - phdeployments/finalizers
+  verbs:
+  - update
 - apiGroups:
   - primehub.io
   resources:
@@ -234,7 +276,6 @@ rules:
   - primehub.io
   resources:
   - phjobs
-  - phjobs/finalizers
   verbs:
   - create
   - delete
@@ -243,6 +284,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - phjobs/finalizers
+  verbs:
+  - update
 - apiGroups:
   - primehub.io
   resources:
@@ -255,7 +302,6 @@ rules:
   - primehub.io
   resources:
   - phschedules
-  - phschedules/finalizers
   verbs:
   - create
   - delete
@@ -264,6 +310,12 @@ rules:
   - patch
   - update
   - watch
+- apiGroups:
+  - primehub.io
+  resources:
+  - phschedules/finalizers
+  verbs:
+  - update
 - apiGroups:
   - primehub.io
   resources:
@@ -272,41 +324,21 @@ rules:
   - get
   - patch
   - update
-- apiGroups:
-  - primehub.io
-  resources:
-  - licenses
-  - licenses/finalizers
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - primehub.io
-  resources:
-  - licenses/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - get
-  - list
-  - watch
-{{- end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-proxy-role
+  name: {{ include "primehub.fullname" . }}-metrics-reader
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "primehub.fullname" . }}-proxy-role
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -324,39 +356,39 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-leader-election-rolebinding
+  name: {{ include "primehub.fullname" . }}-leader-election-rolebinding
   namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "primehub.fullname" . }}-controller-leader-election-role
+  name: {{ include "primehub.fullname" . }}-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "primehub.fullname" . }}-controller
+  name: {{ include "primehub.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-manager-rolebinding
+  name: {{ include "primehub.fullname" . }}-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "primehub.fullname" . }}-controller-manager-role
+  name: {{ include "primehub.fullname" . }}-manager-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "primehub.fullname" . }}-controller
+  name: {{ include "primehub.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "primehub.fullname" . }}-controller-proxy-rolebinding
+  name: {{ include "primehub.fullname" . }}-proxy-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "primehub.fullname" . }}-controller-proxy-role
+  name: {{ include "primehub.fullname" . }}-proxy-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "primehub.fullname" . }}-controller
+  name: {{ include "primehub.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}

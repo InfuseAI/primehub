@@ -1,4 +1,4 @@
-{{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
+{{- $data := include "primehub-admission.webhook-certs.manage" . | fromYaml }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
@@ -13,7 +13,7 @@ webhooks:
         name: primehub-admission
         namespace: {{ .Release.Namespace }}
         path: "/image-mutation"
-      caBundle: {{ $ca.Cert | b64enc }}
+      caBundle: {{ get $data "cacert" }}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: ["*"]
@@ -38,7 +38,7 @@ webhooks:
         name: primehub-admission
         namespace: {{ .Release.Namespace }}
         path: /pvc-check
-      caBundle: {{ $ca.Cert | b64enc }}
+      caBundle: {{ get $data "cacert" }}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: ["*"]
@@ -63,7 +63,7 @@ webhooks:
         name: primehub-admission
         namespace: {{ .Release.Namespace }}
         path: "/"
-      caBundle: {{ $ca.Cert | b64enc }}
+      caBundle: {{ get $data "cacert" }}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: ["*"]
@@ -88,7 +88,7 @@ webhooks:
         name: primehub-admission
         namespace: {{ .Release.Namespace }}
         path: /license-check
-      caBundle: {{ $ca.Cert | b64enc }}
+      caBundle: {{ get $data "cacert" }}
     failurePolicy: Ignore
     namespaceSelector:
       matchLabels:
@@ -99,11 +99,6 @@ webhooks:
         apiVersions: ["*"]
         resources: ["licenses"]
 ---
-{{- $cn := "primehub-admission" }}
-{{- $altName1 := printf "%s.%s" $cn .Release.Namespace }}
-{{- $altName2 := printf "%s.%s.svc" $cn .Release.Namespace }}
-{{- $altNames := (list $altName1 $altName2) }}
-{{- $cert := genSignedCert $cn nil $altNames 3650 $ca }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -111,5 +106,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 data:
-  cert.pem: {{ $cert.Cert | b64enc }}
-  key.pem: {{ $cert.Key | b64enc }}
+  cert.pem: {{ get $data "cert" }}
+  key.pem: {{ get $data "key" }}
+  cacert.pem: {{ get $data "cacert" }}

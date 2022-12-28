@@ -24,6 +24,11 @@ Global
 {{- end -}}
 
 {{- define "primehub.url" -}}
+{{- if not .Values.primehub.domain }}
+  {{- $errorString := "\nPRIMEHUB DOMAIN ERROR: You must provide an IP address or domain when installing the release." -}}
+  {{- $errorString = print $errorString "\n                       Set \"primehub.domain\" in your value file, or add \"--set primehub.domain=<your_ip_or_domain>\"." -}}
+  {{- printf "%s" $errorString | fail -}}
+{{- end -}}
 {{- if .Values.primehub.port -}}
 {{- printf "%s://%s:%v" .Values.primehub.scheme .Values.primehub.domain .Values.primehub.port }}
 {{- else -}}
@@ -31,9 +36,6 @@ Global
 {{- end -}}
 {{- end -}}
 
-{{/*
-Keycloak
-*/}}
 {{- define "primehub.keycloak.appUrl" -}}
 {{- if .Values.keycloak.deploy -}}
 {{- printf "%s/auth" (include "primehub.url" .) }}
@@ -187,273 +189,6 @@ Store
 {{- end -}}
 
 {{/*
-Keycloak
-*/}}
-{{- define "keycloak.name" -}}
-{{- "keycloak" -}}
-{{- end -}}
-
-{{- define "keycloak.fullname" -}}
-{{- "keycloak" -}}
-{{- end -}}
-
-{{/*
-Create the service DNS name.
-*/}}
-{{- define "keycloak.serviceDnsName" -}}
-{{ include "keycloak.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.keycloak.clusterDomain }}
-{{- end -}}
-
-{{/*
-{{/*
-Create common labels.
-*/}}
-{{- define "keycloak.commonLabels" -}}
-app.kubernetes.io/name: {{ include "keycloak.name" . }}
-helm.sh/chart: {{ include "primehub.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name | quote }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}
-
-{{/*
-Create selector labels.
-*/}}
-{{- define "keycloak.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "keycloak.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name | quote }}
-{{- end -}}
-
-{{/*
-Create name of the service account to use
-*/}}
-{{- define "keycloak.serviceAccountName" -}}
-{{- if .Values.keycloak.serviceAccount.create -}}
-    {{ default (include "keycloak.fullname" .) .Values.keycloak.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.keycloak.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name for the postgres requirement.
-*/}}
-{{- define "keycloak.postgresql.fullname" -}}
-{{- $postgresContext := dict "Values" .Values.keycloak.postgresql "Release" .Release "Chart" (dict "Name" "postgresql") -}}
-{{ include "postgresql.fullname" $postgresContext }}
-{{- end -}}
-
-{{/*
-Create the name for the Keycloak secret.
-*/}}
-{{- define "keycloak.secret" -}}
-{{- if .Values.keycloak.existingSecret -}}
-  {{- tpl .Values.keycloak.existingSecret $ -}}
-{{- else -}}
-  {{- include "keycloak.fullname" . -}}-http
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name for the database secret.
-*/}}
-{{- define "keycloak.dbSecretName" -}}
-{{- if .Values.keycloak.persistence.existingSecret -}}
-  {{- tpl .Values.keycloak.persistence.existingSecret $ -}}
-{{- else -}}
-  {{- include "keycloak.fullname" . -}}-db
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the Keycloak password.
-*/}}
-{{- define "keycloak.password" -}}
-{{- if .Values.keycloak.password -}}
-  {{- .Values.keycloak.password | b64enc | quote -}}
-{{- else -}}
-  {{- randAlphaNum 16 | b64enc | quote -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name for the password secret key.
-*/}}
-{{- define "keycloak.passwordKey" -}}
-{{- if .Values.keycloak.existingSecret -}}
-  {{- .Values.keycloak.existingSecretKey -}}
-{{- else -}}
-  password
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name for the database password secret key.
-*/}}
-{{- define "keycloak.dbPasswordKey" -}}
-{{- if and .Values.keycloak.persistence.existingSecret .Values.keycloak.persistence.existingSecretPasswordKey -}}
-  {{- .Values.keycloak.persistence.existingSecretPasswordKey -}}
-{{- else -}}
-  password
-{{- end -}}
-{{- end -}}
-
-{{/*
-Get keycloak db password
-*/}}
-{{- define "keycloak.dbPassword" -}}
-{{- if .Values.keycloak.persistence.dbPassword }}
-  {{- .Values.keycloak.persistence.dbPassword }}
-{{- else -}}
-  {{- randAlphaNum 16 -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name for the database password secret key - if it is defined.
-*/}}
-{{- define "keycloak.dbUserKey" -}}
-{{- if and .Values.keycloak.persistence.existingSecret .Values.keycloak.persistence.existingSecretUsernameKey -}}
-  {{- .Values.keycloak.persistence.existingSecretUsernameKey -}}
-{{- else -}}
-  username
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create environment variables for database configuration.
-*/}}
-{{- define "keycloak.dbEnvVars" -}}
-{{- if .Values.keycloak.persistence.deployPostgres }}
-{{- if not (eq "postgres" .Values.keycloak.persistence.dbVendor) }}
-{{ fail (printf "ERROR: 'Setting keycloak.persistence.deployPostgres' to 'true' requires setting 'keycloak.persistence.dbVendor' to 'postgres' (is: '%s')!" .Values.keycloak.persistence.dbVendor) }}
-{{- end }}
-- name: DB_VENDOR
-  value: postgres
-- name: DB_ADDR
-  value: {{ include "keycloak.postgresql.fullname" . }}
-- name: DB_PORT
-  value: "5432"
-- name: DB_DATABASE
-  value: {{ .Values.keycloak.postgresql.postgresqlDatabase | quote }}
-- name: DB_USER
-  value: {{ .Values.keycloak.postgresql.postgresqlUsername | quote }}
-- name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "keycloak.postgresql.fullname" . }}
-      key: postgresql-password
-{{- else }}
-- name: DB_VENDOR
-  value: {{ .Values.keycloak.persistence.dbVendor | quote }}
-{{- if not (eq "h2" .Values.keycloak.persistence.dbVendor) }}
-- name: DB_ADDR
-  value: {{ .Values.keycloak.persistence.dbHost | quote }}
-- name: DB_PORT
-  value: {{ .Values.keycloak.persistence.dbPort | quote }}
-- name: DB_DATABASE
-  value: {{ .Values.keycloak.persistence.dbName | quote }}
-- name: DB_USER
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "keycloak.dbSecretName" . }}
-      key: {{ include "keycloak.dbUserKey" . | quote }}
-- name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "keycloak.dbSecretName" . }}
-      key: {{ include "keycloak.dbPasswordKey" . | quote }}
-{{- end }}
-{{- end }}
-{{- end -}}
-
-{{/*
-Create the namespace for the serviceMonitor deployment.
-*/}}
-{{- define "keycloak.serviceMonitor.namespace" -}}
-{{- if .Values.keycloak.prometheus.operator.serviceMonitor.namespace -}}
-{{ .Values.keycloak.prometheus.operator.serviceMonitor.namespace }}
-{{- else -}}
-{{ .Release.Namespace }}
-{{- end -}}
-{{- end -}}
-
-{{- define "postgresql.name" -}}
-{{- "keycloak-postgres" -}}
-{{- end -}}
-
-{{- define "postgresql.fullname" -}}
-{{- "keycloak-postgres" -}}
-{{- end -}}
-
-{{- define "postgresql.port" -}}
-{{- .Values.keycloak.postgresql.service.port -}}
-{{- end -}}
-
-{{- define "postgresql.master.fullname" -}}
-{{- "keycloak-postgres" -}}
-{{- end -}}
-
-{{- define "postgresql.volumePermissions.image" -}}
-{{- $registryName := .Values.keycloak.postgresql.volumePermissions.image.registry -}}
-{{- $repositoryName := .Values.keycloak.postgresql.volumePermissions.image.repository -}}
-{{- $tag := .Values.keycloak.postgresql.volumePermissions.image.tag | toString -}}
-{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
-{{- end -}}
-
-{{- define "postgresql.image" -}}
-{{- $registryName := .Values.keycloak.postgresql.image.registry -}}
-{{- $repositoryName := .Values.keycloak.postgresql.image.repository -}}
-{{- $tag := .Values.keycloak.postgresql.image.tag | toString -}}
-{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
-{{- end -}}
-
-{{- define "postgresql.username" -}}
-{{- .Values.keycloak.postgresql.postgresqlUsername -}}
-{{- end -}}
-
-{{- define "postgresql.secretName" -}}
-{{- printf "%s" (include "postgresql.fullname" .) -}}
-{{- end -}}
-
-{{- define "postgresql.database" -}}
-{{- .Values.postgresqlDatabase -}}
-{{- end -}}
-
-{{- define "postgresql.readinessProbeCommand" -}}
-- |
-{{- if (include "postgresql.database" .) }}
-  pg_isready -U {{ include "postgresql.username" . | quote }} -d {{ (include "postgresql.database" .) | quote }} -h 127.0.0.1 -p {{ template "postgresql.port" . }}
-{{- else }}
-  pg_isready -U {{ include "postgresql.username" . | quote }} -h 127.0.0.1 -p {{ template "postgresql.port" . }}
-{{- end }}
-{{- if contains "bitnami/" .Values.keycloak.postgresql.image.repository }}
-  [ -f /opt/bitnami/postgresql/tmp/.initialized ]
-{{- end -}}
-{{- end -}}
-
-{{- define "postgresql.storageClass" -}}
-{{- if .Values.keycloak.postgresql.persistence.storageClass -}}
-{{- if (eq "-" .Values.keycloak.postgresql.persistence.storageClass) -}}
-  {{- printf "storageClassName: \"\"" -}}
-{{- else }}
-  {{- printf "storageClassName: %s" .Values.keycloak.postgresql.persistence.storageClass -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "postgresql.createSecret" -}}
-{{- true -}}
-{{- end -}}
-
-{{- define "postgresql.password" -}}
-{{- if .Values.keycloak.postgresql.postgresqlPassword -}}
-    {{- .Values.keycloak.postgresql.postgresqlPassword -}}
-{{- else -}}
-    {{- randAlphaNum 10 -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 ssh bastion server
 */}}
 {{- define "ssh-bastion-server.name" -}}
@@ -511,4 +246,34 @@ primehub deployment
   {{- else -}}
     false
   {{- end -}}
+{{- end -}}
+
+{{/*
+primehub admission
+*/}}
+{{- define "primehub-admission.webhook-certs.manage" -}}
+{{- $data := (dict "cacert" "" "cert" "" "key" "") }}
+{{- $secretData := (lookup "v1" "Secret" .Release.Namespace "primehub-admission-webhook-certs").data -}}
+{{- if $secretData }}
+  {{- if hasKey $secretData "cert.pem" }}
+    {{- $_ := set $data "cert" (index $secretData "cert.pem" | quote) }}
+  {{- end -}}
+  {{- if hasKey $secretData "key.pem" }}
+    {{- $_ := set $data "key" (index $secretData "key.pem" | quote) }}
+  {{- end -}}
+  {{- if hasKey $secretData "cacert.pem" }}
+    {{- $_ := set $data "cacert" (index $secretData "cacert.pem" | quote) }}
+  {{- end -}}
+{{- else }}
+  {{- $ca := genCA "primehub-admission-webhook-certs" 3650 }}
+  {{- $_ := set $data "cacert" ($ca.Cert | b64enc | quote) }}
+  {{- $cn := "primehub-admission" }}
+  {{- $altName1 := printf "%s.%s" $cn .Release.Namespace }}
+  {{- $altName2 := printf "%s.%s.svc" $cn .Release.Namespace }}
+  {{- $altNames := (list $altName1 $altName2) }}
+  {{- $cert := genSignedCert $cn nil $altNames 3650 $ca }}
+  {{- $_ := set $data "cert" ($cert.Cert | b64enc | quote) }}
+  {{- $_ := set $data "key" ($cert.Key | b64enc | quote) }}
+{{- end -}}
+{{- $data | toYaml -}}
 {{- end -}}

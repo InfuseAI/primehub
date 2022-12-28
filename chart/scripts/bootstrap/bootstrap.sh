@@ -5,6 +5,21 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 KCADM=kcadm
 source ${DIR}/keycloak.inc
 
+KCADM_CONFIG=$HOME/.keycloak/kcadm.config
+KUBECTL_DRY_RUN_FLAG='--dry-run=client'
+
+############################################################
+# Prepare
+function prepare() {
+  print_section "Kubectl version"
+  kubectl version --client=true -o yaml
+  kubectl_version=$(kubectl version --client -o json | jq -r '.clientVersion | .major +"."+ .minor')
+  if [[ $kubectl_version < '1.18' ]]; then
+    KUBECTL_DRY_RUN_FLAG='--dry-run'
+  fi
+}
+
+
 ############################################################
 # Wait for keycloak
 function wait_for_url() {
@@ -58,6 +73,16 @@ function update_realm() {
       -s enabled=true
   fi
 
+  frontendUrl=$($KCADM get realms/$KC_REALM | jq -r ".attributes.frontendUrl")
+  if [[ $frontendUrl != ${KC_APP_URL} ]]; then
+    print_info "Update realm frontend URL: ${KC_APP_URL}"
+    $KCADM update realms/$KC_REALM -s "attributes.frontendUrl=${KC_APP_URL}"
+    if [[ -f $KCADM_CONFIG && $(jq -r ".realm" $KCADM_CONFIG) != "master" ]]; then
+      print_info "Frontend URL changed by service account. Login again"
+      kc_login
+    fi
+  fi
+
   if [[ -n ${KC_SSL_REQUIRED:-""} ]]; then
     print_info "Update realm ssl_required: ${KC_SSL_REQUIRED}"
     $KCADM update realms/$KC_REALM -s "sslRequired=${KC_SSL_REQUIRED}"
@@ -97,7 +122,7 @@ function update_client_admin_ui() {
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
     --from-literal=everyone_group_id=$PH_GROUP_EVERYONE_ID \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 
   kc_apply_client_baseurl $KC_REALM $client $ADMIN_UI_BASEURL
@@ -114,7 +139,7 @@ function update_client_jupyterhub() {
   kubectl -n "$PRIMEHUB_NAMESPACE" create secret generic $secret_name \
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 }
 
@@ -142,7 +167,7 @@ function update_client_maintenance_proxy() {
     --from-literal=client_id=$client \
     --from-literal=client_secret=$client_secret \
     --from-literal=proxy_encrypted_key=$proxy_encrypted_key \
-    --dry-run -oyaml | \
+    $KUBECTL_DRY_RUN_FLAG -oyaml | \
     kubectl apply -f -
 }
 
@@ -225,6 +250,7 @@ function restart_hub() {
 }
 
 function main() {
+  prepare
   wait_for_keycloak
   kc_login
   update

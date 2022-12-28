@@ -34,8 +34,10 @@ spec:
         paths:
           - path: /minio
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $servicePort }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  name: {{ $servicePort }}
       {{- if . }}
       host: {{ . | quote }}
       {{- end }}
