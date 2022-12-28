@@ -15,7 +15,7 @@ Feature: Login
     When I choose "Logout" in top-right menu
     Then I am on login page
 
-  @regression @sanity @error-check
+  @wip @regression @sanity @error-check
   Scenario: User can't login with incorrect username and password
     When I fill in the wrong credentials and click login
     | username                  | password                         |
