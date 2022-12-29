@@ -224,35 +224,35 @@ workflows:
       - unit_test
       - verify_image_list
       - e2e_test:
-          name: "e2e_smoke_ce_v1.22"
+          name: "e2e_smoke_ce_v1.23"
           primehub_mode: "ce"
-          k8s_version: "v1.22.17-k3s1"
+          k8s_version: "v1.23.15-k3s1"
           test_type: "smoke"
           notify: true
           filters:
             branches:
               only:
-                - chore/e2e-v4-k8s-v1.22
+                - chore/e2e-v4-k8s-v1.23
       - e2e_test:
-          name: "e2e_smoke_ee_v1.22"
+          name: "e2e_smoke_ee_v1.23"
           primehub_mode: "ee"
-          k8s_version: "v1.22.17-k3s1"
+          k8s_version: "v1.23.15-k3s1"
           test_type: "smoke"
           notify: true
           filters:
             branches:
               only:
-                - chore/e2e-v4-k8s-v1.22
+                - chore/e2e-v4-k8s-v1.23
       - e2e_test:
-          name: "e2e_sanity_ee_v1.22"
+          name: "e2e_sanity_ee_v1.23"
           primehub_mode: "ee"
-          k8s_version: "v1.22.17-k3s1"
+          k8s_version: "v1.23.15-k3s1"
           test_type: "sanity"
           notify: true
           filters:
             branches:
               only:
-                - chore/e2e-v4-k8s-v1.22
+                - chore/e2e-v4-k8s-v1.23
       - build:
           filters:
             tags:
