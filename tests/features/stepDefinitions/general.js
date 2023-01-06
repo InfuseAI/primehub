@@ -161,16 +161,25 @@ defineStep("I switch to {string} tab", async function(tabname) {
 
 defineStep("I go to login page", async function() {
   await this.page.goto(this.HOME_URL);
-  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}']`);
+  await this.page.waitForXPath(`//title[text()='Sign in to ${this.KC_REALM}']`);
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
   await this.takeScreenshot(`login-page`);
 });
 
 defineStep("I am on login page", async function() {
-  await this.page.waitForXPath(`//title[text()='Log in to ${this.KC_REALM}'] | //title[text()='登入到 ${this.KC_REALM}']`);
+  await this.page.waitForXPath(`//title[text()='Sign in to ${this.KC_REALM}'] | //title[text()='登入到 ${this.KC_REALM}']`);
   const url = this.page.url();
   expect(url).to.contain(this.KC_SERVER_URL);
+});
+
+defineStep("I click logout confirm button", async function() {
+  await this.page.waitForXPath(`//input[@value='Logout']`);
+  const url = this.page.url();
+  expect(url).to.contain(this.KC_SERVER_URL);
+  await this.takeScreenshot(`logout-confirm-page`);
+  const xpath = "//input[@id='kc-logout']";
+  await this.clickElementByXpath(xpath);
 });
 
 defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
@@ -190,7 +199,7 @@ defineStep(/^I am logged in(?: as (.*))?$/, async function(role) {
         this.page.waitForNavigation(),
       ]);
     } catch (e) {}
-    await this.checkElementExistByXPath('should exist', `//title[text()='Log in to ${this.KC_REALM}']`).then(
+    await this.checkElementExistByXPath('should exist', `//title[text()='Sign in to ${this.KC_REALM}']`).then(
       function(result) { ret = result; }
     );
     if (ret) { break; }
