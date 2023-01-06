@@ -105,6 +105,7 @@ Feature: Admin - Users
   @regression @error-check
   Scenario: User can see expected results when no group is available
     When I choose "Logout" in top-right menu
+    And I click logout confirm button
     Then I am on login page
 
     When I go to login page
@@ -224,6 +225,7 @@ Feature: Admin - Users
   @regression @prep-data
   Scenario: Newly created users can login
     When I choose "Logout" in top-right menu
+    And I click logout confirm button
     Then I am on login page
 
     When I go to login page
@@ -239,7 +241,16 @@ Feature: Admin - Users
     And I "should" see element with xpath "//label[text()='Username']"
     And I "should" see element with xpath "//input[@id='username' and contains(@value, 'e2e-test-user')]"
 
-    When I click element with xpath "//li//a[contains(text(), 'Sign Out')]"
+    # Note:
+    #   Our e2e test will install keycloak on a domain with random port number.
+    #   However, on keycloak 19.0.3 User profile page, the 'Sign out' url doesn't contain 'port number'
+    #   in query param 'post_logout_redirect_uri', which causes 'invalid redirect_uri' error for signing out.
+    #   This might be a keycloak 19.0.3 bug.
+    #
+    # When I click element with xpath "//li//a[contains(text(), 'Sign out')]"
+    When I click element with xpath "//li//a[contains(text(), 'Back to')]"
+    And I choose "Logout" in top-right menu
+    And I click logout confirm button
     Then I am on login page
 
     When I go to login page
@@ -255,5 +266,8 @@ Feature: Admin - Users
     And I "should" see element with xpath "//label[text()='Username']"
     And I "should" see element with xpath "//input[@id='username' and contains(@value, 'e2e-test-another-user')]"
 
-    When I click element with xpath "//li//a[contains(text(), 'Sign Out')]"
+    # When I click element with xpath "//li//a[contains(text(), 'Sign out')]"
+    When I click element with xpath "//li//a[contains(text(), 'Back to')]"
+    And I choose "Logout" in top-right menu
+    And I click logout confirm button
     Then I am on login page

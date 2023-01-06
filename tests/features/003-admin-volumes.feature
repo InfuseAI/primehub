@@ -30,6 +30,7 @@ Feature: Admin - Volumes
     | volume/input-name | e2e-test-volume |
 
     And I select option "Env" in admin portal
+    And I click element with test-id "volume/global"
     And I click element with test-id "confirm-button"
     Then I should see element with test-id on the page
     | test-id       |
