@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       name: {{ include "common.names.name" . }}
-      labels: {{- include "common.labels.standard" . | nindent 8 }}
+      labels: {{- include "common.labels.matchLabels" . | nindent 8 }}
         app.kubernetes.io/component: postgresql
     spec:
       serviceAccountName: default
