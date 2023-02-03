@@ -1076,6 +1076,10 @@ usage:
     pullPolicy: IfNotPresent
     tag: v1.0.1
 
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+
   appResources:
     limits:
       cpu: 250m

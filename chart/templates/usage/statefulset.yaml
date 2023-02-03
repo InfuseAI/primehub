@@ -15,6 +15,9 @@ spec:
         app: primehub-usage-db
     spec:
       terminationGracePeriodSeconds: 10
+      {{- if .Values.usage.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.usage.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
       containers:
       - name: database
         image: {{.Values.usage.dbImage.repository}}:{{.Values.usage.dbImage.tag}}
