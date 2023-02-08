@@ -11,6 +11,11 @@ metadata:
     {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
     {{- end }}
     nginx.ingress.kubernetes.io/proxy-buffer-size: 8m
+    nginx.ingress.kubernetes.io/server-snippet: |
+      client_header_buffer_size 8m;
+      large_client_header_buffers 4 8m;
+      http2_max_header_size 8m;
+      http2_max_field_size 8m;
   {{- end }}
   labels:
     {{- include "keycloak.labels" . | nindent 4 }}
