@@ -1,5 +1,67 @@
 # Changelog
-## Upcoming
+## 4.0.0
+
+### Features
+
+- Kubernetes 1.24+ support
+    - 1.21 and 1.24 are fully tested
+- Add Resource Usage dashboard
+- Add more SDK/CLI supports
+    - MLflow model registry
+    - Group admin can manage members
+    - Usage report list and download
+    - Enhance admin related APIs
+
+### Enhancements
+
+- Disable NPS survey when installed in EE or Deploy mode
+- Enhance primehub-install script
+
+### Bug fixes
+
+- Fix: PrimeHub admission might not work in Kubernetes 1.21 env
+- Fix: Group admin cannot update group MLflow settings
+- Fix: In Admin Portal → System settings page, logo cannot be removed
+- Fix: Image builder might fail if base image or target image has no ‘[docker.io](http://docker.io/)’ prefix
+- Fix: Deployment status cannot be updated by controller
+- Fix: Customized deployment ID always failed to verify
+- Fix: Cannot edit Group admin in Groups
+- Fix: PrimeHub usage has no write permission on PVC in GKE env
+- Fix: Large token causes Hub 500 error for certain cases
+- Fix: Jobs might be outdated if jobs cache failed
+- Fix: Handle invalid nonce for OIDC flow
+
+### Security updates
+
+#### Keycloak
+
+- keycloak `8.0.1` → `19.0.3`
+- postgresql `11.5.0` → `14.5.0`
+
+#### JupyterHub
+
+- jupyterhub `1.2.2` → `3.0.0`
+- jupyterhub-kubespawner `0.14.1` → `4.2.0`
+- oauthenticator `0.12.1` → `15.1.0`
+
+#### PrimeHub Console/GraphQL
+
+- keycloak admin client `keycloak-admin@1.14.17` → `@keycloak/keycloak-admin-client@18.0.2`
+- kubernetes client `0.14.3` → `0.17.0`
+- openid-client `2.5.0` → `5.3.1`
+
+#### PrimeHub Controller
+
+- kubebuilder `v2.2.0` → `v3.6.0`
+
+#### Other components
+
+- buildah `v1.19.8` → `v1.28.0`
+- minio `RELEASE.2021-03-04T00-53-13Z` → `RELEASE.2022-04-16T04-26-02Z`
+- minio client `RELEASE.2021-03-12T03-36-59Z` → `RELEASE.2022-11-07T23-47-39Z`
+- rclone `v1.53.2` → `v1.60.1`
+- tusd `v1.4.0` → `v1.10.0`
+
 
 ## 3.10.0
 ### What's New
