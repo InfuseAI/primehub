@@ -148,6 +148,13 @@ ingress:
     secretName: hub-tls
   {{ end }}
 
+# When PRIMEHUB_MODE in ['ee', 'deploy'], disable NPS survey
+{{- if ne $PRIMEHUB_MODE "ce" }}
+console:
+  npsSurvey:
+    enabled: false
+{{- end }}
+
 graphql:
   sharedGraphqlSecret: {{ env "ADMIN_UI_GRAPHQL_SECRET_KEY" }}
 
