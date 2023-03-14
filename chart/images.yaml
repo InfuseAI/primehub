@@ -48,7 +48,7 @@ primehub-all:
   prepackaged-sklearn: &prepackaged-sklearn infuseai/sklearn-prepackaged:v0.1.0
 
   # SSH Bastion Server
-  ssh-proxy: &ssh-proxy mltooling/ssh-proxy:0.1.11
+  ssh-proxy: &ssh-proxy infuseai/ssh-proxy:0.1.11-patch-1
 
   # Usage
   primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.1

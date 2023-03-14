@@ -1097,8 +1097,8 @@ sshBastionServer:
   enabled: true
   customHostname: ""
   image:
-    repository: mltooling/ssh-proxy
-    tag: 0.1.11
+    repository: infuseai/ssh-proxy
+    tag: 0.1.11-patch-1
     pullPolicy: IfNotPresent
   replicaCount: 1
   service:
