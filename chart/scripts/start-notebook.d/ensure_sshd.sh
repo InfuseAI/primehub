@@ -35,7 +35,7 @@ prepare_user_volume() {
   fi
 
   # Only create .ssh when found NB_ variables
-  if [ -z ${NB_UID=+x} || -z ${NB_GID=+x} ]; then
+  if [[ -z ${NB_UID=+x} ]] || [[ -z ${NB_GID=+x} ]]; then
     return
   fi
 
@@ -56,5 +56,10 @@ if [ "$PRIMEHUB_START_SSH" == "true" ]; then
     # Start publickey api server
     if command -v nohup &>/dev/null; then
         nohup python /usr/local/bin/start-notebook.d/publickey_api.py &
+        sleep 3
+        if [[ ! -f /tmp/publickey_api.pid ]]; then
+            echo 'ERROR: Failed to start publickey api server'
+            exit 1
+        fi
     fi
 fi

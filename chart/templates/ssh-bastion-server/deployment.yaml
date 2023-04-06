@@ -31,10 +31,6 @@ spec:
             {{- toYaml .Values.sshBastionServer.securityContext | nindent 12 }}
           image: "{{ .Values.sshBastionServer.image.repository }}:{{ .Values.sshBastionServer.image.tag }}"
           imagePullPolicy: {{ .Values.sshBastionServer.image.pullPolicy }}
-          volumeMounts:
-          - name: config
-            mountPath: /resources/start_ssh.py
-            subPath: start_ssh.py
           resources:
             {{- toYaml .Values.sshBastionServer.resources | nindent 12 }}
           env:
@@ -42,10 +38,6 @@ spec:
             value: {{ .Values.sshBastionServer.ssh.target.publicKeyApiPort | quote }}
           - name: SSH_TARGET_LABELS
             value: {{ include "ssh-bastion-server.ssh.target.labels" . }}
-      volumes:
-      - name: config
-        configMap:
-          name: {{ include "ssh-bastion-server.name" . }}-config
       {{- with .Values.sshBastionServer.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

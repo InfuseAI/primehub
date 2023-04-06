@@ -23,10 +23,14 @@ def run(server_class=HTTPServer, handler_class=PublickeyApiServer, port=8080):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting publickey api server...\n')
+    with open('/tmp/publickey_api.pid', 'w') as f:
+        f.write(str(os.getpid()))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
+    finally:
+        os.remove('/tmp/publickey_api.pid')
     httpd.server_close()
     logging.info('Stopping publickey api server...\n')
 
