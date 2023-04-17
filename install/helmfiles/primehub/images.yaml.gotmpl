@@ -122,7 +122,7 @@ rclone:
 
 sshBastionServer:
   image:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}mltooling/ssh-proxy
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/ssh-proxy
   metacontroller:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
