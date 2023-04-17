@@ -26,7 +26,7 @@ prometheusOperator:
   prometheusConfigReloaderImage:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}quay.io/coreos/prometheus-config-reloader
   hyperkubeImage:
-    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/hyperkube
+    repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/hyperkube
     tag: v1.7.12
 
 grafana:

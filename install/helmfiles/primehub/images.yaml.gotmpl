@@ -69,7 +69,7 @@ groupvolume:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
   nfs:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/volume-nfs
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/volume-nfs
 gitsync:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
