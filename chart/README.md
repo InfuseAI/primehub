@@ -114,7 +114,7 @@ Parameter | Description | Default
 `groupvolume.image.repository` | The metacontroller webhook image repository | `metacontroller/jsonnetd`
 `groupvolume.image.tag` | The metacontroller webhook image tag | Please see [values.yaml](values.yaml)
 `groupvolume.image.pullPolicy` | The metacontroller webhook image pull policy | `IfNotPresent`
-`groupvolume.nfs.image.repository` | The NFS image repository | `k8s.gcr.io/volume-nfs`
+`groupvolume.nfs.image.repository` | The NFS image repository | `registry.k8s.io/volume-nfs`
 `groupvolume.nfs.image.tag` | The NFS image tag | Please see [values.yaml](values.yaml)
 `groupvolume.nfs.image.pullPolicy` | The NFS image pull policy | `IfNotPresent`
 `groupvolume.resources` | Pod resource requests and limits | Please see [values.yaml](values.yaml)
@@ -135,7 +135,7 @@ Parameter | Description | Default
 `gitsync.tolerations` | Node taints to tolerate| `{}`
 `gitsync.affinity` | Pod affinitiy | `[]`
 `gitsync.daemonset.delayInit` | |
-`gitsync.daemonset.image.repository` | The [gitsync](https://github.com/kubernetes/git-sync) image repository | `k8s.gcr.io/git-sync`
+`gitsync.daemonset.image.repository` | The [gitsync](https://github.com/kubernetes/git-sync) image repository | `registry.k8s.io/git-sync`
 `gitsync.daemonset.image.tag` | The gitsync image tag | Please see [values.yaml](values.yaml)
 `gitsync.daemonset.image.pullPolicy` | The gitsync image tag pull policy | `IfNotPresent`
 
