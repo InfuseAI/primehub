@@ -39,17 +39,17 @@ jupyterhub:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-image-awaiter
     pause:
       image:
-        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/pause
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/pause
     podCuller:
       image:
         name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}jupyterhub/k8s-pod-culler
   scheduling:
     userScheduler:
       image:
-        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/kube-scheduler
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/kube-scheduler
     userPlaceholder:
       image:
-        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/pause
+        name: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/pause
   primehub:
     primehub-examples:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/primehub-examples
@@ -82,7 +82,7 @@ groupvolume:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
   nfs:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/volume-nfs
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/volume-nfs
 gitsync:
   image:
     repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}metacontroller/jsonnetd
@@ -112,13 +112,13 @@ minio:
 rclone:
   nodeDriverRegistrar:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-node-driver-registrar
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/sig-storage/csi-node-driver-registrar
   rclone:
     image:
       repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}infuseai/csi-rclone
   csiAttacher:
     image:
-      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}k8s.gcr.io/sig-storage/csi-attacher
+      repository: {{ env "PRIMEHUB_AIRGAPPED_IMAGE_PREFIX" }}registry.k8s.io/sig-storage/csi-attacher
 
 sshBastionServer:
   image:
