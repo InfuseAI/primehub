@@ -30,6 +30,7 @@ PRIMEHUB_CHART_PATH=
 PRIMEHUB_MODE='ee'
 PRIMEHUB_FEATURE_SSH_BASTION_SERVER=false
 PRIMEHUB_AIRGAPPED=
+PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=
 LICENSE_PATH=
 
 PROMETHEUS_CHART="stable/prometheus-operator"
@@ -132,6 +133,7 @@ Options:
   --skip-domain-check                            : Skip the domain name check
   --skip-disk-space-check                        : Skip the disk space check when install singlenode k8s
   --aws                                          : Set the latest PrimeHub AWS version as default verion
+  --airgap                                       : Install the PrimeHub from private repository platform
 EOF
 }
 
@@ -617,6 +619,7 @@ init_env() {
     PH_PASSWORD
 
     PRIMEHUB_AIRGAPPED
+    PRIMEHUB_AIRGAPPED_IMAGE_PREFIX
 
     PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_ENDPOINT
     PRIMEHUB_CONTROLLER_CUSTOM_IMAGE_REGISTRY_USERNAME
@@ -664,6 +667,9 @@ prepare_primehub_env() {
     prepare_env_varible PRIMEHUB_DOMAIN || (usage_PRIMEHUB_DOMAIN; exit 1)
     prepare_env_varible KC_PASSWORD || (info "Will auto generate KC_PASSWORD for you."; true)
     prepare_env_varible PH_PASSWORD || (info "Will auto generate PH_PASSWORD for you."; true)
+    if [[ "$PRIMEHUB_AIRGAPPED" == "true" ]]; then
+      prepare_env_varible PRIMEHUB_AIRGAPPED_IMAGE_PREFIX || (info "Will pull the docker images from Dockerhub."; true)
+    fi
     if [[ "${PRIMEHUB_STORAGE_CLASS}" == "" ]]; then
       info "[Available] K8S StorageClass"
       kubectl get storageclass
@@ -701,6 +707,7 @@ prepare_primehub_env() {
     export PH_PASSWORD
     export KC_PASSWORD
     export PRIMEHUB_AIRGAPPED=${PRIMEHUB_AIRGAPPED}
+    export PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=${PRIMEHUB_AIRGAPPED_IMAGE_PREFIX}
 
     # microk8s-hostpath storage class support both RWO and RWX
     if [[ "${PRIMEHUB_STORAGE_CLASS}" == 'microk8s-hostpath' ]]; then
