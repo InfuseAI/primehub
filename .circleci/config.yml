@@ -296,7 +296,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - no_such_branch # set a non-existent branch to disable the workflow
     jobs:
       - e2e_test:
           name: "e2e_regression_ee_admin_k3d"
