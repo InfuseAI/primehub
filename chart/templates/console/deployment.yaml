@@ -187,7 +187,7 @@ spec:
             {{- end }}
             {{- if .Values.console.enableInviteUsers }}
             - name: ENABLE_INVITE_USERS
-              value: "true"
+              value: "false"
             {{- end }}
           ports:
             - name: http
