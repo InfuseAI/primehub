@@ -234,7 +234,7 @@ metacontroller:
 # Primehub console
 console:
   enableUserPortal: true
-  enableInviteUsers: true
+  enableInviteUsers: false
   npsSurvey:
     enabled: true
   replicas: 1
