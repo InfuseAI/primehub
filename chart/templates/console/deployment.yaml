@@ -185,6 +185,8 @@ spec:
             - name: ENABLE_NPS_SURVEY
               value: "true"
             {{- end }}
+            - name: MLFLOW_VERSION
+              value: {{ .Values.modelDeployment.mlflowVersion | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}
