@@ -32,7 +32,7 @@ data:
       modelStorageInitializer:
 {{ toYaml .Values.modelDeployment.modelStorageInitializer | indent 8 }}
       mlflowModelStorageInitializer:
-{{- if eq .Values.modelDeployment.mlflowVersion 1 }}
+{{- if eq (int .Values.modelDeployment.mlflowVersion) 1 }}
 {{ toYaml .Values.modelDeployment.mlflow1ModelStorageInitializer | indent 8 }}
 {{- else }}
 {{ toYaml .Values.modelDeployment.mlflow2ModelStorageInitializer | indent 8 }}
