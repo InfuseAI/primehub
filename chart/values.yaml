@@ -797,6 +797,14 @@ jobSubmission:
     retentionSeconds: 604800
   monitoring:
     enabled: true
+  smtp:
+    enabled: false
+    # host: smtp-domain.example.com
+    # port: 587
+    # from: noreply@example.com
+    # fromDisplayName: PrimeHub Notification
+    # username: your-username
+    # password: your-password
 
 monitoringAgent:
   image:
