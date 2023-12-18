@@ -264,6 +264,27 @@ spec:
               add:
               - SYS_PTRACE
         {{- end }}
+        - name: zipper
+          image: "{{ .Values.graphql.zipper.repository }}:{{ .Values.graphql.zipper.tag }}"
+          env:
+            - name: PRIMEHUB_STORE_BUCKET
+              value: {{ include "primehub.store.bucket" . | quote }}
+            - name: PRIMEHUB_STORE_ENDPOINT
+              value: {{ include "primehub.store.endpoint" . | trimPrefix "http://" | quote }}
+            - name: PRIMEHUB_STORE_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "primehub.name" . }}-graphql
+                  key: storeAccessKey
+            - name: PRIMEHUB_STORE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "primehub.name" . }}-graphql
+                  key: storeSecretKey
+          ports:
+            - name: http
+              containerPort: {{ .Values.graphql.zipper.targetPort }}
+              protocol: TCP
       volumes:
         {{- if or (eq .Values.primehub.mode "ee") (eq .Values.primehub.mode "deploy") }}
         - name: license
