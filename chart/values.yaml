@@ -275,9 +275,9 @@ console:
 graphql:
   replicas: 1
   reloaderImage:
-    repository: library/busybox
-    pullPolicy: IfNotPresent
-    tag: 1.32
+    repository: infuseai/primehub-sharedfiles-zipper
+    tag: v1.0.0
+    targetPort: 4000
   zipper:
     repository: tbd
     tag: tbd
