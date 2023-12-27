@@ -61,6 +61,46 @@
             </div>
           </div>
         </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <label for="group">
+              Environment Variables
+              <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right"
+                title="Key-value pairs of variables providing to the jupyter-lab as environmental variables"></i>
+            </label>
+            <div id="env-vars"></div>
+            <button class="add-env-btn" type="button" onclick="addEnvVarField()">+ Add field</button>
+
+            <script>
+              var envCounter = 1;
+              function addEnvVarField() {
+                var div = document.createElement('div');
+                div.className = 'env-field-row';
+                div.innerHTML = '<div>' + envCounter + ' </div>' +
+                  '<input type="text" name="env_var_' + envCounter + '_key" placeholder="key">' +
+                  '<input type="text" name="env_var_' + envCounter + '_value" placeholder="value">' +
+                  '<div class="remove-env-btn" onclick="removeField(this)">+</div>';
+                document.getElementById('env-vars').appendChild(div);
+                envCounter++;
+              }
+              function removeField(div) {
+                var row = div.parentNode;
+                row.parentNode.removeChild(row);
+
+                var envVarRows = document.querySelectorAll('.env-field-row');
+                for (let idx = 0; idx < envVarRows.length; idx++) {
+                  const currentRow = envVarRows[idx];
+                  currentRow.querySelector('div').textContent = idx + 1;
+                  var inputs = currentRow.querySelectorAll('input[type="text"]');
+                  inputs[0].name = "env_var_" + idx + "_key";
+                  inputs[1].name = "env_var_" + idx + "_value";
+                }
+              }
+            </script>
+          </div>
+        </div>
+
       </div>
       <!-- Group Usages End -->
       <!-- Spawner Options -->

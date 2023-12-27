@@ -5,6 +5,8 @@ import time
 import traceback
 import urllib
 from datetime import datetime
+import re
+
 
 import jupyterhub.handlers
 from jinja2 import Environment, FileSystemLoader
@@ -1415,7 +1417,33 @@ class PrimeHubSpawner(KubeSpawner):
             self.launch_image = '<unknown>'
             pass
 
+        # user-predefined envs
+        env = self._get_env_options(formdata)
+        if env:
+            options["env"] = env
+
         return options
+
+    def _get_env_options(self, formdata):
+        env_key_re = r'^env_var_(\d+)_key$'
+        env_value_re = r'^env_var_(\d+)_value$'
+        env_dict = {}
+        for k, v in formdata.items():
+            key_match = re.match(env_key_re, k)
+            if key_match:
+                if key_match.group(1) not in env_dict:
+                    env_dict[key_match.group(1)] = {}
+                env_dict.get(key_match.group(1), {})["key"] = v[0]
+            value_match = re.match(env_value_re, k)
+            if value_match:
+                if value_match.group(1) not in env_dict:
+                    env_dict[value_match.group(1)] = {}
+                env_dict.get(value_match.group(1), {})["value"] = v[0]
+        if env_dict:
+            flatten_env_dict = {}
+            for _, val in env_dict.items():
+                flatten_env_dict[val["key"]] = val["value"]
+            return flatten_env_dict
 
     def apply_kubespawner_override(self, kubespawner_override):
         for k, v in kubespawner_override.items():
@@ -1430,6 +1458,12 @@ class PrimeHubSpawner(KubeSpawner):
     def fs_gid(self, spawner):
         self.log.warning("overriding fs_group_id to %s", fs_group_id)
         return fs_group_id
+
+    def get_env(self):
+        env = super().get_env()
+        if self.user_options.get('env'):
+            env.update(self.user_options['env'])
+        return env
 
 
 class StopSpawningHandler(BaseHandler):

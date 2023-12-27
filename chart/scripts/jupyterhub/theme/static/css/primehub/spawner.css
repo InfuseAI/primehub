@@ -182,3 +182,67 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.add-env-btn {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  margin: 10px 0;
+  color: rgba(0, 0, 0, 0.88);
+  background-color: white;
+  border: dashed;
+  border-color: #d9d9d9;
+  border-width: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-env-btn:hover {
+  color: #4096ff;
+  border-color: #4096ff;
+}
+
+.env-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.env-field-row > input:first-of-type {
+  margin-left: 10px;
+  flex: 4 1 0;
+  padding: 4px 11px;
+  border-right-width: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-width: 1px 0px 1px 1px;
+  border-color: gray;
+}
+
+.env-field-row input:nth-of-type(2) {
+  flex: 6 1 0;
+  padding: 4px 11px;
+  border-width: 1px;
+  border-color: gray;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin-right: 10px;
+}
+
+.env-field-row input:focus {
+  border-color: #4096ff;
+}
+
+.remove-env-btn {
+  height: 14px;
+  line-height: 14px;
+  width: 14px;
+  font-weight: bold;
+  border-radius: 50%;
+  border: 1px solid #4096ff;
+  color: #4096ff;
+  text-align: center;
+  cursor: pointer;
+  transform: rotate(45deg);
+}
