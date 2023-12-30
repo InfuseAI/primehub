@@ -233,16 +233,3 @@
 .env-field-row input:focus {
   border-color: #4096ff;
 }
-
-.remove-env-btn {
-  height: 14px;
-  line-height: 14px;
-  width: 14px;
-  font-weight: bold;
-  border-radius: 50%;
-  border: 1px solid #4096ff;
-  color: #4096ff;
-  text-align: center;
-  cursor: pointer;
-  transform: rotate(45deg);
-}
