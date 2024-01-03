@@ -1551,7 +1551,13 @@ class ResourceUsageHandler(BaseHandler):
             self.finish(dict(error=error))
         groups = spawner._groups_from_ctx(auth_state['launch_context'])
         # Tornado will response json when give chuck as a dictionary.
-        self.finish(dict(groups=groups, predefinedEnvs=json.loads(auth_state['launch_context']['predefinedEnvs'])))
+        try:
+            predefinedEnvs = json.loads(auth_state['launch_context']['predefinedEnvs'])
+            if not isinstance(predefinedEnvs, dict):
+                predefinedEnvs = {}
+        except:
+            predefinedEnvs = {}
+        self.finish(dict(groups=groups, predefinedEnvs=predefinedEnvs))
 
 
 class PrimeHubHomeHandler(BaseHandler):
