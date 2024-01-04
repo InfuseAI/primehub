@@ -1464,6 +1464,10 @@ class PrimeHubSpawner(KubeSpawner):
             flatten_env_dict = {}
             for _, val in env_dict.items():
                 k = val["key"].strip()
+                if not re.match(r'[-._a-zA-Z][-._a-zA-Z0-9]*', k):
+                    raise web.HTTPError(
+                        400, "Valid environment variable name must consist of alphabetic characters, digits, '_', '-', or '.', and must not start with a digit"
+                    )
                 v = val["value"].strip()
                 if k and v:
                     flatten_env_dict[k] = v
