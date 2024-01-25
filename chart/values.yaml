@@ -735,8 +735,8 @@ customImage:
 
   buildJob:
     image:
-      repository: quay.io/buildah/stable
-      tag: v1.28.0
+      repository: infuseai/buildah
+      tag: v1.33.2
     resources:
       limits:
         cpu: 2000m
