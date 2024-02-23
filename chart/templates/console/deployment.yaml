@@ -187,6 +187,10 @@ spec:
             {{- end }}
             - name: MLFLOW_VERSION
               value: {{ .Values.modelDeployment.mlflowVersion | quote }}
+            {{- if .Values.console.enableInviteUsers }}
+            - name: ENABLE_INVITE_USERS
+              value: "true"
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.console.service.targetPort }}
