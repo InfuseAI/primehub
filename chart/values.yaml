@@ -279,6 +279,10 @@ graphql:
     repository: library/busybox
     pullPolicy: IfNotPresent
     tag: 1.32
+  zipper:
+    repository: infuseai/primehub-sharedfiles-zipper
+    tag: v1.0.0
+    targetPort: 4000
   image:
     repository: infuseai/primehub-console-graphql
     tag: v4.0-b0fe5346
