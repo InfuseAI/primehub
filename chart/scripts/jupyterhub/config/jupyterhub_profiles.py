@@ -5,6 +5,8 @@ import time
 import traceback
 import urllib
 from datetime import datetime
+import re
+
 
 import jupyterhub.handlers
 from jinja2 import Environment, FileSystemLoader
@@ -392,7 +394,7 @@ grantSudo = get_primehub_config('grantSudo', True)
 BACKEND_API_UNAVAILABLE = 'API_UNAVAILABLE'
 GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
                     system { defaultUserVolumeCapacity }
-                    user (where: { id: $id }) { id username isAdmin volumeCapacity
+                    user (where: { id: $id }) { id username isAdmin volumeCapacity predefinedEnvs
                     groups {
                             id
                             name
@@ -416,49 +418,65 @@ GRAPHQL_LAUNCH_CONTEXT_QUERY = '''query ($id: ID!) {
 GRAPHQL_SEND_TELEMETRY_MUTATION = '''mutation ($data: NotebookNotifyEventInput!) {
                     notifyNotebookEvent (data: $data)
                 }'''
+GRAPHQL_UDPATE_USER_PREDEFINED_ENVS_MUTATION = '''mutation ($id: ID!, $predefinedEnvs: String!) {
+    updateUser(
+        data: { predefinedEnvs: $predefinedEnvs }
+        where: { id: $id }
+    ) {
+        id
+    }
+}'''
+
+
+def _get_headers():
+    return {"Content-Type": "application/json", "Authorization": f"Bearer {graphql_secret}"}
+
+
+async def update_user_predefined_envs(user_id, predefined_envs):
+    data = {
+        "query": GRAPHQL_UDPATE_USER_PREDEFINED_ENVS_MUTATION,
+        "variables": {"id": user_id, "predefinedEnvs": json.dumps(predefined_envs)},
+    }
+    client = httpclient.AsyncHTTPClient(max_clients=64)
+    response = await client.fetch(
+        graphql_endpoint, method="POST", headers=_get_headers(), body=json.dumps(data)
+    )
+    result = json.loads(response.body.decode())
+    if 'errors' in result:
+        print(f"update_user_predefined_envs error: {result['errors']}")
 
 
 async def fetch_context(user_id):
-    headers = {'Content-Type': 'application/json',
-               'Authorization': 'Bearer %s' % graphql_secret}
-    data = {'query': GRAPHQL_LAUNCH_CONTEXT_QUERY,
-            'variables': {'id': user_id}}
+    data = {"query": GRAPHQL_LAUNCH_CONTEXT_QUERY, "variables": {"id": user_id}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
-    response = await client.fetch(graphql_endpoint,
-                                  method='POST',
-                                  headers=headers,
-                                  body=json.dumps(data))
+    response = await client.fetch(
+        graphql_endpoint, method="POST", headers=_get_headers(), body=json.dumps(data)
+    )
     result = json.loads(response.body.decode())
 
     # Code: `API_UNAVAILABLE` if kube-apiserver is down.
-    if 'errors' in result:
+    if "errors" in result:
         raise Exception(BACKEND_API_UNAVAILABLE)
 
-    if 'data' in result:
-        return result['data']
-    return {}
+    return result.get("data", {})
 
 
 async def send_telemetry(traits):
     if not enable_telemetry:
         return
 
-    headers = {'Content-Type': 'application/json',
-               'Authorization': 'Bearer %s' % graphql_secret}
     data = {'query': GRAPHQL_SEND_TELEMETRY_MUTATION,
             'variables': {'data': traits}}
     client = httpclient.AsyncHTTPClient(max_clients=64)
     response = await client.fetch(graphql_endpoint,
                                   method='POST',
-                                  headers=headers,
+                                  headers=_get_headers(),
                                   body=json.dumps(data))
     result = json.loads(response.body.decode())
 
     # Code: `API_UNAVAILABLE` if kube-apiserver is down.
     if 'errors' in result:
         raise Exception(BACKEND_API_UNAVAILABLE)
-
-    return
 
 
 class PrimehubOidcMixin(OAuth2Mixin):
@@ -1375,7 +1393,12 @@ class PrimeHubSpawner(KubeSpawner):
     def get_default_image(self):
         return self.config.get('KubeSpawner', {}).get('image', '')
 
-    def options_from_form(self, formdata):
+    async def update_predefined_vars(self, flatten_env_dict):
+        auth_state = await self.user.get_auth_state()
+        user_id = auth_state['oauth_user'].get('sub', None)
+        await update_user_predefined_envs(user_id, flatten_env_dict)
+
+    async def options_from_form(self, formdata):
         if enable_feature_ssh_server:
             self.ssh_config['enabled'] = formdata.get('ssh_server', ['off']) == ['on']
         self.enable_safe_mode = formdata.get('safe_mode', ['off']) == ['on']
@@ -1415,7 +1438,41 @@ class PrimeHubSpawner(KubeSpawner):
             self.launch_image = '<unknown>'
             pass
 
+        # user-predefined envs
+        env = await self._get_env_options(formdata)
+        if env:
+            options["env"] = env
+
         return options
+
+    async def _get_env_options(self, formdata):
+        env_key_re = r'^env_var_(\d+)_key$'
+        env_value_re = r'^env_var_(\d+)_value$'
+        env_dict = {}
+        for k, v in formdata.items():
+            key_match = re.match(env_key_re, k)
+            if key_match:
+                if key_match.group(1) not in env_dict:
+                    env_dict[key_match.group(1)] = {}
+                env_dict.get(key_match.group(1), {})["key"] = v[0]
+            value_match = re.match(env_value_re, k)
+            if value_match:
+                if value_match.group(1) not in env_dict:
+                    env_dict[value_match.group(1)] = {}
+                env_dict.get(value_match.group(1), {})["value"] = v[0]
+        if env_dict:
+            flatten_env_dict = {}
+            for _, val in env_dict.items():
+                k = val["key"].strip()
+                if not re.match(r'[-._a-zA-Z][-._a-zA-Z0-9]*', k):
+                    raise web.HTTPError(
+                        400, "Valid environment variable name must consist of alphabetic characters, digits, '_', '-', or '.', and must not start with a digit"
+                    )
+                v = val["value"].strip()
+                if k and v:
+                    flatten_env_dict[k] = v
+            await self.update_predefined_vars(flatten_env_dict)
+            return flatten_env_dict
 
     def apply_kubespawner_override(self, kubespawner_override):
         for k, v in kubespawner_override.items():
@@ -1430,6 +1487,12 @@ class PrimeHubSpawner(KubeSpawner):
     def fs_gid(self, spawner):
         self.log.warning("overriding fs_group_id to %s", fs_group_id)
         return fs_group_id
+
+    def get_env(self):
+        env = super().get_env()
+        if self.user_options.get('env'):
+            env.update(self.user_options['env'])
+        return env
 
 
 class StopSpawningHandler(BaseHandler):
@@ -1492,7 +1555,13 @@ class ResourceUsageHandler(BaseHandler):
             self.finish(dict(error=error))
         groups = spawner._groups_from_ctx(auth_state['launch_context'])
         # Tornado will response json when give chuck as a dictionary.
-        self.finish(dict(groups=groups))
+        try:
+            predefinedEnvs = json.loads(auth_state['launch_context']['predefinedEnvs'])
+            if not isinstance(predefinedEnvs, dict):
+                predefinedEnvs = {}
+        except:
+            predefinedEnvs = {}
+        self.finish(dict(groups=groups, predefinedEnvs=predefinedEnvs))
 
 
 class PrimeHubHomeHandler(BaseHandler):

@@ -289,6 +289,7 @@
         window.currentGroup = getCurrentGroup(activeGroup);
         updateUsagesDashboard(currentGroup);
         updateSpawnerOptions(currentGroup);
+        loadLastEnvVars(PrimeHubContext.predefinedEnvs);
       })
       .fail(reloadPage);
 

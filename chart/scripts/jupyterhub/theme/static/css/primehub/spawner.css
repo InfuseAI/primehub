@@ -182,3 +182,83 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.add-env-btn {
+  display: block;
+  width: 100%;
+  padding: 5px;
+  margin: 10px 0;
+  color: rgba(0, 0, 0, 0.65);
+  background-color: white;
+  border: dashed;
+  border-color: #d9d9d9;
+  border-width: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.add-env-btn:hover {
+  color: #4096ff;
+  border-color: #4096ff;
+}
+
+.env-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.env-field-row > input:first-of-type {
+  margin-left: 10px;
+  flex: 4 1 0;
+  padding: 4px 11px;
+  border-right-width: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.65);
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+}
+
+.env-field-row input:nth-of-type(2) {
+  margin-left: -1px;
+  flex: 6 1 0;
+  padding: 4px 11px;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.65);
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin-right: 10px;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
+  outline: none;
+}
+
+.env-field-row input:focus {
+  outline: none;
+  border-color: #4096ff;
+}
+
+.remove-env-btn {
+  height: 14px;
+  line-height: 14px;
+  width: 14px;
+  font-weight: bold;
+  border-radius: 50%;
+  border: 1px solid #4096ff;
+  color: #4096ff;
+  text-align: center;
+  cursor: pointer;
+  transform: rotate(45deg);
+}
+
+.close-button {
+  color: #4096ff;
+  cursor: pointer;
+}
