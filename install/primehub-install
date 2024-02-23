@@ -8,20 +8,20 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 export PATH=${PATH}:~/bin
-K9S_VERSION=v0.26.7
-KUBECTL_VERSION=v1.24.8
-HELM_VERSION=v3.10.2
-HELMDIFF_VERSION=v3.6.0
+K9S_VERSION=v0.31.7
+KUBECTL_VERSION=v1.26.11
+HELM_VERSION=v3.14.0
+HELMDIFF_VERSION=v3.9.2
 HELMFILE_VERSION=v0.144.0
 JQ_VERSION=1.6
-YQ_VERSION=v4.9.8
+YQ_VERSION=v4.40.5
 
 INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
 
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
-SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26"
-K8S_VERSION=1.24
+SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26 1.27 1.28"
+K8S_VERSION=1.26
 PRIMEHUB_VERSION=
 PRIMEHUB_NAMESPACE=hub
 PRIMEHUB_SCHEME='http'
@@ -33,8 +33,8 @@ PRIMEHUB_AIRGAPPED=
 PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=
 LICENSE_PATH=
 
-PROMETHEUS_CHART="stable/prometheus-operator"
-PROMETHEUS_CHART_VERSION="8.9.0"
+PROMETHEUS_CHART="prometheus-community/kube-prometheus-stack"
+PROMETHEUS_CHART_VERSION="55.11.0"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART="infuseai/primehub-grafana-dashboard-basic"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.3.0"
 
@@ -373,6 +373,7 @@ install::k9s() {
   local arch=$(uname -m)
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
+  info "[Download] k9s ${K9S_VERSION}"
   curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_${arch}.tar.gz"
   mkdir -p ~/bin/k9s-${K9S_VERSION}
   tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
@@ -800,7 +801,7 @@ install::ingress_nginx() {
       nginx-ingress ingress-nginx/ingress-nginx \
       --create-namespace \
       --namespace ingress-nginx \
-      --version 4.2.5 \
+      --version 4.7.2 \
       --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
       --set controller.admissionWebhooks.enabled=false \
       --set controller.resources.limits.cpu=250m \
@@ -827,7 +828,7 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v1.9.1 \
+      --version v1.12.7 \
       --set installCRDs=true \
       --set ingressShim.defaultIssuerName=letsencrypt-prod \
       --set ingressShim.defaultIssuerKind=ClusterIssuer
@@ -1372,7 +1373,7 @@ primehub_aws_latest_version() {
 }
 
 verify_minimal_resources() {
-  info "[Verify] Mininal k8s resources"
+  info "[Verify] Minimal k8s resources"
   local readonly nodes=$(kubectl get node --no-headers | grep Ready | awk '{print $1}')
   local node_count=0
   local total_cpu=0
