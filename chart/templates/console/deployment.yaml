@@ -185,6 +185,8 @@ spec:
             - name: ENABLE_NPS_SURVEY
               value: "true"
             {{- end }}
+            - name: MLFLOW_VERSION
+              value: {{ .Values.modelDeployment.mlflowVersion | quote }}
             {{- if .Values.console.enableInviteUsers }}
             - name: ENABLE_INVITE_USERS
               value: "true"

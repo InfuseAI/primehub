@@ -808,6 +808,7 @@ monitoringAgent:
 # Model Deployment
 modelDeployment:
   enabled: true
+  mlflowVersion: 2
   engineContainer:
     image:
       repository: seldonio/seldon-core-executor
@@ -818,10 +819,15 @@ modelDeployment:
       repository: kfserving/storage-initializer
       tag: v0.4.0
       pullPolicy: IfNotPresent
-  mlflowModelStorageInitializer:
+  mlflow1ModelStorageInitializer:
     image:
       repository: infuseai/mlflow-model-downloader
       tag: v0.1.1
+      pullPolicy: IfNotPresent
+  mlflow2ModelStorageInitializer:
+    image:
+      repository: infuseai/mlflow-model-downloader
+      tag: v0.2.0
       pullPolicy: IfNotPresent
 
 # Admin Notebook (Deprecated)
