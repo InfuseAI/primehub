@@ -1383,7 +1383,7 @@ class PrimeHubSpawner(KubeSpawner):
                 'Not enough resource limit in your groups, please contact admin.')
 
         def map_group(group):
-            if group.get('displayName', None) is None or group.get('displayName', None) is '': group[
+            if group.get('displayName', None) == None or group.get('displayName', None) == '': group[
                 'displayName'] = group.get('name', '')
             return group
 
