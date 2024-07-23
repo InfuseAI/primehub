@@ -29,7 +29,7 @@ echo "k8s_version: $K8S_VERSION"
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
-k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg  '--disable=servicelb' --k3s-server-arg '--disable-network-policy' --wait --kubeconfig-update-default
+k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-arg "--disable=traefik@server:0" --k3s-arg "--disable=servicelb@server:0" --k3s-arg "--disable=network-policy@server:0" --wait --kubeconfig-update-default
 kubectl config view
 
 echo "waiting for nodes ready"
