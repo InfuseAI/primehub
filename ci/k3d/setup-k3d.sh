@@ -4,7 +4,7 @@ PRIMEHUB_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd $PRIMEHUB_ROOT
 
 CLUSTER_NAME=${CLUSTER_NAME:-primehub}
-K8S_VERSION=${K8S_VERSION:-"v1.21.2-k3s1"}
+K8S_VERSION=${K8S_VERSION:-"v1.26.15-k3s1"}
 BIND_ADDRESS=${BIND_ADDRESS:-10.88.88.88}
 PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
 
@@ -29,7 +29,7 @@ echo "k8s_version: $K8S_VERSION"
 # Create k3d
 # https://github.com/rancher/k3d/issues/206
 mkdir -p /tmp/k3d/kubelet/pods
-k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-server-arg '--disable=traefik' --k3s-server-arg  '--disable=servicelb' --k3s-server-arg '--disable-network-policy' --wait --kubeconfig-update-default
+k3d cluster create ${CLUSTER_NAME} -v /tmp/k3d/kubelet/pods:/var/lib/kubelet/pods:shared --image rancher/k3s:${K8S_VERSION} --k3s-arg "--disable=traefik@server:0" --k3s-arg "--disable=servicelb@server:0" --k3s-arg "--disable=network-policy@server:0" --wait --kubeconfig-update-default
 kubectl config view
 
 echo "waiting for nodes ready"
@@ -49,14 +49,16 @@ kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apis
 echo "init nginx-ingress"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --version 4.9.1 \
     --create-namespace \
     --namespace nginx-ingress \
     --set controller.hostNetwork=true \
     --set controller.admissionWebhooks.enabled=false \
-    --set controller.updateStrategy.type=RollingUpdate \
-    --set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
-    --set controller.updateStrategy.rollingUpdate.maxSurge=1 \
+    --set rbac.create=true \
     --set defaultBackend.enabled=true
+    #--set controller.updateStrategy.type=RollingUpdate \
+    #--set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
+    #--set controller.updateStrategy.rollingUpdate.maxSurge=1 \
 
 kubectl apply -f k3d/nginx-config.yaml
 

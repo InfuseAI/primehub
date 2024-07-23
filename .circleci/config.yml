@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.4.2
-  codecov: codecov/codecov@3.0.0
+  slack: circleci/slack@4.13.3
+  codecov: codecov/codecov@4.1.0
 
 commands:
   notify_slack:
@@ -42,7 +42,7 @@ commands:
 jobs:
   unit_test:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.10
 
     working_directory: ~/repo
 
@@ -80,7 +80,7 @@ jobs:
 
   verify_image_list:
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.10
 
     working_directory: ~/repo
 
@@ -125,11 +125,11 @@ jobs:
         type: boolean
       k8s_version:
         description: "the image tag for k3d"
-        default: "v1.25.3-k3s1"
+        default: "v1.28.11-k3s1"
         type: string
 
     machine:
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2024.05.1
     resource_class: << parameters.machine_resource_class >>
     steps:
       - checkout
@@ -162,7 +162,7 @@ jobs:
     docker:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.8
+      - image: circleci/python:3.10
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -196,7 +196,7 @@ jobs:
     machine:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      image: ubuntu-2004:202107-02
+      image: ubuntu-2204:2024.05.1
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -224,9 +224,9 @@ workflows:
       - unit_test
       - verify_image_list
       - e2e_test:
-          name: "e2e_smoke_ce_v1.21"
+          name: "e2e_smoke_ce_v1.26"
           primehub_mode: "ce"
-          k8s_version: "v1.21.14-k3s1"
+          k8s_version: "v1.26.15-k3s1"
           test_type: "smoke"
           notify: true
           filters:
@@ -234,9 +234,9 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_smoke_ee_v1.21"
+          name: "e2e_smoke_ee_v1.26"
           primehub_mode: "ee"
-          k8s_version: "v1.21.14-k3s1"
+          k8s_version: "v1.26.15-k3s1"
           test_type: "smoke"
           notify: true
           filters:
@@ -244,9 +244,9 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_sanity_ee_v1.21"
+          name: "e2e_sanity_ee_v1.26"
           primehub_mode: "ee"
-          k8s_version: "v1.21.14-k3s1"
+          k8s_version: "v1.26.15-k3s1"
           test_type: "sanity"
           notify: true
           filters:
@@ -254,9 +254,9 @@ workflows:
               only:
                 - master
       - e2e_test:
-          name: "e2e_smoke_ce_v1.24"
+          name: "e2e_smoke_ce_v1.28"
           primehub_mode: "ce"
-          k8s_version: "v1.24.8-k3s1"
+          k8s_version: "v1.28.11-k3s1"
           test_type: "smoke"
           notify: true
           filters:
@@ -264,9 +264,9 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_smoke_ee_v1.24"
+          name: "e2e_smoke_ee_v1.28"
           primehub_mode: "ee"
-          k8s_version: "v1.24.8-k3s1"
+          k8s_version: "v1.28.11-k3s1"
           test_type: "smoke"
           notify: true
           filters:
@@ -274,9 +274,9 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_sanity_ee_v1.24"
+          name: "e2e_sanity_ee_v1.28"
           primehub_mode: "ee"
-          k8s_version: "v1.24.8-k3s1"
+          k8s_version: "v1.28.11-k3s1"
           test_type: "sanity"
           notify: true
           filters:

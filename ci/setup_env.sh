@@ -29,12 +29,12 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get clean
 sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install kubectl
-curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/linux/amd64/kubectl && \
+curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.26.15/bin/linux/amd64/kubectl && \
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
-K3D_VERSION=4.4.8
-HELM_VERSION=3.6.2
+K3D_VERSION=5.5.1
+HELM_VERSION=3.14.4
 HELMFILE_VERSION=v0.144.0
 NVM_VERSION=0.39.0
 NODEJS_VERSION=14.18.0
