@@ -121,6 +121,7 @@ echo PRIMEHUB_MODE=$PRIMEHUB_MODE >> env_file
 
 TARGET=${TARGET:-false}
 if [[ "$TARGET" != "demo.a" ]]; then
+  sudo apt-get update ; sudo apt-get install net-tools -y
   sudo ifconfig lo:0 inet ${BIND_ADDRESS} netmask 0xffffff00
 
   # wait for docker in docker

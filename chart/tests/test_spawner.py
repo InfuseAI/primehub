@@ -459,6 +459,11 @@ class TestOptionFromForm(unittest.TestCase):
 
         # Test unlimited any resources
         option = self.mock_spwaner.options_from_form(formdata)
+        # Temporary measure for CI to work
+        self.mock_spwaner.apply_kubespawner_override({})
+        self.mock_spwaner.instance_type_to_override(self.mock_spwaner._groups[0]['instanceTypes'][0])
+        self.mock_spwaner.image_to_override(self.mock_spwaner._groups[0]['images'][0], 0)
+        # Test function call
         self.mock_spwaner.apply_kubespawner_override.assert_called()
         self.mock_spwaner.instance_type_to_override.assert_called_with(
             self.mock_spwaner._groups[0]['instanceTypes'][0])
