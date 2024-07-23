@@ -269,7 +269,7 @@ check::microk8s() {
 
   check::microk8s::addon "rbac"
   check::microk8s::addon "dns"
-  check::microk8s::addon "storage"
+  check::microk8s::addon "hostpath-storage"
 }
 
 check::k8s::cluster() {
@@ -482,8 +482,8 @@ create::singlenode() {
   local status=$(microk8s.status --format short --wait-ready)
 
   if echo ${status} | grep "storage: disabled" > /dev/null; then
-    info "[Enable] microk8s addon: storage"
-    microk8s.enable storage
+    info "[Enable] microk8s addon: hostpath-storage"
+    microk8s.enable hostpath-storage
   fi
 
   if echo ${status} | grep "dns: disabled" > /dev/null; then
