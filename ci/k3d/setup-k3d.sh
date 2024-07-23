@@ -4,7 +4,7 @@ PRIMEHUB_ROOT=$(dirname "${BASH_SOURCE[0]}")/..
 cd $PRIMEHUB_ROOT
 
 CLUSTER_NAME=${CLUSTER_NAME:-primehub}
-K8S_VERSION=${K8S_VERSION:-"v1.21.2-k3s1"}
+K8S_VERSION=${K8S_VERSION:-"v1.26.15-k3s1"}
 BIND_ADDRESS=${BIND_ADDRESS:-10.88.88.88}
 PRIMEHUB_PORT=${PRIMEHUB_PORT:-8080}
 
@@ -54,10 +54,11 @@ helm install nginx-ingress ingress-nginx/ingress-nginx \
     --namespace nginx-ingress \
     --set controller.hostNetwork=true \
     --set controller.admissionWebhooks.enabled=false \
-    --set controller.updateStrategy.type=RollingUpdate \
-    --set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
-    --set controller.updateStrategy.rollingUpdate.maxSurge=1 \
+    --set rbac.create=true \
     --set defaultBackend.enabled=true
+    #--set controller.updateStrategy.type=RollingUpdate \
+    #--set controller.updateStrategy.rollingUpdate.maxUnavailable=1 \
+    #--set controller.updateStrategy.rollingUpdate.maxSurge=1 \
 
 kubectl apply -f k3d/nginx-config.yaml
 
