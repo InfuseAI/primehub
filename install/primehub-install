@@ -9,19 +9,19 @@ export LANG=C.UTF-8
 
 export PATH=${PATH}:~/bin
 K9S_VERSION=v0.31.7
-KUBECTL_VERSION=v1.26.11
-HELM_VERSION=v3.14.0
-HELMDIFF_VERSION=v3.9.2
+KUBECTL_VERSION=v1.28.12
+HELM_VERSION=v3.15.3
+HELMDIFF_VERSION=v3.9.9
 HELMFILE_VERSION=v0.144.0
-JQ_VERSION=1.6
-YQ_VERSION=v4.40.5
+JQ_VERSION=1.7.1
+YQ_VERSION=v4.44.2
 
 INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
 
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
-SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26 1.27 1.28"
-K8S_VERSION=1.26
+SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26 1.27 1.28 1.29 1.30"
+K8S_VERSION=1.28
 PRIMEHUB_VERSION=
 PRIMEHUB_NAMESPACE=hub
 PRIMEHUB_SCHEME='http'
@@ -34,7 +34,7 @@ PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=
 LICENSE_PATH=
 
 PROMETHEUS_CHART="prometheus-community/kube-prometheus-stack"
-PROMETHEUS_CHART_VERSION="55.11.0"
+PROMETHEUS_CHART_VERSION="61.3.2"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART="infuseai/primehub-grafana-dashboard-basic"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.3.0"
 
@@ -801,7 +801,7 @@ install::ingress_nginx() {
       nginx-ingress ingress-nginx/ingress-nginx \
       --create-namespace \
       --namespace ingress-nginx \
-      --version 4.7.2 \
+      --version 4.10.3 \
       --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
       --set controller.admissionWebhooks.enabled=false \
       --set controller.resources.limits.cpu=250m \
@@ -828,7 +828,7 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v1.12.7 \
+      --version v1.12.12 \
       --set installCRDs=true \
       --set ingressShim.defaultIssuerName=letsencrypt-prod \
       --set ingressShim.defaultIssuerKind=ClusterIssuer
