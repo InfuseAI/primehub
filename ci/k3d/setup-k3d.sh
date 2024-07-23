@@ -49,6 +49,7 @@ kubectl --namespace=kube-system wait --for=condition=Available --timeout=5m apis
 echo "init nginx-ingress"
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm install nginx-ingress ingress-nginx/ingress-nginx \
+    --version 4.9.1 \
     --create-namespace \
     --namespace nginx-ingress \
     --set controller.hostNetwork=true \
