@@ -355,6 +355,12 @@ install::helmdiff() {
   mkdir -p $helm_plugin_path
   tar -C $helm_plugin_path -xf ~/bin/helm-diff-*.tgz
   rm -f ~/bin/helm-diff-*.tgz
+  if command -v helm > /dev/null; then
+    info "[List] helm plugin"
+    helm plugin list
+  else
+    warn "helm command is not installed, please check manually."
+  fi
   popd > /dev/null
 }
 
@@ -370,23 +376,34 @@ install::helmfile() {
 
 install::k9s() {
   local platform=$(uname)
-  local arch=$(uname -m)
+  local detect_arch=$(uname -m)
+  if [ "$detect_arch" == "x86_64" ]; then
+    arch="amd64"
+  else
+    arch=$(uname -m)
+  fi
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] k9s ${K9S_VERSION}"
   curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_${arch}.tar.gz"
   mkdir -p ~/bin/k9s-${K9S_VERSION}
-  tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
+  tar zxf ~/bin/k9s_${platform}_${arch}.tar.gz -C ~/bin/k9s-${K9S_VERSION}
   mv ~/bin/k9s-${K9S_VERSION}/k9s ~/bin/k9s
   rm -rf ~/bin/k9s-${K9S_VERSION}
-  rm -f ~/bin/k9s_${platform}_x86_64.tar.gz
+  rm -f ~/bin/k9s_${platform}_${arch}.tar.gz
   popd > /dev/null
 }
 
 install:nfs-common() {
-  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
-    info "[Install] nfs-common"
-    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  if command -v dpkg > /dev/null; then
+    if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
+      info "[Install] nfs-common packages"
+      sudo apt-get install -yy -qq --no-install-recommends nfs-common
+     else
+      info "[Info] nfs-common packages have already been installed"
+    fi
+  else
+    warn "[WARN] This is not a debian-based Linux system, nfs-common package will not be installed"
   fi
 }
 
@@ -395,7 +412,7 @@ install::primehub::required_bin() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
   mkdir -p ~/bin
   if [[ "${PRIMEHUB_PATH}" == "" ]]; then
-    info "[Install] primehub required bin"
+    info "[Install] PrimeHub required binaries"
     install::kubectl
     install::yq
     install::jq
@@ -742,7 +759,7 @@ prepare_primehub_env() {
       export GROUP_VOLUME_STORAGE_CLASS=${PRIMEHUB_STORAGE_CLASS}
     fi
 
-    info "[Init] primehub config"
+    info "[Init] PrimeHub config"
     mkdir -p "${CONFIG_PATH}"
     init_env
   else
@@ -987,7 +1004,7 @@ destroy::prometheus() {
 
   verify_action "Prometheus" "Prometheus"
 
-  info "[Delete] prometheus helm"
+  info "[Delete] Prometheus helm chart"
   ns=$(helm ls -A -f prometheus-operator -o json | jq -r '.[0].namespace')
   helm uninstall -n $ns prometheus-operator
 
@@ -1281,7 +1298,7 @@ destroy::primehub() {
   info "[Backup] config"
   backup_config
 
-  info "[Delete] primehub helm"
+  info "[Delete] PrimeHub helm chart"
   ns=$(helm ls -A -a -f primehub -o json | jq -r '.[0].namespace')
   helm uninstall -n $ns primehub
 
