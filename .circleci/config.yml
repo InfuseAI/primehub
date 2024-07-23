@@ -264,7 +264,7 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_smoke_ee_v1.24"
+          name: "e2e_smoke_ee_v1.28"
           primehub_mode: "ee"
           k8s_version: "v1.28.11-k3s1"
           test_type: "smoke"
@@ -274,7 +274,7 @@ workflows:
               ignore:
                 - master
       - e2e_test:
-          name: "e2e_sanity_ee_v1.24"
+          name: "e2e_sanity_ee_v1.28"
           primehub_mode: "ee"
           k8s_version: "v1.28.11-k3s1"
           test_type: "sanity"

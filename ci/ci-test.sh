@@ -55,13 +55,14 @@ wait_for_docker() {
 
 wait_for_pod() {
   local name=$1
+  local ready_num=$2
   local now=$SECONDS
   local timeout=600
   while true; do
     # it might fail
     echo "Checking ${name} up..."
     set +e
-    kubectl get pods -n hub -l app.kubernetes.io/name=${name} | grep "2/2" > /dev/null 2>&1
+    kubectl get pods -n hub -l app.kubernetes.io/name=${name} | grep $ready_num > /dev/null 2>&1
     ret=$?
     set -e
     if [ "$ret" == "0" ]; then
@@ -142,8 +143,8 @@ if [[ "$TARGET" != "demo.a" ]]; then
     echo "Applying License [EE] for test."
     echo "$DEV_EE_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
-    wait_for_pod "primehub-graphql"
-    wait_for_pod "primehub-console"
+    wait_for_pod "primehub-graphql" "3/3"
+    wait_for_pod "primehub-console" "2/2"
   fi
 
   # apply dev license
@@ -152,8 +153,8 @@ if [[ "$TARGET" != "demo.a" ]]; then
     echo "Applying License [DEPLOY] for test."
     echo "$DEV_DEPLOY_LICENSE" | base64 -d | kubectl apply -n hub -f -
     sleep 30
-    wait_for_pod "primehub-graphql"
-    wait_for_pod "primehub-console"
+    wait_for_pod "primehub-graphql" "3/3"
+    wait_for_pod "primehub-console" "2/2"
   fi
 
   # ensure rollout before testing

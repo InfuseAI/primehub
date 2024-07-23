@@ -33,8 +33,8 @@ curl -sLO https://storage.googleapis.com/kubernetes-release/release/v1.26.15/bin
   chmod a+x kubectl && \
   sudo mv kubectl /usr/local/bin
 
-K3D_VERSION=4.4.8
-HELM_VERSION=3.15.3
+K3D_VERSION=5.5.1
+HELM_VERSION=3.14.4
 HELMFILE_VERSION=v0.144.0
 NVM_VERSION=0.39.0
 NODEJS_VERSION=14.18.0
