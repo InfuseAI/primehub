@@ -28,7 +28,6 @@ PRIMEHUB_SCHEME='http'
 PRIMEHUB_PATH=
 PRIMEHUB_CHART_PATH=
 PRIMEHUB_MODE='ee'
-PRIMEHUB_FEATURE_SSH_BASTION_SERVER=false
 PRIMEHUB_AIRGAPPED=
 PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=
 LICENSE_PATH=
@@ -138,7 +137,6 @@ Options:
   --path              <primehub-path>            : Path of PrimeHub chart folder    (Default: ${PRIMEHUB_PATH})
   --license-path      <primehub-license-path>    : Path of PrimeHub license
   --enable-https                                 : Enable HTTPS                     (Default:off)
-  --enable-ssh-bastion-server                    : Enable SSH Bastion Server feature on port 2222 (Default:off)
   --insecure-registry <container-registry>       : Enable insecure container registry
   --custom-image      <container-registry>       : Enable image builder feature with giving container-registry
   --primehub-ce                                  : Install PrimeHub Community Edition
@@ -376,8 +374,8 @@ install::helmfile() {
 
 install::k9s() {
   local platform=$(uname)
-  local detect_arch=$(uname -m)
-  if [ "$detect_arch" == "x86_64" ]; then
+  local machine=$(uname -m | tr '[:upper:]' '[:lower:]')
+  if [ "$machine" == "x86_64" ]; then
     arch="amd64"
   else
     arch=$(uname -m)
@@ -1666,9 +1664,6 @@ main() {
       ;;
       --enable-https)
         PRIMEHUB_SCHEME='https'
-      ;;
-      --enable-ssh-bastion-server)
-        PRIMEHUB_FEATURE_SSH_BASTION_SERVER=true
       ;;
       --primehub-ce)
         export PRIMEHUB_MODE='ce'

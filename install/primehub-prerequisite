@@ -8,13 +8,13 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 export PATH=${PATH}:~/bin
-K9S_VERSION=v0.21.9
-KUBECTL_VERSION=v1.21.3
-HELM_VERSION=v3.6.2
-HELMDIFF_VERSION=v3.1.3
+K9S_VERSION=v0.32.5
+KUBECTL_VERSION=v1.28.12
+HELM_VERSION=v3.15.3
+HELMDIFF_VERSION=v3.9.9
 HELMFILE_VERSION=v0.144.0
-JQ_VERSION=1.6
-YQ_VERSION=v4.9.8
+JQ_VERSION=1.7.1
+YQ_VERSION=v4.44.2
 
 
 info() {
@@ -34,26 +34,27 @@ usage (){
     cat <<EOF
 
 PURPOSE: Check the following pre-requisites:
-    1) linux_package 
-    2) container 
-    3) Kubernetes 
-    4) ingress 
-    5) gpu 
+    1) linux_package
+    2) container
+    3) kubernetes
+    4) ingress
+    5) gpu
     6) storageclass
+    7) all
 
 USAGE:
-  $SELF -h,--help              : show this message
+  $SELF -h,--help      : show this message
 
-  $SELF install : check and install prerequisite if missing
-  $SELF check   : check only
+  $SELF install        : check and install all prerequisite if missing
+  $SELF check \$target  : check provided target (default is 'all' if \$target is empty)
 
 EOF
 }
 
 check::linux_package() {
-  info "[Check] Linux_package"
   local result=0
-  LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc' 'kubectl' 'helm' 'helmfile')
+  local LINUX_PACKAGES=('make' 'jq' 'yq' 'git' 'curl' 'nc')
+  info "[Check] Linux package"
   echo "[Check] Required: ${LINUX_PACKAGES[@]}"
 
   for val in ${LINUX_PACKAGES[@]}; do
@@ -63,13 +64,8 @@ check::linux_package() {
     fi
   done
 
-  if [[ "$(helm plugin list | grep diff)" == "" ]]; then
-      result=1
-      MISSING_PACKAGES+=('helm diff')
-  fi
-
   if [ ${result} -gt 0 ]; then
-    warn "[Check] Failed checking: Some Linux packages not installed: ${MISSING_PACKAGES}"
+    echo "[Check] Failed checking: Some Linux packages not installed: ${MISSING_PACKAGES[@]}"
   else
     info "[Check] Passed checking: Linux packages"
   fi
@@ -77,22 +73,50 @@ check::linux_package() {
 
 check::container() {
   info "[Check] Container Runtime"
+  CONTAINER_RUNTIME=('docker' 'crictl' 'ctr' 'microk8s.ctr' 'podman' 'runc')
+  echo "[Check] Required: ${CONTAINER_RUNTIME[@]}"
 
-  if [[ "$(command -v docker)" == "" ]]; then
-    MISSING_PACKAGES+="docker"
-    warn "[Check] Failed checking: Container Runtime not installed: ${MISSING_PACKAGES}"
+  for val in ${CONTAINER_RUNTIME[@]}; do
+    if [[ "$(command -v $val)" != "" ]]; then
+      result=0
+      INSTALLED_CONTAINER+=(${val})
+    fi
+  done
+
+  if [ ${result} -eq 0 ]; then
+    echo "[Check] Passed checking: Container Runtime installed: ${INSTALLED_CONTAINER[@]}"
   else
-    info "[Check] Passed checking: Container Runtime"
+    warn "[Check] Failed checking: Container Runtime not installed"
   fi
+
+#  if [[ "$(command -v docker)" != "" || "$(command -v crictl)" != "" || "$(command -v ctr)" != "" || "$(command -v microk8s.ctr)" != "" || "$(command -v podman)" != "" ]]; then
+#    info "[Check] Passed checking: Container Runtime"
+#  else
+#    warn "[Check] Failed checking: Container Runtime not installed"
+#  fi
 }
 
 check::kubernetes() {
   info "[Check] Kubernetes"
-  if [[ "$(command -v kubectl)" == "" ]]; then
-    MISSING_PACKAGES+="kubectl"
-    warn "[Check] Failed checking: kubectl not installed: ${MISSING_PACKAGES}"
+  K8S_PACKAGES=('kubectl' 'helm' 'helmfile')
+  echo "[Check] Required: ${K8S_PACKAGES[@]} helm-diff"
+
+  for val in ${K8S_PACKAGES[@]}; do
+    if [[ "$(command -v $val)" == "" ]]; then
+      result=1
+      MISSING_PACKAGES+=(${val})
+    fi
+  done
+
+  if [[ "$(helm plugin list | grep diff)" == "" ]]; then
+      result=1
+      MISSING_PACKAGES+=('helm-diff')
+  fi
+
+  if [[ ${result} -gt 0 ]]; then
+    echo "[Check] Failed checking: Some k8s-related commands not installed: ${MISSING_PACKAGES[@]}"
   else
-    info "[Check] Passed checking: kubectl"
+    info "[Check] Passed checking: k8s-related commands"
   fi
 }
 
@@ -124,6 +148,17 @@ check_snap() {
   return -1
 }
 
+check::microk8s() {
+  info "[Check] Microk8s service"
+
+  if ! check_snap microk8s; then
+    error "[Pre-check Failed] Not install microk8s"
+  else
+    info "[Pre-check Passed] Passed checking: microk8s"
+  fi
+
+}
+
 check::ingress() {
   info "[Check] Ingress"
   if ! search_helm_release nginx-ingress; then
@@ -137,8 +172,8 @@ check::ingress() {
 check::gpu() {
   info "[Check] GPU"
   if [[ "$(command -v nvidia-smi)" == "" ]]; then
-    MISSING_PACKAGES+="nvidia-smi"
-    warn "[Check] Failed checking: GPU not installed: ${MISSING_PACKAGES}"
+    MISSING_PACKAGES+=("nvidia-smi")
+    echo "[Check] Failed checking: GPU not installed: ${MISSING_PACKAGES[@]}"
   elif ! search_pod nvidia-gpu-device-plugin; then
     warn "[Check] Failed checking: GPU: nvidia-gpu-device-plugin"
   else
@@ -156,15 +191,41 @@ check::storageclass() {
 }
 
 install::linux_package() {
-  info "[Install] Linux package"
+  info "[Check] Linux package"
+  info "[Check] Required: make git curl nc"
 
-  if ! check_snap microk8s; then
-    error "[Pre-check Failed] Not install microk8s"
-    exit 1
+  if command -v dpkg > /dev/null; then
+    if ! (dpkg -l make | grep "ii.*make") > /dev/null; then
+      info "[Install] make package"
+      sudo apt-get install -yy -qq --no-install-recommends make
+      info "[Install] make installed."
+     else
+      info "[Install] make installed."
+    fi
+    if ! (dpkg -l git | grep "ii.*git") > /dev/null; then
+      info "[Install] git package"
+      sudo apt-get install -yy -qq --no-install-recommends git
+      info "[Install] git installed."
+     else
+      info "[Install] git installed."
+    fi
+    if ! (dpkg -l curl | grep "ii.*curl") > /dev/null; then
+      info "[Install] curl package"
+      sudo apt-get install -yy -qq --no-install-recommends curl
+      info "[Install] curl installed."
+     else
+      info "[Install] curl installed."
+    fi
+    if ! (dpkg -l netcat-openbsd | grep "ii.*netcat-openbsd") > /dev/null; then
+      info "[Install] netcat package"
+      sudo apt-get install -yy -qq --no-install-recommends netcat-openbsd
+      info "[Install] netcat installed."
+     else
+      info "[Install] netcat installed."
+    fi
   else
-    info "[Pre-check Passed] Passed checking: microk8s"
+    warn "[WARN] This is not a debian-based Linux system, Linux packages will not be installed"
   fi
-
 }
 
 install::kubectl() {
@@ -237,20 +298,25 @@ install::helmdiff() {
   if [[ "$(helm plugin list | grep diff)" == "" ]]; then
     info "[Install] helm diff not installed yet"
     local platform=$(uname | tr '[:upper:]' '[:lower:]')
+    local machine=$(uname -m | tr '[:upper:]' '[:lower:]')
     local helm_plugin_path=$(helm env | grep HELM_PLUGINS | tr -d '"' | cut -d= -f2)
+    if [ "$machine" == "x86_64" ]; then
+      arch="amd64"
+    else
+      arch=$(uname -m)
+    fi
     info "[Download] helm-diff ${HELMDIFF_VERSION}"
     case "${platform}" in
       'linux')
-        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux.tgz"
+        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-linux-${arch}.tgz"
       ;;
       'darwin')
-        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos.tgz"
+        curl -O -L "https://github.com/databus23/helm-diff/releases/download/${HELMDIFF_VERSION}/helm-diff-macos-${arch}.tgz"
       ;;
     esac
     mkdir -p $helm_plugin_path
     tar -C $helm_plugin_path -xf ~/bin/helm-diff-*.tgz
     rm -f ~/bin/helm-diff-*.tgz
-
   fi
 
   info "[Install] helm diff installed."
@@ -259,7 +325,7 @@ install::helmdiff() {
 install::helmfile() {
   info "[Install] check helmfile..."
 
-  if [[ "$(command -v k9s)" == "" ]]; then
+  if [[ "$(command -v helmfile)" == "" ]]; then
     info "[Install] helmfile not installed yet"
     local platform=$(uname | tr '[:upper:]' '[:lower:]')
     info "[Download] helmfile ${HELMFILE_VERSION}"
@@ -275,12 +341,19 @@ install::k9s() {
   if [[ "$(command -v k9s)" == "" ]]; then
     info "[Install] k9s not installed yet"
     local platform=$(uname)
-    curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_x86_64.tar.gz"
+    local machine=$(uname -m | tr '[:upper:]' '[:lower:]')
+    if [ "$machine" == "x86_64" ]; then
+      arch="amd64"
+    else
+      arch=$(uname -m)
+    fi
+    info "[Download] k9s ${K9S_VERSION}"
+    curl -O -L "https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_${platform}_${arch}.tar.gz"
     mkdir -p ~/bin/k9s-${K9S_VERSION}
-    tar zxf ~/bin/k9s_${platform}_x86_64.tar.gz -C ~/bin/k9s-${K9S_VERSION}
+    tar zxf ~/bin/k9s_${platform}_${arch}.tar.gz -C ~/bin/k9s-${K9S_VERSION}
     mv ~/bin/k9s-${K9S_VERSION}/k9s ~/bin/k9s
     rm -rf ~/bin/k9s-${K9S_VERSION}
-    rm -f ~/bin/k9s_${platform}_x86_64.tar.gz
+    rm -f ~/bin/k9s_${platform}_${arch}.tar.gz
   fi
 
   info "[Install] k9s installed."
@@ -289,19 +362,24 @@ install::k9s() {
 install:nfs-common() {
   info "[Install] check nfs-common"
 
-  if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
-    info "[Install] nfs-common"
-    sudo apt-get install -yy -qq --no-install-recommends nfs-common
+  if command -v dpkg > /dev/null; then
+    if ! (dpkg -l nfs-common | grep "ii.*nfs-common") > /dev/null; then
+      info "[Install] nfs-common packages"
+      sudo apt-get install -yy -qq --no-install-recommends nfs-common
+     else
+      info "[Install] nfs-common installed."
+    fi
+  else
+    warn "[WARN] This is not a debian-based Linux system, nfs-common package will not be installed"
   fi
 
-  info "[Install] nfs-common installed."
 }
-
 
 check::all() {
   check::linux_package
   check::container
   check::kubernetes
+  check::microk8s
   check::ingress
   check::gpu
   check::storageclass
@@ -311,7 +389,8 @@ install::all() {
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   if [[ "${PRIMEHUB_PATH}" == "" ]]; then
-    info "[Install] primehub required bin"
+    info "[Install] PrimeHub required binaries"
+    install::linux_package
     install::kubectl
     install::yq
     install::jq
@@ -320,10 +399,12 @@ install::all() {
     install::helmfile
     install::k9s
   else
-    info "[Install] primehub/bin"
+    info "[Install] Copy \$PRIMEHUB_PATH files to \$HOME/bin"
     cp -r ${PRIMEHUB_PATH}/bin/* ~/bin
-    mkdir -p $helm_plugin_path
-    tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
+    if [[ $helm_plugin_path != "" ]]; then
+      mkdir -p $helm_plugin_path
+      tar -C $helm_plugin_path -xvf ${PRIMEHUB_PATH}/bin/helm-diff-*.tgz
+    fi
   fi
 
   # Check nfs-common
