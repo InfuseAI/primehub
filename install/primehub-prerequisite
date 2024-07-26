@@ -3,11 +3,10 @@ set -eo pipefail
 IFS=$'\n\t '
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-
 export PATH=${PATH}:~/bin
+
 K9S_VERSION=v0.32.5
 KUBECTL_VERSION=v1.28.12
 HELM_VERSION=v3.15.3
@@ -88,12 +87,6 @@ check::container() {
   else
     warn "[Check] Failed checking: Container Runtime not installed"
   fi
-
-#  if [[ "$(command -v docker)" != "" || "$(command -v crictl)" != "" || "$(command -v ctr)" != "" || "$(command -v microk8s.ctr)" != "" || "$(command -v podman)" != "" ]]; then
-#    info "[Check] Passed checking: Container Runtime"
-#  else
-#    warn "[Check] Failed checking: Container Runtime not installed"
-#  fi
 }
 
 check::kubernetes() {
@@ -156,21 +149,21 @@ check::microk8s() {
   else
     info "[Pre-check Passed] Passed checking: microk8s"
   fi
-
 }
 
 check::ingress() {
   info "[Check] Ingress"
+
   if ! search_helm_release nginx-ingress; then
     warn "[Check] Failed checking: Ingress"
   else
     info "[Check] Passed checking: Ingress"
   fi
-
 }
 
 check::gpu() {
   info "[Check] GPU"
+
   if [[ "$(command -v nvidia-smi)" == "" ]]; then
     MISSING_PACKAGES+=("nvidia-smi")
     echo "[Check] Failed checking: GPU not installed: ${MISSING_PACKAGES[@]}"
@@ -183,6 +176,7 @@ check::gpu() {
 
 check::storageclass() {
   info "[Check] Storage Class"
+
   if [[ "$(kubectl get storageclass | grep default)" == "" ]]; then
     warn "[Check] Failed checking: Storage Class"
   else
@@ -250,7 +244,6 @@ install::yq() {
   fi
 
   info "[Install] yq installed."
-
 }
 
 install::jq() {
@@ -271,7 +264,6 @@ install::jq() {
 
 
   info "[Install] jq installed."
-
 }
 
 install::helm() {
@@ -372,7 +364,6 @@ install:nfs-common() {
   else
     warn "[WARN] This is not a debian-based Linux system, nfs-common package will not be installed"
   fi
-
 }
 
 check::all() {
@@ -412,7 +403,6 @@ install::all() {
     install:nfs-common
   fi
   popd > /dev/null
-
 }
 
 env::setpath() {
