@@ -1,483 +1,576 @@
 #!/bin/bash
 # PrimeHub environmental data collection script
-# Version : 2022/10/21 Version 5
 set -o pipefail
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
+export PATH=${PATH}:~/bin
 
+TIMESTAMP=$(date +%F-%H-%M-%S)
+TAR_TIMESTAMP=$(echo $TIMESTAMP | cut -d- -f1-5 |sed 's/-//g')
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 ARCHIVE_DIR=$DIR/primehub_data
-LOG_DIR=$DIR/primehub_data/primehub_data_$(date +'%Y%m%d%H%M')
-TIMESTAMP=$(date +%F-%H-%M-%S)
+LOG_DIR=$DIR/primehub_data/primehub_data_$TAR_TIMESTAMP
 
-OSTYPE=$(echo $OSTYPE)
-WSL_DETECT=$(grep -qi microsoft /proc/version ; echo $?)
 
-USER_UID=$(echo $UID)
-USER_NAME=$(echo $USER)
-SUDO=$(SUDO_ASKPASS=/bin/false sudo -An whoami > /dev/null 2>&1 ; echo $?)
+usage() {
+    local SELF=`basename $0`
+    cat <<EOF
 
-TIME=$(date +%Y/%m/%d-%H:%M:%S)
-ANSIBLE_ENV_CHECK=$(command -v ansible)
+PURPOSE: Check the following service status:
+    1) system
+    2) kubernetes
+    3) rook-ceph
+    4) primehub
+    5) all
 
-CHECK_KUBELET=$(systemctl -la | grep -o kubelet.service 1> /dev/null 2>&1 ; echo $?)
-CHECK_RKE=$(docker ps -a 2> /dev/null | grep -o kubelet 1> /dev/null 2>&1 ; echo $?)
-CHECK_KUBELET_SERVICE=$(systemctl is-active kubelet.service)
-CHECK_DOCKER_SERVICE=$(systemctl is-active docker.service)
+USAGE:
+  $SELF -h,--help      : show this message
 
-PVC_LIST=$(kubectl get pvc -A 2> /dev/null)
-PV_LIST=$(kubectl get pv -A 2> /dev/null)
-DEPLOY_LIST=$(kubectl get deploy -A 2> /dev/null)
-SVC_LIST=$(kubectl get svc -A 2> /dev/null)
+  $SELF check \$target  : check provided service part (default is 'all' if \$target is empty)
 
-NOT_READY_NODE=$(kubectl get nodes 2> /dev/null | grep NotReady | awk {'print $1'})
-NOT_RUNNING_POD=$(kubectl get pod -o json --all-namespaces 2> /dev/null | jq -j '.items[] |  "\(.metadata.name), \(.metadata.namespace), \(.status.phase)\n"' 2> /dev/null | grep -v Running | grep -v Completed | grep -v Succeeded)
-NOT_READY_DEPLOY=$(kubectl get deploy -o json --all-namespaces 2> /dev/null | jq -j '.items[] | "\(.metadata.name), \(.metadata.namespace), \(.status.unavailableReplicas)\n"' 2> /dev/null | grep -v null)
+EOF
+}
 
-OSD_POOL_NAME=replicapool
+beep() {
+  echo -en "\007"
+}
 
-FILE_NAME="primehub-data-$(date +'%Y%m%d%H%M')"
+info() {
+  echo -e "\033[0;32m$1\033[0m"
+}
 
-start_running() {
+warn() {
+  echo -e "\033[0;93m$1\033[0m"
+}
+
+error() {
+  echo -e "\033[0;91m$1\033[0m" >&2
+}
+
+execution::start() {
 echo ""
-printf "\E[5;30;47m#################################################################\E[0m\n"
-printf "\E[5;30;47m#                                                               #\E[0m\n"
-printf "\E[5;30;47m#  Start running PrimeHub environmental data collection script. #\E[0m\n"
-printf "\E[5;30;47m#                                                               #\E[0m\n"
-printf "\E[5;30;47m#################################################################\E[0m\n"
+info "#################################################################"
+info "#                                                               #"
+info "#  Start running PrimeHub environmental data collection script. #"
+info "#                                                               #"
+info "#################################################################"
 echo ""
 }
 
-end_running() {
+execution::end() {
 echo ""
-printf "\E[0;90;102m#################################################################\E[0m\n"
-printf "\E[0;90;102m#                                                               #\E[0m\n"
-printf "\E[0;90;102m#     PrimeHub environmental data collection is completed!      #\E[0m\n"
-printf "\E[0;90;102m#                                                               #\E[0m\n"
-printf "\E[0;90;102m#################################################################\E[0m\n"
+info "#################################################################"
+info "#                                                               #"
+info "#     PrimeHub environmental data collection is completed!      #"
+info "#                                                               #"
+info "#################################################################"
 echo ""
 }
 
-bash_run_check() {
+check::bash() {
 if [ ! "$BASH_VERSION" ] ; then
-	echo "-------------------------------------------------------------------------"
-    echo "Please do not use $SHELL to run this script, execute it with bash directly." 1>&2
-	echo "e.g. bash $0"
+  warn "-------------------------------------------------------------------------"
+    warn "Please do not use $SHELL to run this script, execute it with bash directly." 1>&2
+  warn "e.g. bash $0"
     exit 1
 fi
 }
 
 # Check host type
-linux_host_check() {
-echo "-------------------------------------------------------------------------"
-if [[ $OSTYPE == "linux-gnu" ]] && [[ $WSL_DETECT -eq 1 ]]; then
-	echo "This host is a native Linux Server."
-	echo "Host type match, moving to next step."
-else
-	echo "This host is not a native Linux Server."
-	echo "This script can only be executed on a native GNU/Linux system."
-	exit 1
-fi
-echo ""
+check::linux_host() {
+  local OSTYPE=$(echo $OSTYPE)
+  local WSL_DETECT=$(grep -qi microsoft /proc/version ; echo $?)
+  info "-------------------------------------------------------------------------"
+  if [[ $OSTYPE == "linux-gnu" ]] && [[ $WSL_DETECT -eq 1 ]]; then
+    info "This host is a native Linux Server."
+    info "Host type match, moving to next step."
+  else
+    warn "This host is not a native Linux Server."
+    warn "This script can only be executed on a native GNU/Linux system."
+    exit 1
+  fi
+  echo ""
 }
 
 # Check if this script run by root-like account
-root_privilege_check() {
-echo "Check whether current user has superuser privilege....."
-echo ""
-if [ $USER_UID != '0' ]; then
-	echo "You are not using root account apparently....."
-	echo "Check if the current user has sudo privilege....."
-		if [[ $SUDO -eq 1 ]]; then
-			echo "You do not have the right privilege to perform this action, exit."
-			exit 1
-		fi
-	echo "Identity confirmed, you have root-like privilege, moving to next step."
-else
-    echo "Identity confirmed, you have root privilege, moving to next step."
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
+check::root_privilege() {
+  local USER_UID=$(echo $UID)
+  local USER_NAME=$(echo $USER)
+  local SUDO=$(SUDO_ASKPASS=/bin/false sudo -An whoami > /dev/null 2>&1 ; echo $?)
+  info "Check whether current user has superuser privilege....."
+  echo ""
+  if [ $USER_UID != '0' ]; then
+    warn "You are not using root account apparently....."
+    warn "Check if the current user has sudo privilege....."
+      if [[ $SUDO -eq 1 ]]; then
+        warn "You do not have the right privilege to perform this action, exit."
+        exit 1
+      fi
+    info "Identity confirmed, you have root-like privilege, moving to next step."
+  else
+    info "Identity confirmed, you have root privilege, moving to next step."
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
-
-bash_run_check
-
-start_running
-
-linux_host_check
-
-root_privilege_check
 
 # Create Log folder
-create_log_folder() {
-echo "-------------------------------------------------------------------------"
-if [ ! -d $LOG_DIR ]; then
-	echo "Creating Log folder."
-	mkdir -p $LOG_DIR
-	echo "Folder $LOG_DIR is created."
-else
-	echo "Log folder $LOG_DIR already exists."
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
+log::folder_create() {
+  info "-------------------------------------------------------------------------"
+  if [ ! -d $LOG_DIR ]; then
+    info "Creating Log folder."
+    mkdir -p $LOG_DIR
+    info "Folder $LOG_DIR is created."
+  else
+    info "Log folder $LOG_DIR already exists."
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
-
-create_log_folder
 
 # System summary report
-system_summary() {
-printf "\E[0;95m=========================================================================\E[0m\n"
-echo "Hostname: $(hostname)" | tee -a $LOG_DIR/system_summary_$(hostname).log
-echo "IP address: $(hostname -I | awk '{print $1}')" | tee -a $LOG_DIR/system_summary_$(hostname).log
-echo "Linux distro name: $(grep -i pretty /etc/os-release | perl -lne 'print for /"([^"]+)"/g' --)" | tee -a $LOG_DIR/system_summary_$(hostname).log
-echo "Kernel version: $(uname -r)" | tee -a $LOG_DIR/system_summary_$(hostname).log
-echo "System manufacturer: $(sudo dmidecode -s system-manufacturer)" | tee -a $LOG_DIR/system_summary_$(hostname).log
-printf "\E[0;95m=========================================================================\E[0m\n"
-echo ""
+check::system_brief() {
+  info "========================================================================="
+  echo "Hostname: $(hostname)" | tee -a $LOG_DIR/system_brief_$(hostname).log
+  echo "IP address: $(hostname -I | awk '{print $1}')" | tee -a $LOG_DIR/system_brief_$(hostname).log
+  echo "Linux distro name: $(grep -i pretty /etc/os-release | perl -lne 'print for /"([^"]+)"/g' --)" | tee -a $LOG_DIR/system_brief_$(hostname).log
+  echo "Kernel version: $(uname -r)" | tee -a $LOG_DIR/system_brief_$(hostname).log
+  echo "System manufacturer: $(sudo dmidecode -s system-manufacturer)" | tee -a $LOG_DIR/system_brief_$(hostname).log
+  info "========================================================================="
+  echo ""
 }
-
-system_summary
 
 # Check system date and time.
-system_time_check() {
-echo "-------------------------------------------------------------------------"
-echo "Check system date and time."
-if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
-	read -t 15 -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $DIR/.ansible/inventory.yaml) > " inventory_file
-	if [[ -f $inventory_file ]]; then
-		ansible -i $inventory_file all -m shell -a 'date' -f99 &> $LOG_DIR/ansible_date_$TIMESTAMP.log
-		echo "System date log is now logged at $LOG_DIR/ansible_date_$TIMESTAMP.log"
-	else
-		echo "Will not run ansible command due to empty input or non-existent file."
-	fi
-else
-	echo "Ansible command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-fi
-echo ""
-echo "Current System time is:"
-echo $TIME
-echo "-------------------------------------------------------------------------"
-echo ""
+check::system_time() {
+  local TIME=$(date +%Y/%m/%d-%H:%M:%S)
+  info "-------------------------------------------------------------------------"
+  info "Check cluster node date and time."
+  echo ""
+  if [[ "$(command -v ansible)" != "" ]]; then
+    read -t 15 -p "Please input your inventory file full path, skip this step by pressing enter. (e.g. $DIR/.ansible/inventory.yaml) > " inventory_file
+    if [[ -f $inventory_file ]]; then
+      ansible -i $inventory_file all -m shell -a 'date' -f99 &> $LOG_DIR/ansible_date_$TIMESTAMP.log
+      info "System date log is now logged at $LOG_DIR/ansible_date_$TIMESTAMP.log"
+    else
+      info "Will not run ansible command due to empty input or non-existent file."
+    fi
+  else
+    echo "Ansible command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  fi
+  echo ""
+  info "Current system time is:"
+  info $TIME
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
-
-system_time_check
 
 # Check system resources usage and NVIDIA driver status
 local_system_check() {
-echo "Log NVIDIA driver status to $LOG_DIR"
-if [[ "$(command -v nvidia-smi)" == "" ]]; then
-	echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "nvidia-smi installed, moving to next step."
-	nvidia-smi &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
-	echo "-------------------------------------------------------------------------" &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
-	nvidia-smi -L &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
-	echo "System NVIDIA driver status is now logged at $LOG_DIR/nvidia_driver_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log NVIDIA driver status to $LOG_DIR"
+  if [[ "$(command -v nvidia-smi)" == "" ]]; then
+    echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "nvidia-smi installed, moving to next step."
+    nvidia-smi &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+    info "-------------------------------------------------------------------------" &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+    nvidia-smi -L &>> $LOG_DIR/nvidia_driver_$TIMESTAMP.log
+    info "System NVIDIA driver status is now logged at $LOG_DIR/nvidia_driver_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Log system resources usage to $LOG_DIR"
-if [[ "$(command -v mpstat)" == "" ]]; then
-	echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "mpstat command installed, capture current system cpu usage."
-	mpstat -P ALL &> $LOG_DIR/cpu_usage_$TIMESTAMP.log
-	echo "System cpu usage is now logged at $LOG_DIR/cpu_usage_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log system resources usage to $LOG_DIR"
+  if [[ "$(command -v mpstat)" == "" ]]; then
+    echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "mpstat command installed, capture current system cpu usage."
+    mpstat -P ALL &> $LOG_DIR/cpu_usage_$TIMESTAMP.log
+    info "System cpu usage is now logged at $LOG_DIR/cpu_usage_$TIMESTAMP.log"
+  fi
+  echo ""
 
-if [[ "$(command -v free)" == "" ]]; then
-	echo "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "free command installed, capture current system memory usage."
-	free -g &> $LOG_DIR/mem_usage_$TIMESTAMP.log
-	echo "System memory usage is now logged at $LOG_DIR/mem_usage_$TIMESTAMP.log"
-fi
-echo ""
+  if [[ "$(command -v free)" == "" ]]; then
+    echo "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "free command installed, capture current system memory usage."
+    free -g &> $LOG_DIR/mem_usage_$TIMESTAMP.log
+    info "System memory usage is now logged at $LOG_DIR/mem_usage_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Log system disk usage to $LOG_DIR"
-if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
-	echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "df and lsblk command installed, capture current system disk usage and partition table."
-	df -h &> $LOG_DIR/disk_usage_$TIMESTAMP.log
-	lsblk &> $LOG_DIR/block_device_list_$TIMESTAMP.log
-	echo "System disk usage is now logged at $LOG_DIR/disk_usage_$TIMESTAMP.log"
-	echo "System partition table is now logged at $LOG_DIR/block_device_list_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log system disk usage to $LOG_DIR"
+  if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
+    echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "df and lsblk command installed, capture current system disk usage and partition table."
+    df -h &> $LOG_DIR/disk_usage_$TIMESTAMP.log
+    lsblk &> $LOG_DIR/block_device_list_$TIMESTAMP.log
+    info "System disk usage is now logged at $LOG_DIR/disk_usage_$TIMESTAMP.log"
+    info "System partition table is now logged at $LOG_DIR/block_device_list_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Dump system logs to $LOG_DIR"
-sudo dmesg -T | tail -1000 &> $LOG_DIR/dmesg_$TIMESTAMP.log
-mount &> $LOG_DIR/mount_$TIMESTAMP.log
-echo "System log is now logged at $LOG_DIR/dmesg_$TIMESTAMP.log"
-echo "Mountpoint log is now logged at $LOG_DIR/mount_$TIMESTAMP.log"
-echo "-------------------------------------------------------------------------"
-echo ""
+  info "Dump system logs to $LOG_DIR"
+  sudo dmesg -T | tail -1000 &> $LOG_DIR/dmesg_$TIMESTAMP.log
+  mount &> $LOG_DIR/mount_$TIMESTAMP.log
+  info "System log is now logged at $LOG_DIR/dmesg_$TIMESTAMP.log"
+  info "Mountpoint log is now logged at $LOG_DIR/mount_$TIMESTAMP.log"
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
 
 ansible_system_check() {
-echo "Log NVIDIA driver status to $LOG_DIR"
-if [[ "$(command -v nvidia-smi)" == "" ]]; then
-	echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "nvidia-smi command installed, capture nvidia device status on all ansible inventory hosts."
-	ansible -i $inventory_file all -m shell -a 'nvidia-smi' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
-	echo "-------------------------------------------------------------------------" &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
-	ansible -i $inventory_file all -m shell -a 'nvidia-smi -L' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
-	echo "System NVIDIA driver status is now logged at $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log NVIDIA driver status to $LOG_DIR"
+  if [[ "$(command -v nvidia-smi)" == "" ]]; then
+    echo "nvidia-smi command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "nvidia-smi command installed, capture nvidia device status on all ansible inventory hosts."
+    ansible -i $inventory_file all -m shell -a 'nvidia-smi' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+    info "-------------------------------------------------------------------------" &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+    ansible -i $inventory_file all -m shell -a 'nvidia-smi -L' -f99 &>> $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log
+    info "System NVIDIA driver status is now logged at $LOG_DIR/ansible_nvidia_driver_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Log system cpu usage usage to $LOG_DIR"
-if [[ "$(command -v mpstat)" == "" ]]; then
-	echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "mpstat command installed, capture system cpu usage on all ansible inventory hosts."
-	ansible -i $inventory_file all -m shell -a 'mpstat -P ALL' -f99 &> $LOG_DIR/ansible_cpu_$TIMESTAMP.log
-	echo "System cpu usage is now logged at $LOG_DIR/ansible_cpu_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log system cpu usage usage to $LOG_DIR"
+  if [[ "$(command -v mpstat)" == "" ]]; then
+    echo "mpstat command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "mpstat command installed, capture system cpu usage on all ansible inventory hosts."
+    ansible -i $inventory_file all -m shell -a 'mpstat -P ALL' -f99 &> $LOG_DIR/ansible_cpu_$TIMESTAMP.log
+    info "System cpu usage is now logged at $LOG_DIR/ansible_cpu_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Log system memory usage usage to $LOG_DIR"
-if [[ "$(command -v free)" == "" ]]; then
-	echo "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "free command installed, capture system memory usage on all ansible inventory hosts."
-	ansible -i $inventory_file all -m shell -a 'free -g' -f99 &> $LOG_DIR/ansible_mem_$TIMESTAMP.log
-	echo "System memory usage is now logged at $LOG_DIR/ansible_mem_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log system memory usage usage to $LOG_DIR"
+  if [[ "$(command -v free)" == "" ]]; then
+    warn "free command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "free command installed, capture system memory usage on all ansible inventory hosts."
+    ansible -i $inventory_file all -m shell -a 'free -g' -f99 &> $LOG_DIR/ansible_mem_$TIMESTAMP.log
+    info "System memory usage is now logged at $LOG_DIR/ansible_mem_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Log system disk usage to $LOG_DIR"
-if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
-	echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "df and lsblk command installed, capture system disk usage and partition table on all ansible inventory hosts."
-	ansible -i $inventory_file all -m shell -a 'df -h' -f99 &> $LOG_DIR/ansible_disk_$TIMESTAMP.log
-	ansible -i $inventory_file all -m shell -a 'lsblk' -f99 &> $LOG_DIR/ansible_block_device_list_$TIMESTAMP.log
-	echo "System disk usage is now logged at $LOG_DIR/ansible_disk_$TIMESTAMP.log"
-	echo "System partition table is now logged at $LOG_DIR/ansible_block_device_list_$TIMESTAMP.log"
-fi
-echo ""
+  info "Log system disk usage to $LOG_DIR"
+  if [[ "$(command -v df)" == "" && "$(command -v lsblk)" == "" ]]; then
+    echo "df and lsblk command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "df and lsblk command installed, capture system disk usage and partition table on all ansible inventory hosts."
+    ansible -i $inventory_file all -m shell -a 'df -h' -f99 &> $LOG_DIR/ansible_disk_$TIMESTAMP.log
+    ansible -i $inventory_file all -m shell -a 'lsblk' -f99 &> $LOG_DIR/ansible_block_device_list_$TIMESTAMP.log
+    info "System disk usage is now logged at $LOG_DIR/ansible_disk_$TIMESTAMP.log"
+    info "System partition table is now logged at $LOG_DIR/ansible_block_device_list_$TIMESTAMP.log"
+  fi
+  echo ""
 
-echo "Dump system logs to $LOG_DIR"
-ansible -i $inventory_file all -m shell -a 'dmesg -T | tail -1000' -b -f99 &> $LOG_DIR/ansible_dmesg_$TIMESTAMP.log
-ansible -i $inventory_file all -m shell -a 'mount' -f99 &> $LOG_DIR/ansible_mount_$TIMESTAMP.log
-echo "System log on all ansible inventory hosts is now logged at $LOG_DIR/ansible_dmesg_$TIMESTAMP.log"
-echo "Mountpoint log on all ansible inventory hosts is now logged at $LOG_DIR/ansible_mount_$TIMESTAMP.log"
-echo "-------------------------------------------------------------------------"
-echo ""
+  info "Dump system logs to $LOG_DIR"
+  ansible -i $inventory_file all -m shell -a 'dmesg -T | tail -1000' -b -f99 &> $LOG_DIR/ansible_dmesg_$TIMESTAMP.log
+  ansible -i $inventory_file all -m shell -a 'mount' -f99 &> $LOG_DIR/ansible_mount_$TIMESTAMP.log
+  info "System log on all ansible inventory hosts is now logged at $LOG_DIR/ansible_dmesg_$TIMESTAMP.log"
+  info "Mountpoint log on all ansible inventory hosts is now logged at $LOG_DIR/ansible_mount_$TIMESTAMP.log"
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
 
-system_total_check() {
-echo "-------------------------------------------------------------------------"
-echo "Check system resources usage and NVIDIA driver status....."
-if [[ $ANSIBLE_ENV_CHECK != "" ]]; then
-	if [[ ! -f $inventory_file ]]; then
-		echo ""
-		echo "Will not run ansible command due to empty input or non-existent file."
-		echo ""
-		local_system_check
-	else
-		echo ""
-		ansible_system_check
-	fi
-else
-	echo "Ansible command not found."
-	echo ""
-	local_system_check
-fi
+check::cluster() {
+  info "-------------------------------------------------------------------------"
+  info "Check system resources usage and NVIDIA driver status....."
+  if [[ "$(command -v ansible)" != "" ]]; then
+    if [[ ! -f $inventory_file ]]; then
+      echo ""
+      warn "Will not run ansible command due to empty input or non-existent file."
+      echo ""
+      local_system_check
+    else
+      echo ""
+      ansible_system_check
+    fi
+  else
+    warn "Ansible command not found."
+    echo ""
+    local_system_check
+  fi
 }
-
-system_total_check
-
-# Check system k8s service
-k8s_service_check() {
-echo "-------------------------------------------------------------------------"
-if [[ "$(command -v docker)" != "" && $CHECK_DOCKER_SERVICE == "active" ]]; then
-	echo "Docker installed, moving to next step."
-	if [[ $CHECK_KUBELET -eq 0 && $CHECK_RKE -eq 1 ]]; then
-		echo "This host has Kubelet service installed."
-		K8S_TYPE=KUBELET
-	elif [[ $CHECK_KUBELET -eq 1 && $CHECK_RKE -eq 0 ]]; then
-		echo "This host has RKE service installed."
-		K8S_TYPE=RKE
-	else
-		echo "Cannot detect k8s service on this host, exit."
-		exit 1
-	fi
-else
-	echo "Docker command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-fi
-
-if [[ $K8S_TYPE == "RKE" ]]; then
-	echo ""
-	echo "Dump kubelet logs to $LOG_DIR"
-	docker logs kubelet --tail 1000 &> $LOG_DIR/kubelet_service_$TIMESTAMP.log
-	echo "Kubelet service log is now logged at $LOG_DIR/kubelet_service_$TIMESTAMP.log"
-elif [[ $K8S_TYPE == "KUBELET"  && $CHECK_KUBELET_SERVICE == "active" ]]; then
-	echo ""
-	echo "Dump kubelet logs to $LOG_DIR"
-	systemctl status kubelet.service -l &> $LOG_DIR/kubelet_status_$TIMESTAMP.log
-	journalctl -u kubelet.service -n 1000 &> $LOG_DIR/kubelet_service_$TIMESTAMP.log
-	echo "Kubelet status log is now logged at $LOG_DIR/kubelet_status_$TIMESTAMP.log"
-	echo "Kubelet service log is now logged at $LOG_DIR/kubelet_service_$TIMESTAMP.log"
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
-}
-
-k8s_service_check
 
 # Check Kubernetes service status
-k8s_status_check() {
-echo "-------------------------------------------------------------------------"
-if [[ "$(command -v kubectl)" == "" ]]; then
-	echo "Kubectl command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "Kubectl installed, Check Kubernetes cluster status."
-	kubectl get nodes -o wide &> $LOG_DIR/kubernetes_node_$TIMESTAMP.log
-	kubectl get pods -A -o wide &> $LOG_DIR/kubernetes_pod_$TIMESTAMP.log
-	kubectl get pvc -A &> $LOG_DIR/kubernetes_pvc_$TIMESTAMP.log
-	kubectl get pv -A &> $LOG_DIR/kubernetes_pv_$TIMESTAMP.log
-	kubectl get deploy -A &> $LOG_DIR/kubernetes_deploy_$TIMESTAMP.log
-	kubectl get svc -A &> $LOG_DIR/kubernetes_svc_$TIMESTAMP.log
-	echo "Kubernetes node status log is now logged at $LOG_DIR/kubernetes_node_$TIMESTAMP.log"
-	echo "Kubernetes pod status log is now logged at $LOG_DIR/kubernetes_pod_$TIMESTAMP.log"
-	echo "Kubernetes pvc status log is now logged at $LOG_DIR/kubernetes_pvc_$TIMESTAMP.log"
-	echo "Kubernetes pv status log is now logged at $LOG_DIR/kubernetes_pv_$TIMESTAMP.log"
-	echo "Kubernetes deploy status log is now logged at $LOG_DIR/kubernetes_deploy_$TIMESTAMP.log"
-	echo "Kubernetes svc status log is now logged at $LOG_DIR/kubernetes_svc_$TIMESTAMP.log"
-fi
-echo ""
+check::k8s() {
+  local CHECK_KUBELET=$(systemctl -la | grep -o kubelet.service 1> /dev/null 2>&1 ; echo $?)
+  local CHECK_RKE=$(docker ps -a 2> /dev/null | grep -o kubelet 1> /dev/null 2>&1 ; echo $?)
+  local CHECK_KUBELET_SERVICE=$(systemctl is-active kubelet.service)
+  local CHECK_DOCKER_SERVICE=$(systemctl is-active docker.service)
+  local NOT_READY_NODE=$(kubectl get nodes 2> /dev/null | grep NotReady | awk {'print $1'})
+  local NOT_RUNNING_POD=$(kubectl get pod -o json --all-namespaces 2> /dev/null | jq -j '.items[] |  "\(.metadata.name), \(.metadata.namespace), \(.status.phase)\n"' 2> /dev/null | grep -v Running | grep -v Completed | grep -v Succeeded)
+  local NOT_READY_DEPLOY=$(kubectl get deploy -o json --all-namespaces 2> /dev/null | jq -j '.items[] | "\(.metadata.name), \(.metadata.namespace), \(.status.unavailableReplicas)\n"' 2> /dev/null | grep -v null)
+  info "-------------------------------------------------------------------------"
+  if [[ "$(command -v docker)" != "" && $CHECK_DOCKER_SERVICE == "active" ]]; then
+    info "Docker installed, moving to next step."
+    if [[ $CHECK_KUBELET -eq 0 && $CHECK_RKE -eq 1 ]]; then
+      info "This host has Kubelet service installed."
+      K8S_TYPE=KUBELET
+    elif [[ $CHECK_KUBELET -eq 1 && $CHECK_RKE -eq 0 ]]; then
+      info "This host has RKE service installed."
+      K8S_TYPE=RKE
+    else
+      warn "Cannot detect k8s service on this host, exit."
+      exit 1
+    fi
+  else
+    echo "Docker command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  fi
 
-if [[ "$(command -v helm)" == "" ]]; then
-	echo "Helm command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "Helm installed, list releases of charts."
-	helm ls -Aa &> $LOG_DIR/helm_$TIMESTAMP.log
-	echo "Helm charts list log is now logged at $LOG_DIR/helm_$TIMESTAMP.log"
-fi
-echo ""
+  if [[ $K8S_TYPE == "RKE" ]]; then
+    echo ""
+    info "Dump kubelet logs to $LOG_DIR"
+    docker logs kubelet --tail 1000 &> $LOG_DIR/kubelet_service_$TIMESTAMP.log
+    info "Kubelet service log is now logged at $LOG_DIR/kubelet_service_$TIMESTAMP.log"
+  elif [[ $K8S_TYPE == "KUBELET"  && $CHECK_KUBELET_SERVICE == "active" ]]; then
+    echo ""
+    info "Dump kubelet logs to $LOG_DIR"
+    systemctl status kubelet.service -l &> $LOG_DIR/kubelet_status_$TIMESTAMP.log
+    journalctl -u kubelet.service -n 1000 &> $LOG_DIR/kubelet_service_$TIMESTAMP.log
+    info "Kubelet status log is now logged at $LOG_DIR/kubelet_status_$TIMESTAMP.log"
+    info "Kubelet service log is now logged at $LOG_DIR/kubelet_service_$TIMESTAMP.log"
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
+  info "-------------------------------------------------------------------------"
+  if [[ "$(command -v kubectl)" == "" ]]; then
+    echo "Kubectl command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "Kubectl installed, Check Kubernetes cluster status."
+    kubectl get nodes -o wide &> $LOG_DIR/kubernetes_node_$TIMESTAMP.log
+    kubectl get pods -A -o wide &> $LOG_DIR/kubernetes_pod_$TIMESTAMP.log
+    kubectl get pvc -A &> $LOG_DIR/kubernetes_pvc_$TIMESTAMP.log
+    kubectl get pv -A &> $LOG_DIR/kubernetes_pv_$TIMESTAMP.log
+    kubectl get deploy -A &> $LOG_DIR/kubernetes_deploy_$TIMESTAMP.log
+    kubectl get svc -A &> $LOG_DIR/kubernetes_svc_$TIMESTAMP.log
+    info "Kubernetes node status log is now logged at $LOG_DIR/kubernetes_node_$TIMESTAMP.log"
+    info "Kubernetes pod status log is now logged at $LOG_DIR/kubernetes_pod_$TIMESTAMP.log"
+    info "Kubernetes pvc status log is now logged at $LOG_DIR/kubernetes_pvc_$TIMESTAMP.log"
+    info "Kubernetes pv status log is now logged at $LOG_DIR/kubernetes_pv_$TIMESTAMP.log"
+    info "Kubernetes deploy status log is now logged at $LOG_DIR/kubernetes_deploy_$TIMESTAMP.log"
+    info "Kubernetes svc status log is now logged at $LOG_DIR/kubernetes_svc_$TIMESTAMP.log"
+  fi
+  echo ""
+
+  if [[ "$(command -v helm)" == "" ]]; then
+    echo "Helm command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "Helm installed, list releases of charts."
+    helm ls -Aa &> $LOG_DIR/helm_$TIMESTAMP.log
+    info "Helm charts list log is now logged at $LOG_DIR/helm_$TIMESTAMP.log"
+  fi
+  echo ""
 
 
-if [[ $NOT_READY_NODE == "" ]]; then
-	echo "The status of all nodes is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-else
-	echo "Not ready node found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-	kubectl get nodes | grep NotReady | awk {'print $1'} | xargs kubectl describe node &> $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log
-	echo "Kubernetes NotReady node status log is now logged at $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log"
-fi
-echo ""
+  if [[ $NOT_READY_NODE == "" ]]; then
+    echo "The status of all nodes is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+  else
+    echo "Not ready node found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+    kubectl get nodes | grep NotReady | awk {'print $1'} | xargs kubectl describe node &> $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log
+    warn "Kubernetes NotReady node status log is now logged at $LOG_DIR/kubernetes_not_ready_node_$TIMESTAMP.log"
+  fi
+  echo ""
 
-if [[ $NOT_RUNNING_POD == "" ]]; then
-	echo "The status of all pods is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-else
-	echo "Not ready pod found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-	echo "$NOT_RUNNING_POD" &> $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log
-	echo "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log"
-fi
-echo ""
+  if [[ $NOT_RUNNING_POD == "" ]]; then
+    echo "The status of all pods is ready." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+  else
+    echo "Not ready pod found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+    echo "$NOT_RUNNING_POD" &> $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log
+    warn "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_not_ready_pod_$TIMESTAMP.log"
+  fi
+  echo ""
 
-if [[ $NOT_READY_DEPLOY == "" ]]; then
-	echo "The status of all deployments is available." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-else
-	echo "Unavailable deployment found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
-	echo "$NOT_READY_DEPLOY" &> $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log
-	echo "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log"
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
+  if [[ $NOT_READY_DEPLOY == "" ]]; then
+    echo "The status of all deployments is available." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+  else
+    echo "Unavailable deployment found." | tee -a $LOG_DIR/kubernetes_status_$TIMESTAMP.log
+    echo "$NOT_READY_DEPLOY" &> $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log
+    warn "Kubernetes NotReady pod status log is now logged at $LOG_DIR/kubernetes_unavailable_deploy_$TIMESTAMP.log"
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
 
-k8s_status_check
-
-# Check Ceph service status
-ceph_status_check() {
-echo "-------------------------------------------------------------------------"
-if [[ "$(command -v kubectl-ceph)" == "" ]]; then
-	echo "Kubectl-ceph command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "Kubectl-ceph installed, Check Ceph cluster status."
-	kubectl ceph status &> $LOG_DIR/ceph_status_$TIMESTAMP.log
-	kubectl ceph health &> $LOG_DIR/ceph_health_$TIMESTAMP.log
-	kubectl ceph osd status &> $LOG_DIR/ceph_osd_status_$TIMESTAMP.log
-	kubectl ceph osd tree &> $LOG_DIR/ceph_osd_tree_$TIMESTAMP.log
-	kubectl ceph pg dump &> $LOG_DIR/ceph_pg_dump_$TIMESTAMP.log
-	kubectl ceph df &> $LOG_DIR/ceph_df_$TIMESTAMP.log
-	kubectl ceph osd df tree &> $LOG_DIR/ceph_osd_df_tree_$TIMESTAMP.log
-	kubectl rbd ls $OSD_POOL_NAME &> $LOG_DIR/ceph_rbd_pool_$TIMESTAMP.log
-	kubectl rbd device list &> $LOG_DIR/ceph_rbd_device_$TIMESTAMP.log
-	echo "Ceph cluster status log is now logged at $LOG_DIR/ceph_status_$TIMESTAMP.log"
-	echo "Ceph cluster health log is now logged at $LOG_DIR/ceph_health_$TIMESTAMP.log"
-	echo "Ceph osd status log is now logged at $LOG_DIR/ceph_osd_status_$TIMESTAMP.log"
-	echo "Ceph osd tree log is now logged at $LOG_DIR/ceph_osd_tree_$TIMESTAMP.log"
-	echo "Ceph pg dump log is now logged at $LOG_DIR/ceph_pg_dump_$TIMESTAMP.log"
-	echo "Ceph cluster usage log is now logged at $LOG_DIR/ceph_df_$TIMESTAMP.log"
-	echo "Ceph osd usage log is now logged at $LOG_DIR/ceph_osd_df_tree_$TIMESTAMP.log"
-	echo "Ceph rbd volume list is now logged at $LOG_DIR/ceph_rbd_pool_$TIMESTAMP.log"
-	echo "Ceph rbd device list is now logged at $LOG_DIR/ceph_rbd_device_$TIMESTAMP.log"
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
+# Check Rook Ceph service status
+check::ceph() {
+  local OSD_POOL_NAME=replicapool
+  info "-------------------------------------------------------------------------"
+  if [[ "$(command -v kubectl-ceph)" == "" ]]; then
+    echo "Kubectl-ceph command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "Kubectl-ceph installed, Check Ceph cluster status, please wait while the script is dumping info from the ceph cluster....."
+    kubectl ceph status &> $LOG_DIR/ceph_status_$TIMESTAMP.log
+    kubectl ceph health &> $LOG_DIR/ceph_health_$TIMESTAMP.log
+    kubectl ceph osd status &> $LOG_DIR/ceph_osd_status_$TIMESTAMP.log
+    kubectl ceph osd tree &> $LOG_DIR/ceph_osd_tree_$TIMESTAMP.log
+    kubectl ceph pg dump &> $LOG_DIR/ceph_pg_dump_$TIMESTAMP.log
+    kubectl ceph df &> $LOG_DIR/ceph_df_$TIMESTAMP.log
+    kubectl ceph osd df tree &> $LOG_DIR/ceph_osd_df_tree_$TIMESTAMP.log
+    kubectl rbd ls $OSD_POOL_NAME &> $LOG_DIR/ceph_rbd_pool_$TIMESTAMP.log
+    kubectl rbd device list &> $LOG_DIR/ceph_rbd_device_$TIMESTAMP.log
+    info "Ceph cluster status log is now logged at $LOG_DIR/ceph_status_$TIMESTAMP.log"
+    info "Ceph cluster health log is now logged at $LOG_DIR/ceph_health_$TIMESTAMP.log"
+    info "Ceph osd status log is now logged at $LOG_DIR/ceph_osd_status_$TIMESTAMP.log"
+    info "Ceph osd tree log is now logged at $LOG_DIR/ceph_osd_tree_$TIMESTAMP.log"
+    info "Ceph pg dump log is now logged at $LOG_DIR/ceph_pg_dump_$TIMESTAMP.log"
+    info "Ceph cluster usage log is now logged at $LOG_DIR/ceph_df_$TIMESTAMP.log"
+    info "Ceph osd usage log is now logged at $LOG_DIR/ceph_osd_df_tree_$TIMESTAMP.log"
+    info "Ceph rbd volume list is now logged at $LOG_DIR/ceph_rbd_pool_$TIMESTAMP.log"
+    info "Ceph rbd device list is now logged at $LOG_DIR/ceph_rbd_device_$TIMESTAMP.log"
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
-
-ceph_status_check
 
 # Check PrimeHub service status
-primehub_status_check() {
-echo "-------------------------------------------------------------------------"
-if [[ "$(command -v kubectl-primehub)" == "" ]]; then
-	echo "Kubectl-primehub command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
-else
-	echo "Kubectl-primehub installed, Check PrimeHub status."
-	kubectl primehub version &> $LOG_DIR/primehub_version_$TIMESTAMP.log
-	#Command usage: kubectl primehub [notebook|job|gitsync|nfs|image-builder|deploy|system]
-	kubectl primehub notebook &> $LOG_DIR/primehub_notebook_$TIMESTAMP.log
-	kubectl primehub job &> $LOG_DIR/primehub_job_$TIMESTAMP.log
-	kubectl primehub nfs &> $LOG_DIR/primehub_nfs_$TIMESTAMP.log
-	kubectl primehub deploy &> $LOG_DIR/primehub_deploy_$TIMESTAMP.log
-	kubectl primehub system &> $LOG_DIR/primehub_system_$TIMESTAMP.log
-	echo "Collect PrimeHub diagnostic logs, please wait....."
-	cd $LOG_DIR
-	kubectl primehub diagnose --path $DIR
-	rm -rf $DIR/primehub-log-*
-	echo "Done."
-	cd $DIR
-	echo ""
-	echo "PrimeHub version log is now logged at $LOG_DIR/primehub_version_$TIMESTAMP.log"
-	echo "PrimeHub notebook list is now logged at $LOG_DIR/primehub_notebook_$TIMESTAMP.log"
-	echo "PrimeHub job list is now logged at $LOG_DIR/primehub_job_$TIMESTAMP.log"
-	echo "PrimeHub nfs list is now logged at $LOG_DIR/primehub_nfs_$TIMESTAMP.log"
-	echo "PrimeHub deploy list is now logged at $LOG_DIR/primehub_deploy_$TIMESTAMP.log"
-	echo "PrimeHub system list is now logged at $LOG_DIR/primehub_system_$TIMESTAMP.log"
-	echo "PrimeHub diagnose log is now stored at $LOG_DIR/primehub-log-$(date +'%Y%m%d%H%M').tgz"
-fi
-echo "-------------------------------------------------------------------------"
-echo ""
+check::primehub_service() {
+  info "-------------------------------------------------------------------------"
+  if [[ "$(command -v kubectl-primehub)" == "" ]]; then
+    echo "Kubectl-primehub command not found." | tee -a $LOG_DIR/system_not_installed_command_$TIMESTAMP.log
+  else
+    info "Kubectl-primehub installed, Check PrimeHub status, please wait while the script is dumping info from the cluster....."
+    kubectl primehub version &> $LOG_DIR/primehub_version_$TIMESTAMP.log
+    #Command usage: kubectl primehub [notebook|job|gitsync|nfs|image-builder|deploy|system]
+    kubectl primehub notebook &> $LOG_DIR/primehub_notebook_$TIMESTAMP.log
+    kubectl primehub job &> $LOG_DIR/primehub_job_$TIMESTAMP.log
+    kubectl primehub nfs &> $LOG_DIR/primehub_nfs_$TIMESTAMP.log
+    kubectl primehub deploy &> $LOG_DIR/primehub_deploy_$TIMESTAMP.log
+    kubectl primehub system &> $LOG_DIR/primehub_system_$TIMESTAMP.log
+    info "Collect PrimeHub diagnostic logs, please wait....."
+    cd $LOG_DIR
+    kubectl primehub diagnose --path $DIR
+    rm -rf $DIR/primehub-log-*
+    info "Done."
+    cd $DIR
+    echo ""
+    info "PrimeHub version log is now logged at $LOG_DIR/primehub_version_$TIMESTAMP.log"
+    info "PrimeHub notebook list is now logged at $LOG_DIR/primehub_notebook_$TIMESTAMP.log"
+    info "PrimeHub job list is now logged at $LOG_DIR/primehub_job_$TIMESTAMP.log"
+    info "PrimeHub nfs list is now logged at $LOG_DIR/primehub_nfs_$TIMESTAMP.log"
+    info "PrimeHub deploy list is now logged at $LOG_DIR/primehub_deploy_$TIMESTAMP.log"
+    info "PrimeHub system list is now logged at $LOG_DIR/primehub_system_$TIMESTAMP.log"
+    info "PrimeHub diagnose log is now stored at $LOG_DIR/primehub-log-$(date +'%Y%m%d%H%M').tgz"
+  fi
+  info "-------------------------------------------------------------------------"
+  echo ""
 }
 
-primehub_status_check
+# Compressing all logs into a tar gz file
+log::compress(){
+  local FILE_NAME="primehub-cluster-data-$TAR_TIMESTAMP"
+  info "-------------------------------------------------------------------------"
+  info "Compressing logs....."
+  cd $LOG_DIR
+  tar czf $ARCHIVE_DIR/$FILE_NAME.tgz * 1> /dev/null 2>&1
+  cd $DIR
+  info "Done."
+  info "-------------------------------------------------------------------------"
+  echo ""
 
-# Summary
-summary(){
-echo "-------------------------------------------------------------------------"
-echo "Compressing logs....."
-cd $LOG_DIR
-tar czf $ARCHIVE_DIR/$FILE_NAME.tgz * 1> /dev/null 2>&1
-cd $DIR
-echo "Done."
-echo "-------------------------------------------------------------------------"
-echo ""
-
-echo "-------------------------------------------------------------------------"
-echo "Logs folder: $LOG_DIR"
-echo "Log archive: $(realpath $ARCHIVE_DIR/$FILE_NAME.tgz)"
-echo "-------------------------------------------------------------------------"
+  info "-------------------------------------------------------------------------"
+  info "Logs folder: $LOG_DIR"
+  info "Log archive: $(realpath $ARCHIVE_DIR/$FILE_NAME.tgz)"
+  info "-------------------------------------------------------------------------"
 }
 
-summary
-end_running
+prerequisite(){
+  check::bash
+  check::linux_host
+  check::root_privilege
+}
 
-exit 0
+check::all(){
+  prerequisite
+  execution::start
+  log::folder_create
+  check::system_brief
+  check::system_time
+  check::cluster
+  check::k8s
+  check::ceph
+  check::primehub_service
+  log::compress
+  execution::end
+}
+
+check::system(){
+  prerequisite
+  execution::start
+  log::folder_create
+  check::system_brief
+  check::system_time
+  check::cluster
+  log::compress
+  execution::end
+}
+
+check::kubernetes(){
+  prerequisite
+  execution::start
+  log::folder_create
+  check::k8s
+  log::compress
+  execution::end
+}
+
+check::rook-ceph(){
+  prerequisite
+  execution::start
+  log::folder_create
+  check::ceph
+  log::compress
+  execution::end
+}
+
+check::primehub(){
+  prerequisite
+  execution::start
+  log::folder_create
+  check::primehub_service
+  log::compress
+  execution::end
+}
+
+main() {
+  local cmd=''
+  local target=''
+  local support_targets='all system kubernetes rook-ceph primehub'
+
+  while (( "$#" )); do
+    case "${1:-}" in
+      env)
+        cmd=${1}; shift
+        break
+      ;;
+      check)
+        if [[ "${cmd}" != '' ]]; then error 'Incorrect command'; usage; exit 1; fi
+        cmd=${1}; shift
+        for t in ${support_targets}; do
+          if [[ "${t}" == "${1}" ]]; then
+            target=${1}
+            break
+          fi
+        done
+
+        if [[ "${target}" == "" ]]; then
+          # usage
+          check::all
+          exit 1
+        fi
+      ;;
+    esac
+    shift || (usage; exit 1)
+  done
+
+  case "$cmd" in
+    check)
+      check::${target}
+    ;;
+    *)
+      usage
+    ;;
+  esac
+}
+
+main "$@"
