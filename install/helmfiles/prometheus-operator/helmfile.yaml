@@ -16,7 +16,7 @@ releases:
     chart: "{{ $CHART_PATH }}"
     {{- else }}
     chart: "prometheus-community/kube-prometheus-stack"
-    version: "61.3.2"
+    version: "66.3.1"
     {{- end }}
     values:
       - prometheus.yaml.gotmpl

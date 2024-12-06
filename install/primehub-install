@@ -8,20 +8,20 @@ export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
 export PATH=${PATH}:~/bin
-K9S_VERSION=v0.32.5
-KUBECTL_VERSION=v1.28.12
-HELM_VERSION=v3.15.3
-HELMDIFF_VERSION=v3.9.9
-HELMFILE_VERSION=v0.144.0
+K9S_VERSION=v0.32.7
+KUBECTL_VERSION=v1.30.7
+HELM_VERSION=v3.16.3
+HELMDIFF_VERSION=v3.9.12
+HELMFILE_VERSION=v0.169.2
 JQ_VERSION=1.7.1
-YQ_VERSION=v4.44.2
+YQ_VERSION=v4.44.5
 
 INSECURE_REGISTRY=''
 CONTAINER_REGISTRY=''
 
 PRIMEHUB_HELM_CHART="https://charts.infuseai.io/index.yaml"
-SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26 1.27 1.28 1.29 1.30"
-K8S_VERSION=1.28
+SUPPORT_K8S_VERSION="1.21 1.22 1.23 1.24 1.25 1.26 1.27 1.28 1.29 1.30 1.31"
+K8S_VERSION=1.30
 PRIMEHUB_VERSION=
 PRIMEHUB_NAMESPACE=hub
 PRIMEHUB_SCHEME='http'
@@ -33,7 +33,7 @@ PRIMEHUB_AIRGAPPED_IMAGE_PREFIX=
 LICENSE_PATH=
 
 PROMETHEUS_CHART="prometheus-community/kube-prometheus-stack"
-PROMETHEUS_CHART_VERSION="61.3.2"
+PROMETHEUS_CHART_VERSION="66.3.1"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART="infuseai/primehub-grafana-dashboard-basic"
 PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CHART_VERSION="1.3.0"
 
@@ -161,7 +161,7 @@ search_primehub_folder() {
 }
 
 search_primehub_license() {
-  find . -name "*license_crd.yml" | head -n1
+  find . -name "*license_crd.yaml" | head -n1
 }
 
 verify_primehub_chart_path() {
@@ -290,7 +290,7 @@ install::kubectl() {
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] kubectl ${KUBECTL_VERSION}"
-  curl -O -L "https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/${platform}/${arch}/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
+  curl -O -L "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/${platform}/${arch}/kubectl" && chmod +x ~/bin/kubectl && ln -nfs ~/bin/kubectl ~/bin/k
   popd > /dev/null
 }
 
@@ -365,10 +365,16 @@ install::helmdiff() {
 install::helmfile() {
   local platform=$(uname | tr '[:upper:]' '[:lower:]')
   local arch=$(get_arch)
+  local hfversion=${HELMFILE_VERSION//"v"/}
   mkdir -p ~/bin
   pushd ~/bin > /dev/null
   info "[Download] helmfile ${HELMFILE_VERSION}"
-  curl -o helmfile -L "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${platform}_${arch}" && chmod +x ~/bin/helmfile
+  mkdir -p ~/bin/helmfile-${HELMFILE_VERSION}
+  curl -O -L "https://github.com/helmfile/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_${hfversion}_${platform}_${arch}.tar.gz"
+  tar zxf helmfile_${hfversion}_${platform}_${arch}.tar.gz -C ~/bin/helmfile-${HELMFILE_VERSION}
+  mv ~/bin/helmfile-${HELMFILE_VERSION}/helmfile ~/bin/helmfile
+  rm -rf ~/bin/helmfile-${HELMFILE_VERSION}
+  rm ~/bin/helmfile_${hfversion}_${platform}_${arch}.tar.gz
   popd > /dev/null
 }
 
@@ -787,7 +793,7 @@ spec:
     solvers:
     - http01:
         ingress:
-          class: nginx
+          ingressClassName: nginx
 EOF
 
   local n=0
@@ -812,11 +818,12 @@ install::ingress_nginx() {
     verify_minimal_resources
     info "[Install] Nginx Ingress"
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
     helm install \
       nginx-ingress ingress-nginx/ingress-nginx \
       --create-namespace \
       --namespace ingress-nginx \
-      --version 4.10.3 \
+      --version 4.11.3 \
       --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
       --set controller.admissionWebhooks.enabled=false \
       --set controller.resources.limits.cpu=250m \
@@ -843,8 +850,11 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v1.12.12 \
-      --set installCRDs=true \
+      --version v1.12.14 \
+      --set crds.enabled=true \
+      --set startupapicheck.timeout=5m \
+      --set webhook.hostNetwork=true \
+      --set webhook.securePort=10260 \
       --set ingressShim.defaultIssuerName=letsencrypt-prod \
       --set ingressShim.defaultIssuerKind=ClusterIssuer
     kubectl -n cert-manager rollout status Deployment/cert-manager-webhook
@@ -920,7 +930,7 @@ generate::keycloak_grafana_client() {
 }
 
 install::primehub_grafana_dashboard() {
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
   # PrimeHub Grafana Dashboard Chart
@@ -933,12 +943,12 @@ install::primehub_grafana_dashboard() {
   fi
 
   info "[Install] PrimeHub Grafana Dashboard Basic"
-  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic sync
+  helmfile -f ${HELMFILE_PATH}/primehub-grafana-dashboard-basic sync
 
 }
 
 install::nvidia_gpu_exporter() {
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
   local NVIDIA_GPU_EXPORTER_CONFIG=$(primehub_config_path)/helm_override/nvidia-gpu-exporter.yaml
 
   # Nvidia GPU Exporter Chart
@@ -951,11 +961,11 @@ install::nvidia_gpu_exporter() {
   fi
 
   info "[Install] Nvidia GPU Exporter"
-  helmfile -f ${HELMFIEL_PATH}/nvidia-gpu-exporter sync
+  helmfile -f ${HELMFILE_PATH}/nvidia-gpu-exporter sync
 }
 
 install::prometheus() {
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
 
   infuseai_repo_update
@@ -974,7 +984,7 @@ install::prometheus() {
   if [ "$PRIMEHUB_AIRGAPPED" == "true" ]; then
     options='--skip-deps'
   fi
-  helmfile -f ${HELMFIEL_PATH}/prometheus-operator sync ${options}
+  helmfile -f ${HELMFILE_PATH}/prometheus-operator sync ${options}
 
   install::primehub_grafana_dashboard
 
@@ -982,14 +992,14 @@ install::prometheus() {
 }
 
 diff::prometheus() {
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
   local PROMETHEUS_CONFIG=$(primehub_config_path)/helm_override/prometheus.yaml
   local PRIMEHUB_GRAFANA_DASHBOARD_BASIC_CONFIG=$(primehub_config_path)/helm_override/primehub-grafana-dashboard-basic.yaml
 
   infuseai_repo_update
-  helmfile -f ${HELMFIEL_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
-  helmfile -f ${HELMFIEL_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
-  helmfile -f ${HELMFIEL_PATH}/nvidia-gpu-exporter diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFILE_PATH}/prometheus-operator diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFILE_PATH}/primehub-grafana-dashboard-basic diff --context 2 --skip-deps --args '--disable-validation'
+  helmfile -f ${HELMFILE_PATH}/nvidia-gpu-exporter diff --context 2 --skip-deps --args '--disable-validation'
 }
 
 destroy::prometheus() {
@@ -1063,7 +1073,7 @@ diff::singlenode() {
 }
 
 diff::primehub() {
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
   echo "primehub-config-path: $(primehub_config_path)"
 
   infuseai_repo_update
@@ -1079,9 +1089,9 @@ diff::primehub() {
   local major=$(echo $helmfile_version | cut -d'.' -f1)
   local minor=$(echo $helmfile_version | cut -d'.' -f2)
   if [[ $major -eq 0 ]] && [[ $minor -ge 144 ]]; then
-    helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --suppress MutatingWebhookConfiguration --suppress ValidatingWebhookConfiguration --args '--disable-validation'
+    helmfile -f ${HELMFILE_PATH}/primehub diff --context 2 --skip-deps --suppress MutatingWebhookConfiguration --suppress ValidatingWebhookConfiguration --args '--disable-validation'
   else
-    helmfile -f ${HELMFIEL_PATH}/primehub diff --context 2 --skip-deps --args '--disable-validation'
+    helmfile -f ${HELMFILE_PATH}/primehub diff --context 2 --skip-deps --args '--disable-validation'
   fi
 }
 
@@ -1126,7 +1136,7 @@ is_yq_v4() {
 install::primehub() {
   local config_path=$(primehub_config_path)
   local PRIMEHUB_CONFIG=${config_path}/helm_override/primehub.yaml
-  local HELMFIEL_PATH=${DIR}/helmfiles
+  local HELMFILE_PATH=${DIR}/helmfiles
 
   if [[ "${PRIMEHUB_SCHEME}" == "https" ]]; then
     sed -i 's/^PRIMEHUB_SCHEME=http$/PRIMEHUB_SCHEME=https/g' ${config_path}/.env
@@ -1143,9 +1153,9 @@ install::primehub() {
     mkdir -p $(primehub_config_path)/helm_override
     info "[Generate] primehub.yaml"
     if [[ $PRIMEHUB_MODE == 'ce' ]]; then
-      cp ${HELMFIEL_PATH}/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
+      cp ${HELMFILE_PATH}/primehub/helm_override/primehub-ce.yaml $PRIMEHUB_CONFIG
     else
-      cp ${HELMFIEL_PATH}/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
+      cp ${HELMFILE_PATH}/primehub/helm_override/primehub-ee.yaml $PRIMEHUB_CONFIG
     fi
     # if kube-apiserver is not running on 6443, override corresponding values in primehub.yaml
     local kube_api_port=$(kubectl get services kubernetes -o json | jq -r '.spec.ports[0].targetPort')
@@ -1175,7 +1185,7 @@ install::primehub() {
 
   apply_crds
   load_env_variables
-  helmfile -f ${HELMFIEL_PATH}/primehub sync || (error_log_primehub; exit 1)
+  helmfile -f ${HELMFILE_PATH}/primehub sync || (error_log_primehub; exit 1)
 
   info "[Progress] Label nodes with component=singleuser-server"
   kubectl label node --all component=singleuser-server --overwrite || true
@@ -1335,7 +1345,7 @@ apply_license() {
   local license_path=${LICENSE_PATH:-$(search_primehub_license)}
 
   if [[ ${license_path} == "" ]]; then
-    warn "[Skip] license_crd.yml not found"
+    warn "[Skip] license_crd.yaml not found"
     exit 1
   fi
 
