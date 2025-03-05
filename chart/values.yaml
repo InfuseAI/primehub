@@ -704,7 +704,7 @@ controller:
 
   proxy:
     image:
-      repository: gcr.io/kubebuilder/kube-rbac-proxy
+      repository: infuseai/kube-rbac-proxy
       tag: v0.4.1
 
   service:
