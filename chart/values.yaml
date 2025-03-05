@@ -756,8 +756,8 @@ groupvolume:
   storageClass: null
   nfs:
     image:
-      repository: registry.k8s.io/volume-nfs
-      tag: 0.8
+      repository: infuseai/volume-nfs
+      tag: v1
       pullPolicy: IfNotPresent
 
 # Gitsync Dataset
