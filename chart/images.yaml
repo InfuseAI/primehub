@@ -8,7 +8,7 @@ primehub-all:
   # Controller
   primehub-controller: &primehub-controller infuseai/primehub-controller:v4.0-6c5467e2
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
-  kube-rbac-proxy: &kube-rbac-proxy gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
+  kube-rbac-proxy: &kube-rbac-proxy infuseai/kube-rbac-proxy:v0.4.1
   buildah: &buildah quay.io/buildah/stable:v1.28.0
 
   # Primehub Console
@@ -21,7 +21,7 @@ primehub-all:
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
   jsonnetd: &jsonnetd metacontroller/jsonnetd:0.1
   git-sync: &git-sync registry.k8s.io/git-sync:v3.0.1
-  volume-nfs: &volume-nfs registry.k8s.io/volume-nfs:0.8
+  volume-nfs: &volume-nfs infuseai/volume-nfs:v1
 
   # Keycloak
   keycloak: &keycloak quay.io/keycloak/keycloak:19.0.3
