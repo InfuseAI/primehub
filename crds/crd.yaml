@@ -27,11 +27,15 @@ spec:
                 type: string
               displayName:
                 type: string
+              gpuResourceName:
+                type: string
               limits.cpu:
                 type: number
               limits.memory:
                 type: string
               limits.nvidia.com/gpu:
+                type: integer
+              limits.gpu:
                 type: integer
               requests.memory:
                 type: string
