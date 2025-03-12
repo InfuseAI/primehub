@@ -648,7 +648,8 @@ class OIDCAuthenticator(GenericOAuthenticator):
         if spawner.started_at is not None:
             started_at = datetime.utcfromtimestamp(int(spawner.started_at)).isoformat()
             duration = int(time.time() - spawner.started_at)
-        gpu_enabled = spawner.extra_resource_limits.get('nvidia.com/gpu', 0) > 0
+        _, gpu_num = spawner.get_gpu_resource()
+        gpu_enabled = gpu_num > 0
         status = 'Success'
         if (len([1 for e in spawner.events if 'Failed' in e['reason']]) > 0):
             status = 'Failed'
@@ -897,6 +898,7 @@ class OIDCAuthenticator(GenericOAuthenticator):
 
         if spawner.extra_resource_limits.get('nvidia.com/gpu', 0) == 0:
             spawner.environment.update({'NVIDIA_VISIBLE_DEVICES': 'none'})
+        # TODO: add env for AMD gpu support
         if spawner.ssh_config['enabled']:
             spawner.environment.update({'PRIMEHUB_START_SSH': 'true'})
             spawner.extra_labels['ssh-bastion-server/notebook'] = 'true'
@@ -1146,8 +1148,8 @@ class PrimeHubSpawner(KubeSpawner):
 
     def instance_type_to_override(self, instance_type):
         spec = instance_type['spec']
-        gpu = spec.get('limits.nvidia.com/gpu', None)
-        extra_resource_limits = {'nvidia.com/gpu': gpu} if gpu else {}
+        gpu_name, gpu_num = self._get_instance_type_gpu(instance_type)
+        extra_resource_limits = {gpu_name: gpu_num} if gpu_num else {}
 
         # there are default value set on
         # .Values.singleuser.cpu.guarantee
@@ -1327,6 +1329,33 @@ class PrimeHubSpawner(KubeSpawner):
                                 enable_ssh_server=enable_feature_ssh_server,
                                 ssh_config=self.user.spawner.ssh_config)
 
+    def _get_instance_type_gpu(self, instance_type):
+        spec = instance_type.get('spec')
+        if not spec:
+            return None, 0
+
+        if all(key in spec for key in ('limits.gpu', 'gpuResourceName')):
+            return spec['gpuResourceName'], spec['limits.gpu']
+
+        # Compatible with the old "limits.nvidia.com/gpu"
+        if 'limits.nvidia.com/gpu' in spec:
+            return 'nvidia.com/gpu', spec['limits.nvidia.com/gpu']
+
+        return None, 0
+
+    def _get_gpu_resource_from_limits(self, limits):
+        if 'nvidia.com/gpu' in limits:
+            return 'nvidia.com/gpu', limits['nvidia.com/gpu']
+        if 'amd.com/gpu' in limits:
+            return 'amd.com/gpu', limits['amd.com/gpu']
+        for k, v in limits.items():
+            if k.startswith('gpu.intel.com/'):
+                return k, v
+        return None, 0
+
+    def get_gpu_resource(self):
+        return self._get_gpu_resource_from_limits(self.extra_resource_limits)
+
     def get_container_resource_usage(self, group):
         try:
             return self._get_container_resource_usage(group)
@@ -1356,13 +1385,18 @@ class PrimeHubSpawner(KubeSpawner):
         # some functions are under primehub_utils.py
         cpu = sum([float(convert_cpu_values_to_float(limit_of(container, 'cpu')))
                    for container in existing if has_limit(container)])
-        gpu = sum([int(limit_of(container, 'nvidia.com/gpu'))
+        gpu = sum([self._get_container_gpu_usage(container)
                    for container in existing if has_limit(container)])
         mem = sum([int(convert_mem_resource_to_bytes(limit_of(container, 'memory')))
                    for container in existing if has_limit(container)])
         mem = round(float(mem / GiB()), 1)  # convert to GB
 
         return {'cpu': cpu, 'gpu': gpu, 'memory': mem}
+
+    def _get_container_gpu_usage(self, container):
+        limits = container.get('resources', {}).get('limits', {})
+        _, gpu_num = self._get_gpu_resource_from_limits(limits)
+        return int(gpu_num)
 
     def _groups_from_ctx(self, context):
         role_groups = [group for group in context['groups']
@@ -1424,7 +1458,7 @@ class PrimeHubSpawner(KubeSpawner):
 
         self.apply_kubespawner_override(self.instance_type_to_override(it))
 
-        gpu_request = int(it['spec'].get('limits.nvidia.com/gpu', 0))
+        _, gpu_request = self._get_instance_type_gpu(it)
         self.apply_kubespawner_override(self.image_to_override(img, gpu_request))
 
         try:
