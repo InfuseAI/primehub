@@ -817,7 +817,7 @@ install::ingress_nginx() {
       nginx-ingress ingress-nginx/ingress-nginx \
       --create-namespace \
       --namespace ingress-nginx \
-      --version 4.11.3 \
+      --version 4.11.4 \
       --set controller.hostNetwork=true --set rbac.create=true --set defaultBackend.enabled=true --set tcp."2222"=hub/ssh-bastion-server:2222 \
       --set controller.admissionWebhooks.enabled=false \
       --set controller.resources.limits.cpu=250m \
@@ -844,7 +844,7 @@ install::cert_manager() {
       cert-manager jetstack/cert-manager \
       --create-namespace \
       --namespace cert-manager \
-      --version v1.12.14 \
+      --version v1.17.1 \
       --set crds.enabled=true \
       --set startupapicheck.timeout=5m \
       --set webhook.hostNetwork=true \
