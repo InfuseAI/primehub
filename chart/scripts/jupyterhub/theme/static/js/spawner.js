@@ -53,6 +53,17 @@
       }
     }
 
+    var getInstanceTypesGPU = function(itDataSpec) {
+      if ('limits.gpu' in itDataSpec) {
+        return itDataSpec['limits.gpu'];
+      }
+      // Compatible with the old "limits.nvidia.com/gpu"
+      if ('limits.nvidia.com/gpu' in itDataSpec) {
+        return itDataSpec['limits.nvidia.com/gpu'];
+      }
+      return false;
+    }
+
     var checkInstanceTypesQuota = function(currentGroup) {
       // parse the top window path.
       var quota = {
@@ -70,7 +81,7 @@
         var itQuota = {
           'cpu': itData.spec['limits.cpu'],
           'memory': parseFloat(itData.spec['limits.memory'].slice(0, -1)),
-          'gpu': 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'],
+          'gpu': getInstanceTypesGPU(itData.spec),
         }
         var disabled = Object.keys(quota).reduce((h, k) => {
           return (quota[k] !== false && itQuota[k] !== false && quota[k] < itQuota[k]) || h;
@@ -130,8 +141,9 @@
       }
 
       for (var i = 0; i < currentGroup.instanceTypes.length; i++) {
-        spec = currentGroup.instanceTypes[i].spec;
-        var resourceLimits = ["CPU: ", spec['limits.cpu'], " / Memory: ", spec['limits.memory'], " / GPU: ", spec['limits.nvidia.com/gpu']].join('');
+        var spec = currentGroup.instanceTypes[i].spec;
+        var gpu = getInstanceTypesGPU(spec);
+        var resourceLimits = ["CPU: ", spec['limits.cpu'], " / Memory: ", spec['limits.memory'], " / GPU: ", (gpu == false ? 0 : gpu)].join('');
         $itInfo = $('#instance_type-item-info-icon-' + i);
         $itInfo.attr('title', resourceLimits);
       }
@@ -147,9 +159,10 @@
 
       // add index for mustache
       for (var i = 0; i < currentGroup.instanceTypes.length; i++) {
-        spec = currentGroup.instanceTypes[i].spec;
+        var spec = currentGroup.instanceTypes[i].spec;
+	var gpu = getInstanceTypesGPU(spec);
         currentGroup.instanceTypes[i].index = i;
-        currentGroup.instanceTypes[i].resourceLimits = ["CPU: ", spec['limits.cpu'], " / Memory: ", spec['limits.memory'], " / GPU: ", spec['limits.nvidia.com/gpu']].join('');
+        currentGroup.instanceTypes[i].resourceLimits = ["CPU: ", spec['limits.cpu'], " / Memory: ", spec['limits.memory'], " / GPU: ", (gpu == false ? 0 : gpu)].join('');
       }
 
       for (var i = 0; i < currentGroup.images.length; i++) {
@@ -230,7 +243,8 @@
       $it = $(event.target);
       itIndex = +$it.data('index');
       itData = currentGroup.instanceTypes[itIndex];
-      cpuOnly = 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'] <= 0;
+      gpu = getInstanceTypesGPU(itData.spec);
+      cpuOnly = gpu == false || gpu <= 0;
       $images = $('label.image-option');
       $images.removeClass('disabled');
       $images.find('input[type="radio"]').removeAttr('disabled');
@@ -257,7 +271,8 @@
       $('div[role="image-not-match-gpu-instance"]').toggleClass('hide', true);
       $currentIt = $('input:radio[name="instance_type"]:checked');
       itData = currentGroup.instanceTypes[itIndex];
-      itHasGpu = 'limits.nvidia.com/gpu' in itData.spec && itData.spec['limits.nvidia.com/gpu'] > 0;
+      gpu = getInstanceTypesGPU(itData.spec);
+      itHasGpu = gpu != false && gpu > 0;
       $image = $(event.target);
       imageIndex = +$image.data('index');
       imageData = currentGroup.images[imageIndex];
