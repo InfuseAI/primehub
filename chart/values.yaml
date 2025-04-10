@@ -942,7 +942,7 @@ minio:
   ##
   image:
     repository: minio/minio
-    tag: RELEASE.2022-04-16T04-26-02Z
+    tag: RELEASE.2025-04-08T15-41-24Z
     pullPolicy: IfNotPresent
 
   ## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
@@ -950,7 +950,7 @@ minio:
   ##
   mcImage:
     repository: minio/mc
-    tag: RELEASE.2022-11-07T23-47-39Z
+    tag: RELEASE.2025-04-08T15-39-49Z
     pullPolicy: IfNotPresent
 
   ## Additional arguments to pass to minio binary
@@ -1093,7 +1093,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v1.1.0
+    tag: 46e88c8
 
   podSecurityContext:
     enabled: true
