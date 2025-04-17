@@ -3,41 +3,41 @@ kind: Image
 metadata:
   name: base-notebook
 spec:
-  displayName: "base-notebook"
-  description: "base notebook"
+  displayName: "Base notebook (Python 3.11)"
+  description: "Base notebook (Python 3.11 + CUDA 12.2)"
   type: "both"
-  url: infuseai/docker-stacks:base-notebook-1eb85fe1
-  urlForGpu: infuseai/docker-stacks:base-notebook-1eb85fe1-gpu
+  url: infuseai/docker-stacks:base-py3.11-b4826add
+  urlForGpu: infuseai/docker-stacks:base-cuda12.2-py3.11-9d284a03
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
   name: pytorch-1
 spec:
-  displayName: "PyTorch 1.10.2 (Python 3.7)"
-  description: "PyTorch 1.10.2 (Python 3.7)"
+  displayName: "PyTorch 2.4.0 (Python 3.11)"
+  description: "PyTorch 2.4.0 (Python 3.11 + CUDA 12.2)"
   type: "both"
-  url: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e
-  urlForGpu: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e-gpu-cuda-11
+  url: infuseai/docker-stacks:pytorch2.4.0-py3.11-b4826add
+  urlForGpu: infuseai/docker-stacks:pytorch2.4.0-cuda12.2-py3.11-9d284a03
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
   name: tf-1
 spec:
-  displayName: "TensorFlow 1.15.4 (Python 3.7)"
-  description: "TensorFlow 1.15.4 (Python 3.7)"
+  displayName: "TensorFlow 2.14.1 (Python 3.9)"
+  description: "TensorFlow 2.14.1 (Python 3.7 + CUDA 11.8)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1-gpu
+  url: infuseai/docker-stacks:tensorflow2.14.1-py3.9-dc0e7e15
+  urlForGpu: infuseai/docker-stacks:tensorflow2.14.1-cuda11.8-py3.9-f471492b
 ---
 apiVersion: primehub.io/v1alpha1
 kind: Image
 metadata:
   name: tf-2
 spec:
-  displayName: "TensorFlow 2.8.0 (Python 3.7)"
-  description: "TensorFlow 2.8.0 (Python 3.7)"
+  displayName: "TensorFlow 2.17.0 (Python 3.11)"
+  description: "TensorFlow 2.17.0 (Python 3.11 + CUDA 12.2)"
   type: "both"
-  url: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e
-  urlForGpu: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e-gpu-cuda-11
+  url: infuseai/docker-stacks:tensorflow2.17.0-py3.11-b4826add
+  urlForGpu: infuseai/docker-stacks:tensorflow2.17.0-cuda12.2-py3.11-9d284a03
