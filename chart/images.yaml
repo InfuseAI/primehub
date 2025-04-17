@@ -57,8 +57,8 @@ primehub-all:
   primehub-usage: &primehub-usage infuseai/primehub-usage:46e88c8
 
   # PrimeHub Store
-  minio: &minio minio/minio:RELEASE.2022-04-16T04-26-02Z
-  mc: &mc minio/mc:RELEASE.2022-11-07T23-47-39Z
+  minio: &minio minio/minio:RELEASE.2025-04-08T15-41-24Z
+  mc: &mc minio/mc:RELEASE.2025-04-08T15-39-49Z
   csi-attacher: &csi-attacher registry.k8s.io/sig-storage/csi-attacher:v3.4.0
   csi-node-driver-registrar: &csi-node-driver-registrar registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.4.0
   csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-16-g998c499
@@ -88,7 +88,7 @@ primehub-ee:
   primehub-console: *primehub-console
   primehub-console-graphql: *primehub-console-graphql
   primehub-console-watcher: *primehub-console-watcher
-  primehub-console-graphql-zipper: &primehub-console-graphql-zipper infuseai/primehub-sharedfiles-zipper:v1.0.0
+  primehub-console-graphql-zipper: *primehub-console-graphql-zipper
 
   # Metacontroller
   metacontroller: *metacontroller
@@ -161,7 +161,7 @@ primehub-deploy:
   primehub-console-model-deploy: *primehub-console-model-deploy
   primehub-console-graphql: *primehub-console-graphql
   primehub-console-watcher: *primehub-console-watcher
-  primehub-console-graphql-zipper: &primehub-console-graphql-zipper infuseai/primehub-sharedfiles-zipper:v1.0.0
+  primehub-console-graphql-zipper: *primehub-console-graphql-zipper
 
   # Metacontroller
   metacontroller: *metacontroller
