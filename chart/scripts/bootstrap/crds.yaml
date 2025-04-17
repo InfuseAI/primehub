@@ -26,7 +26,7 @@ metadata:
   name: tf-1
 spec:
   displayName: "TensorFlow 2.14.1 (Python 3.9)"
-  description: "TensorFlow 2.14.1 (Python 3.7 + CUDA 11.8)"
+  description: "TensorFlow 2.14.1 (Python 3.9 + CUDA 11.8)"
   type: "both"
   url: infuseai/docker-stacks:tensorflow2.14.1-py3.9-dc0e7e15
   urlForGpu: infuseai/docker-stacks:tensorflow2.14.1-cuda11.8-py3.9-f471492b
