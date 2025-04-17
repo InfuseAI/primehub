@@ -191,14 +191,14 @@ primehub-admin-notebook:
   keycloak-gatekeeper: keycloak/keycloak-gatekeeper:6.0.1
 
 primehub-jupyter-images:
-  base-notebook: infuseai/docker-stacks:base-notebook-1eb85fe1
-  base-notebook-gpu: infuseai/docker-stacks:base-notebook-1eb85fe1-gpu
-  pytorch-notebook: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e
-  pytorch-notebook-gpu: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e-gpu-cuda-11
-  tensorflow-notebook: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1
-  tensorflow-notebook-gpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1-gpu
-  tensorflow-notebook-tf-v2: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e
-  tensorflow-notebook-tf-v2-gpu: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e-gpu-cuda-11
+  base-notebook: infuseai/docker-stacks:base-py3.11-b4826add
+  base-notebook-gpu: infuseai/docker-stacks:base-cuda12.2-py3.11-9d284a03
+  pytorch2-notebook: infuseai/docker-stacks:pytorch2.4.0-py3.11-b4826add
+  pytorch2-notebook-gpu: infuseai/docker-stacks:pytorch2.4.0-cuda12.2-py3.11-9d284a03
+  tensorflow2-notebook: infuseai/docker-stacks:tensorflow2.14.1-py3.9-dc0e7e15
+  tensorflow2-notebook-gpu: infuseai/docker-stacks:tensorflow2.14.1-cuda11.8-py3.9-f471492b
+  tensorflow2-notebook-py311: infuseai/docker-stacks:tensorflow2.17.0-py3.11-b4826add
+  tensorflow2-notebook-py311-gpu: infuseai/docker-stacks:tensorflow2.17.0-cuda12.2-py3.11-9d284a03
 
 primehub-model-images:
   model-tensorflow2-mnist-0-1: infuseai/model-tensorflow2-mnist:v0.1.0
