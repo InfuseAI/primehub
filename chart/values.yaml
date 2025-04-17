@@ -775,7 +775,7 @@ customImage:
   buildJob:
     image:
       repository: infuseai/buildah
-      tag: v1.33.2
+      tag: v1.39.3
     resources:
       limits:
         cpu: 2000m
