@@ -6,7 +6,7 @@ primehub-all:
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
-  primehub-controller: &primehub-controller infuseai/primehub-controller:8dfbb81
+  primehub-controller: &primehub-controller infuseai/primehub-controller:1f0d280
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy infuseai/kube-rbac-proxy:v0.4.1
   buildah: &buildah infuseai/buildah:v1.39.3
