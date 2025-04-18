@@ -5,4 +5,4 @@
 [submodule "chart/modules/awesome-primehub-apps"]
 	path = chart/modules/awesome-primehub-apps
 	url = https://github.com/InfuseAI/awesome-primehub-apps.git 
-	branch = main
+	branch = primehub-install-app-templates

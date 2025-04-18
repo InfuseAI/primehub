@@ -1,21 +1,22 @@
 primehub-all:
   # Core
   busybox: &busybox library/busybox:1.32
-  primehub-admission: &primehub-admission infuseai/primehub-admission:db8a8ba960
-  primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:20221125
+  primehub-admission: &primehub-admission infuseai/primehub-admission:2284a32
+  primehub-bootstrap: &primehub-bootstrap infuseai/primehub-bootstrap:2025.03
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
-  primehub-controller: &primehub-controller infuseai/primehub-controller:v4.0-6c5467e2
+  primehub-controller: &primehub-controller infuseai/primehub-controller:1f0d280
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy infuseai/kube-rbac-proxy:v0.4.1
-  buildah: &buildah quay.io/buildah/stable:v1.28.0
+  buildah: &buildah infuseai/buildah:v1.39.3
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:v4.0-b0fe5346
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:v4.0-b0fe5346
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:v4.0-b0fe5346
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:v4.0-b0fe5346
+  primehub-console: &primehub-console infuseai/primehub-console:16eaaf9
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:16eaaf9
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:16eaaf9
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:16eaaf9
+  primehub-console-graphql-zipper: &primehub-console-graphql-zipper infuseai/primehub-sharedfiles-zipper:v1.0.0
 
   # Metacontroller
   metacontroller: &metacontroller metacontroller/metacontroller:0.2
@@ -44,20 +45,20 @@ primehub-all:
   # Model deployment
   seldon-core-executor: &seldon-core-executor seldonio/seldon-core-executor:1.4.0
   model-storage-initializer: &model-storage-initializer kfserving/storage-initializer:v0.4.0
-  mlflow-model-storage-initializer: &mlflow-model-storage-initializer infuseai/mlflow-model-downloader:v0.1.1
-  prepackaged-tensorflow: &prepackaged-tensorflow infuseai/tensorflow2-prepackaged:v0.2.0
-  prepackaged-pytorch: &prepackaged-pytorch infuseai/pytorch-prepackaged:v0.2.0
-  prepackaged-sklearn: &prepackaged-sklearn infuseai/sklearn-prepackaged:v0.1.0
+  mlflow-model-storage-initializer: &mlflow-model-storage-initializer infuseai/mlflow-model-downloader:v0.2.3
+  prepackaged-tensorflow: &prepackaged-tensorflow infuseai/tensorflow2-prepackaged:v0.3.0
+  prepackaged-pytorch: &prepackaged-pytorch infuseai/pytorch-prepackaged:v0.3.0
+  prepackaged-sklearn: &prepackaged-sklearn infuseai/sklearn-prepackaged:v0.2.0
 
   # SSH Bastion Server
   ssh-proxy: &ssh-proxy infuseai/ssh-proxy:0.1.11-patch-1
 
   # Usage
-  primehub-usage: &primehub-usage infuseai/primehub-usage:v1.0.1
+  primehub-usage: &primehub-usage infuseai/primehub-usage:46e88c8
 
   # PrimeHub Store
-  minio: &minio minio/minio:RELEASE.2022-04-16T04-26-02Z
-  mc: &mc minio/mc:RELEASE.2022-11-07T23-47-39Z
+  minio: &minio minio/minio:RELEASE.2025-04-08T15-41-24Z
+  mc: &mc minio/mc:RELEASE.2025-04-08T15-39-49Z
   csi-attacher: &csi-attacher registry.k8s.io/sig-storage/csi-attacher:v3.4.0
   csi-node-driver-registrar: &csi-node-driver-registrar registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.4.0
   csi-rclone: &csi-rclone infuseai/csi-rclone:v1.2.0-16-g998c499
@@ -87,6 +88,7 @@ primehub-ee:
   primehub-console: *primehub-console
   primehub-console-graphql: *primehub-console-graphql
   primehub-console-watcher: *primehub-console-watcher
+  primehub-console-graphql-zipper: *primehub-console-graphql-zipper
 
   # Metacontroller
   metacontroller: *metacontroller
@@ -159,6 +161,7 @@ primehub-deploy:
   primehub-console-model-deploy: *primehub-console-model-deploy
   primehub-console-graphql: *primehub-console-graphql
   primehub-console-watcher: *primehub-console-watcher
+  primehub-console-graphql-zipper: *primehub-console-graphql-zipper
 
   # Metacontroller
   metacontroller: *metacontroller
@@ -188,22 +191,22 @@ primehub-admin-notebook:
   keycloak-gatekeeper: keycloak/keycloak-gatekeeper:6.0.1
 
 primehub-jupyter-images:
-  base-notebook: infuseai/docker-stacks:base-notebook-1eb85fe1
-  base-notebook-gpu: infuseai/docker-stacks:base-notebook-1eb85fe1-gpu
-  pytorch-notebook: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e
-  pytorch-notebook-gpu: infuseai/docker-stacks:pytorch-notebook-v1-10-2-6dec5b2e-gpu-cuda-11
-  tensorflow-notebook: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1
-  tensorflow-notebook-gpu: infuseai/docker-stacks:tensorflow-notebook-v1-15-4-1eb85fe1-gpu
-  tensorflow-notebook-tf-v2: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e
-  tensorflow-notebook-tf-v2-gpu: infuseai/docker-stacks:tensorflow-notebook-v2-8-0-6dec5b2e-gpu-cuda-11
+  base-notebook: infuseai/docker-stacks:base-py3.11-b4826add
+  base-notebook-gpu: infuseai/docker-stacks:base-cuda12.2-py3.11-9d284a03
+  pytorch2-notebook: infuseai/docker-stacks:pytorch2.4.0-py3.11-b4826add
+  pytorch2-notebook-gpu: infuseai/docker-stacks:pytorch2.4.0-cuda12.2-py3.11-9d284a03
+  tensorflow2-notebook: infuseai/docker-stacks:tensorflow2.14.1-py3.9-dc0e7e15
+  tensorflow2-notebook-gpu: infuseai/docker-stacks:tensorflow2.14.1-cuda11.8-py3.9-f471492b
+  tensorflow2-notebook-py311: infuseai/docker-stacks:tensorflow2.17.0-py3.11-b4826add
+  tensorflow2-notebook-py311-gpu: infuseai/docker-stacks:tensorflow2.17.0-cuda12.2-py3.11-9d284a03
 
 primehub-model-images:
   model-tensorflow2-mnist-0-1: infuseai/model-tensorflow2-mnist:v0.1.0
   model-tensorflow2-mnist-0-2: infuseai/model-tensorflow2-mnist:v0.2.0
 
 primehub-phapp-template-images:
-  code-server: codercom/code-server:3.9.2
-  label-studio: heartexlabs/label-studio:1.1.0
+  code-server: codercom/code-server:4.91.1
+  label-studio: heartexlabs/label-studio:1.13.0
   matlab: nvcr.io/partners/matlab:r2020b
-  mlflow: larribas/mlflow:1.9.1
-  streamlit: infuseai/streamlit:v1.2.0
+  mlflow: infuseai/primehub-apps:mlflow-server-v2.20.3
+  streamlit: infuseai/primehub-apps:streamlit-v1.37.0
