@@ -244,7 +244,7 @@ console:
     tag: 1.32
   image:
     repository: infuseai/primehub-console
-    tag: v4.0-b0fe5346
+    tag: 16eaaf9
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -285,7 +285,7 @@ graphql:
     targetPort: 4000
   image:
     repository: infuseai/primehub-console-graphql
-    tag: v4.0-b0fe5346
+    tag: 16eaaf9
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -317,7 +317,7 @@ graphql:
 watcher:
   image:
     repository: infuseai/primehub-console-watcher
-    tag: v4.0-b0fe5346
+    tag: 16eaaf9
     # pullPolicy: IfNotPresent
     # credentials:
     #   registry: registry.gitlab.com
@@ -335,7 +335,7 @@ watcher:
 admission:
   image:
     repository: infuseai/primehub-admission
-    tag: db8a8ba960
+    tag: 2284a32
     pullPolicy: IfNotPresent
   podImageReplacing:
     imagePrefix: "primehub.airgap:5000/"
@@ -360,7 +360,7 @@ bootstrap:
   enabled: true
   image:
     repository: infuseai/primehub-bootstrap
-    tag: "20221125"
+    tag: "2025.03"
     pullPolicy: IfNotPresent
   resources:
     limits:
@@ -378,7 +378,7 @@ bootstrap:
   - metadata:
       name: cpu-1
     spec:
-      description: 1 CPU / 2G
+      description: 1 CPU / 2G Memory
       displayName: CPU 1
       limits.cpu: 1
       limits.memory: 2G
@@ -393,11 +393,45 @@ bootstrap:
   - metadata:
       name: cpu-2
     spec:
-      description: 2 CPU / 10G
+      description: 2 CPU / 8G Memory
       displayName: CPU 2
       limits.cpu: 2
-      limits.memory: 10G
+      limits.memory: 8G
       limits.nvidia.com/gpu: 0
+      requests.cpu: 2
+      requests.memory: 8G
+      nodeSelector: {}
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+  - metadata:
+      name: cpu-3
+    spec:
+      description: 4 CPU / 16G Memory
+      displayName: CPU 3
+      limits.cpu: 4
+      limits.memory: 16G
+      limits.nvidia.com/gpu: 0
+      requests.cpu: 4
+      requests.memory: 16G
+      nodeSelector: {}
+      tolerations:
+      - key: "hub.jupyter.org/dedicated"
+        operator: "Equal"
+        value: "user"
+        effect: "NoSchedule"
+  - metadata:
+      name: cpu-4
+    spec:
+      description: 8 CPU / 32G Memory
+      displayName: CPU 4
+      limits.cpu: 8
+      limits.memory: 32G
+      limits.nvidia.com/gpu: 0
+      requests.cpu: 8
+      requests.memory: 32G
       nodeSelector: {}
       tolerations:
       - key: "hub.jupyter.org/dedicated"
@@ -407,13 +441,13 @@ bootstrap:
   - metadata:
       name: gpu-1
     spec:
-      description: 2 CPU / 7G / 1 GPU
+      description: 2 CPU / 8G Memory / 1 GPU
       displayName: GPU 1
       limits.cpu: 2
-      limits.memory: 7G
+      limits.memory: 8G
       limits.nvidia.com/gpu: 1
-      requests.cpu: 1.5
-      requests.memory: 5G
+      requests.cpu: 2
+      requests.memory: 8G
       tolerations:
       - key: "hub.jupyter.org/dedicated"
         operator: "Equal"
@@ -425,13 +459,13 @@ bootstrap:
   - metadata:
       name: gpu-2
     spec:
-      description: 4 CPU / 14G / 2 GPU
+      description: 4 CPU / 16G Memory / 2 GPU
       displayName: GPU 2
       limits.cpu: 4
-      limits.memory: 14G
+      limits.memory: 16G
       limits.nvidia.com/gpu: 2
       requests.cpu: 4
-      requests.memory: 14G
+      requests.memory: 16G
       tolerations:
       - key: "hub.jupyter.org/dedicated"
         operator: "Equal"
@@ -699,7 +733,7 @@ controller:
 
   image:
     repository: infuseai/primehub-controller
-    tag: v4.0-6c5467e2
+    tag: 1f0d280
     # pullPolicy: IfNotPresent
 
   proxy:
@@ -741,7 +775,7 @@ customImage:
   buildJob:
     image:
       repository: infuseai/buildah
-      tag: v1.33.2
+      tag: v1.39.3
     resources:
       limits:
         cpu: 2000m
@@ -839,7 +873,7 @@ modelDeployment:
   mlflow2ModelStorageInitializer:
     image:
       repository: infuseai/mlflow-model-downloader
-      tag: v0.2.1
+      tag: v0.2.3
       pullPolicy: IfNotPresent
 
 # Admin Notebook (Deprecated)
@@ -942,7 +976,7 @@ minio:
   ##
   image:
     repository: minio/minio
-    tag: RELEASE.2022-04-16T04-26-02Z
+    tag: RELEASE.2025-04-08T15-41-24Z
     pullPolicy: IfNotPresent
 
   ## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
@@ -950,7 +984,7 @@ minio:
   ##
   mcImage:
     repository: minio/mc
-    tag: RELEASE.2022-11-07T23-47-39Z
+    tag: RELEASE.2025-04-08T15-39-49Z
     pullPolicy: IfNotPresent
 
   ## Additional arguments to pass to minio binary
@@ -1093,7 +1127,7 @@ usage:
   image:
     repository: infuseai/primehub-usage
     pullPolicy: IfNotPresent
-    tag: v1.0.1
+    tag: 46e88c8
 
   podSecurityContext:
     enabled: true

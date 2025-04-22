@@ -50,9 +50,9 @@ function build() {
   echo
   echo "Building image: $TARGET_IMAGE"
   if [ "$SKIP_TLS_VERIFY" == "true" ]; then
-    buildah --storage-driver overlay bud --tls-verify=false -f /Dockerfile -t $TARGET_IMAGE .
+    buildah --storage-driver overlay bud --format docker --tls-verify=false -f /Dockerfile -t $TARGET_IMAGE .
   else
-    buildah --storage-driver overlay bud -f /Dockerfile -t $TARGET_IMAGE .
+    buildah --storage-driver overlay bud --format docker -f /Dockerfile -t $TARGET_IMAGE .
   fi
   [[ $? -ne 0 ]] && { exit $BUILD_FAILED; }
   echo
