@@ -234,8 +234,13 @@ grafana:
   ingress:
     enabled: true
     annotations:
-      kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: "true"
+    ingressClassName: nginx
+    hosts:
+      {{ if (regexFind "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$" $GRAFANA_DOMAIN) }}
+      {{ else }}
+      - {{ $GRAFANA_DOMAIN }}
+      {{ end }}
     path: {{$GRAFANA_PATH}}
     {{ if eq $GRAFANA_SCHEME "https" }}
     tls:
