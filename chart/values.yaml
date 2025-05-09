@@ -23,8 +23,8 @@ ingress:
   enabled: true
   annotations:
     ingress.kubernetes.io/affinity: cookie
-    kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+  className: nginx
   hosts:
     - chart-example.local
   tls: []
