@@ -12,10 +12,10 @@ primehub-all:
   buildah: &buildah infuseai/buildah:v1.39.3
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:c5cfdba
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:c5cfdba
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:c5cfdba
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:c5cfdba
+  primehub-console: &primehub-console infuseai/primehub-console:84ec661
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:84ec661
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:84ec661
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:84ec661
   primehub-console-graphql-zipper: &primehub-console-graphql-zipper infuseai/primehub-sharedfiles-zipper:v1.0.0
 
   # Metacontroller
