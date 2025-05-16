@@ -6,16 +6,16 @@ primehub-all:
   primehub-examples: &primehub-examples infuseai/primehub-examples:v0.1.1
 
   # Controller
-  primehub-controller: &primehub-controller infuseai/primehub-controller:1f0d280
+  primehub-controller: &primehub-controller infuseai/primehub-controller:36c2ec1
   primehub-monitoring-agent: &primehub-monitoring-agent infuseai/primehub-monitoring-agent:v0.1.2
   kube-rbac-proxy: &kube-rbac-proxy infuseai/kube-rbac-proxy:v0.4.1
   buildah: &buildah infuseai/buildah:v1.39.3
 
   # Primehub Console
-  primehub-console: &primehub-console infuseai/primehub-console:84ec661
-  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:84ec661
-  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:84ec661
-  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:84ec661
+  primehub-console: &primehub-console infuseai/primehub-console:7884dd0
+  primehub-console-model-deploy: &primehub-console-model-deploy infuseai/primehub-console-model-deploy:7884dd0
+  primehub-console-graphql: &primehub-console-graphql infuseai/primehub-console-graphql:7884dd0
+  primehub-console-watcher: &primehub-console-watcher infuseai/primehub-console-watcher:7884dd0
   primehub-console-graphql-zipper: &primehub-console-graphql-zipper infuseai/primehub-sharedfiles-zipper:v1.0.0
 
   # Metacontroller
